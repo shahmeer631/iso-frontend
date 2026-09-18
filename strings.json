@@ -1,0 +1,5061 @@
+{
+  "Oops! Destination not found.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/not-found.tsx",
+      "type": "JsxText",
+      "line": 26
+    }
+  ],
+  "The page you’re looking for doesn’t exist or may have been moved. Try           exploring our latest travel deals below.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/not-found.tsx",
+      "type": "JsxText",
+      "line": 29
+    }
+  ],
+  "Back to Home": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/not-found.tsx",
+      "type": "JsxText",
+      "line": 39
+    }
+  ],
+  "Not found illustration": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/not-found.tsx",
+      "type": "JsxAttribute-alt",
+      "line": 20
+    }
+  ],
+  "ISOBrain": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/sheard/Footer.tsx",
+      "type": "JsxText",
+      "line": 76
+    },
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/auth/login/page.tsx",
+      "type": "JsxText",
+      "line": 145
+    },
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/auth/sign-up/page.tsx",
+      "type": "JsxText",
+      "line": 90
+    }
+  ],
+  ".AI": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/sheard/Footer.tsx",
+      "type": "JsxText",
+      "line": 76
+    }
+  ],
+  "Icon": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/sheard/Footer.tsx",
+      "type": "JsxAttribute-alt",
+      "line": 72
+    },
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/sheard/Navbar.tsx",
+      "type": "JsxAttribute-alt",
+      "line": 167
+    },
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/auth/complete-profile/page.tsx",
+      "type": "JsxAttribute-alt",
+      "line": 123
+    },
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/auth/login/page.tsx",
+      "type": "JsxAttribute-alt",
+      "line": 143
+    },
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/auth/sign-up/page.tsx",
+      "type": "JsxAttribute-alt",
+      "line": 88
+    }
+  ],
+  "ISOBrain.AI": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/sheard/Navbar.tsx",
+      "type": "JsxText",
+      "line": 171
+    }
+  ],
+  "Explore our comprehensive resources and specialized tools designed for ISO professionals worldwide.": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/sheard/Navbar.tsx",
+      "type": "JsxText",
+      "line": 266
+    }
+  ],
+  "CPD Certified": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/acadamy/AcademyCategoriesNexus.tsx",
+      "type": "JsxText",
+      "line": 79
+    }
+  ],
+  "Enroll in Course": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/acadamy/AcademyCategoriesNexus.tsx",
+      "type": "JsxText",
+      "line": 93
+    }
+  ],
+  "Loading certification categories...": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/acadamy/AcademyCategoriesNexus.tsx",
+      "type": "JsxText",
+      "line": 138
+    }
+  ],
+  "Failed to load categories. Please try again later.": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/acadamy/AcademyCategoriesNexus.tsx",
+      "type": "JsxText",
+      "line": 142
+    },
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/Library/iso-standards/ISOStandardsNexus.tsx",
+      "type": "JsxText",
+      "line": 160
+    }
+  ],
+  "No results found for \"": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/acadamy/AcademyCategoriesNexus.tsx",
+      "type": "JsxText",
+      "line": 146
+    },
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/Library/iso-standards/ISOStandardsNexus.tsx",
+      "type": "JsxText",
+      "line": 164
+    }
+  ],
+  "Featured Management Systems": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/acadamy/ComplianceBundles.tsx",
+      "type": "JsxText",
+      "line": 57
+    }
+  ],
+  "Select your Option": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/components/AIAssistant/Hero.tsx",
+      "type": "JsxText",
+      "line": 17
+    },
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/components/AIAssistant/Hero.tsx",
+      "type": "JsxText",
+      "line": 43
+    },
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/components/AIAssistant/Hero.tsx",
+      "type": "JsxText",
+      "line": 63
+    },
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/components/AIAssistant/Hero.tsx",
+      "type": "JsxText",
+      "line": 92
+    },
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/components/AIAssistant/Hero.tsx",
+      "type": "JsxText",
+      "line": 110
+    },
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/components/AIAssistant/Hero.tsx",
+      "type": "JsxText",
+      "line": 127
+    }
+  ],
+  "option left": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/components/AIAssistant/Hero.tsx",
+      "type": "JsxAttribute-alt",
+      "line": 23
+    },
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/components/AIAssistant/Hero.tsx",
+      "type": "JsxAttribute-alt",
+      "line": 98
+    },
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/components/AIAssistant/Hero.tsx",
+      "type": "JsxAttribute-alt",
+      "line": 133
+    }
+  ],
+  "arrow": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/components/AIAssistant/Hero.tsx",
+      "type": "JsxAttribute-alt",
+      "line": 34
+    },
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/components/AIAssistant/Hero.tsx",
+      "type": "JsxAttribute-alt",
+      "line": 145
+    }
+  ],
+  "option right": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/components/AIAssistant/Hero.tsx",
+      "type": "JsxAttribute-alt",
+      "line": 49
+    },
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/components/AIAssistant/Hero.tsx",
+      "type": "JsxAttribute-alt",
+      "line": 69
+    },
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/components/AIAssistant/Hero.tsx",
+      "type": "JsxAttribute-alt",
+      "line": 116
+    }
+  ],
+  "Explore the ISOBrain": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/components/AIAssistant/InstructToAi.tsx",
+      "type": "JsxText",
+      "line": 63
+    }
+  ],
+  "AI Product Suite": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/components/AIAssistant/InstructToAi.tsx",
+      "type": "JsxText",
+      "line": 70
+    }
+  ],
+  "Three purpose-built AI modules that cover every phase of your ISO Management System lifecycle—from implementation to audit to evidence evaluation.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/components/AIAssistant/InstructToAi.tsx",
+      "type": "JsxText",
+      "line": 78
+    }
+  ],
+  "Welcome to ISO Navigator, the premier Generative AI tool developed by ISOBrain.ai. Whether you are starting from scratch with an initial Gap Analysis or actively preparing for a Certification Audit, ISO Navigator is your dedicated virtual consultant. Our AI is specifically trained to help you establish, implement, and effortlessly maintain your ISO Management Systems (IMS) by generating the exact documentation, strategies, and training materials you need.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/components/AIAssistant/InstructToAi.tsx",
+      "type": "JsxText",
+      "line": 122
+    }
+  ],
+  "Explore ISO Navigator": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/components/AIAssistant/InstructToAi.tsx",
+      "type": "JsxText",
+      "line": 127
+    }
+  ],
+  "Audit Lens is an intelligent audit management tool developed by ISOBrain.ai. Designed for auditors and compliance teams, it uses Generative AI to automatically create comprehensive audit materials—from initial planning and scheduling to final reporting and follow-up—across all ISO management system standards.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/components/AIAssistant/InstructToAi.tsx",
+      "type": "JsxText",
+      "line": 167
+    }
+  ],
+  "Explore Audit Lens": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/components/AIAssistant/InstructToAi.tsx",
+      "type": "JsxText",
+      "line": 172
+    }
+  ],
+  "Benchmark AI is an intelligent document review tool developed by ISOBrain.ai. It uses advanced Generative AI and OCR (Optical Character Recognition) technology to instantly analyze, score, and improve your existing ISO compliance documents. By simply uploading a file and stating your goals, the AI compares your documentation against strict ISO standard requirements to identify gaps and provide actionable recommendations.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/components/AIAssistant/InstructToAi.tsx",
+      "type": "JsxText",
+      "line": 244
+    }
+  ],
+  "Explore Benchmark AI": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/components/AIAssistant/InstructToAi.tsx",
+      "type": "JsxText",
+      "line": 249
+    }
+  ],
+  "landing image": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/components/AIAssistant/InstructToAi.tsx",
+      "type": "JsxAttribute-alt",
+      "line": 98
+    },
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/components/AIAssistant/InstructToAi.tsx",
+      "type": "JsxAttribute-alt",
+      "line": 187
+    },
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/components/AIAssistant/InstructToAi.tsx",
+      "type": "JsxAttribute-alt",
+      "line": 216
+    }
+  ],
+  "Iso Image": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/components/AIAssistant/InstructToAi.tsx",
+      "type": "JsxAttribute-alt",
+      "line": 114
+    },
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/components/AIAssistant/InstructToAi.tsx",
+      "type": "JsxAttribute-alt",
+      "line": 158
+    },
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/components/AIAssistant/InstructToAi.tsx",
+      "type": "JsxAttribute-alt",
+      "line": 233
+    }
+  ],
+  "Please wait while our AI reviews your document": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/components/AIAssistant/LoadingOverlay.tsx",
+      "type": "JsxText",
+      "line": 25
+    }
+  ],
+  "OpenUp Use Cases": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/components/AIAssistant/OpenUpUseCases.tsx",
+      "type": "JsxText",
+      "line": 13
+    },
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/Library/LibraryUseCases.tsx",
+      "type": "JsxText",
+      "line": 191
+    }
+  ],
+  "Generate Blog, Article or Essay Ideas in One Click": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/components/AIAssistant/OpenUpUseCases.tsx",
+      "type": "JsxText",
+      "line": 18
+    }
+  ],
+  "The easiest way to come up with catchy blog, essay, and article topics and content structures using AI writing assistant.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/components/AIAssistant/OpenUpUseCases.tsx",
+      "type": "JsxText",
+      "line": 23
+    }
+  ],
+  "Start Writing": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/components/AIAssistant/OpenUpUseCases.tsx",
+      "type": "JsxText",
+      "line": 32
+    }
+  ],
+  "Previous": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/components/assessment/NavigationButtons.tsx",
+      "type": "JsxText",
+      "line": 29
+    },
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/mastery-lab/assessment/page.tsx",
+      "type": "JsxText",
+      "line": 579
+    }
+  ],
+  "support@isobrain.ai": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/contact/contactForm.tsx",
+      "type": "JsxText",
+      "line": 115
+    }
+  ],
+  "123 ISO Street": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/contact/contactForm.tsx",
+      "type": "JsxText",
+      "line": 145
+    }
+  ],
+  "San Francisco, CA 94107": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/contact/contactForm.tsx",
+      "type": "JsxText",
+      "line": 146
+    }
+  ],
+  "United States": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/contact/contactForm.tsx",
+      "type": "JsxText",
+      "line": 147
+    }
+  ],
+  "9:00 AM - 6:00 PM": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/contact/contactForm.tsx",
+      "type": "JsxText",
+      "line": 161
+    }
+  ],
+  "10:00 AM - 4:00 PM": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/contact/contactForm.tsx",
+      "type": "JsxText",
+      "line": 165
+    }
+  ],
+  "John Doe": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/contact/contactForm.tsx",
+      "type": "JsxAttribute-placeholder",
+      "line": 31
+    },
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/lessons/complete/page.tsx",
+      "type": "JsxText",
+      "line": 34
+    }
+  ],
+  "you@example.com": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/contact/contactForm.tsx",
+      "type": "JsxAttribute-placeholder",
+      "line": 47
+    }
+  ],
+  "Your Company": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/contact/contactForm.tsx",
+      "type": "JsxAttribute-placeholder",
+      "line": 64
+    }
+  ],
+  "Neural Interaction Layer": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/landing-page-components/AISimulation.tsx",
+      "type": "JsxText",
+      "line": 57
+    }
+  ],
+  "User": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/landing-page-components/AISimulation.tsx",
+      "type": "JsxAttribute-alt",
+      "line": 62
+    }
+  ],
+  "Start My 7-Day Free Trial →": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/landing-page-components/HeroSection.tsx",
+      "type": "JsxText",
+      "line": 197
+    }
+  ],
+  "Cancel anytime in 2 clicks. No charge today.": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/landing-page-components/HeroSection.tsx",
+      "type": "JsxText",
+      "line": 201
+    }
+  ],
+  "Ask AI": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/landing-page-components/HeroSection.tsx",
+      "type": "JsxText",
+      "line": 212
+    },
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/landing-page-components/HeroSection.tsx",
+      "type": "JsxAttribute-alt",
+      "line": 211
+    }
+  ],
+  "Copy to Clipboard": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/landing-page-components/HeroSection.tsx",
+      "type": "JsxText",
+      "line": 286
+    },
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/ai-assistant/iso-navigator/page.tsx",
+      "type": "JsxText",
+      "line": 1911
+    }
+  ],
+  "Ask about ISO 42001 Risk Management...": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/landing-page-components/HeroSection.tsx",
+      "type": "JsxAttribute-placeholder",
+      "line": 216
+    }
+  ],
+  "How ISOBRain.aiWorks": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/components/landing-page-components/HowWorks.tsx",
+      "type": "JsxText",
+      "line": 17
+    }
+  ],
+  "Select Context": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/components/landing-page-components/HowWorks.tsx",
+      "type": "JsxText",
+      "line": 32
+    }
+  ],
+  "Choose your industry & job role": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/components/landing-page-components/HowWorks.tsx",
+      "type": "JsxText",
+      "line": 34
+    }
+  ],
+  "Learn AI": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/components/landing-page-components/HowWorks.tsx",
+      "type": "JsxText",
+      "line": 50
+    }
+  ],
+  "Watch lessons + use AI tools": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/components/landing-page-components/HowWorks.tsx",
+      "type": "JsxText",
+      "line": 52
+    }
+  ],
+  "Measure Competency": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/components/landing-page-components/HowWorks.tsx",
+      "type": "JsxText",
+      "line": 69
+    }
+  ],
+  "Get your personalized skill report": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/components/landing-page-components/HowWorks.tsx",
+      "type": "JsxText",
+      "line": 72
+    }
+  ],
+  "ISO Platform": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/components/landing-page-components/LibrarySection.tsx",
+      "type": "JsxText",
+      "line": 80
+    },
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/library/page.tsx",
+      "type": "JsxText",
+      "line": 46
+    },
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/quality-managemant/page.tsx",
+      "type": "JsxText",
+      "line": 189
+    }
+  ],
+  "The ISO Platform is the core engine of ISOBrain, shifting the traditional document-browsing experience into a highly focused, interactive workspace. Designed specifically for auditors, compliance officers, and quality managers, it combines the full text of global ISO standards with an advanced AI assistant that is strictly contextualized to the specific standard you are working on.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/components/landing-page-components/LibrarySection.tsx",
+      "type": "JsxText",
+      "line": 83
+    }
+  ],
+  "Get Started Free": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/components/landing-page-components/LibrarySection.tsx",
+      "type": "JsxText",
+      "line": 113
+    }
+  ],
+  "View Full Library": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/components/landing-page-components/LibrarySection.tsx",
+      "type": "JsxText",
+      "line": 127
+    }
+  ],
+  "Take the leap - Enhance your skills before time runs out!": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/landing-page-components/OfferTimer.tsx",
+      "type": "JsxText",
+      "line": 69
+    }
+  ],
+  "Flash Sale - Limited time only!": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/landing-page-components/OfferTimer.tsx",
+      "type": "JsxText",
+      "line": 72
+    }
+  ],
+  "Server under maintenance!": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/landing-page-components/OfferTimer.tsx",
+      "type": "JsxText",
+      "line": 77
+    }
+  ],
+  "Please wait for some time...": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/landing-page-components/OfferTimer.tsx",
+      "type": "JsxText",
+      "line": 78
+    }
+  ],
+  "FAQS": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/landing-page-components/PricingFAQ.tsx",
+      "type": "JsxText",
+      "line": 54
+    }
+  ],
+  "AI Learning Tools": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/LessonSideBar/AiToolsSection.tsx",
+      "type": "JsxText",
+      "line": 8
+    }
+  ],
+  "Chat / Ask AI": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/LessonSideBar/ChatSection.tsx",
+      "type": "JsxText",
+      "line": 7
+    }
+  ],
+  "No messages yet. Ask a question about this lesson...": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/LessonSideBar/ChatSection.tsx",
+      "type": "JsxText",
+      "line": 8
+    }
+  ],
+  "Send": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/LessonSideBar/ChatSection.tsx",
+      "type": "JsxText",
+      "line": 17
+    }
+  ],
+  "Start typing your question about this lesson...": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/LessonSideBar/ChatSection.tsx",
+      "type": "JsxAttribute-placeholder",
+      "line": 13
+    }
+  ],
+  "← Back to Course": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/LessonSideBar/LessonSidebar.tsx",
+      "type": "JsxText",
+      "line": 29
+    }
+  ],
+  "Lessons": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/LessonSideBar/LessonSidebar.tsx",
+      "type": "JsxText",
+      "line": 32
+    }
+  ],
+  "icon": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/LessonSideBar/LessonSidebar.tsx",
+      "type": "JsxAttribute-alt",
+      "line": 55
+    },
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/quality-managemant/page.tsx",
+      "type": "JsxAttribute-alt",
+      "line": 53
+    },
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/quality-managemant/page.tsx",
+      "type": "JsxAttribute-alt",
+      "line": 84
+    },
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/quality-managemant/page.tsx",
+      "type": "JsxAttribute-alt",
+      "line": 114
+    },
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/quality-managemant/page.tsx",
+      "type": "JsxAttribute-alt",
+      "line": 144
+    },
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/quality-managemant/page.tsx",
+      "type": "JsxAttribute-alt",
+      "line": 184
+    },
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/quality-managemant/page.tsx",
+      "type": "JsxAttribute-alt",
+      "line": 206
+    },
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/quality-managemant/page.tsx",
+      "type": "JsxAttribute-alt",
+      "line": 229
+    }
+  ],
+  "Related Standards": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/LessonSideBar/RelatedStandards.tsx",
+      "type": "JsxText",
+      "line": 14
+    }
+  ],
+  "YouTube video": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/LessonSideBar/VideoPlayerPlaceholder.tsx",
+      "type": "JsxAttribute-title",
+      "line": 10
+    }
+  ],
+  "Failed to load categories.": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/Library/LibraryUseCases.tsx",
+      "type": "JsxText",
+      "line": 172
+    }
+  ],
+  "Generate AI Copy writing": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/Library/LibraryUseCases.tsx",
+      "type": "JsxText",
+      "line": 194
+    }
+  ],
+  "Favorite Tools": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/Library/LibraryUseCases.tsx",
+      "type": "JsxText",
+      "line": 196
+    }
+  ],
+  "Explore Courses": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/Library/LibraryUseCases.tsx",
+      "type": "JsxText",
+      "line": 244
+    }
+  ],
+  "Set your context": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/mastery-lab/GetStartedSection.tsx",
+      "type": "JsxText",
+      "line": 79
+    }
+  ],
+  "Step 1 — Select Your Industry": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/mastery-lab/GetStartedSection.tsx",
+      "type": "JsxText",
+      "line": 86
+    }
+  ],
+  "Step 2 — Define your management level": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/mastery-lab/GetStartedSection.tsx",
+      "type": "JsxText",
+      "line": 107
+    }
+  ],
+  "Step 3 — Choose your department or function": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/mastery-lab/GetStartedSection.tsx",
+      "type": "JsxText",
+      "line": 128
+    }
+  ],
+  "Select industry...": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/mastery-lab/GetStartedSection.tsx",
+      "type": "JsxAttribute-placeholder",
+      "line": 91
+    }
+  ],
+  "Select level...": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/mastery-lab/GetStartedSection.tsx",
+      "type": "JsxAttribute-placeholder",
+      "line": 112
+    }
+  ],
+  "Select department...": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/mastery-lab/GetStartedSection.tsx",
+      "type": "JsxAttribute-placeholder",
+      "line": 133
+    }
+  ],
+  "Trial Expired": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/payment/PaymentModal.tsx",
+      "type": "JsxText",
+      "line": 56
+    }
+  ],
+  "Your 7-day trial has ended and your payment could not be processed.": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/payment/PaymentModal.tsx",
+      "type": "JsxText",
+      "line": 58
+    }
+  ],
+  "Please update your payment method to restore access to all ISOBrain features and continue where you left off.": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/payment/PaymentModal.tsx",
+      "type": "JsxText",
+      "line": 65
+    }
+  ],
+  "You will be redirected securely to Stripe.": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/payment/PaymentModal.tsx",
+      "type": "JsxText",
+      "line": 82
+    }
+  ],
+  "Access Granted!": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/payments/MockCheckoutForm.tsx",
+      "type": "JsxText",
+      "line": 62
+    },
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/payments/StripeCheckoutForm.tsx",
+      "type": "JsxText",
+      "line": 183
+    }
+  ],
+  "Preparing your learning environment...": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/payments/MockCheckoutForm.tsx",
+      "type": "JsxText",
+      "line": 64
+    }
+  ],
+  "Redirecting to Academy...": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/payments/MockCheckoutForm.tsx",
+      "type": "JsxText",
+      "line": 68
+    },
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/payments/StripeCheckoutForm.tsx",
+      "type": "JsxText",
+      "line": 187
+    }
+  ],
+  "Card Number": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/payments/MockCheckoutForm.tsx",
+      "type": "JsxText",
+      "line": 112
+    },
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/payments/StripeCheckoutForm.tsx",
+      "type": "JsxText",
+      "line": 216
+    }
+  ],
+  "VISA": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/payments/MockCheckoutForm.tsx",
+      "type": "JsxText",
+      "line": 115
+    },
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/payments/StripeCheckoutForm.tsx",
+      "type": "JsxText",
+      "line": 219
+    }
+  ],
+  "Expiry Date": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/payments/MockCheckoutForm.tsx",
+      "type": "JsxText",
+      "line": 134
+    },
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/payments/StripeCheckoutForm.tsx",
+      "type": "JsxText",
+      "line": 232
+    }
+  ],
+  "CVV Code": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/payments/MockCheckoutForm.tsx",
+      "type": "JsxText",
+      "line": 146
+    },
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/payments/StripeCheckoutForm.tsx",
+      "type": "JsxText",
+      "line": 238
+    }
+  ],
+  "Validating Test Session...": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/payments/MockCheckoutForm.tsx",
+      "type": "JsxText",
+      "line": 180
+    }
+  ],
+  "Start 7-Day Trial (Cancel Anytime)": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/payments/MockCheckoutForm.tsx",
+      "type": "JsxText",
+      "line": 186
+    },
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/payments/StripeCheckoutForm.tsx",
+      "type": "JsxText",
+      "line": 272
+    }
+  ],
+  "🔒 Secure checkout. ISO 27001 & SOC2 compliant.": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/payments/MockCheckoutForm.tsx",
+      "type": "JsxText",
+      "line": 193
+    },
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/payments/StripeCheckoutForm.tsx",
+      "type": "JsxText",
+      "line": 279
+    }
+  ],
+  "Why do we ask for a credit card? Because ISOBrain uses advanced AI, we require a card to verify you are a real human and prevent bot abuse. You will not be charged until Day 7.": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/payments/MockCheckoutForm.tsx",
+      "type": "JsxText",
+      "line": 198
+    },
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/payments/StripeCheckoutForm.tsx",
+      "type": "JsxText",
+      "line": 284
+    }
+  ],
+  "Mock Sandbox Security Active": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/payments/MockCheckoutForm.tsx",
+      "type": "JsxText",
+      "line": 203
+    }
+  ],
+  "MM/YY": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/payments/MockCheckoutForm.tsx",
+      "type": "JsxAttribute-placeholder",
+      "line": 141
+    }
+  ],
+  "Your purchase was successful. Preparing your learning environment...": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/payments/StripeCheckoutForm.tsx",
+      "type": "JsxText",
+      "line": 184
+    }
+  ],
+  "Validating Transaction...": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/payments/StripeCheckoutForm.tsx",
+      "type": "JsxText",
+      "line": 266
+    }
+  ],
+  "Encrypted Secure Connection": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/payments/StripeCheckoutForm.tsx",
+      "type": "JsxText",
+      "line": 290
+    }
+  ],
+  "NEXT STEPS": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/Shared/ExploreFeatures.tsx",
+      "type": "JsxText",
+      "line": 48
+    }
+  ],
+  "Keep building your ISO system": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/Shared/ExploreFeatures.tsx",
+      "type": "JsxText",
+      "line": 51
+    }
+  ],
+  "Previous slide": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/ui/carousel.tsx",
+      "type": "JsxText",
+      "line": 199
+    }
+  ],
+  "Next slide": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/ui/carousel.tsx",
+      "type": "JsxText",
+      "line": 229
+    }
+  ],
+  "Close": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/components/ui/dialog.tsx",
+      "type": "JsxText",
+      "line": 76
+    },
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/components/ui/dialog.tsx",
+      "type": "JsxText",
+      "line": 114
+    },
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/AIAssistant/Banchmark/ISOSuggestionModal.tsx",
+      "type": "JsxText",
+      "line": 313
+    },
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/AIAssistant/Banchmark/uploadPage.tsx",
+      "type": "JsxText",
+      "line": 1827
+    }
+  ],
+  "ISOBrain Pro (Most Popular) –": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/academy/page.tsx",
+      "type": "JsxText",
+      "line": 250
+    }
+  ],
+  "USD $49/Month": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/academy/page.tsx",
+      "type": "JsxText",
+      "line": 250
+    }
+  ],
+  "Our most popular tier. Enhance your benchmarking with deep, AI-powered learning and study tools.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/academy/page.tsx",
+      "type": "JsxText",
+      "line": 266
+    }
+  ],
+  "Designed for professionals who don’t just want to read the standards—they want to master them, apply them confidently, and build an undeniable portfolio of qualifications.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/academy/page.tsx",
+      "type": "JsxText",
+      "line": 277
+    }
+  ],
+  "Countdown ticking—secure your spot!": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/academy/page.tsx",
+      "type": "JsxText",
+      "line": 289
+    }
+  ],
+  "Master new skills for USD$ 49": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/academy/page.tsx",
+      "type": "JsxText",
+      "line": 302
+    }
+  ],
+  "7-Day Free Trial": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/academy/page.tsx",
+      "type": "JsxText",
+      "line": 320
+    },
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/ai-assistant-home/page.tsx",
+      "type": "JsxText",
+      "line": 403
+    },
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/library/iso-standards/page.tsx",
+      "type": "JsxText",
+      "line": 321
+    }
+  ],
+  "Get ISOBrain Pro & Start Learning": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/academy/page.tsx",
+      "type": "JsxText",
+      "line": 322
+    }
+  ],
+  "Everything in ISOBrain Plus, including unlimited access to the ISO Library and ISO Mastery Lab.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/academy/page.tsx",
+      "type": "JsxText",
+      "line": 377
+    }
+  ],
+  "Unlimited Access to ISOBrain Academy:": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/academy/page.tsx",
+      "type": "JsxText",
+      "line": 384
+    }
+  ],
+  "Move beyond theory. Get unrestricted access to industry-leading, AI-powered learning tailored to your specific context.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/academy/page.tsx",
+      "type": "JsxText",
+      "line": 387
+    }
+  ],
+  "High-Quality Video Lessons:": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/academy/page.tsx",
+      "type": "JsxText",
+      "line": 394
+    }
+  ],
+  "Learn directly from ISO experts. Master complex standards from the ground up and see exactly how they apply in day-to-day scenarios and operations.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/academy/page.tsx",
+      "type": "JsxText",
+      "line": 397
+    }
+  ],
+  "Advanced Study Tools:": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/academy/page.tsx",
+      "type": "JsxText",
+      "line": 404
+    }
+  ],
+  "Learn faster with AI-powered Study Guides, Briefing Docs, Smart Notes, and real-world analogies. These tools help you master complex standards and apply knowledge effectively under pressure.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/academy/page.tsx",
+      "type": "JsxText",
+      "line": 407
+    }
+  ],
+  "Unlimited CPD Certificates:": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/academy/page.tsx",
+      "type": "JsxText",
+      "line": 414
+    }
+  ],
+  "Your professional growth has no limits. Earn an unlimited number of verified CPD professional certifications as you complete various courses and modules within the Academy.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/academy/page.tsx",
+      "type": "JsxText",
+      "line": 417
+    }
+  ],
+  "A System Built for Real-World Execution": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/academy/page.tsx",
+      "type": "JsxText",
+      "line": 432
+    }
+  ],
+  "Everything you need to bridge the gap between regulatory theory and day-to-day application.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/academy/page.tsx",
+      "type": "JsxText",
+      "line": 434
+    }
+  ],
+  "AI-Powered Cognitive Tools": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/academy/page.tsx",
+      "type": "JsxText",
+      "line": 455
+    }
+  ],
+  "Learn faster, retain more, and turn complex requirements into everyday knowledge.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/academy/page.tsx",
+      "type": "JsxText",
+      "line": 457
+    }
+  ],
+  "Your Career Transformation": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/academy/page.tsx",
+      "type": "JsxText",
+      "line": 491
+    }
+  ],
+  "Complete your chosen pathway and walk away with more than just a piece of paper.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/academy/page.tsx",
+      "type": "JsxText",
+      "line": 493
+    }
+  ],
+  "Resume-Boosting Credentials": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/academy/page.tsx",
+      "type": "JsxText",
+      "line": 501
+    }
+  ],
+  "Earn recognized professional certificates to back up your on-the-job expertise and demonstrate your skills to employers.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/academy/page.tsx",
+      "type": "JsxText",
+      "line": 502
+    }
+  ],
+  "Focused, Bite-Sized Learning": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/academy/page.tsx",
+      "type": "JsxText",
+      "line": 508
+    }
+  ],
+  "Structured into 6 lessons per course to deliver high-value knowledge without the fluff or unnecessary filler.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/academy/page.tsx",
+      "type": "JsxText",
+      "line": 509
+    }
+  ],
+  "Interactive Contextual Quizzes": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/academy/page.tsx",
+      "type": "JsxText",
+      "line": 515
+    }
+  ],
+  "Test your practical application skills with dynamic, AI-generated quizzes designed around actual audit situations.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/academy/page.tsx",
+      "type": "JsxText",
+      "line": 516
+    }
+  ],
+  "Begin Your Path to Certification": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/academy/page.tsx",
+      "type": "JsxText",
+      "line": 524
+    }
+  ],
+  "ISOBrain Ultra –": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/ai-assistant-home/page.tsx",
+      "type": "JsxText",
+      "line": 337
+    }
+  ],
+  "USD $65/Month": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/ai-assistant-home/page.tsx",
+      "type": "JsxText",
+      "line": 337
+    }
+  ],
+  "The ultimate intelligent ISO compliance companion. Unlock the full power of the ISOBrain ecosystem, including our proprietary AI tools.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/ai-assistant-home/page.tsx",
+      "type": "JsxText",
+      "line": 349
+    }
+  ],
+  "Built for audit teams, lead implementers, and advanced compliance workflows. Unlock our proprietary AI automation tools to save hours of manual cross-referencing.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/ai-assistant-home/page.tsx",
+      "type": "JsxText",
+      "line": 360
+    }
+  ],
+  "Claim your discount - Enhance your skills today": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/ai-assistant-home/page.tsx",
+      "type": "JsxText",
+      "line": 372
+    }
+  ],
+  "Enhance your skills before time runs out!": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/ai-assistant-home/page.tsx",
+      "type": "JsxText",
+      "line": 385
+    }
+  ],
+  "Get ISOBrain Ultra — Enhance your career at a lower price": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/ai-assistant-home/page.tsx",
+      "type": "JsxText",
+      "line": 405
+    }
+  ],
+  "Everything in ISOBrain Pro, giving you full run of the ISO Library, ISO Mastery Lab, and unlimited Academy courses & CPD certificates.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/ai-assistant-home/page.tsx",
+      "type": "JsxText",
+      "line": 460
+    }
+  ],
+  "Unlimited Access & Usage of the AI Assistant:": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/ai-assistant-home/page.tsx",
+      "type": "JsxText",
+      "line": 467
+    }
+  ],
+  "Stop second-guessing your interpretations. Get clear, structured answers based on real standards. The Ultra plan unlocks the complete suite of our cutting-edge AI compliance tools.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/ai-assistant-home/page.tsx",
+      "type": "JsxText",
+      "line": 470
+    }
+  ],
+  "ISO Navigator:": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/ai-assistant-home/page.tsx",
+      "type": "JsxText",
+      "line": 477
+    }
+  ],
+  "Quickly find your way through complex ISO frameworks and clauses. Map your ISO system from the inside out and instantly interpret clauses specifically for your unique use case.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/ai-assistant-home/page.tsx",
+      "type": "JsxText",
+      "line": 480
+    }
+  ],
+  "Audit Lens:": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/ai-assistant-home/page.tsx",
+      "type": "JsxText",
+      "line": 487
+    }
+  ],
+  "Your forensic audit interface. AI-driven assistance to streamline your auditing process. Inspect your documentation to identify hidden non-conformities and gaps before a formal external audit occurs.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/ai-assistant-home/page.tsx",
+      "type": "JsxText",
+      "line": 490
+    }
+  ],
+  "Benchmark AI:": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/ai-assistant-home/page.tsx",
+      "type": "JsxText",
+      "line": 497
+    }
+  ],
+  "Advanced intelligence to automate your gap analysis. Compare your organizational compliance against global best practices, highlight missing requirements, and get actionable resolution steps.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/ai-assistant-home/page.tsx",
+      "type": "JsxText",
+      "line": 500
+    }
+  ],
+  "CODE: NAV-01": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/ai-assistant-home/page.tsx",
+      "type": "JsxText",
+      "line": 579
+    }
+  ],
+  "CODE: AUD-07": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/ai-assistant-home/page.tsx",
+      "type": "JsxText",
+      "line": 605
+    }
+  ],
+  "CODE: BEN-04": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/ai-assistant-home/page.tsx",
+      "type": "JsxText",
+      "line": 631
+    }
+  ],
+  "CODE: LIB-02": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/ai-assistant-home/page.tsx",
+      "type": "JsxText",
+      "line": 657
+    }
+  ],
+  "ISO ACADEMY": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/ai-assistant-home/page.tsx",
+      "type": "JsxText",
+      "line": 683
+    }
+  ],
+  "CODE: ACA-05": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/ai-assistant-home/page.tsx",
+      "type": "JsxText",
+      "line": 685
+    }
+  ],
+  "ISO Academy": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/ai-assistant-home/page.tsx",
+      "type": "JsxText",
+      "line": 687
+    }
+  ],
+  "Learn it properly. Apply it confidently. Most courses stop at theory. ISOBrain shows you how it works in practice. Structured learning paths, real-world examples, and interactive compliance tools for enterprises and individuals. Understand the standard and apply it in your day-to-day work without getting stuck": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/ai-assistant-home/page.tsx",
+      "type": "JsxText",
+      "line": 689
+    }
+  ],
+  "Start Learning": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/ai-assistant-home/page.tsx",
+      "type": "JsxText",
+      "line": 695
+    }
+  ],
+  "Cookie Policy": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/cookie-policy/page.tsx",
+      "type": "JsxText",
+      "line": 16
+    }
+  ],
+  "This Cookie Policy explains how Isobrain (\"we,\" \"us,\" or \"our\") uses cookies and similar tracking technologies when you visit our website (https://isobrain.ai/), use our student dashboard, and interact with our AI Services. This policy explains what these technologies are, why we use them, and your rights to control our use of them.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/cookie-policy/page.tsx",
+      "type": "JsxText",
+      "line": 19
+    }
+  ],
+  "1. What Are Cookies?": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/cookie-policy/page.tsx",
+      "type": "JsxText",
+      "line": 27
+    }
+  ],
+  "Cookies are small data files that are placed on your computer or mobile device when you visit a website. They are widely used by online service providers to facilitate and help make websites work efficiently, enhance security, and provide reporting information.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/cookie-policy/page.tsx",
+      "type": "JsxText",
+      "line": 29
+    }
+  ],
+  "First-party cookies:": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/cookie-policy/page.tsx",
+      "type": "JsxText",
+      "line": 32
+    }
+  ],
+  "Cookies set by the website owner (Isobrain).": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/cookie-policy/page.tsx",
+      "type": "JsxText",
+      "line": 32
+    }
+  ],
+  "Third-party cookies:": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/cookie-policy/page.tsx",
+      "type": "JsxText",
+      "line": 33
+    }
+  ],
+  "Cookies set by parties other than the website owner (such as our payment processor, Stripe, or analytics providers).": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/cookie-policy/page.tsx",
+      "type": "JsxText",
+      "line": 33
+    }
+  ],
+  "2. How We Use Cookies": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/cookie-policy/page.tsx",
+      "type": "JsxText",
+      "line": 39
+    }
+  ],
+  "We use first-party and third-party cookies for several reasons. Some cookies are strictly necessary for our platform to operate, especially regarding user authentication and secure billing. We classify our cookies into the following categories:": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/cookie-policy/page.tsx",
+      "type": "JsxText",
+      "line": 41
+    }
+  ],
+  "A. Essential (Strictly Necessary) Cookies": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/cookie-policy/page.tsx",
+      "type": "JsxText",
+      "line": 46
+    }
+  ],
+  "These cookies are critical to the core operation of Isobrain. They cannot be disabled in our systems. We rely on them to:": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/cookie-policy/page.tsx",
+      "type": "JsxText",
+      "line": 47
+    }
+  ],
+  "Keep you securely logged into your Student Dashboard.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/cookie-policy/page.tsx",
+      "type": "JsxText",
+      "line": 49
+    }
+  ],
+  "Maintain your session state as you interact with our AI tools.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/cookie-policy/page.tsx",
+      "type": "JsxText",
+      "line": 50
+    }
+  ],
+  "Process secure subscription transactions through our payment gateway (Stripe).": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/cookie-policy/page.tsx",
+      "type": "JsxText",
+      "line": 51
+    }
+  ],
+  "Remember your agreement to our Terms of Service and No Refund Policy during checkout.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/cookie-policy/page.tsx",
+      "type": "JsxText",
+      "line": 52
+    }
+  ],
+  "B. Performance and Analytics Cookies": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/cookie-policy/page.tsx",
+      "type": "JsxText",
+      "line": 57
+    }
+  ],
+  "These cookies collect information about how you use our website, such as which pages you visit most often or if you encounter error messages. They help us understand site traffic and usage patterns so we can improve the Isobrain experience.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/cookie-policy/page.tsx",
+      "type": "JsxText",
+      "line": 58
+    }
+  ],
+  "Note: This data is aggregated and does not personally identify you.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/cookie-policy/page.tsx",
+      "type": "JsxText",
+      "line": 60
+    }
+  ],
+  "C. Functionality Cookies": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/cookie-policy/page.tsx",
+      "type": "JsxText",
+      "line": 65
+    }
+  ],
+  "These cookies allow our website to remember choices you make (such as your preferred language, region, or visual preferences) and provide enhanced, more personal features.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/cookie-policy/page.tsx",
+      "type": "JsxText",
+      "line": 66
+    }
+  ],
+  "D. Third-Party Cookies": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/cookie-policy/page.tsx",
+      "type": "JsxText",
+      "line": 70
+    }
+  ],
+  "In some cases, we use cookies provided by trusted third parties.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/cookie-policy/page.tsx",
+      "type": "JsxText",
+      "line": 71
+    }
+  ],
+  "Stripe:": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/cookie-policy/page.tsx",
+      "type": "JsxText",
+      "line": 73
+    }
+  ],
+  "Our payment processor uses essential cookies to ensure fraud prevention, manage your 7-day free trial, and facilitate secure recurring billing.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/cookie-policy/page.tsx",
+      "type": "JsxText",
+      "line": 73
+    }
+  ],
+  "Analytics Providers:": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/cookie-policy/page.tsx",
+      "type": "JsxText",
+      "line": 74
+    }
+  ],
+  "We may use services like Google Analytics to help us understand how users engage with our site.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/cookie-policy/page.tsx",
+      "type": "JsxText",
+      "line": 74
+    }
+  ],
+  "3. How to Manage and Control Cookies": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/cookie-policy/page.tsx",
+      "type": "JsxText",
+      "line": 82
+    }
+  ],
+  "You have the right to decide whether to accept or reject cookies. While you cannot opt out of Essential Cookies (as they are required to provide the service), you can manage your preferences for other types of cookies.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/cookie-policy/page.tsx",
+      "type": "JsxText",
+      "line": 84
+    }
+  ],
+  "Browser Settings:": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/cookie-policy/page.tsx",
+      "type": "JsxText",
+      "line": 88
+    }
+  ],
+  "You can set or amend your web browser controls to accept or refuse cookies. If you choose to reject cookies, you may still use our website, but your access to certain functionality (like maintaining an active login session on the dashboard) may be severely restricted.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/cookie-policy/page.tsx",
+      "type": "JsxText",
+      "line": 88
+    }
+  ],
+  "To learn how to manage cookies on popular browsers, visit:": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/cookie-policy/page.tsx",
+      "type": "JsxText",
+      "line": 91
+    }
+  ],
+  "Google Chrome": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/cookie-policy/page.tsx",
+      "type": "JsxText",
+      "line": 93
+    }
+  ],
+  "Apple Safari": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/cookie-policy/page.tsx",
+      "type": "JsxText",
+      "line": 94
+    }
+  ],
+  "Mozilla Firefox": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/cookie-policy/page.tsx",
+      "type": "JsxText",
+      "line": 95
+    }
+  ],
+  "Microsoft Edge": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/cookie-policy/page.tsx",
+      "type": "JsxText",
+      "line": 96
+    }
+  ],
+  "4. Updates to This Cookie Policy": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/cookie-policy/page.tsx",
+      "type": "JsxText",
+      "line": 104
+    }
+  ],
+  "We may update this Cookie Policy from time to time in order to reflect changes to the cookies we use or for other operational, legal, or regulatory reasons. Please revisit this Cookie Policy regularly to stay informed about our use of cookies and related technologies.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/cookie-policy/page.tsx",
+      "type": "JsxText",
+      "line": 106
+    }
+  ],
+  "The date at the top of this Cookie Policy indicates when it was last updated.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/cookie-policy/page.tsx",
+      "type": "JsxText",
+      "line": 108
+    }
+  ],
+  "5. Contact Us": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/cookie-policy/page.tsx",
+      "type": "JsxText",
+      "line": 114
+    }
+  ],
+  "If you have any questions about our use of cookies or other technologies, please contact us at:": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/cookie-policy/page.tsx",
+      "type": "JsxText",
+      "line": 115
+    }
+  ],
+  "Email:": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/cookie-policy/page.tsx",
+      "type": "JsxText",
+      "line": 118
+    },
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/privacy-policy/page.tsx",
+      "type": "JsxText",
+      "line": 113
+    },
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/terms-of-service/page.tsx",
+      "type": "JsxText",
+      "line": 127
+    }
+  ],
+  "hello@isobrain.ai": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/cookie-policy/page.tsx",
+      "type": "JsxText",
+      "line": 119
+    },
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/privacy-policy/page.tsx",
+      "type": "JsxText",
+      "line": 114
+    },
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/terms-of-service/page.tsx",
+      "type": "JsxText",
+      "line": 128
+    }
+  ],
+  "Website:": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/cookie-policy/page.tsx",
+      "type": "JsxText",
+      "line": 122
+    },
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/privacy-policy/page.tsx",
+      "type": "JsxText",
+      "line": 117
+    },
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/terms-of-service/page.tsx",
+      "type": "JsxText",
+      "line": 131
+    }
+  ],
+  "https://isobrain.ai/": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/cookie-policy/page.tsx",
+      "type": "JsxText",
+      "line": 123
+    },
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/privacy-policy/page.tsx",
+      "type": "JsxText",
+      "line": 118
+    },
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/terms-of-service/page.tsx",
+      "type": "JsxText",
+      "line": 132
+    }
+  ],
+  "Complete Lesson": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/lessons/page.tsx",
+      "type": "JsxText",
+      "line": 21
+    },
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/lessons/[lesson]/page.tsx",
+      "type": "JsxText",
+      "line": 30
+    }
+  ],
+  "Access 250+ ISO standards organized by categories with AI-powered             insights": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/library/page.tsx",
+      "type": "JsxText",
+      "line": 50
+    },
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/library/store/page.tsx",
+      "type": "JsxText",
+      "line": 54
+    }
+  ],
+  "Search for ISO standards across all categories...": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/library/page.tsx",
+      "type": "JsxAttribute-placeholder",
+      "line": 59
+    },
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/library/store/page.tsx",
+      "type": "JsxAttribute-placeholder",
+      "line": 63
+    }
+  ],
+  "All set to level up\r\nyour content game?": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/library/page.tsx",
+      "type": "JsxAttribute-title",
+      "line": 113
+    }
+  ],
+  "ISO Mastery Lab: Test Your Applied Knowledge": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/mastery-lab/page.tsx",
+      "type": "JsxText",
+      "line": 141
+    }
+  ],
+  "Fast. Personalized. CPD-Certified.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/mastery-lab/page.tsx",
+      "type": "JsxText",
+      "line": 143
+    }
+  ],
+  "Prove your expertise in just 15 minutes. Take a free competency assessment tailored to your industry, management level, and job function to earn your verifiable Certificate of Competency.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/mastery-lab/page.tsx",
+      "type": "JsxText",
+      "line": 145
+    }
+  ],
+  "Start Your Free Assessment": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/mastery-lab/page.tsx",
+      "type": "JsxText",
+      "line": 156
+    }
+  ],
+  "15 Minutes": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/mastery-lab/page.tsx",
+      "type": "JsxText",
+      "line": 159
+    }
+  ],
+  "Personalised feedback": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/mastery-lab/page.tsx",
+      "type": "JsxText",
+      "line": 161
+    }
+  ],
+  "Used by ISO professionals": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/mastery-lab/page.tsx",
+      "type": "JsxText",
+      "line": 163
+    }
+  ],
+  "CPD Certificate": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/mastery-lab/page.tsx",
+      "type": "JsxAttribute-alt",
+      "line": 180
+    }
+  ],
+  "Choose the right level of access for your ISO workflow.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/pricing/page.tsx",
+      "type": "JsxText",
+      "line": 51
+    }
+  ],
+  "ISOBrain gives you structured tools to navigate standards, assess compliance, and build systems with clarity.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/pricing/page.tsx",
+      "type": "JsxText",
+      "line": 56
+    }
+  ],
+  "Choose the monthly subscription plan that matches how you work, learn, and audit.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/pricing/page.tsx",
+      "type": "JsxText",
+      "line": 59
+    }
+  ],
+  "Loading...": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/pricing/page.tsx",
+      "type": "JsxText",
+      "line": 90
+    }
+  ],
+  "Privacy Policy": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/privacy-policy/page.tsx",
+      "type": "JsxText",
+      "line": 17
+    }
+  ],
+  "Welcome to Isobrain (\"we,\" \"our,\" or \"us\"). We are committed to protecting your privacy and ensuring that your personal information is handled securely and responsibly. This Privacy Policy outlines how we collect, use, share, and protect your data when you visit our website (https://isobrain.ai/) and use our AI tools, student dashboard, and related services (collectively, the \"Services\").": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/privacy-policy/page.tsx",
+      "type": "JsxText",
+      "line": 20
+    }
+  ],
+  "By accessing or using Isobrain, you agree to the collection and use of information in accordance with this Privacy Policy.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/privacy-policy/page.tsx",
+      "type": "JsxText",
+      "line": 22
+    }
+  ],
+  "1. Information We Collect": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/privacy-policy/page.tsx",
+      "type": "JsxText",
+      "line": 29
+    }
+  ],
+  "We collect information directly from you, automatically through your use of our Services, and from third-party services.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/privacy-policy/page.tsx",
+      "type": "JsxText",
+      "line": 30
+    }
+  ],
+  "A. Information You Provide to Us": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/privacy-policy/page.tsx",
+      "type": "JsxText",
+      "line": 34
+    }
+  ],
+  "Account Information:": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/privacy-policy/page.tsx",
+      "type": "JsxText",
+      "line": 36
+    }
+  ],
+  "When you register for a free trial or subscription, we collect your name, email address, and login credentials.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/privacy-policy/page.tsx",
+      "type": "JsxText",
+      "line": 36
+    }
+  ],
+  "Payment Information:": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/privacy-policy/page.tsx",
+      "type": "JsxText",
+      "line": 37
+    }
+  ],
+  "If you upgrade to a paid package, your payment details (credit card information, billing address) are collected and processed securely by our third-party payment processor, Stripe. We do not store your full credit card number on our servers.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/privacy-policy/page.tsx",
+      "type": "JsxText",
+      "line": 37
+    }
+  ],
+  "User Inputs & AI Interactions:": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/privacy-policy/page.tsx",
+      "type": "JsxText",
+      "line": 38
+    }
+  ],
+  "We collect the text, prompts, queries, and files you submit to our AI tools via the student dashboard in order to generate the requested outputs.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/privacy-policy/page.tsx",
+      "type": "JsxText",
+      "line": 38
+    }
+  ],
+  "Communications:": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/privacy-policy/page.tsx",
+      "type": "JsxText",
+      "line": 39
+    }
+  ],
+  "Information you provide when you contact our support team.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/privacy-policy/page.tsx",
+      "type": "JsxText",
+      "line": 39
+    }
+  ],
+  "B. Information We Collect Automatically": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/privacy-policy/page.tsx",
+      "type": "JsxText",
+      "line": 44
+    }
+  ],
+  "Usage Data:": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/privacy-policy/page.tsx",
+      "type": "JsxText",
+      "line": 46
+    }
+  ],
+  "We collect system logs detailing how you interact with our platform, including login timestamps, features utilized, and subscription status. (Note: This data may be used as proof of service in the event of a billing dispute).": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/privacy-policy/page.tsx",
+      "type": "JsxText",
+      "line": 46
+    }
+  ],
+  "Device Information:": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/privacy-policy/page.tsx",
+      "type": "JsxText",
+      "line": 47
+    }
+  ],
+  "We automatically record your IP address, browser type, operating system, and device identifiers.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/privacy-policy/page.tsx",
+      "type": "JsxText",
+      "line": 47
+    }
+  ],
+  "Cookies and Tracking Technologies:": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/privacy-policy/page.tsx",
+      "type": "JsxText",
+      "line": 48
+    }
+  ],
+  "We use cookies to keep you logged in, remember your preferences, and analyze site traffic.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/privacy-policy/page.tsx",
+      "type": "JsxText",
+      "line": 48
+    }
+  ],
+  "2. How We Use Your Information": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/privacy-policy/page.tsx",
+      "type": "JsxText",
+      "line": 55
+    }
+  ],
+  "We use the collected information for the following purposes:": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/privacy-policy/page.tsx",
+      "type": "JsxText",
+      "line": 56
+    }
+  ],
+  "To Provide and Maintain the Service:": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/privacy-policy/page.tsx",
+      "type": "JsxText",
+      "line": 58
+    }
+  ],
+  "To operate your student dashboard, generate AI outputs based on your prompts, and manage your subscription level.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/privacy-policy/page.tsx",
+      "type": "JsxText",
+      "line": 58
+    }
+  ],
+  "Billing and Transactions:": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/privacy-policy/page.tsx",
+      "type": "JsxText",
+      "line": 59
+    }
+  ],
+  "To process payments, manage your 7-day free trial conversions, and prevent fraudulent transactions.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/privacy-policy/page.tsx",
+      "type": "JsxText",
+      "line": 59
+    }
+  ],
+  "To Improve Our AI and Platform:": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/privacy-policy/page.tsx",
+      "type": "JsxText",
+      "line": 60
+    }
+  ],
+  "To analyze usage trends, troubleshoot bugs, and enhance the functionality of Isobrain. (We do not use your personal prompts or private data to train our foundational AI models.)": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/privacy-policy/page.tsx",
+      "type": "JsxText",
+      "line": 60
+    }
+  ],
+  "To Communicate With You:": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/privacy-policy/page.tsx",
+      "type": "JsxText",
+      "line": 61
+    }
+  ],
+  "To send transactional emails (e.g., password resets, trial expiration warnings, billing receipts) and updates about new Isobrain features.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/privacy-policy/page.tsx",
+      "type": "JsxText",
+      "line": 61
+    }
+  ],
+  "Legal & Security:": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/privacy-policy/page.tsx",
+      "type": "JsxText",
+      "line": 62
+    }
+  ],
+  "To protect against unauthorized access, enforce our strictly No Refund & Cancellation Policy, and resolve disputes.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/privacy-policy/page.tsx",
+      "type": "JsxText",
+      "line": 62
+    }
+  ],
+  "3. How We Share Your Information": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/privacy-policy/page.tsx",
+      "type": "JsxText",
+      "line": 67
+    }
+  ],
+  "We do not sell your personal information to third parties. We only share your data in the following circumstances:": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/privacy-policy/page.tsx",
+      "type": "JsxText",
+      "line": 68
+    }
+  ],
+  "Service Providers:": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/privacy-policy/page.tsx",
+      "type": "JsxText",
+      "line": 70
+    }
+  ],
+  "We share necessary data with trusted third parties who help us operate our business, such as cloud hosting providers and our payment processor (Stripe). These providers are bound by strict data protection agreements.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/privacy-policy/page.tsx",
+      "type": "JsxText",
+      "line": 70
+    }
+  ],
+  "AI Infrastructure Partners:": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/privacy-policy/page.tsx",
+      "type": "JsxText",
+      "line": 71
+    }
+  ],
+  "Depending on the architecture of our AI, your inputs may be processed by third-party language model APIs (e.g., OpenAI, Anthropic). These partners are restricted from using your data for their own independent purposes.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/privacy-policy/page.tsx",
+      "type": "JsxText",
+      "line": 71
+    }
+  ],
+  "Legal Compliance:": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/privacy-policy/page.tsx",
+      "type": "JsxText",
+      "line": 72
+    }
+  ],
+  "We may disclose your information if required to do so by law, in response to a subpoena, or to protect the rights, property, and safety of Isobrain, our users, or others (including sharing system logs with Stripe and banks to contest unwarranted chargebacks).": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/privacy-policy/page.tsx",
+      "type": "JsxText",
+      "line": 72
+    }
+  ],
+  "4. Data Security": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/privacy-policy/page.tsx",
+      "type": "JsxText",
+      "line": 77
+    }
+  ],
+  "We implement industry-standard security measures, including encryption and secure socket layer (SSL) technology, to protect your data during transmission and at rest. While we strive to protect your personal information, no method of transmission over the internet or electronic storage is 100% secure, and we cannot guarantee absolute security.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/privacy-policy/page.tsx",
+      "type": "JsxText",
+      "line": 79
+    }
+  ],
+  "5. Your Data Rights & Choices": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/privacy-policy/page.tsx",
+      "type": "JsxText",
+      "line": 84
+    }
+  ],
+  "Depending on your location (such as under the GDPR in Europe or CCPA in California), you may have the following rights regarding your data:": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/privacy-policy/page.tsx",
+      "type": "JsxText",
+      "line": 85
+    }
+  ],
+  "Access and Update:": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/privacy-policy/page.tsx",
+      "type": "JsxText",
+      "line": 87
+    }
+  ],
+  "You can access and update your personal information directly within your student dashboard.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/privacy-policy/page.tsx",
+      "type": "JsxText",
+      "line": 87
+    }
+  ],
+  "Cancellation:": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/privacy-policy/page.tsx",
+      "type": "JsxText",
+      "line": 88
+    }
+  ],
+  "You can cancel your subscription at any time via the bottom section of your student dashboard or via your Stripe billing portal.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/privacy-policy/page.tsx",
+      "type": "JsxText",
+      "line": 88
+    }
+  ],
+  "Data Deletion:": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/privacy-policy/page.tsx",
+      "type": "JsxText",
+      "line": 89
+    }
+  ],
+  "You may request the deletion of your account and associated personal data by contacting us. Please note that we may retain certain billing records as required by law or for dispute resolution purposes.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/privacy-policy/page.tsx",
+      "type": "JsxText",
+      "line": 89
+    }
+  ],
+  "Opt-Out:": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/privacy-policy/page.tsx",
+      "type": "JsxText",
+      "line": 90
+    }
+  ],
+  "You may opt out of promotional emails by clicking the \"unsubscribe\" link at the bottom of our emails. You will still receive essential service and billing notices.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/privacy-policy/page.tsx",
+      "type": "JsxText",
+      "line": 90
+    }
+  ],
+  "6. Children’s Privacy": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/privacy-policy/page.tsx",
+      "type": "JsxText",
+      "line": 95
+    }
+  ],
+  "Isobrain is intended for students and users who are at least 13 years of age (or the minimum age of digital consent in your jurisdiction). We do not knowingly collect personal information from children under 13. If we become aware that a child under 13 has provided us with personal data, we will take steps to delete such information immediately.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/privacy-policy/page.tsx",
+      "type": "JsxText",
+      "line": 97
+    }
+  ],
+  "7. Changes to This Privacy Policy": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/privacy-policy/page.tsx",
+      "type": "JsxText",
+      "line": 102
+    }
+  ],
+  "We may update this Privacy Policy from time to time to reflect changes in our practices or legal requirements. We will notify you of any significant changes by posting the new policy on this page and updating the \"Effective Date.\"": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/privacy-policy/page.tsx",
+      "type": "JsxText",
+      "line": 104
+    }
+  ],
+  "8. Contact Us": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/privacy-policy/page.tsx",
+      "type": "JsxText",
+      "line": 109
+    }
+  ],
+  "If you have any questions, concerns, or requests regarding this Privacy Policy or your data, please contact us at:": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/privacy-policy/page.tsx",
+      "type": "JsxText",
+      "line": 110
+    }
+  ],
+  "← Back to Platform": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/quality-managemant/page.tsx",
+      "type": "JsxText",
+      "line": 25
+    }
+  ],
+  "ISO 9001 — Quality Management": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/quality-managemant/page.tsx",
+      "type": "JsxText",
+      "line": 33
+    }
+  ],
+  "Master quality management systems that meet customer and regulatory requirements.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/quality-managemant/page.tsx",
+      "type": "JsxText",
+      "line": 36
+    }
+  ],
+  "Requirements": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/quality-managemant/page.tsx",
+      "type": "JsxText",
+      "line": 61
+    },
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/quality-managemant/page.tsx",
+      "type": "JsxText",
+      "line": 91
+    },
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/quality-managemant/page.tsx",
+      "type": "JsxText",
+      "line": 121
+    },
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/quality-managemant/page.tsx",
+      "type": "JsxText",
+      "line": 151
+    }
+  ],
+  "Understand the core requirements and clauses of the standard": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/quality-managemant/page.tsx",
+      "type": "JsxText",
+      "line": 63
+    },
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/quality-managemant/page.tsx",
+      "type": "JsxText",
+      "line": 93
+    },
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/quality-managemant/page.tsx",
+      "type": "JsxText",
+      "line": 123
+    },
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/quality-managemant/page.tsx",
+      "type": "JsxText",
+      "line": 153
+    }
+  ],
+  "8 lessons": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/quality-managemant/page.tsx",
+      "type": "JsxText",
+      "line": 65
+    },
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/quality-managemant/page.tsx",
+      "type": "JsxText",
+      "line": 95
+    },
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/quality-managemant/page.tsx",
+      "type": "JsxText",
+      "line": 125
+    },
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/quality-managemant/page.tsx",
+      "type": "JsxText",
+      "line": 155
+    }
+  ],
+  "Start Course →": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/quality-managemant/page.tsx",
+      "type": "JsxText",
+      "line": 71
+    },
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/quality-managemant/page.tsx",
+      "type": "JsxText",
+      "line": 101
+    },
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/quality-managemant/page.tsx",
+      "type": "JsxText",
+      "line": 131
+    },
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/quality-managemant/page.tsx",
+      "type": "JsxText",
+      "line": 161
+    }
+  ],
+  "Explore More ISOBrain Features": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/quality-managemant/page.tsx",
+      "type": "JsxText",
+      "line": 172
+    }
+  ],
+  "Discover additional tools designed to support your journey.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/quality-managemant/page.tsx",
+      "type": "JsxText",
+      "line": 175
+    }
+  ],
+  "Browse structured ISO standards and learning paths.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/quality-managemant/page.tsx",
+      "type": "JsxText",
+      "line": 191
+    }
+  ],
+  "Explore Platform →": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/quality-managemant/page.tsx",
+      "type": "JsxText",
+      "line": 197
+    }
+  ],
+  "ISO Assistant": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/quality-managemant/page.tsx",
+      "type": "JsxText",
+      "line": 211
+    }
+  ],
+  "Use AI to interpret clauses, generate insights and simplify compliance.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/quality-managemant/page.tsx",
+      "type": "JsxText",
+      "line": 213
+    }
+  ],
+  "Open ISO Assistant →": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/quality-managemant/page.tsx",
+      "type": "JsxText",
+      "line": 220
+    }
+  ],
+  "ISO Assessment": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/quality-managemant/page.tsx",
+      "type": "JsxText",
+      "line": 234
+    }
+  ],
+  "Take role-based assessments and measure your competency.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/quality-managemant/page.tsx",
+      "type": "JsxText",
+      "line": 236
+    }
+  ],
+  "Start Assessment →": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/quality-managemant/page.tsx",
+      "type": "JsxText",
+      "line": 243
+    }
+  ],
+  "ISOBrain.AI No Refund & Cancellation Policy": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/refund-and-cancellation/page.tsx",
+      "type": "JsxText",
+      "line": 16
+    }
+  ],
+  "By accessing, signing up for a free trial, or purchasing a subscription on Isobrain (https://isobrain.ai/), you acknowledge and agree to the following No Refund and Cancellation Policy.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/refund-and-cancellation/page.tsx",
+      "type": "JsxText",
+      "line": 19
+    }
+  ],
+  "This policy is strictly enforced.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/refund-and-cancellation/page.tsx",
+      "type": "JsxText",
+      "line": 21
+    }
+  ],
+  "1. Strictly No Refunds": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/refund-and-cancellation/page.tsx",
+      "type": "JsxText",
+      "line": 28
+    }
+  ],
+  "All subscription charges are 100% non-refundable once processed. We do not offer refunds, partial refunds, or prorated refunds for any active subscription or unused time, regardless of whether you have logged in or utilized the services during the billing period.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/refund-and-cancellation/page.tsx",
+      "type": "JsxText",
+      "line": 30
+    }
+  ],
+  "This strict no-refund policy applies to:": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/refund-and-cancellation/page.tsx",
+      "type": "JsxText",
+      "line": 32
+    }
+  ],
+  "Charges processed immediately after the expiration of the 7-day free trial.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/refund-and-cancellation/page.tsx",
+      "type": "JsxText",
+      "line": 34
+    }
+  ],
+  "Charges processed for subsequent monthly or annual recurring billing cycles.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/refund-and-cancellation/page.tsx",
+      "type": "JsxText",
+      "line": 35
+    }
+  ],
+  "2. 7-Day Free Trial & Automatic Billing": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/refund-and-cancellation/page.tsx",
+      "type": "JsxText",
+      "line": 40
+    }
+  ],
+  "We offer a 7-day free trial for new users to evaluate our platform. By entering your payment information to start the free trial, you authorize Isobrain to automatically charge your payment method at the end of the 7-day period for the subscription package you selected (details available at": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/refund-and-cancellation/page.tsx",
+      "type": "JsxText",
+      "line": 42
+    }
+  ],
+  "https://isobrain.ai/pricing": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/refund-and-cancellation/page.tsx",
+      "type": "JsxText",
+      "line": 42
+    }
+  ],
+  "It is solely the customer's responsibility to cancel the trial before the 7 days expire if they do not wish to be charged. Claims of \"forgetting to cancel,\" \"not realizing the trial was ending,\" or \"being unaware of the cancellation policy\" are not valid grounds for a refund.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/refund-and-cancellation/page.tsx",
+      "type": "JsxText",
+      "line": 45
+    }
+  ],
+  "3. How to Cancel Your Subscription": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/refund-and-cancellation/page.tsx",
+      "type": "JsxText",
+      "line": 50
+    }
+  ],
+  "We have made cancellation entirely self-serve and transparent. You can cancel your free trial or active subscription at any time without having to contact customer support.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/refund-and-cancellation/page.tsx",
+      "type": "JsxText",
+      "line": 52
+    }
+  ],
+  "To cancel, please use one of the following methods:": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/refund-and-cancellation/page.tsx",
+      "type": "JsxText",
+      "line": 54
+    }
+  ],
+  "Student Dashboard:": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/refund-and-cancellation/page.tsx",
+      "type": "JsxText",
+      "line": 56
+    }
+  ],
+  "Log into your Isobrain account, scroll to the bottom section of your Student Dashboard, and click the cancellation option.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/refund-and-cancellation/page.tsx",
+      "type": "JsxText",
+      "line": 56
+    }
+  ],
+  "Stripe Subscription Page:": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/refund-and-cancellation/page.tsx",
+      "type": "JsxText",
+      "line": 57
+    }
+  ],
+  "Manage or cancel your subscription directly through the secure Stripe billing portal link provided to you upon initial signup.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/refund-and-cancellation/page.tsx",
+      "type": "JsxText",
+      "line": 57
+    }
+  ],
+  "Note:": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/refund-and-cancellation/page.tsx",
+      "type": "JsxText",
+      "line": 61
+    }
+  ],
+  "Deleting your account or uninstalling any associated software does not cancel your subscription. You must use one of the two methods listed above to stop future billing.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/refund-and-cancellation/page.tsx",
+      "type": "JsxText",
+      "line": 61
+    }
+  ],
+  "4. Continued Access After Cancellation": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/refund-and-cancellation/page.tsx",
+      "type": "JsxText",
+      "line": 67
+    }
+  ],
+  "If you choose to cancel your subscription (or cancel after your free trial has converted to a paid plan), you will not be billed for any future cycles. However, you will retain full access to all tools, features, and limits as per your availed package for the remainder of your current paid subscription period. Your access will automatically expire at the end of your billing cycle.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/refund-and-cancellation/page.tsx",
+      "type": "JsxText",
+      "line": 69
+    }
+  ],
+  "5. Chargebacks and Bank Disputes": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/refund-and-cancellation/page.tsx",
+      "type": "JsxText",
+      "line": 74
+    }
+  ],
+  "This policy is agreed to at the time of checkout. Because we provide clear, upfront communication regarding our free trial duration, recurring billing cycles, and self-serve cancellation methods, any disputes or chargebacks filed with your bank or credit card company (such as claims of \"fraud,\" \"unrecognized charge,\" or \"unaware of cancellation terms\") will be considered a breach of these Terms.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/refund-and-cancellation/page.tsx",
+      "type": "JsxText",
+      "line": 76
+    }
+  ],
+  "In the event of a chargeback, we will submit this agreed-upon policy, alongside our system logs showing your IP address, login history, and timestamped agreement to these terms, to Stripe and your financial institution to successfully contest and settle the dispute.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/refund-and-cancellation/page.tsx",
+      "type": "JsxText",
+      "line": 79
+    }
+  ],
+  "Terms of Service": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/terms-of-service/page.tsx",
+      "type": "JsxText",
+      "line": 16
+    }
+  ],
+  "Welcome to Isobrain (\"we,\" \"our,\" or \"us\"). These Terms of Service (\"Terms\") govern your access to and use of our website (https://isobrain.ai/), the student dashboard, AI tools, and all related services (collectively, the \"Services\").": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/terms-of-service/page.tsx",
+      "type": "JsxText",
+      "line": 19
+    }
+  ],
+  "By creating an account, starting a free trial, or using our Services, you agree to be bound by these Terms. If you do not agree, please do not use Isobrain.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/terms-of-service/page.tsx",
+      "type": "JsxText",
+      "line": 21
+    }
+  ],
+  "1. Description of Service": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/terms-of-service/page.tsx",
+      "type": "JsxText",
+      "line": 28
+    }
+  ],
+  "Isobrain provides AI-powered educational and productivity tools accessed via a web-based student dashboard. Our Services are designed to generate text, solve problems, and provide information based on user inputs (\"Prompts\"). The Services are continually evolving, and we may add, modify, or remove features at our discretion.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/terms-of-service/page.tsx",
+      "type": "JsxText",
+      "line": 30
+    }
+  ],
+  "2. Account Registration & Security": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/terms-of-service/page.tsx",
+      "type": "JsxText",
+      "line": 35
+    }
+  ],
+  "Eligibility:": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/terms-of-service/page.tsx",
+      "type": "JsxText",
+      "line": 37
+    }
+  ],
+  "You must be at least 13 years old (or the age of digital consent in your jurisdiction) to use our Services.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/terms-of-service/page.tsx",
+      "type": "JsxText",
+      "line": 37
+    }
+  ],
+  "Account Accuracy:": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/terms-of-service/page.tsx",
+      "type": "JsxText",
+      "line": 38
+    }
+  ],
+  "You agree to provide accurate, current, and complete information during registration.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/terms-of-service/page.tsx",
+      "type": "JsxText",
+      "line": 38
+    }
+  ],
+  "Security:": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/terms-of-service/page.tsx",
+      "type": "JsxText",
+      "line": 39
+    }
+  ],
+  "You are responsible for safeguarding your password and account credentials. You agree to notify us immediately of any unauthorized use of your account. Isobrain is not liable for any losses caused by unauthorized access to your account.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/terms-of-service/page.tsx",
+      "type": "JsxText",
+      "line": 39
+    }
+  ],
+  "3. Subscriptions, Billing, and Cancellations": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/terms-of-service/page.tsx",
+      "type": "JsxText",
+      "line": 44
+    }
+  ],
+  "By subscribing to a paid plan or entering a free trial, you agree to our strictly enforced billing policies:": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/terms-of-service/page.tsx",
+      "type": "JsxText",
+      "line": 45
+    }
+  ],
+  "7-Day Free Trial:": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/terms-of-service/page.tsx",
+      "type": "JsxText",
+      "line": 47
+    }
+  ],
+  "We offer a 7-day free trial for new users. By providing your payment information, you authorize our payment processor (Stripe) to automatically charge you for your selected subscription package immediately upon the trial's expiration.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/terms-of-service/page.tsx",
+      "type": "JsxText",
+      "line": 47
+    }
+  ],
+  "Strict No Refund Policy:": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/terms-of-service/page.tsx",
+      "type": "JsxText",
+      "line": 48
+    }
+  ],
+  "All charges are 100% non-refundable. We do not provide refunds or prorated credits for unused time, forgotten cancellations, or mid-cycle terminations.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/terms-of-service/page.tsx",
+      "type": "JsxText",
+      "line": 48
+    }
+  ],
+  "Cancellations:": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/terms-of-service/page.tsx",
+      "type": "JsxText",
+      "line": 50
+    }
+  ],
+  "It is entirely your responsibility to manage your subscription. You can cancel your trial or active subscription at any time using one of two methods:": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/terms-of-service/page.tsx",
+      "type": "JsxText",
+      "line": 50
+    }
+  ],
+  "Via the bottom section of your Student Dashboard on Isobrain.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/terms-of-service/page.tsx",
+      "type": "JsxText",
+      "line": 52
+    }
+  ],
+  "Via the secure Stripe Subscription Page link provided to you.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/terms-of-service/page.tsx",
+      "type": "JsxText",
+      "line": 53
+    }
+  ],
+  "Post-Cancellation Access:": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/terms-of-service/page.tsx",
+      "type": "JsxText",
+      "line": 56
+    }
+  ],
+  "If you cancel, you will not be billed again, but you will retain full access to your availed package until the end of your current billing cycle.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/terms-of-service/page.tsx",
+      "type": "JsxText",
+      "line": 56
+    }
+  ],
+  "Please note:": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/terms-of-service/page.tsx",
+      "type": "JsxText",
+      "line": 57
+    }
+  ],
+  "Disputing valid subscription charges with your bank after failing to cancel via the provided methods constitutes a breach of these Terms.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/terms-of-service/page.tsx",
+      "type": "JsxText",
+      "line": 57
+    }
+  ],
+  "4. Artificial Intelligence & Output Disclaimer": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/terms-of-service/page.tsx",
+      "type": "JsxText",
+      "line": 62
+    }
+  ],
+  "Due to the nature of machine learning and artificial intelligence, the outputs generated by Isobrain (\"Outputs\") are not guaranteed to be accurate, complete, or reliable.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/terms-of-service/page.tsx",
+      "type": "JsxText",
+      "line": 63
+    }
+  ],
+  "No Professional Advice:": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/terms-of-service/page.tsx",
+      "type": "JsxText",
+      "line": 65
+    }
+  ],
+  "Isobrain is an educational tool. Outputs do not constitute professional medical, legal, financial, or psychological advice.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/terms-of-service/page.tsx",
+      "type": "JsxText",
+      "line": 65
+    }
+  ],
+  "Verification:": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/terms-of-service/page.tsx",
+      "type": "JsxText",
+      "line": 66
+    }
+  ],
+  "You are solely responsible for evaluating the accuracy and appropriateness of any Output before relying on it or sharing it.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/terms-of-service/page.tsx",
+      "type": "JsxText",
+      "line": 66
+    }
+  ],
+  "Similar Outputs:": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/terms-of-service/page.tsx",
+      "type": "JsxText",
+      "line": 67
+    }
+  ],
+  "You acknowledge that AI may generate the same or similar Outputs for other Isobrain users who enter similar Prompts.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/terms-of-service/page.tsx",
+      "type": "JsxText",
+      "line": 67
+    }
+  ],
+  "5. Acceptable Use Policy": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/terms-of-service/page.tsx",
+      "type": "JsxText",
+      "line": 72
+    }
+  ],
+  "You agree not to use Isobrain to:": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/terms-of-service/page.tsx",
+      "type": "JsxText",
+      "line": 73
+    }
+  ],
+  "Generate, promote, or distribute illegal, violent, harmful, or sexually explicit content.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/terms-of-service/page.tsx",
+      "type": "JsxText",
+      "line": 75
+    }
+  ],
+  "Harass, bully, defame, or discriminate against others.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/terms-of-service/page.tsx",
+      "type": "JsxText",
+      "line": 76
+    }
+  ],
+  "Generate malware, spam, or engage in deceptive practices (e.g., phishing).": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/terms-of-service/page.tsx",
+      "type": "JsxText",
+      "line": 77
+    }
+  ],
+  "Attempt to reverse-engineer, decompile, or scrape the Isobrain platform or its underlying AI models.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/terms-of-service/page.tsx",
+      "type": "JsxText",
+      "line": 78
+    }
+  ],
+  "Bypass or manipulate subscription limits, API rate limits, or platform security features.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/terms-of-service/page.tsx",
+      "type": "JsxText",
+      "line": 79
+    }
+  ],
+  "Infringe upon the intellectual property rights of any third party.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/terms-of-service/page.tsx",
+      "type": "JsxText",
+      "line": 80
+    }
+  ],
+  "We reserve the right to suspend or terminate your account immediately, without notice or refund, if you violate this Acceptable Use Policy.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/terms-of-service/page.tsx",
+      "type": "JsxText",
+      "line": 82
+    }
+  ],
+  "6. Intellectual Property Rights": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/terms-of-service/page.tsx",
+      "type": "JsxText",
+      "line": 86
+    }
+  ],
+  "Our Property:": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/terms-of-service/page.tsx",
+      "type": "JsxText",
+      "line": 88
+    }
+  ],
+  "Isobrain owns all rights, title, and interest in the platform, the student dashboard, original website content, branding, and underlying software.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/terms-of-service/page.tsx",
+      "type": "JsxText",
+      "line": 88
+    }
+  ],
+  "Your Inputs and Outputs:": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/terms-of-service/page.tsx",
+      "type": "JsxText",
+      "line": 89
+    }
+  ],
+  "To the extent permitted by law, you retain ownership of the Prompts you input into the Service. Isobrain claims no ownership over the Outputs generated specifically for you, allowing you to use them for your personal or commercial educational purposes, provided they comply with these Terms.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/terms-of-service/page.tsx",
+      "type": "JsxText",
+      "line": 89
+    }
+  ],
+  "7. Third-Party Services": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/terms-of-service/page.tsx",
+      "type": "JsxText",
+      "line": 94
+    }
+  ],
+  "Isobrain utilizes third-party services, such as Stripe for payment processing and external cloud/AI infrastructure providers. Your interactions with these third parties are governed by their respective Terms of Service and Privacy Policies. Isobrain is not responsible for the availability or performance of these external services.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/terms-of-service/page.tsx",
+      "type": "JsxText",
+      "line": 95
+    }
+  ],
+  "8. Disclaimer of Warranties": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/terms-of-service/page.tsx",
+      "type": "JsxText",
+      "line": 99
+    }
+  ],
+  "ISOBRAIN IS PROVIDED ON AN \"AS IS\" AND \"AS AVAILABLE\" BASIS. WE DISCLAIM ALL WARRANTIES, WHETHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NON-INFRINGEMENT. WE DO NOT GUARANTEE THAT THE SERVICE WILL BE UNINTERRUPTED, ERROR-FREE, OR FREE FROM HARMFUL COMPONENTS.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/terms-of-service/page.tsx",
+      "type": "JsxText",
+      "line": 101
+    }
+  ],
+  "9. Limitation of Liability": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/terms-of-service/page.tsx",
+      "type": "JsxText",
+      "line": 106
+    }
+  ],
+  "TO THE MAXIMUM EXTENT PERMITTED BY LAW, IN NO EVENT SHALL ISOBRAIN, ITS FOUNDERS, OR AFFILIATES BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, OR PUNITIVE DAMAGES, OR ANY LOSS OF PROFITS, DATA, OR GOODWILL RESULTING FROM (A) YOUR USE OF OR INABILITY TO USE THE SERVICE; (B) ANY INACCURATE OUTPUT GENERATED BY THE AI; OR (C) UNAUTHORIZED ACCESS TO YOUR ACCOUNT. IN NO EVENT SHALL OUR TOTAL LIABILITY EXCEED THE AMOUNT YOU PAID TO ISOBRAIN IN THE PAST 12 MONTHS.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/terms-of-service/page.tsx",
+      "type": "JsxText",
+      "line": 108
+    }
+  ],
+  "10. Modifications to the Terms": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/terms-of-service/page.tsx",
+      "type": "JsxText",
+      "line": 113
+    }
+  ],
+  "We reserve the right to modify these Terms at any time. If we make material changes, we will provide notice by updating the \"Effective Date\" at the top of this page or by sending an email to registered users. Your continued use of Isobrain after changes are published constitutes your acceptance of the new Terms.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/terms-of-service/page.tsx",
+      "type": "JsxText",
+      "line": 114
+    }
+  ],
+  "11. Governing Law": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/terms-of-service/page.tsx",
+      "type": "JsxText",
+      "line": 118
+    }
+  ],
+  "These Terms shall be governed and construed in accordance with the laws of the United Arab Emirates, without regard to its conflict of law provisions.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/terms-of-service/page.tsx",
+      "type": "JsxText",
+      "line": 119
+    }
+  ],
+  "12. Contact Information": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/terms-of-service/page.tsx",
+      "type": "JsxText",
+      "line": 123
+    }
+  ],
+  "If you have any questions about these Terms, please contact us at:": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/terms-of-service/page.tsx",
+      "type": "JsxText",
+      "line": 124
+    }
+  ],
+  "Relevance": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/AIAssistant/Banchmark/ISOSuggestionModal.tsx",
+      "type": "JsxText",
+      "line": 133
+    },
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/AIAssistant/Banchmark/uploadPage.tsx",
+      "type": "JsxText",
+      "line": 1721
+    }
+  ],
+  "Required Documents": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/AIAssistant/Banchmark/ISOSuggestionModal.tsx",
+      "type": "JsxText",
+      "line": 162
+    },
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/AIAssistant/Banchmark/uploadPage.tsx",
+      "type": "JsxText",
+      "line": 1743
+    }
+  ],
+  "Clause": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/AIAssistant/Banchmark/ISOSuggestionModal.tsx",
+      "type": "JsxText",
+      "line": 211
+    },
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/AIAssistant/Banchmark/ISOSuggestionModal.tsx",
+      "type": "JsxText",
+      "line": 284
+    },
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/AIAssistant/Banchmark/ResultPage.tsx",
+      "type": "JsxText",
+      "line": 459
+    }
+  ],
+  "Required Records": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/AIAssistant/Banchmark/ISOSuggestionModal.tsx",
+      "type": "JsxText",
+      "line": 235
+    },
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/AIAssistant/Banchmark/uploadPage.tsx",
+      "type": "JsxText",
+      "line": 1783
+    }
+  ],
+  "Found": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/AIAssistant/Banchmark/ISOSuggestionsPage.tsx",
+      "type": "JsxText",
+      "line": 85
+    }
+  ],
+  "applicable standards": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/AIAssistant/Banchmark/ISOSuggestionsPage.tsx",
+      "type": "JsxText",
+      "line": 85
+    }
+  ],
+  "Documents": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/AIAssistant/Banchmark/ISOSuggestionsPage.tsx",
+      "type": "JsxText",
+      "line": 166
+    }
+  ],
+  "Records": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/AIAssistant/Banchmark/ISOSuggestionsPage.tsx",
+      "type": "JsxText",
+      "line": 174
+    }
+  ],
+  "Items": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/AIAssistant/Banchmark/ISOSuggestionsPage.tsx",
+      "type": "JsxText",
+      "line": 182
+    }
+  ],
+  "How to Use These Suggestions": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/AIAssistant/Banchmark/ISOSuggestionsPage.tsx",
+      "type": "JsxText",
+      "line": 207
+    }
+  ],
+  "Review Standards": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/AIAssistant/Banchmark/ISOSuggestionsPage.tsx",
+      "type": "JsxText",
+      "line": 215
+    }
+  ],
+  "Click on any standard to see required documents and records": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/AIAssistant/Banchmark/ISOSuggestionsPage.tsx",
+      "type": "JsxText",
+      "line": 217
+    }
+  ],
+  "Plan Implementation": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/AIAssistant/Banchmark/ISOSuggestionsPage.tsx",
+      "type": "JsxText",
+      "line": 226
+    }
+  ],
+  "Use the detailed information to plan your compliance journey": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/AIAssistant/Banchmark/ISOSuggestionsPage.tsx",
+      "type": "JsxText",
+      "line": 228
+    }
+  ],
+  "BENCHMARK RESULTS": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/AIAssistant/Banchmark/ResultPage.tsx",
+      "type": "JsxText",
+      "line": 137
+    }
+  ],
+  "Benchmark Diagnostic": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/AIAssistant/Banchmark/ResultPage.tsx",
+      "type": "JsxText",
+      "line": 141
+    }
+  ],
+  "Workspace": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/AIAssistant/Banchmark/ResultPage.tsx",
+      "type": "JsxText",
+      "line": 141
+    }
+  ],
+  "Compare your document content directly against ISO compliance definitions.": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/AIAssistant/Banchmark/ResultPage.tsx",
+      "type": "JsxText",
+      "line": 145
+    }
+  ],
+  "Document Input": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/AIAssistant/Banchmark/ResultPage.tsx",
+      "type": "JsxText",
+      "line": 182
+    }
+  ],
+  "Click or drag files": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/AIAssistant/Banchmark/ResultPage.tsx",
+      "type": "JsxText",
+      "line": 187
+    }
+  ],
+  "PDF format only": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/AIAssistant/Banchmark/ResultPage.tsx",
+      "type": "JsxText",
+      "line": 190
+    }
+  ],
+  "Scanned": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/AIAssistant/Banchmark/ResultPage.tsx",
+      "type": "JsxText",
+      "line": 200
+    }
+  ],
+  "Improvement Goal": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/AIAssistant/Banchmark/ResultPage.tsx",
+      "type": "JsxText",
+      "line": 206
+    },
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/AIAssistant/Banchmark/uploadPage.tsx",
+      "type": "JsxText",
+      "line": 1241
+    }
+  ],
+  "Analyzed...": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/AIAssistant/Banchmark/ResultPage.tsx",
+      "type": "JsxText",
+      "line": 209
+    }
+  ],
+  "Reset Analysis": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/AIAssistant/Banchmark/ResultPage.tsx",
+      "type": "JsxText",
+      "line": 218
+    }
+  ],
+  "Analysis Complete": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/AIAssistant/Banchmark/ResultPage.tsx",
+      "type": "JsxText",
+      "line": 222
+    }
+  ],
+  "Analyze another document": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/AIAssistant/Banchmark/ResultPage.tsx",
+      "type": "JsxText",
+      "line": 228
+    }
+  ],
+  "Processed Securely": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/AIAssistant/Banchmark/ResultPage.tsx",
+      "type": "JsxText",
+      "line": 233
+    }
+  ],
+  "OCR Tech Enabled": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/AIAssistant/Banchmark/ResultPage.tsx",
+      "type": "JsxText",
+      "line": 237
+    }
+  ],
+  "ISO Requirements Sandbox": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/AIAssistant/Banchmark/ResultPage.tsx",
+      "type": "JsxText",
+      "line": 241
+    }
+  ],
+  "Grade": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/AIAssistant/Banchmark/ResultPage.tsx",
+      "type": "JsxText",
+      "line": 262
+    }
+  ],
+  "Protocol:": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/AIAssistant/Banchmark/ResultPage.tsx",
+      "type": "JsxText",
+      "line": 300
+    }
+  ],
+  "ISO Standards:": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/AIAssistant/Banchmark/ResultPage.tsx",
+      "type": "JsxText",
+      "line": 307
+    }
+  ],
+  "Neural Compliance Matrix": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/AIAssistant/Banchmark/ResultPage.tsx",
+      "type": "JsxText",
+      "line": 316
+    }
+  ],
+  "Evidence:": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/AIAssistant/Banchmark/ResultPage.tsx",
+      "type": "JsxText",
+      "line": 327
+    }
+  ],
+  "Gap:": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/AIAssistant/Banchmark/ResultPage.tsx",
+      "type": "JsxText",
+      "line": 330
+    }
+  ],
+  "Optimization Roadmap": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/AIAssistant/Banchmark/ResultPage.tsx",
+      "type": "JsxText",
+      "line": 435
+    }
+  ],
+  "Recommendation:": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/AIAssistant/Banchmark/ResultPage.tsx",
+      "type": "JsxText",
+      "line": 467
+    }
+  ],
+  "Benefit:": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/AIAssistant/Banchmark/ResultPage.tsx",
+      "type": "JsxText",
+      "line": 475
+    }
+  ],
+  "Interactive compliance AI Chat": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/AIAssistant/Banchmark/ResultPage.tsx",
+      "type": "JsxText",
+      "line": 493
+    }
+  ],
+  "Ask any question about compliance, standards, or how to improve...": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/AIAssistant/Banchmark/ResultPage.tsx",
+      "type": "JsxAttribute-placeholder",
+      "line": 556
+    },
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/AIAssistant/Banchmark/uploadPage.tsx",
+      "type": "JsxAttribute-placeholder",
+      "line": 1593
+    }
+  ],
+  "BENCHMARK AI": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/AIAssistant/Banchmark/uploadPage.tsx",
+      "type": "JsxText",
+      "line": 665
+    }
+  ],
+  "Benchmark AI: Instant Gap Analysis & Action Plans": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/AIAssistant/Banchmark/uploadPage.tsx",
+      "type": "JsxText",
+      "line": 673
+    }
+  ],
+  "See Exactly How Your System Measures Up": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/AIAssistant/Banchmark/uploadPage.tsx",
+      "type": "JsxText",
+      "line": 681
+    }
+  ],
+  "Transform raw organizational documents into structured ISO compliance roadmaps. Benchmark AI performs semantic gap analysis using actual ISO standard texts, showing you precisely what you are doing right and where you are falling short.": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/AIAssistant/Banchmark/uploadPage.tsx",
+      "type": "JsxText",
+      "line": 683
+    }
+  ],
+  "BENCHMARK PORTAL": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/AIAssistant/Banchmark/uploadPage.tsx",
+      "type": "JsxText",
+      "line": 709
+    }
+  ],
+  "01. UPLOAD PROTOCOL": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/AIAssistant/Banchmark/uploadPage.tsx",
+      "type": "JsxText",
+      "line": 719
+    }
+  ],
+  "Upload File": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/AIAssistant/Banchmark/uploadPage.tsx",
+      "type": "JsxText",
+      "line": 757
+    },
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/AIAssistant/Banchmark/uploadPage.tsx",
+      "type": "JsxAttribute-title",
+      "line": 751
+    }
+  ],
+  "Paste Text": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/AIAssistant/Banchmark/uploadPage.tsx",
+      "type": "JsxText",
+      "line": 791
+    },
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/AIAssistant/Banchmark/uploadPage.tsx",
+      "type": "JsxAttribute-title",
+      "line": 785
+    }
+  ],
+  "DRAG & DROP OR CLICK TO UPLOAD PDF": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/AIAssistant/Banchmark/uploadPage.tsx",
+      "type": "JsxText",
+      "line": 839
+    }
+  ],
+  "ADVANCED OCR ENGINE ACTIVE (PDF ONLY)": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/AIAssistant/Banchmark/uploadPage.tsx",
+      "type": "JsxText",
+      "line": 845
+    }
+  ],
+  "Upload complete": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/AIAssistant/Banchmark/uploadPage.tsx",
+      "type": "JsxText",
+      "line": 883
+    }
+  ],
+  "Paste your document text": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/AIAssistant/Banchmark/uploadPage.tsx",
+      "type": "JsxText",
+      "line": 907
+    }
+  ],
+  "Minimum 50 characters required for AI analysis (": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/AIAssistant/Banchmark/uploadPage.tsx",
+      "type": "JsxText",
+      "line": 973
+    }
+  ],
+  "characters ready for analysis": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/AIAssistant/Banchmark/uploadPage.tsx",
+      "type": "JsxText",
+      "line": 987
+    }
+  ],
+  "Selected Category": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/AIAssistant/Banchmark/uploadPage.tsx",
+      "type": "JsxText",
+      "line": 1009
+    }
+  ],
+  "Recommended ISO Standards (": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/AIAssistant/Banchmark/uploadPage.tsx",
+      "type": "JsxText",
+      "line": 1051
+    }
+  ],
+  "ISO Standards Found": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/AIAssistant/Banchmark/uploadPage.tsx",
+      "type": "JsxText",
+      "line": 1097
+    }
+  ],
+  "Select an improvement goal:": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/AIAssistant/Banchmark/uploadPage.tsx",
+      "type": "JsxText",
+      "line": 1248
+    }
+  ],
+  "Analyzing...": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/AIAssistant/Banchmark/uploadPage.tsx",
+      "type": "JsxText",
+      "line": 1303
+    }
+  ],
+  "Initialize Benchmark": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/AIAssistant/Banchmark/uploadPage.tsx",
+      "type": "JsxText",
+      "line": 1313
+    }
+  ],
+  "Secure ISO sandbox parsing": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/AIAssistant/Banchmark/uploadPage.tsx",
+      "type": "JsxText",
+      "line": 1337
+    }
+  ],
+  "Intelligent OCR text extraction": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/AIAssistant/Banchmark/uploadPage.tsx",
+      "type": "JsxText",
+      "line": 1345
+    }
+  ],
+  "Instant gap analysis & report": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/AIAssistant/Banchmark/uploadPage.tsx",
+      "type": "JsxText",
+      "line": 1353
+    }
+  ],
+  "Ready for Benchmark": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/AIAssistant/Banchmark/uploadPage.tsx",
+      "type": "JsxText",
+      "line": 1375
+    }
+  ],
+  "Upload your ISO-related protocols to activate the benchmarking engine. AI will resolve architectural gaps and compliance variance.": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/AIAssistant/Banchmark/uploadPage.tsx",
+      "type": "JsxText",
+      "line": 1381
+    }
+  ],
+  "Interactive Compliance AI Chat": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/AIAssistant/Banchmark/uploadPage.tsx",
+      "type": "JsxText",
+      "line": 1457
+    }
+  ],
+  "Chat directly with the AI about this session context": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/AIAssistant/Banchmark/uploadPage.tsx",
+      "type": "JsxText",
+      "line": 1463
+    }
+  ],
+  "Clause:": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/AIAssistant/Banchmark/uploadPage.tsx",
+      "type": "JsxText",
+      "line": 1761
+    },
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/AIAssistant/Banchmark/uploadPage.tsx",
+      "type": "JsxText",
+      "line": 1801
+    }
+  ],
+  "Select": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/AIAssistant/Banchmark/uploadPage.tsx",
+      "type": "JsxText",
+      "line": 1847
+    }
+  ],
+  "Paste document content here...": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/AIAssistant/Banchmark/uploadPage.tsx",
+      "type": "JsxAttribute-placeholder",
+      "line": 921
+    }
+  ],
+  "View Details": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/AIAssistant/Banchmark/uploadPage.tsx",
+      "type": "JsxAttribute-title",
+      "line": 1207
+    },
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/library/iso-standards/category/[categoryId]/page.tsx",
+      "type": "JsxText",
+      "line": 93
+    }
+  ],
+  "ISO Brain": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/Library/iso-standards/ChatInterface.tsx",
+      "type": "JsxText",
+      "line": 454
+    }
+  ],
+  "Interactive Cards •": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/Library/iso-standards/ChatInterface.tsx",
+      "type": "JsxText",
+      "line": 646
+    }
+  ],
+  "Interactive Study Deck": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/Library/iso-standards/ChatInterface.tsx",
+      "type": "JsxText",
+      "line": 1355
+    }
+  ],
+  "level": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/Library/iso-standards/ChatInterface.tsx",
+      "type": "JsxText",
+      "line": 1362
+    }
+  ],
+  "Generating Flashcards": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/Library/iso-standards/ChatInterface.tsx",
+      "type": "JsxText",
+      "line": 1376
+    }
+  ],
+  "Our neural engine is analyzing the standard to formulate interactive study aids...": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/Library/iso-standards/ChatInterface.tsx",
+      "type": "JsxText",
+      "line": 1377
+    }
+  ],
+  "Question": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/Library/iso-standards/ChatInterface.tsx",
+      "type": "JsxText",
+      "line": 1445
+    },
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/mastery-lab/assessment/page.tsx",
+      "type": "JsxText",
+      "line": 571
+    }
+  ],
+  "👈 Swipe to Navigate 👉": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/Library/iso-standards/ChatInterface.tsx",
+      "type": "JsxText",
+      "line": 1458
+    }
+  ],
+  "Click to Flip": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/Library/iso-standards/ChatInterface.tsx",
+      "type": "JsxText",
+      "line": 1460
+    }
+  ],
+  "Answer Revealed": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/Library/iso-standards/ChatInterface.tsx",
+      "type": "JsxText",
+      "line": 1468
+    }
+  ],
+  "Click card to flip back": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/Library/iso-standards/ChatInterface.tsx",
+      "type": "JsxText",
+      "line": 1481
+    }
+  ],
+  "No flashcards loaded": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/Library/iso-standards/ChatInterface.tsx",
+      "type": "JsxText",
+      "line": 1510
+    }
+  ],
+  "Click below to generate compliance cards for this standard.": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/Library/iso-standards/ChatInterface.tsx",
+      "type": "JsxText",
+      "line": 1511
+    }
+  ],
+  "Generate Deck": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/Library/iso-standards/ChatInterface.tsx",
+      "type": "JsxText",
+      "line": 1516
+    }
+  ],
+  "Card": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/Library/iso-standards/ChatInterface.tsx",
+      "type": "JsxText",
+      "line": 1527
+    }
+  ],
+  "of": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/Library/iso-standards/ChatInterface.tsx",
+      "type": "JsxText",
+      "line": 1527
+    },
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/mastery-lab/assessment/page.tsx",
+      "type": "JsxText",
+      "line": 571
+    }
+  ],
+  "% Complete": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/Library/iso-standards/ChatInterface.tsx",
+      "type": "JsxText",
+      "line": 1530
+    }
+  ],
+  "Prev Card": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/Library/iso-standards/ChatInterface.tsx",
+      "type": "JsxText",
+      "line": 1559
+    }
+  ],
+  "Next Card": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/Library/iso-standards/ChatInterface.tsx",
+      "type": "JsxText",
+      "line": 1574
+    }
+  ],
+  "View All Standards": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/Library/iso-standards/ISOStandardsNexus.tsx",
+      "type": "JsxText",
+      "line": 96
+    }
+  ],
+  "Loading management systems...": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/Library/iso-standards/ISOStandardsNexus.tsx",
+      "type": "JsxText",
+      "line": 156
+    }
+  ],
+  "Explore by sector": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/Library/store/ExploreBySector.tsx",
+      "type": "JsxText",
+      "line": 48
+    }
+  ],
+  "Starter packages": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/Library/store/StarterPackage.tsx",
+      "type": "JsxText",
+      "line": 68
+    }
+  ],
+  "Get started with essential standards for your business": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/Library/store/StarterPackage.tsx",
+      "type": "JsxText",
+      "line": 71
+    }
+  ],
+  "See More": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/Library/store/StarterPackage.tsx",
+      "type": "JsxText",
+      "line": 78
+    }
+  ],
+  "Explore Standards": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/Library/store/StarterPackage.tsx",
+      "type": "JsxText",
+      "line": 126
+    }
+  ],
+  "Top publications": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/Library/store/Toppublications.tsx",
+      "type": "JsxText",
+      "line": 57
+    }
+  ],
+  "Failed to load standards.": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/Library/store/TopStandards.tsx",
+      "type": "JsxText",
+      "line": 21
+    }
+  ],
+  "Top Standards": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/Library/store/TopStandards.tsx",
+      "type": "JsxText",
+      "line": 35
+    }
+  ],
+  "Most viewed and highly rated standards": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/Library/store/TopStandards.tsx",
+      "type": "JsxText",
+      "line": 38
+    }
+  ],
+  "CHF 179": [
+    {
+      "file": "c:/Sharif/scalafrodriguez-front_end/components/Library/store/TopStandards.tsx",
+      "type": "JsxText",
+      "line": 64
+    }
+  ],
+  "No quiz for this lesson. Proceed to the next one!": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/academy/[id]/page.tsx",
+      "type": "JsxText",
+      "line": 748
+    }
+  ],
+  "Retry Analysis": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/academy/[id]/page.tsx",
+      "type": "JsxText",
+      "line": 770
+    }
+  ],
+  "Next →": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/academy/[id]/page.tsx",
+      "type": "JsxText",
+      "line": 874
+    }
+  ],
+  "Provide Context": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/ai-assistant/audit-lens/page.tsx",
+      "type": "JsxText",
+      "line": 967
+    }
+  ],
+  "Text": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/ai-assistant/audit-lens/page.tsx",
+      "type": "JsxText",
+      "line": 999
+    },
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/ai-assistant/iso-navigator/page.tsx",
+      "type": "JsxText",
+      "line": 910
+    }
+  ],
+  "URL": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/ai-assistant/audit-lens/page.tsx",
+      "type": "JsxText",
+      "line": 1023
+    },
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/ai-assistant/iso-navigator/page.tsx",
+      "type": "JsxText",
+      "line": 922
+    }
+  ],
+  "Select Direction": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/ai-assistant/audit-lens/page.tsx",
+      "type": "JsxText",
+      "line": 1183
+    }
+  ],
+  "Back": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/ai-assistant/audit-lens/page.tsx",
+      "type": "JsxText",
+      "line": 1191
+    }
+  ],
+  "Active Context": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/ai-assistant/audit-lens/page.tsx",
+      "type": "JsxText",
+      "line": 1291
+    }
+  ],
+  "Change": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/ai-assistant/audit-lens/page.tsx",
+      "type": "JsxText",
+      "line": 1295
+    }
+  ],
+  "Audit Steps": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/ai-assistant/audit-lens/page.tsx",
+      "type": "JsxText",
+      "line": 1343
+    }
+  ],
+  "Restart": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/ai-assistant/audit-lens/page.tsx",
+      "type": "JsxText",
+      "line": 1351
+    }
+  ],
+  "Phase": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/ai-assistant/audit-lens/page.tsx",
+      "type": "JsxText",
+      "line": 1439
+    }
+  ],
+  "Steps)": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/ai-assistant/audit-lens/page.tsx",
+      "type": "JsxText",
+      "line": 1443
+    }
+  ],
+  "Analyzing Context": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/ai-assistant/audit-lens/page.tsx",
+      "type": "JsxText",
+      "line": 1723
+    }
+  ],
+  "Processing your input to generate precise audit scope options.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/ai-assistant/audit-lens/page.tsx",
+      "type": "JsxText",
+      "line": 1727
+    }
+  ],
+  "Ready For Scan": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/ai-assistant/audit-lens/page.tsx",
+      "type": "JsxText",
+      "line": 1755
+    }
+  ],
+  "Provide context to begin the comprehensive 13-step audit process.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/ai-assistant/audit-lens/page.tsx",
+      "type": "JsxText",
+      "line": 1759
+    }
+  ],
+  "Generating Step": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/ai-assistant/audit-lens/page.tsx",
+      "type": "JsxText",
+      "line": 1855
+    }
+  ],
+  "Compiling guidance and templates...": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/ai-assistant/audit-lens/page.tsx",
+      "type": "JsxText",
+      "line": 1859
+    }
+  ],
+  "Step": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/ai-assistant/audit-lens/page.tsx",
+      "type": "JsxText",
+      "line": 1907
+    }
+  ],
+  "Template Preview": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/ai-assistant/audit-lens/page.tsx",
+      "type": "JsxText",
+      "line": 2055
+    }
+  ],
+  "Previous Step": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/ai-assistant/audit-lens/page.tsx",
+      "type": "JsxText",
+      "line": 2199
+    }
+  ],
+  "Failed to load Step": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/ai-assistant/audit-lens/page.tsx",
+      "type": "JsxText",
+      "line": 2279
+    }
+  ],
+  ". Please try again.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/ai-assistant/audit-lens/page.tsx",
+      "type": "JsxText",
+      "line": 2279
+    }
+  ],
+  "Retry Step": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/ai-assistant/audit-lens/page.tsx",
+      "type": "JsxText",
+      "line": 2287
+    }
+  ],
+  "Audit AI Assistant": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/ai-assistant/audit-lens/page.tsx",
+      "type": "JsxText",
+      "line": 2337
+    }
+  ],
+  "Ask questions about the audit process or specific standards.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/ai-assistant/audit-lens/page.tsx",
+      "type": "JsxText",
+      "line": 2339
+    }
+  ],
+  "Audit Lens: AI-Powered Forensic Auditing": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/ai-assistant/audit-lens/page.tsx",
+      "type": "JsxText",
+      "line": 2607
+    }
+  ],
+  "Streamline Every Stage of Your Audit Lifecycle": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/ai-assistant/audit-lens/page.tsx",
+      "type": "JsxText",
+      "line": 2619
+    }
+  ],
+  "Audit Lens is an end-to-end AI auditing suite designed to help you prepare, execute, and report on ISO audits with unprecedented speed and accuracy. Move beyond static checklists to an intelligence-driven workflow.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/ai-assistant/audit-lens/page.tsx",
+      "type": "JsxText",
+      "line": 2623
+    }
+  ],
+  "e.g. ISO 9001 internal audit for manufacturing company": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/ai-assistant/audit-lens/page.tsx",
+      "type": "JsxAttribute-placeholder",
+      "line": 1047
+    }
+  ],
+  "e.g. https://example.com/audit-requirements": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/ai-assistant/audit-lens/page.tsx",
+      "type": "JsxAttribute-placeholder",
+      "line": 1079
+    }
+  ],
+  "Ask the Audit Assistant anything...": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/ai-assistant/audit-lens/page.tsx",
+      "type": "JsxAttribute-placeholder",
+      "line": 2495
+    }
+  ],
+  "ISO Navigator": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/ai-assistant/iso-navigator/page.tsx",
+      "type": "JsxText",
+      "line": 755
+    }
+  ],
+  "ISO Navigator: Map Your Path to Compliance": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/ai-assistant/iso-navigator/page.tsx",
+      "type": "JsxText",
+      "line": 763
+    }
+  ],
+  "Build Your ISO Framework from the Inside Out": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/ai-assistant/iso-navigator/page.tsx",
+      "type": "JsxText",
+      "line": 769
+    }
+  ],
+  "Stop guessing which standards apply to your business or what documents you need to create. ISO Navigator takes your unique organizational footprint and builds a highly personalized compliance roadmap.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/ai-assistant/iso-navigator/page.tsx",
+      "type": "JsxText",
+      "line": 771
+    }
+  ],
+  "No documents or records available for this standard.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/ai-assistant/iso-navigator/page.tsx",
+      "type": "JsxText",
+      "line": 1455
+    }
+  ],
+  "Generating...": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/ai-assistant/iso-navigator/page.tsx",
+      "type": "JsxText",
+      "line": 1474
+    }
+  ],
+  "Generate Framework": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/ai-assistant/iso-navigator/page.tsx",
+      "type": "JsxText",
+      "line": 1478
+    }
+  ],
+  "Contextual AI Chat: Need to refine your new policy?": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/ai-assistant/iso-navigator/page.tsx",
+      "type": "JsxText",
+      "line": 1851
+    }
+  ],
+  "Use the built-in AI chat to ask follow-up questions, request real-world case studies, or ask the AI to rewrite specific sections of the generated document.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/ai-assistant/iso-navigator/page.tsx",
+      "type": "JsxText",
+      "line": 1857
+    }
+  ],
+  "Simply enter your website URL or provide a brief company description. Our AI will instantly trigger a web scraper (if a URL is provided) to extract your context—defining exactly what your organization does, where you operate, why you exist, when you were founded, and whom you serve.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/ai-assistant/iso-navigator/page.tsx",
+      "type": "JsxAttribute-title",
+      "line": 872
+    }
+  ],
+  "e.g. https://example.com": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/ai-assistant/iso-navigator/page.tsx",
+      "type": "JsxAttribute-placeholder",
+      "line": 952
+    }
+  ],
+  "ISOBrain.ai": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/auth/complete-profile/page.tsx",
+      "type": "JsxText",
+      "line": 130
+    },
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/auth/otp/page.tsx",
+      "type": "JsxText",
+      "line": 130
+    },
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/lessons/complete/page.tsx",
+      "type": "JsxText",
+      "line": 63
+    }
+  ],
+  "Completing Facebook authentication...": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/auth/facebook-callback/page.tsx",
+      "type": "JsxText",
+      "line": 46
+    }
+  ],
+  "Completing Google authentication...": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/auth/google-callback/page.tsx",
+      "type": "JsxText",
+      "line": 46
+    }
+  ],
+  "Completing LinkedIn authentication...": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/auth/linkedin-callback/page.tsx",
+      "type": "JsxText",
+      "line": 46
+    }
+  ],
+  "ISO, Without the confusion.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/auth/login/page.tsx",
+      "type": "JsxText",
+      "line": 154
+    },
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/auth/sign-up/page.tsx",
+      "type": "JsxText",
+      "line": 99
+    }
+  ],
+  "ISO standards are powerful. But working with them rarely feels that way. Most professionals don't struggle because they lack ability. They struggle because the standards are dense, fragmented, and difficult to apply in real-world situations. ISOBrain was built to change that.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/auth/login/page.tsx",
+      "type": "JsxText",
+      "line": 157
+    },
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/auth/sign-up/page.tsx",
+      "type": "JsxText",
+      "line": 102
+    }
+  ],
+  "&copy; 2026 ISOBRAIN AI": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/auth/login/page.tsx",
+      "type": "JsxText",
+      "line": 168
+    }
+  ],
+  "IB": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/auth/otp/page.tsx",
+      "type": "JsxText",
+      "line": 128
+    },
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/lessons/complete/page.tsx",
+      "type": "JsxText",
+      "line": 25
+    }
+  ],
+  "&copy; 2024 ISOBRAIN AI": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/auth/sign-up/page.tsx",
+      "type": "JsxText",
+      "line": 126
+    },
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/auth/sign-up/page.tsx",
+      "type": "JsxText",
+      "line": 222
+    }
+  ],
+  "Congratulations!": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/auth/success/page.tsx",
+      "type": "JsxText",
+      "line": 41
+    }
+  ],
+  "You have successfully created your account .": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/auth/success/page.tsx",
+      "type": "JsxText",
+      "line": 49
+    }
+  ],
+  "1. What is a core principle of ISO 9001?": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/lessons/assessment/page.tsx",
+      "type": "JsxText",
+      "line": 133
+    }
+  ],
+  "2. Which year was the latest version of ISO 9001 published?": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/lessons/assessment/page.tsx",
+      "type": "JsxText",
+      "line": 167
+    }
+  ],
+  "Course Completed!": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/lessons/complete/page.tsx",
+      "type": "JsxText",
+      "line": 15
+    }
+  ],
+  "Congratulations on completing all lessons": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/lessons/complete/page.tsx",
+      "type": "JsxText",
+      "line": 16
+    }
+  ],
+  "Certificate of Completion": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/lessons/complete/page.tsx",
+      "type": "JsxText",
+      "line": 29
+    }
+  ],
+  "Continuing Professional Development (CPD)": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/lessons/complete/page.tsx",
+      "type": "JsxText",
+      "line": 31
+    }
+  ],
+  "This is to certify that": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/lessons/complete/page.tsx",
+      "type": "JsxText",
+      "line": 33
+    }
+  ],
+  "has successfully completed": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/lessons/complete/page.tsx",
+      "type": "JsxText",
+      "line": 35
+    }
+  ],
+  "ISO 9001:2015 Quality Management Systems": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/lessons/complete/page.tsx",
+      "type": "JsxText",
+      "line": 37
+    }
+  ],
+  "Date Completed": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/lessons/complete/page.tsx",
+      "type": "JsxText",
+      "line": 43
+    }
+  ],
+  "Feb 14, 2026": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/lessons/complete/page.tsx",
+      "type": "JsxText",
+      "line": 44
+    }
+  ],
+  "CPD Hours": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/lessons/complete/page.tsx",
+      "type": "JsxText",
+      "line": 47
+    },
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/academy/category/[categoryName]/page.tsx",
+      "type": "JsxText",
+      "line": 350
+    }
+  ],
+  "12 Hours": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/lessons/complete/page.tsx",
+      "type": "JsxText",
+      "line": 48
+    }
+  ],
+  "Certificate ID": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/lessons/complete/page.tsx",
+      "type": "JsxText",
+      "line": 51
+    }
+  ],
+  "IB-2026-0142": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/lessons/complete/page.tsx",
+      "type": "JsxText",
+      "line": 52
+    }
+  ],
+  "Course Director": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/lessons/complete/page.tsx",
+      "type": "JsxText",
+      "line": 62
+    }
+  ],
+  "Director": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/lessons/complete/page.tsx",
+      "type": "JsxText",
+      "line": 72
+    }
+  ],
+  "February 14, 2026": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/lessons/complete/page.tsx",
+      "type": "JsxText",
+      "line": 73
+    }
+  ],
+  "Download Certificate": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/lessons/complete/page.tsx",
+      "type": "JsxText",
+      "line": 83
+    }
+  ],
+  "Browse More Courses": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/lessons/complete/page.tsx",
+      "type": "JsxText",
+      "line": 86
+    }
+  ],
+  "ISOBrain Plus –": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/library/iso-standards/page.tsx",
+      "type": "JsxText",
+      "line": 257
+    }
+  ],
+  "USD $30/Month": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/library/iso-standards/page.tsx",
+      "type": "JsxText",
+      "line": 257
+    }
+  ],
+  "The essential toolkit for ISO professionals to master compliance and benchmark their expertise.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/library/iso-standards/page.tsx",
+      "type": "JsxText",
+      "line": 272
+    }
+  ],
+  "Perfect for compliance officers and quality managers who need immediate access to real-world standards and want to validate their baseline expertise.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/library/iso-standards/page.tsx",
+      "type": "JsxText",
+      "line": 283
+    }
+  ],
+  "Secure your spot - Skill development made affordable": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/library/iso-standards/page.tsx",
+      "type": "JsxText",
+      "line": 294
+    }
+  ],
+  "Take your skills to the next level": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/library/iso-standards/page.tsx",
+      "type": "JsxText",
+      "line": 305
+    }
+  ],
+  "Get ISOBrain Plus - Limited time to save big!": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/library/iso-standards/page.tsx",
+      "type": "JsxText",
+      "line": 323
+    }
+  ],
+  "How the Library Accelerates Your Expertise": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/library/iso-standards/page.tsx",
+      "type": "JsxText",
+      "line": 374
+    }
+  ],
+  "Old Way: Static Documentation": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/library/iso-standards/page.tsx",
+      "type": "JsxText",
+      "line": 381
+    }
+  ],
+  "The New Way: Interactive Research Terminal": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/library/iso-standards/page.tsx",
+      "type": "JsxText",
+      "line": 382
+    }
+  ],
+  "Your Career Value": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/library/iso-standards/page.tsx",
+      "type": "JsxText",
+      "line": 383
+    }
+  ],
+  "Manual PDF Digging:": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/library/iso-standards/page.tsx",
+      "type": "JsxText",
+      "line": 389
+    }
+  ],
+  "Hours spent searching through massive, fragmented documents.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/library/iso-standards/page.tsx",
+      "type": "JsxText",
+      "line": 390
+    }
+  ],
+  "Instant Clause Search:": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/library/iso-standards/page.tsx",
+      "type": "JsxText",
+      "line": 393
+    }
+  ],
+  "Instantly locate, break down, and understand complex requirements.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/library/iso-standards/page.tsx",
+      "type": "JsxText",
+      "line": 394
+    }
+  ],
+  "Unmatched Speed:": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/library/iso-standards/page.tsx",
+      "type": "JsxText",
+      "line": 397
+    }
+  ],
+  "Solve urgent compliance issues faster and save hours of administrative research.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/library/iso-standards/page.tsx",
+      "type": "JsxText",
+      "line": 398
+    }
+  ],
+  "Isolated Frameworks:": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/library/iso-standards/page.tsx",
+      "type": "JsxText",
+      "line": 403
+    }
+  ],
+  "Hard to see how standards and requirements connect with each other.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/library/iso-standards/page.tsx",
+      "type": "JsxText",
+      "line": 404
+    }
+  ],
+  "Connected Workspace:": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/library/iso-standards/page.tsx",
+      "type": "JsxText",
+      "line": 407
+    }
+  ],
+  "Visual mapping showing relationships across different management systems.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/library/iso-standards/page.tsx",
+      "type": "JsxText",
+      "line": 408
+    }
+  ],
+  "Subject Matter Authority:": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/library/iso-standards/page.tsx",
+      "type": "JsxText",
+      "line": 411
+    }
+  ],
+  "Become the organization's go-to expert for clear, up-to-date compliance interpretation.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/library/iso-standards/page.tsx",
+      "type": "JsxText",
+      "line": 412
+    }
+  ],
+  "For USD$ 30 You Get": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/library/iso-standards/page.tsx",
+      "type": "JsxText",
+      "line": 425
+    }
+  ],
+  "Unlimited Access to the ISO Library:": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/library/iso-standards/page.tsx",
+      "type": "JsxText",
+      "line": 432
+    }
+  ],
+  "Centralize your compliance. Access 250+ ISO Management System Standards across domains like Quality, InfoSec, and Health & Safety. This resource provides implementation guidance and tools strictly aligned with ISO requirements.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/library/iso-standards/page.tsx",
+      "type": "JsxText",
+      "line": 435
+    }
+  ],
+  "Unlimited Access to ISO Mastery Lab:": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/library/iso-standards/page.tsx",
+      "type": "JsxText",
+      "line": 442
+    }
+  ],
+  "Validate your ISO professional competency through industry-specific global benchmarking.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/library/iso-standards/page.tsx",
+      "type": "JsxText",
+      "line": 445
+    }
+  ],
+  "AI-Powered Competency Analysis:": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/library/iso-standards/page.tsx",
+      "type": "JsxText",
+      "line": 452
+    }
+  ],
+  "Pinpoint compliance gaps with personalized reports and receive clear guidance on specific skill improvements.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/library/iso-standards/page.tsx",
+      "type": "JsxText",
+      "line": 455
+    }
+  ],
+  "✦ CPD Certificate Of Competency: ✦": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/library/iso-standards/page.tsx",
+      "type": "JsxText",
+      "line": 462
+    }
+  ],
+  "Earn a recognized CPD certification to give employers, auditors, and clients verified proof of your professional competency and proficiency.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/library/iso-standards/page.tsx",
+      "type": "JsxText",
+      "line": 465
+    }
+  ],
+  "Stop Searching. Start Implementing.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/library/iso-standards/page.tsx",
+      "type": "JsxText",
+      "line": 493
+    }
+  ],
+  "Position yourself as a modern compliance leader. Work directly with the standard, interpret it instantly, and lead your team with absolute authority.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/library/iso-standards/page.tsx",
+      "type": "JsxText",
+      "line": 496
+    }
+  ],
+  "Enter the Library Workspace": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/library/iso-standards/page.tsx",
+      "type": "JsxText",
+      "line": 503
+    }
+  ],
+  "Store": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/library/store/page.tsx",
+      "type": "JsxText",
+      "line": 50
+    }
+  ],
+  "Ready to Get Started?": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/library/store/page.tsx",
+      "type": "JsxText",
+      "line": 107
+    }
+  ],
+  "Start exploring ISO standards with AI-powered tools": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/library/store/page.tsx",
+      "type": "JsxText",
+      "line": 111
+    }
+  ],
+  "ISO Competency Assessment": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/mastery-lab/assessment/page.tsx",
+      "type": "JsxText",
+      "line": 408
+    }
+  ],
+  "Overall Score": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/mastery-lab/assessment/page.tsx",
+      "type": "JsxText",
+      "line": 423
+    }
+  ],
+  "Industry Avg.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/mastery-lab/assessment/page.tsx",
+      "type": "JsxText",
+      "line": 427
+    },
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/mastery-lab/success-evaluation/page.tsx",
+      "type": "JsxText",
+      "line": 177
+    }
+  ],
+  "Benchmark": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/mastery-lab/assessment/page.tsx",
+      "type": "JsxText",
+      "line": 431
+    },
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/mastery-lab/success-evaluation/page.tsx",
+      "type": "JsxText",
+      "line": 184
+    }
+  ],
+  "Competency:": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/mastery-lab/assessment/page.tsx",
+      "type": "JsxText",
+      "line": 435
+    }
+  ],
+  "Competency Summary": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/mastery-lab/assessment/page.tsx",
+      "type": "JsxText",
+      "line": 442
+    }
+  ],
+  "Key Strengths": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/mastery-lab/assessment/page.tsx",
+      "type": "JsxText",
+      "line": 452
+    }
+  ],
+  "No specific strengths identified yet.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/mastery-lab/assessment/page.tsx",
+      "type": "JsxText",
+      "line": 458
+    }
+  ],
+  "Primary Weaknesses": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/mastery-lab/assessment/page.tsx",
+      "type": "JsxText",
+      "line": 462
+    }
+  ],
+  "No specific weaknesses identified.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/mastery-lab/assessment/page.tsx",
+      "type": "JsxText",
+      "line": 468
+    }
+  ],
+  "Risk Assessment": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/mastery-lab/assessment/page.tsx",
+      "type": "JsxText",
+      "line": 477
+    }
+  ],
+  "RISK": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/mastery-lab/assessment/page.tsx",
+      "type": "JsxText",
+      "line": 479
+    }
+  ],
+  "Impact:": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/mastery-lab/assessment/page.tsx",
+      "type": "JsxText",
+      "line": 484
+    }
+  ],
+  "Mitigation:": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/mastery-lab/assessment/page.tsx",
+      "type": "JsxText",
+      "line": 490
+    }
+  ],
+  "Critical Focus Clauses": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/mastery-lab/assessment/page.tsx",
+      "type": "JsxText",
+      "line": 502
+    }
+  ],
+  "Strategic Learning Roadmap": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/mastery-lab/assessment/page.tsx",
+      "type": "JsxText",
+      "line": 516
+    },
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/mastery-lab/success-evaluation/page.tsx",
+      "type": "JsxText",
+      "line": 275
+    }
+  ],
+  "Priority": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/mastery-lab/assessment/page.tsx",
+      "type": "JsxText",
+      "line": 526
+    },
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/mastery-lab/success-evaluation/page.tsx",
+      "type": "JsxText",
+      "line": 286
+    }
+  ],
+  "Resources:": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/mastery-lab/assessment/page.tsx",
+      "type": "JsxText",
+      "line": 530
+    }
+  ],
+  "Action Item:": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/mastery-lab/assessment/page.tsx",
+      "type": "JsxText",
+      "line": 536
+    }
+  ],
+  "Mentor's Note": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/mastery-lab/assessment/page.tsx",
+      "type": "JsxText",
+      "line": 550
+    }
+  ],
+  "Question Review Breakdown": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/mastery-lab/assessment/page.tsx",
+      "type": "JsxText",
+      "line": 559
+    }
+  ],
+  "Evaluation Results": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/mastery-lab/success-evaluation/page.tsx",
+      "type": "JsxText",
+      "line": 154
+    }
+  ],
+  "Level": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/mastery-lab/success-evaluation/page.tsx",
+      "type": "JsxText",
+      "line": 161
+    }
+  ],
+  "Overall Competency": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/mastery-lab/success-evaluation/page.tsx",
+      "type": "JsxText",
+      "line": 173
+    }
+  ],
+  "Code:": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/mastery-lab/success-evaluation/page.tsx",
+      "type": "JsxText",
+      "line": 191
+    }
+  ],
+  "Competency Overview": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/mastery-lab/success-evaluation/page.tsx",
+      "type": "JsxText",
+      "line": 203
+    }
+  ],
+  "Performance Breakdown": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/mastery-lab/success-evaluation/page.tsx",
+      "type": "JsxText",
+      "line": 213
+    }
+  ],
+  "Core Strengths": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/mastery-lab/success-evaluation/page.tsx",
+      "type": "JsxText",
+      "line": 224
+    }
+  ],
+  "Strengths analysis pending...": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/mastery-lab/success-evaluation/page.tsx",
+      "type": "JsxText",
+      "line": 230
+    }
+  ],
+  "Critical Gaps": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/mastery-lab/success-evaluation/page.tsx",
+      "type": "JsxText",
+      "line": 234
+    }
+  ],
+  "Weakness analysis pending...": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/mastery-lab/success-evaluation/page.tsx",
+      "type": "JsxText",
+      "line": 240
+    }
+  ],
+  "Risk Exposure": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/mastery-lab/success-evaluation/page.tsx",
+      "type": "JsxText",
+      "line": 249
+    }
+  ],
+  "LEVEL": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/mastery-lab/success-evaluation/page.tsx",
+      "type": "JsxText",
+      "line": 251
+    }
+  ],
+  "Organizational Impact:": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/mastery-lab/success-evaluation/page.tsx",
+      "type": "JsxText",
+      "line": 256
+    }
+  ],
+  "Recommended Mitigation:": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/mastery-lab/success-evaluation/page.tsx",
+      "type": "JsxText",
+      "line": 262
+    }
+  ],
+  "Recommended Action:": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/mastery-lab/success-evaluation/page.tsx",
+      "type": "JsxText",
+      "line": 297
+    }
+  ],
+  "Explore Academy": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/mastery-lab/success-evaluation/page.tsx",
+      "type": "JsxText",
+      "line": 324
+    }
+  ],
+  "Retake Assessment": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/mastery-lab/success-evaluation/page.tsx",
+      "type": "JsxText",
+      "line": 330
+    }
+  ],
+  "No courses found for this category.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/academy/category/[categoryName]/page.tsx",
+      "type": "JsxText",
+      "line": 478
+    }
+  ],
+  "Loading standards...": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/library/iso-standards/category/[categoryId]/page.tsx",
+      "type": "JsxText",
+      "line": 182
+    }
+  ],
+  "Failed to load standards. Please try again later.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/library/iso-standards/category/[categoryId]/page.tsx",
+      "type": "JsxText",
+      "line": 186
+    }
+  ],
+  "No standards found in this category.": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/library/iso-standards/category/[categoryId]/page.tsx",
+      "type": "JsxText",
+      "line": 190
+    }
+  ],
+  "Search standards in this category...": [
+    {
+      "file": "C:/Sharif/scalafrodriguez-front_end/app/[lang]/library/iso-standards/category/[categoryId]/page.tsx",
+      "type": "JsxAttribute-placeholder",
+      "line": 167
+    }
+  ]
+}

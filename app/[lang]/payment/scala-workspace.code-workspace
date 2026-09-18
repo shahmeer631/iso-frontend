@@ -1,0 +1,13 @@
+{
+	"folders": [
+		{
+			"path": "../../.."
+		},
+		{
+			"path": "../../../../scalafrodriguez-dashboard"
+		},
+		{
+			"path": "../../../../scalafrodriguez-backend"
+		}
+	]
+}

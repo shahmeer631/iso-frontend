@@ -1,0 +1,14 @@
+services:
+  frontend:
+    image: scalafrodriguez-frontend
+    container_name: scalafrodriguez-frontend
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - "3011:3011"
+    env_file:
+      - .env
+    environment:
+      NODE_ENV: production

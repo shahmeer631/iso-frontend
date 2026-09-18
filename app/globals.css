@@ -1,0 +1,455 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@100;200;300;400;500;600;700;800&display=swap');
+
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@layer utilities {
+  .animate-marquee-left {
+    animation: marquee-left var(--duration, 40s) linear infinite;
+  }
+
+  .animate-marquee-right {
+    animation: marquee-right var(--duration, 40s) linear infinite;
+  }
+}
+
+@keyframes marquee-left {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes marquee-right {
+  from {
+    transform: translateX(-50%);
+  }
+
+  to {
+    transform: translateX(0);
+  }
+}
+
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: "Inter", sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+  --font-heading: "Space Grotesk", sans-serif;
+  --color-bg-primary: var(--bg-primary);
+  --color-bg-secondary: var(--bg-secondary);
+  --color-text-heading: var(--text-heading);
+  --color-text-body: var(--text-body);
+  --color-accent-gold: var(--accent-gold);
+  --color-accent-gold-hover: var(--accent-gold-hover);
+
+  /* Map standard tailwind cyan classes directly to premium gold accents */
+  --color-cyan-400: var(--accent-gold);
+  --color-cyan-500: var(--accent-gold);
+  --color-cyan-600: var(--accent-gold-hover);
+
+  /* Override standard Tailwind v4 font-size classes with brand responsive tokens */
+  --text-xs: 12px;
+  --text-sm: var(--font-size-small);
+  --text-base: var(--font-size-body);
+  --text-lg: var(--font-size-body);
+  --text-xl: var(--font-size-h3);
+  --text-2xl: var(--font-size-h3);
+  --text-3xl: var(--font-size-h2);
+  --text-4xl: var(--font-size-h2);
+  --text-5xl: var(--font-size-h1);
+  --text-6xl: var(--font-size-h1);
+
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 12px);
+  --radius-4xl: calc(var(--radius) + 16px);
+}
+
+:root {
+  /* Core Backgrounds */
+  --bg-primary: #FFFFFF;
+  /* Pure white for main content areas */
+  --bg-secondary: #F8F9FA;
+  /* Off-white for alternating layout sections */
+
+  /* Typography */
+  --text-heading: #0B1B3D;
+  /* Deep corporate blue for all H1, H2, H3 */
+  --text-body: #334155;
+  /* Slate gray for high-contrast, readable paragraphs */
+
+  /* Accents & Interactions */
+  --accent-gold: #3F3EED;
+  /* Primary CTA buttons, active states, and badges */
+  --accent-gold-hover: #2e2db8;
+
+  /* Typography Size tokens per specification */
+  --font-size-h1: 34px;
+  /* Mobile size: 32px – 36px */
+  --font-size-h2: 30px;
+  /* Mobile size: 28px – 32px */
+  --font-size-h3: 21px;
+  /* Mobile size: 20px – 22px */
+  --font-size-body: 16px;
+  /* Mobile body text minimum */
+  --font-size-small: 14px;
+  /* Mobile/Desktop small caption */
+
+  --radius: 0.625rem;
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: oklch(0.205 0 0);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.97 0 0);
+  --secondary-foreground: oklch(0.205 0 0);
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+  --accent: oklch(0.97 0 0);
+  --accent-foreground: oklch(0.205 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.922 0 0);
+  --input: oklch(0.922 0 0);
+  --ring: oklch(0.708 0 0);
+  --chart-1: oklch(0.646 0.222 41.116);
+  --chart-2: oklch(0.6 0.118 184.704);
+  --chart-3: oklch(0.398 0.07 227.392);
+  --chart-4: oklch(0.828 0.189 84.429);
+  --chart-5: oklch(0.769 0.188 70.08);
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: oklch(0.205 0 0);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.708 0 0);
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --font-size-h1: 52px;
+    /* Desktop midpoint: 48px – 56px */
+    --font-size-h2: 38px;
+    /* Desktop midpoint: 36px – 40px */
+    --font-size-h3: 26px;
+    /* Desktop midpoint: 24px – 28px */
+    --font-size-body: 17px;
+    /* Desktop body midpoint: 16px – 18px */
+  }
+}
+
+.dark {
+  /* Core Backgrounds adapted for dark mode premium feel */
+  --bg-primary: #0F111A;
+  --bg-secondary: #1E212B;
+
+  /* Typography adapted for dark mode premium legibility */
+  --text-heading: #FFFFFF;
+  --text-body: #A1A1A6;
+
+  /* Accents & Interactions stay premium gold */
+  --accent-gold: #3F3EED;
+  --accent-gold-hover: #2e2db8;
+
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.205 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.205 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.922 0 0);
+  --primary-foreground: oklch(0.205 0 0);
+  --secondary: oklch(0.269 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --accent: oklch(0.269 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.556 0 0);
+  --chart-1: oklch(0.488 0.243 264.376);
+  --chart-2: oklch(0.696 0.17 162.48);
+  --chart-3: oklch(0.769 0.188 70.08);
+  --chart-4: oklch(0.627 0.265 303.9);
+  --chart-5: oklch(0.645 0.246 16.439);
+  --sidebar: oklch(0.205 0 0);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.488 0.243 264.376);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.269 0 0);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: oklch(0.556 0 0);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: "Inter", sans-serif !important;
+    font-size: 16px;
+    /* Mobile Body Text minimum to prevent iOS zoom */
+    font-weight: 400;
+    line-height: 1.6;
+  }
+
+  /* Responsive Typography System per UX Specification */
+  h1,
+  .text-h1 {
+    font-family: "Space Grotesk", sans-serif !important;
+    font-weight: 700;
+    line-height: 1.2 !important;
+    letter-spacing: -0.02em !important;
+    font-size: 34px !important;
+    /* Mobile size: 32px – 36px */
+  }
+
+  h2,
+  .text-h2 {
+    font-family: "Space Grotesk", sans-serif !important;
+    font-weight: 600;
+    line-height: 1.25 !important;
+    letter-spacing: -0.02em !important;
+    font-size: 30px !important;
+    /* Mobile size: 28px – 32px */
+  }
+
+  h3,
+  .text-h3 {
+    font-family: "Space Grotesk", sans-serif !important;
+    font-weight: 500;
+    line-height: 1.3 !important;
+    letter-spacing: -0.02em !important;
+    font-size: 21px !important;
+    /* Mobile size: 20px – 22px */
+  }
+
+  p,
+  .text-body {
+    font-family: "Inter", sans-serif !important;
+    font-weight: 400 !important;
+    line-height: 1.6 !important;
+    font-size: 16px;
+    /* Mobile size: 16px minimum — no !important so Tailwind utilities can override */
+  }
+
+  small,
+  .text-caption,
+  .text-small {
+    font-family: "Inter", sans-serif !important;
+    font-weight: 400 !important;
+    line-height: 1.5 !important;
+    font-size: 14px !important;
+    /* Small/Caption: 14px */
+  }
+
+  /* Desktop Type Scale (min-width: 1024px) */
+  @media (min-width: 1024px) {
+    body {
+      font-size: 17px;
+      /* Desktop body midpoint: 16px – 18px */
+    }
+
+    h1,
+    .text-h1 {
+      font-size: 52px !important;
+      /* Desktop H1 midpoint: 48px – 56px */
+    }
+
+    h2,
+    .text-h2 {
+      font-size: 38px !important;
+      /* Desktop H2 midpoint: 36px – 40px */
+    }
+
+    h3,
+    .text-h3 {
+      font-size: 26px !important;
+      /* Desktop H3 midpoint: 24px – 28px */
+    }
+
+    p,
+    .text-body {
+      font-size: 17px;
+      /* Desktop body midpoint: 16px – 18px */
+    }
+
+    small,
+    .text-caption,
+    .text-small {
+      font-size: 14px !important;
+      /* Small/Caption: 14px */
+    }
+  }
+
+  h4,
+  h5,
+  h6 {
+    font-family: "Space Grotesk", sans-serif !important;
+    font-weight: 500;
+    letter-spacing: -0.02em !important;
+  }
+}
+
+/* Hide Google Translate completely - logic handled by custom component */
+.goog-te-banner-frame,
+iframe.goog-te-banner-frame,
+.goog-te-menu-frame,
+.goog-te-balloon-frame,
+#goog-te-balloon-absolute,
+#goog-gt-tt,
+.goog-te-menu-value span,
+.goog-te-gadget-icon,
+.goog-logo-link,
+.goog-te-gadget-simple,
+.goog-te-spinner-pos,
+.goog-te-gadget,
+.skiptranslate,
+iframe[name*="googtrans"],
+iframe[id*="googtrans"],
+#google_translate_element {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+/* Remove highlight/hover artifacts from Google Translate */
+.goog-text-highlight {
+  background: none !important;
+  background-color: transparent !important;
+  box-shadow: none !important;
+  color: inherit !important;
+}
+
+/* Prevent Google from wrapping text in fonts with background colors */
+font[style*="background-color"] {
+  background-color: transparent !important;
+}
+
+/* Fix body shift and positioning */
+body {
+  top: 0 !important;
+  position: static !important;
+}
+
+/* Prevent Google from adding styles to body */
+body[style*="top:"] {
+  top: 0 !important;
+}
+
+/* Remove Google Translate's auto-generated highlight */
+.goog-text-highlight {
+  background: none !important;
+  box-shadow: none !important;
+}
+
+/* Custom Thin Scrollbar Utility */
+@layer utilities {
+  .custom-thin-scrollbar::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;
+  }
+
+  .custom-thin-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .custom-thin-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(99, 102, 241, 0.2);
+    border-radius: 10px;
+  }
+
+  .custom-thin-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: rgba(99, 102, 241, 0.4);
+  }
+
+  /* Always-visible horizontal scrollbar for tables on mobile */
+  .scrollable-table {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .scrollable-table::-webkit-scrollbar {
+    height: 8px;
+  }
+
+  .scrollable-table::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 4px;
+  }
+
+  .scrollable-table::-webkit-scrollbar-thumb {
+    background: rgba(0, 240, 255, 0.4);
+    border-radius: 4px;
+  }
+
+  .scrollable-table::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 240, 255, 0.6);
+  }
+}
+
+.space-grotesk {
+  font-family: "Space Grotesk", sans-serif;
+  font-optical-sizing: auto;
+  font-style: normal;
+}
+
+.font-inter {
+  font-family: "Inter", sans-serif;
+}
+
+/* .font-inter correctly maps to Inter above — duplicate removed */
+
+.font-jetbrains-mono {
+  font-family: "JetBrains Mono", monospace;
+}
