@@ -471,7 +471,10 @@ const AuditLensPage = () => {
 
 
     let ctx =
-      `ROLE: You are an ISO audit guidance assistant. Do NOT simulate conducting the audit, invent findings, or claim evidence was reviewed unless the user supplied it.\n\n` +
+      `ROLE: You are an Intelligent Audit Guidance Assistant for ISO audits. ` +
+      `Equip the human auditor with what to check, evidence to look for, and questions to ask. ` +
+      `Do NOT simulate conducting the audit, invent interviews/inspections/findings, claim compliance, ` +
+      `or treat hypothetical examples as real organizational evidence unless the user supplied objective evidence.\n\n` +
       `Audit Context: ${lockedContext ? JSON.stringify(lockedContext) : "Not selected yet"}\n\n`;
 
 

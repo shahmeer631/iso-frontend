@@ -2,6 +2,8 @@
 
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { useTranslation } from "react-i18next";
+import { CopyControl } from "@/components/AIAssistant/CopyControl";
 
 function cleanMarkdown(raw: string) {
   let content = raw || "";
@@ -79,30 +81,54 @@ type Props = {
   emptyMessage?: string;
 };
 
-function Section({ title, body }: { title: string; body?: string }) {
+function Section({
+  title,
+  body,
+  copyLabel,
+}: {
+  title: string;
+  body?: string;
+  copyLabel: string;
+}) {
   if (!body || !String(body).trim()) return null;
+  const text = cleanMarkdown(String(body));
   return (
     <section>
-      <h2 className="text-xl md:text-2xl font-black text-[#F8F9FA] mb-4 pb-2 border-b border-[#1E293B]">
-        {title}
-      </h2>
+      <div className="mb-4 flex items-start justify-between gap-3 pb-2 border-b border-[#1E293B]">
+        <h2 className="min-w-0 text-xl md:text-2xl font-black text-[#F8F9FA]">{title}</h2>
+        <CopyControl text={text} label={copyLabel} />
+      </div>
       <div className="prose prose-invert max-w-none">
         <ReactMarkdown remarkPlugins={[remarkGfm]} components={mdComponents}>
-          {cleanMarkdown(String(body))}
+          {text}
         </ReactMarkdown>
       </div>
     </section>
   );
 }
 
-function SubSection({ title, body }: { title: string; body?: string }) {
+function SubSection({
+  title,
+  body,
+  copyLabel,
+}: {
+  title: string;
+  body?: string;
+  copyLabel: string;
+}) {
   if (!body || !String(body).trim()) return null;
+  const text = cleanMarkdown(String(body));
   return (
-    <div className="mb-6">
-      <h3 className="text-lg font-bold text-[#F8F9FA] mt-4 mb-2">{title}</h3>
+    <div className="mb-6 rounded-2xl border border-[#1E293B] bg-[#111827] px-4 py-4 sm:px-5 sm:py-5 shadow-[0_4px_20px_-2px_rgba(0,0,0,0.12)]">
+      <div className="mb-3 flex items-start justify-between gap-3">
+        <h3 className="min-w-0 text-[14px] font-semibold leading-[1.4] text-[#F1F5F9]">
+          {title}
+        </h3>
+        <CopyControl text={text} label={copyLabel} />
+      </div>
       <div className="prose prose-invert max-w-none">
         <ReactMarkdown remarkPlugins={[remarkGfm]} components={mdComponents}>
-          {cleanMarkdown(String(body))}
+          {text}
         </ReactMarkdown>
       </div>
     </div>
@@ -110,6 +136,8 @@ function SubSection({ title, body }: { title: string; body?: string }) {
 }
 
 export default function AuditStepGuidanceView({ data, emptyMessage }: Props) {
+  const { t } = useTranslation();
+  const copyLabel = t("auditLens.copyClipboard") || t("isoNavigator.copyClipboard") || "Copy";
   const guidance = cleanMarkdown(data.guidance || "");
 
   const hasDiscreteParts =
@@ -147,8 +175,9 @@ export default function AuditStepGuidanceView({ data, emptyMessage }: Props) {
       preview.slice(0, Math.min(80, preview.length)),
     );
 
-  // Prefer discrete What/When/Why fields when present; else auditor_guidance blob
   const showDiscreteGuidance = hasDiscreteParts;
+
+  const auditorGuidanceBlob = cleanMarkdown(String(data.auditor_guidance || ""));
 
   return (
     <div className="space-y-10">
@@ -156,44 +185,73 @@ export default function AuditStepGuidanceView({ data, emptyMessage }: Props) {
         <>
           {(showDiscreteGuidance || data.auditor_guidance) && (
             <section>
-              <h2 className="text-xl md:text-2xl font-black text-[#F8F9FA] mb-4 pb-2 border-b border-[#1E293B]">
-                1. Auditor Guidance
-              </h2>
+              <div className="mb-4 flex items-start justify-between gap-3 pb-2 border-b border-[#1E293B]">
+                <h2 className="min-w-0 text-xl md:text-2xl font-black text-[#F8F9FA]">
+                  A. Auditor Guidance
+                </h2>
+                {!showDiscreteGuidance && auditorGuidanceBlob ? (
+                  <CopyControl text={auditorGuidanceBlob} label={copyLabel} />
+                ) : null}
+              </div>
               {showDiscreteGuidance ? (
                 <>
-                  <SubSection title="What to Do" body={data.what_to_do} />
-                  <SubSection title="When to Do It" body={data.when_to_do_it} />
-                  <SubSection title="Why It Is Necessary" body={data.why_it_is_necessary} />
+                  <SubSection title="What to Do" body={data.what_to_do} copyLabel={copyLabel} />
+                  <SubSection title="When to Do It" body={data.when_to_do_it} copyLabel={copyLabel} />
+                  <SubSection
+                    title="Why It Is Necessary"
+                    body={data.why_it_is_necessary}
+                    copyLabel={copyLabel}
+                  />
                   <SubSection
                     title="Specification / Requirement to Check"
                     body={data.specification_to_check}
+                    copyLabel={copyLabel}
                   />
-                  <SubSection title="Evidence to Look For" body={data.evidence_to_look_for} />
-                  <SubSection title="Audit Questions / Checkpoints" body={data.audit_questions} />
+                  <SubSection
+                    title="Evidence to Look For"
+                    body={data.evidence_to_look_for}
+                    copyLabel={copyLabel}
+                  />
+                  <SubSection
+                    title="Audit Questions / Checkpoints"
+                    body={data.audit_questions}
+                    copyLabel={copyLabel}
+                  />
                 </>
               ) : (
                 <div className="prose prose-invert max-w-none">
                   <ReactMarkdown remarkPlugins={[remarkGfm]} components={mdComponents}>
-                    {cleanMarkdown(String(data.auditor_guidance))}
+                    {auditorGuidanceBlob}
                   </ReactMarkdown>
                 </div>
               )}
             </section>
           )}
 
-          <Section title="2. Audit Paper / Document" body={data.audit_paper} />
           <Section
-            title="3. Documented Information Template"
-            body={data.documented_information_template}
+            title="B. Audit Work Paper / Audit Document"
+            body={data.audit_paper}
+            copyLabel={copyLabel}
           />
-          <Section title="4. Demonstrated Case Study" body={data.case_study} />
+          <Section
+            title="C. Documented Information Template"
+            body={data.documented_information_template}
+            copyLabel={copyLabel}
+          />
+          <Section
+            title="D. Demonstrated Case Study — Hypothetical Example"
+            body={data.case_study}
+            copyLabel={copyLabel}
+          />
 
-          {/* Only dump full guidance if we lack the major structured pieces */}
           {guidance.length > 120 &&
             !data.auditor_guidance &&
             !showDiscreteGuidance &&
             !(data.audit_paper && data.case_study) && (
               <div className="prose prose-invert max-w-none border-t border-[#1E293B] pt-8">
+                <div className="mb-4 flex justify-end">
+                  <CopyControl text={guidance} label={copyLabel} />
+                </div>
                 <ReactMarkdown remarkPlugins={[remarkGfm]} components={mdComponents}>
                   {guidance}
                 </ReactMarkdown>
@@ -202,6 +260,9 @@ export default function AuditStepGuidanceView({ data, emptyMessage }: Props) {
         </>
       ) : (
         <div className="prose prose-invert max-w-none">
+          <div className="mb-4 flex justify-end">
+            <CopyControl text={guidance} label={copyLabel} />
+          </div>
           <ReactMarkdown remarkPlugins={[remarkGfm]} components={mdComponents}>
             {guidance}
           </ReactMarkdown>
@@ -210,9 +271,12 @@ export default function AuditStepGuidanceView({ data, emptyMessage }: Props) {
 
       {showPreview && (
         <div className="mt-4 border-t border-[#1E293B] pt-10">
-          <h3 className="text-xl font-black text-[#F8F9FA] uppercase tracking-widest mb-6">
-            Audit Paper / Template Preview
-          </h3>
+          <div className="mb-6 flex items-start justify-between gap-3">
+            <h3 className="min-w-0 text-xl font-black text-[#F8F9FA] uppercase tracking-widest">
+              Audit Paper / Template Preview
+            </h3>
+            <CopyControl text={cleanMarkdown(preview)} label={copyLabel} />
+          </div>
           <div className="bg-[#131B2D] p-6 md:p-8 rounded-2xl border border-[#1E293B] overflow-x-auto">
             <div className="prose prose-invert max-w-none">
               <ReactMarkdown remarkPlugins={[remarkGfm]} components={mdComponents}>

@@ -1,10 +1,10 @@
 "use client";
 
-import React, { isValidElement, Children, createContext, useContext, useState } from "react";
+import React, { isValidElement, Children, createContext, useContext } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { Copy, Check } from "lucide-react";
 import { GeneratedDocumentData } from "@/types/iso-navigator";
+import { CopyControl } from "@/components/AIAssistant/CopyControl";
 
 function cleanMarkdown(raw: string) {
   let content = raw || "";
@@ -832,26 +832,6 @@ function MarkdownBody({
         })}
       </div>
     </ChecklistMode.Provider>
-  );
-}
-
-function CopyControl({ text, label }: { text: string; label: string }) {
-  const [copied, setCopied] = useState(false);
-  if (!text?.trim()) return null;
-  return (
-    <button
-      type="button"
-      onClick={async () => {
-        await navigator.clipboard.writeText(text);
-        setCopied(true);
-        window.setTimeout(() => setCopied(false), 1600);
-      }}
-      className="inline-flex items-center gap-1 rounded-lg border border-[#1E293B] bg-[#0F172A]/80 backdrop-blur-[8px] px-2 py-1 text-[11px] font-medium text-[#94A3B8] hover:text-[#F8FAFC] hover:border-[#3B82F6]/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3B82F6]"
-      aria-label={label}
-    >
-      {copied ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
-      {copied ? "Copied" : label}
-    </button>
   );
 }
 
