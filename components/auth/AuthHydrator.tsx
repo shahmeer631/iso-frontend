@@ -82,8 +82,11 @@ export const AuthHydrator = ({ children }: { children: React.ReactNode }) => {
       const token = tokenMatch ? tokenMatch[2] : "";
       const refreshToken = refreshMatch ? refreshMatch[2] : null;
       
-      const purchasedPlanIds = userData.purchasedPlanIds || 
-        (userData.planId || userData.activePlanId || userData.plan?.id || userData.plan?._id ? [userData.planId || userData.activePlanId || userData.plan?.id || userData.plan?._id] : []);
+      const purchasedPlanIds = Array.isArray(userData.purchasedPlanIds)
+        ? userData.purchasedPlanIds
+        : (userData.planId || userData.activePlanId || userData.plan?.id || userData.plan?._id
+            ? [userData.planId || userData.activePlanId || userData.plan?.id || userData.plan?._id]
+            : []);
       
       console.log("AuthHydrator Sync Effect - Dispatching purchasedPlanIds:", purchasedPlanIds);
 
@@ -99,7 +102,11 @@ export const AuthHydrator = ({ children }: { children: React.ReactNode }) => {
             currentPlan: userData.currentPlan,
             subscribed: userData.subscribed,
             stripeCustomerId: userData.stripeCustomerId,
-            hasSubscriptionHistory: userData.hasSubscriptionHistory
+            hasSubscriptionHistory: userData.hasSubscriptionHistory,
+            features: userData.features || userData.effectiveAccess?.features || [],
+            effectivePlans: userData.effectivePlans || userData.effectiveAccess?.effectivePlans || [],
+            groupPlans: userData.groupPlans || userData.effectiveAccess?.groupPlans || [],
+            subscriptionPlans: userData.subscriptionPlans || userData.effectiveAccess?.subscriptionPlans || [],
           },
           token: token,
           refreshToken: refreshToken,

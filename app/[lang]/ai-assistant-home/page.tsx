@@ -24,6 +24,7 @@ import { selectCurrentUser, selectCurrentToken } from "@/lib/redux/features/auth
 import { toast } from "sonner";
 import OfferTimer from "@/components/landing-page-components/OfferTimer";
 import { Loader2 } from "lucide-react";
+import { userHasFeature, userOwnsPlanId } from "@/lib/access/effectiveAccess";
 
 import { useTranslation } from "react-i18next";
 import i18n from "@/lib/i18n/client";
@@ -163,7 +164,9 @@ const AIAssistantHome = () => {
 
   const plans = response?.data || [];
   const plan = plans.find(p => p.name?.toLowerCase().includes("ultra") || p.name?.toLowerCase().includes("enterprise")) || plans[2];
-  const isPurchased = user?.purchasedPlanIds?.some(id => id === plan?.id || id === plan?._id);
+  // Subscription purchase OR User Group grant (Ultra via AI_ASSISTANT feature)
+  const isPurchased =
+    userOwnsPlanId(user, plan?.id || plan?._id) || userHasFeature(user, "AI_ASSISTANT");
 
   const handlePlanSelect = async (selectedPlan: Plan) => {
     if (isPurchased) {

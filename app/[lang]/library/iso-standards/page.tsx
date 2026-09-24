@@ -17,6 +17,7 @@ import { useCreatePaymentIntentMutation } from "@/lib/redux/features/payments/pa
 import { selectCurrentUser, selectCurrentToken } from "@/lib/redux/features/auth/authSlice";
 import { toast } from "sonner";
 import OfferTimer from "@/components/landing-page-components/OfferTimer";
+import { userHasFeature, userOwnsPlanId } from "@/lib/access/effectiveAccess";
 
 const decodeJwt = (token: string) => {
   try {
@@ -114,7 +115,9 @@ const Page = () => {
 
   const plans = response?.data || [];
   const plan = plans.find(p => p.name?.toLowerCase().includes("plus")) || plans[1];
-  const isPurchased = user?.purchasedPlanIds?.some(id => id === plan?.id || id === plan?._id);
+  // Subscription purchase OR User Group grant (Plus+ via LIBRARY feature)
+  const isPurchased =
+    userOwnsPlanId(user, plan?.id || plan?._id) || userHasFeature(user, "LIBRARY");
 
   const handlePlanSelect = async (selectedPlan: Plan) => {
     if (isPurchased) {

@@ -12,6 +12,12 @@ interface User {
   subscribed?: string;
   stripeCustomerId?: string | null;
   hasSubscriptionHistory?: boolean;
+  /** Feature flags from subscription ∪ user groups */
+  features?: string[];
+  /** PLUS | PRO | ULTRA from subscription ∪ groups */
+  effectivePlans?: string[];
+  groupPlans?: string[];
+  subscriptionPlans?: string[];
 }
 
 interface AuthState {

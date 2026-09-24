@@ -22,6 +22,7 @@ import { useCreatePaymentIntentMutation } from "@/lib/redux/features/payments/pa
 import { selectCurrentUser, selectCurrentToken } from "@/lib/redux/features/auth/authSlice";
 import { toast } from "sonner";
 import OfferTimer from "@/components/landing-page-components/OfferTimer";
+import { userHasFeature, userOwnsPlanId } from "@/lib/access/effectiveAccess";
 
 import { useTranslation } from "react-i18next";
 import i18n from "@/lib/i18n/client";
@@ -133,7 +134,9 @@ const AcademyPage = () => {
 
   const plans = response?.data || [];
   const plan = plans.find(p => p.name?.toLowerCase().includes("pro")) || plans.find(p => p.name?.toLowerCase().includes("plus")) || plans[1];
-  const isPurchased = user?.purchasedPlanIds?.some(id => id === plan?.id || id === plan?._id);
+  // Subscription purchase OR User Group grant (Pro+ via COURSES feature)
+  const isPurchased =
+    userOwnsPlanId(user, plan?.id || plan?._id) || userHasFeature(user, "COURSES");
 
   const handlePlanSelect = async (selectedPlan: Plan) => {
     if (isPurchased) {

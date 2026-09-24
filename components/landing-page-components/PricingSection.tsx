@@ -12,6 +12,11 @@ import { selectCurrentUser, selectCurrentToken } from "@/lib/redux/features/auth
 import PricingCardButton from "./PricingCardButton";
 import { useRouter, useSearchParams, useParams } from "next/navigation";
 import { toast } from "sonner";
+import {
+  userHasAnyPaidAccess,
+  userOwnsPlanId,
+  userHasPlanTier,
+} from "@/lib/access/effectiveAccess";
 
 // Helper to decode JWT token to get user info if Redux user is missing
 const decodeJwt = (token: string) => {
@@ -52,8 +57,8 @@ const PricingSection = () => {
   const plans = response?.data || [];
 
   // Upgrade subscription start
-
-  const hasPurchasedAnyPlan = !!user?.planId && user?.currentPlan !== 'FREE' && user?.subscribed !== 'FREE_USER';
+  // Includes User Group grants (cash/offline) — not only Stripe subscriptions
+  const hasPurchasedAnyPlan = userHasAnyPaidAccess(user);
 
   // Upgrade subscription end
 
@@ -299,7 +304,16 @@ const PricingSection = () => {
             const displayPrice = plan.discountedPrice;
             const period = plan.validityDays ? ` / ${plan.validityDays} ${t('pricingPage.days')}` : "";
 
-            const isPurchased = (user?.planId === plan.id || user?.planId === plan._id) && user?.currentPlan !== 'FREE' && user?.subscribed !== 'FREE_USER';
+            const planKey = plan.name?.toLowerCase().includes("ultra")
+              ? "ULTRA"
+              : plan.name?.toLowerCase().includes("pro")
+                ? "PRO"
+                : plan.name?.toLowerCase().includes("plus")
+                  ? "PLUS"
+                  : null;
+            const isPurchased =
+              userOwnsPlanId(user, plan.id || plan._id) ||
+              (!!planKey && userHasPlanTier(user, planKey));
             // CHANGE: Custom button texts & microcopy variables mapped for each plan
             let displayButtonText = "";
             let microcopyText = "";
