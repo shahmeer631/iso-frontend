@@ -1818,7 +1818,7 @@ const AuditLensPage = () => {
 
 
 
-            <div className="flex-1 overflow-y-auto bg-[#0A0F1C] p-5 md:p-8 lg:p-12 custom-thin-scrollbar">
+            <div className="flex-1 overflow-y-auto bg-[#0F172A] p-5 md:p-8 lg:p-12 custom-thin-scrollbar">
 
 
 
