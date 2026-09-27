@@ -72,8 +72,9 @@ export interface Course {
   };
   isoStandard?: {
     id: string;
-    name: string;
-    code: string;
+    title?: string;
+    name?: string;
+    code?: string;
   };
 }
 
@@ -150,7 +151,7 @@ export const academyApi = baseApi.injectEndpoints({
       }),
       providesTags: ['Courses'],
     }),
-    academyChatBot: builder.mutation<any, any>({
+    academyChatBot: builder.mutation<any, FormData | Record<string, unknown>>({
       query: (body) => ({
         url: '/ai-assistant/chat',
         method: 'POST',

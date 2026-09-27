@@ -95,8 +95,10 @@ export default function AcademyCoursePage({
   const [quizSubmitted, setQuizSubmitted] = React.useState(false);
   const [currentQuestionIndex, setCurrentQuestionIndex] = React.useState(0);
   const [aiQuestion, setAiQuestion] = React.useState("");
-  const [aiMessages, setAiMessages] = React.useState<{ role: "user" | "ai"; text: string; followups?: string[] }[]>([]);
-  const [chatSessionId] = React.useState(() => `session_${Date.now()}`);
+  const [aiMessages, setAiMessages] = React.useState<
+    { role: "user" | "ai"; text: string; followups?: string[]; sources?: string[] }[]
+  >([]);
+  const [chatSessionId, setChatSessionId] = React.useState<string | null>(null);
   const chatEndRef = React.useRef<HTMLDivElement>(null);
   const chatContainerRef = React.useRef<HTMLDivElement>(null);
   const isUserScrolledUp = React.useRef(false);
@@ -106,6 +108,12 @@ export default function AcademyCoursePage({
   const [isNoteOpen, setIsNoteOpen] = React.useState(false);
   const [noteContent, setNoteContent] = React.useState("");
   const [savedNotes, setSavedNotes] = React.useState<{ content: string; createdAt: string }[]>([]);
+
+  // Reset Ask AI session when switching courses (keep history within a course for follow-ups)
+  React.useEffect(() => {
+    setChatSessionId(null);
+    setAiMessages([]);
+  }, [courseId]);
 
   // Access verification
   React.useEffect(() => {
@@ -261,19 +269,60 @@ export default function AcademyCoursePage({
     setTimeout(() => scrollToBottom(true), 50);
 
     try {
-      const response = await sendAiChat({
-        question: userText,
-        courseId: courseData?.data?.isoStandard?.id,
-        sessionId: chatSessionId,
-      }).unwrap();
+      // Align with Library chat contract: messages + context + session_id
+      // Backend enriches course/lesson grounding and attaches the linked ISO file.
+      const formData = new FormData();
+      formData.append("messages", userText);
+      formData.append(
+        "context",
+        JSON.stringify({
+          purpose: "course_learning",
+          courseId: course?.id || courseId || undefined,
+          lessonId: currentLesson?.id || undefined,
+          isoStandardId: course?.isoStandard?.id || undefined,
+          courseTitle: course?.title || undefined,
+          lessonTitle: currentLesson?.title || undefined,
+        }),
+      );
+      if (chatSessionId) {
+        formData.append("session_id", chatSessionId);
+      }
 
-      const aiText = response?.data?.answer || "I could not generate an answer at this time.";
-      setAiMessages((prev) => [...prev, { role: "ai", text: aiText }]);
-      setTimeout(() => scrollToBottom(true), 100);
-    } catch {
+      const response = await sendAiChat(formData as any).unwrap();
+
+      if (response?.data?.session_id && response.data.session_id !== chatSessionId) {
+        setChatSessionId(response.data.session_id);
+      }
+
+      const aiText = (
+        response?.data?.response ||
+        response?.data?.answer ||
+        ""
+      ).trim();
+      const followups = response?.data?.suggested_followups;
+      const sources = response?.data?.sources;
       setAiMessages((prev) => [
         ...prev,
-        { role: "ai", text: "Encountered a connection error. Please verify your query and retry." },
+        {
+          role: "ai",
+          text:
+            aiText ||
+            "I couldn't find enough information in the current course material or connected knowledge sources to answer that confidently.",
+          followups: Array.isArray(followups) ? followups.slice(0, 4) : undefined,
+          sources: Array.isArray(sources)
+            ? sources.filter((s: unknown) => typeof s === "string" && s.trim()).slice(0, 6)
+            : undefined,
+        },
+      ]);
+      setTimeout(() => scrollToBottom(true), 100);
+    } catch (err: any) {
+      const serverMsg =
+        err?.data?.message ||
+        err?.error ||
+        "Encountered a connection error. Please verify your query and retry.";
+      setAiMessages((prev) => [
+        ...prev,
+        { role: "ai", text: serverMsg },
       ]);
     }
   };
@@ -653,6 +702,30 @@ export default function AcademyCoursePage({
                             ) : (
                               m.text
                             )}
+                            {m.role === "ai" && m.sources && m.sources.length > 0 && (
+                              <div className="mt-3 pt-2 border-t border-white/5">
+                                <p className="text-[10px] font-bold text-[#6B7280] uppercase tracking-widest mb-1.5">Sources</p>
+                                <ul className="space-y-1">
+                                  {m.sources.map((s, si) => (
+                                    <li key={si} className="text-[10px] text-[#A0AAB2] leading-snug">• {s}</li>
+                                  ))}
+                                </ul>
+                              </div>
+                            )}
+                            {m.role === "ai" && m.followups && m.followups.length > 0 && i === aiMessages.length - 1 && !isChatLoading && (
+                              <div className="mt-3 flex flex-wrap gap-1.5">
+                                {m.followups.map((f) => (
+                                  <button
+                                    key={f}
+                                    type="button"
+                                    onClick={() => setAiQuestion(f)}
+                                    className="text-[10px] font-bold px-2.5 py-1 rounded-lg border border-white/10 text-[#A0AAB2] hover:text-white hover:border-brand-cyan/40 hover:bg-brand-cyan/10 transition-all text-left"
+                                  >
+                                    {f}
+                                  </button>
+                                ))}
+                              </div>
+                            )}
                           </div>
                         </div>
                       ))}
@@ -671,24 +744,28 @@ export default function AcademyCoursePage({
                 </div>
 
                 {/* Chat Input */}
-                <div className="p-3.5 border-t border-white/5 bg-[#161B22] flex gap-2 shrink-0">
-                  <input
-                    type="text"
-                    value={aiQuestion}
-                    onChange={(e) => setAiQuestion(e.target.value)}
-                    onKeyDown={(e) => e.key === "Enter" && !isChatLoading && handleSendAi()}
-                    disabled={isChatLoading}
-                    placeholder={t('academy.coursePlayer.queryAIArchitect')}
-                    className="min-w-0 flex-1 rounded-xl border border-white/10 bg-[#0B0F19] px-4 py-2.5 text-xs md:text-sm text-white placeholder:text-[#4B5563] focus:border-brand-cyan/50 focus:outline-none transition-all"
-                  />
-                  <button
-                    type="button"
-                    onClick={handleSendAi}
-                    disabled={!aiQuestion.trim() || isChatLoading}
-                    className="flex shrink-0 items-center justify-center rounded-xl bg-brand-cyan text-[#0F111A] px-3.5 py-2.5 hover:opacity-90 transition-all disabled:opacity-20"
-                  >
-                    <Send className="h-4 w-4" />
-                  </button>
+                <div className="p-3.5 border-t border-white/5 bg-[#161B22] shrink-0">
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="text"
+                      value={aiQuestion}
+                      onChange={(e) => setAiQuestion(e.target.value)}
+                      onKeyDown={(e) => e.key === "Enter" && !isChatLoading && handleSendAi()}
+                      disabled={isChatLoading}
+                      placeholder={t('academy.coursePlayer.queryAIArchitect')}
+                      className="min-w-0 flex-1 rounded-xl border border-white/10 bg-[#0B0F19] px-4 py-2.5 text-xs md:text-sm text-white placeholder:text-[#4B5563] focus:border-[#00F0FF]/50 focus:outline-none transition-all disabled:opacity-60"
+                    />
+                    <button
+                      type="button"
+                      onClick={handleSendAi}
+                      disabled={!aiQuestion.trim() || isChatLoading}
+                      aria-label="Send message"
+                      title="Send"
+                      className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-[#00F0FF]/30 bg-[#00F0FF] text-[#0F111A] shadow-[0_0_12px_rgba(0,240,255,0.35)] hover:brightness-110 transition-all disabled:opacity-100 disabled:brightness-75 disabled:cursor-not-allowed"
+                    >
+                      <Send className="h-4 w-4 stroke-[2.5]" aria-hidden />
+                    </button>
+                  </div>
                 </div>
               </div>
 

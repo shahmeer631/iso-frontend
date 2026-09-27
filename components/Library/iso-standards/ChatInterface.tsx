@@ -372,7 +372,7 @@ const InitialChatView = ({ title, summary, code, category, standardId, onActionC
       try {
         const formData = new FormData();
         formData.append("messages", "Can you Give 5 1 liner followup question. Max 10 words standard");
-        formData.append("context", JSON.stringify({ isoStandardId: standardId }));
+        formData.append("context", JSON.stringify({ purpose: "library_standards", isoStandardId: standardId }));
 
         const result = await chatWithISOStandards(formData as any).unwrap();
 
@@ -963,7 +963,7 @@ const ChatInterface = ({ id }: { id: string }) => {
 
     try {
       const formData = new FormData();
-      formData.append("context", JSON.stringify({ isoStandardId: standardId }));
+      formData.append("context", JSON.stringify({ purpose: "library_standards", isoStandardId: standardId }));
       formData.append("num_cards", "12");
       formData.append("difficulty", "intermediate");
       if (sessionId) {
@@ -1188,7 +1188,7 @@ const ChatInterface = ({ id }: { id: string }) => {
     try {
       const formData = new FormData();
       formData.append("messages", messageText);
-      formData.append("context", JSON.stringify({ isoStandardId: standardId }));
+      formData.append("context", JSON.stringify({ purpose: "library_standards", isoStandardId: standardId }));
 
       if (sessionId) {
         formData.append("session_id", sessionId);
