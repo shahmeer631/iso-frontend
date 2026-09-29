@@ -68,6 +68,9 @@ export interface GeneratedDocumentData {
     document_taxonomy?: string;
     iso_standard?: string;
     grounded_standard?: string;
+    ims_guide_title?: string;
+    ims_guide_available?: boolean;
+    missing_editions?: string[];
   };
   iso_clauses_referenced: string[];
   generation_timestamp: string;

@@ -187,8 +187,8 @@ function MdUl({ className, ...props }: any) {
     <ul
       className={mergeClass(
         task
-          ? "list-none pl-0 mb-4 space-y-2 max-w-[768px]"
-          : "list-disc pl-5 mb-4 space-y-1.5 text-[14px] leading-[1.6] text-[#CBD5E1] max-w-[768px]",
+          ? "list-none pl-0 mb-4 space-y-2 max-w-5xl"
+          : "list-disc pl-5 mb-4 space-y-1.5 text-[14px] leading-[1.6] text-[#CBD5E1] max-w-5xl",
         className,
       )}
       {...props}
@@ -202,8 +202,8 @@ function MdOl({ className, ...props }: any) {
     <ol
       className={mergeClass(
         checklist
-          ? "list-none pl-0 mb-4 space-y-2 max-w-[768px]"
-          : "list-decimal pl-5 mb-4 space-y-1.5 text-[14px] leading-[1.6] text-[#CBD5E1] max-w-[768px]",
+          ? "list-none pl-0 mb-4 space-y-2 max-w-5xl"
+          : "list-decimal pl-5 mb-4 space-y-1.5 text-[14px] leading-[1.6] text-[#CBD5E1] max-w-5xl",
         className,
       )}
       {...props}
@@ -283,7 +283,7 @@ const mdComponents = {
   h1: ({ className, children, ...props }: any) => (
     <h1
       className={mergeClass(
-        "text-[20px] font-semibold leading-[1.3] tracking-[-0.01em] text-[#F1F5F9] mb-4 max-w-[768px]",
+        "text-[22px] md:text-[24px] font-semibold leading-[1.25] tracking-[-0.015em] text-[#F1F5F9] mb-4 max-w-5xl",
         className,
       )}
       {...props}
@@ -294,7 +294,7 @@ const mdComponents = {
   h2: ({ className, children, ...props }: any) => (
     <h2
       className={mergeClass(
-        "text-[16px] font-semibold leading-[1.4] tracking-[-0.005em] text-[#F1F5F9] mt-2 mb-3",
+        "text-[18px] md:text-[20px] font-semibold leading-[1.3] tracking-[-0.01em] text-[#F1F5F9] mt-5 mb-3",
         className,
       )}
       {...props}
@@ -305,7 +305,7 @@ const mdComponents = {
   h3: ({ className, children, ...props }: any) => (
     <h3
       className={mergeClass(
-        "text-[14px] font-semibold leading-[1.4] text-[#E2E8F0] mt-4 mb-2",
+        "text-[15px] md:text-[16px] font-semibold leading-[1.35] text-[#E2E8F0] mt-4 mb-2",
         className,
       )}
       {...props}
@@ -316,7 +316,7 @@ const mdComponents = {
   p: ({ className, children, ...props }: any) => (
     <p
       className={mergeClass(
-        "text-[14px] font-normal leading-[1.6] text-[#CBD5E1] mb-3 max-w-[768px]",
+        "text-[14px] md:text-[15px] font-normal leading-[1.65] text-[#CBD5E1] mb-3 max-w-5xl",
         className,
       )}
       {...props}
@@ -337,7 +337,7 @@ const mdComponents = {
   blockquote: ({ className, children, ...props }: any) => (
     <blockquote
       className={mergeClass(
-        "max-w-[768px] my-4 border-l-2 border-[#3B82F6]/50 bg-[#0B1220] rounded-r-xl px-4 py-3 text-[14px] leading-[1.6] text-[#CBD5E1]",
+        "max-w-5xl my-4 border-l-2 border-[#3B82F6]/50 bg-[#0B1220] rounded-r-xl px-4 py-3 text-[14px] leading-[1.6] text-[#CBD5E1]",
         className,
       )}
       {...props}
@@ -391,7 +391,7 @@ const mdComponents = {
   table: ({ className, ...props }: any) => (
     <div className="w-full overflow-x-auto my-4 rounded-xl border border-[#1E293B] bg-[#0B1220]">
       <table
-        className={mergeClass("w-full min-w-[520px] border-collapse text-left", className)}
+        className={mergeClass("w-full min-w-[280px] sm:min-w-[420px] border-collapse text-left", className)}
         {...props}
       />
     </div>
@@ -759,7 +759,7 @@ function NativeTable({
   const paddedHeaders = [...headers, ...Array(Math.max(0, colCount - headers.length)).fill("")];
   return (
     <div className="navigator-output-table w-full overflow-x-auto my-4 rounded-xl border border-[#1E293B] bg-[#0B1220]">
-      <table className="w-full min-w-[520px] border-collapse text-left" style={{ color: "#E2E8F0" }}>
+      <table className="w-full min-w-[280px] sm:min-w-[420px] border-collapse text-left" style={{ color: "#E2E8F0" }}>
         <thead className="bg-[#0F172A]/90 sticky top-0 backdrop-blur-[8px]">
           <tr>
             {paddedHeaders.map((header, idx) => (
@@ -863,8 +863,8 @@ function OutputCard({
             <h3
               className={`min-w-0 ${
                 summary
-                  ? "text-[14px] font-semibold leading-[1.4] text-[#BFDBFE]"
-                  : "text-[14px] font-semibold leading-[1.4] text-[#F1F5F9]"
+                  ? "text-[15px] md:text-[16px] font-semibold leading-[1.35] text-[#BFDBFE]"
+                  : "text-[15px] md:text-[16px] font-semibold leading-[1.35] text-[#F1F5F9]"
               }`}
             >
               {title}
@@ -890,7 +890,7 @@ function MajorSection({
   return (
     <section className="space-y-4">
       <div className="flex items-end justify-between gap-3 pb-2 border-b border-[#1E293B]">
-        <h2 className="text-[16px] font-semibold leading-[1.4] tracking-[-0.005em] text-[#F8FAFC]">
+        <h2 className="text-[18px] md:text-[20px] font-semibold leading-[1.3] tracking-[-0.01em] text-[#F8FAFC]">
           {label}
         </h2>
       </div>
@@ -1013,6 +1013,10 @@ export function extractIsoStandardBadge(value?: string | null): string | null {
   if (!value) return null;
   const trimmed = String(value).trim();
   if (!trimmed) return null;
+  if (/integrated\s+management|\bims\b/i.test(trimmed)) {
+    if (trimmed.length <= 72) return trimmed;
+    return "Integrated Management Systems";
+  }
   const m = trimmed.match(/\b(?:ISO\/IEC|ISO|IEC)\s*[\d][\dA-Za-z\s:.-]{1,32}/i);
   if (m) {
     const badge = m[0].replace(/\s+/g, " ").trim();
@@ -1100,7 +1104,7 @@ export default function NavigatorDocumentView({ document, labels }: Props) {
   );
 
   return (
-    <div className="font-sans text-[14px] font-normal leading-[1.6] text-[#CBD5E1] min-w-0">
+    <div className="font-sans text-[14px] md:text-[15px] font-normal leading-[1.65] text-[#CBD5E1] min-w-0 w-full max-w-none">
       {summaryBody ? (
         <div className="mb-8">
           <OutputCard

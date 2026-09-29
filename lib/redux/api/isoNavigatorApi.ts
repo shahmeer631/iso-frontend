@@ -171,7 +171,12 @@ export const isoNavigatorApi = baseApi.injectEndpoints({
       }),
       transformResponse: (response: any) => {
         if (Array.isArray(response)) return response;
-        return response?.data?.suggestions || response?.suggestions || response?.data || [];
+        const nested =
+          response?.data?.suggestions ||
+          response?.suggestions ||
+          response?.data?.data?.suggestions ||
+          response?.data;
+        return Array.isArray(nested) ? nested : [];
       },
     }),
   }),

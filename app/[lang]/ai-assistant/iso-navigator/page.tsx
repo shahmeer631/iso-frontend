@@ -71,11 +71,17 @@ import {
 
   setGeneratedDocument,
 
+  restoreGeneratedDocument,
+
+  clearGeneratedDocument,
+
   addChatMessage,
 
   setSessionId,
 
   resetNavigator,
+
+  navigatorDocumentCacheKey,
 
 } from "@/lib/redux/features/isoNavigatorSlice";
 
@@ -92,8 +98,6 @@ import {
 } from "@/lib/redux/api/isoNavigatorApi";
 
 import { ISONavigatorFormData } from "@/types/iso-navigator";
-
-import FullPageLoader from "@/components/Shared/FullPageLoader";
 
 import Steps, { Step } from 'rc-steps';
 
@@ -131,7 +135,7 @@ export default function ISONavigator() {
 
 
 
-  const { currentStep, formData, generatedDocument, chatHistory, sessionId } =
+  const { currentStep, formData, generatedDocument, generatedDocumentsByKey, chatHistory, sessionId } =
 
     useAppSelector((state) => state.isoNavigator);
 
@@ -526,8 +530,95 @@ export default function ISONavigator() {
 
 
   const handleUpdateFormData = (data: Partial<ISONavigatorFormData>) =>
-
     dispatch(updateFormData(data));
+
+  const handleGenerate = async (overrides?: Partial<ISONavigatorFormData>) => {
+    try {
+      const merged = { ...formData, ...(overrides || {}) };
+      const orgCtxText = orgContextToString(merged.organization_context);
+
+      const structured =
+        typeof merged.organization_context === "object" && merged.organization_context
+          ? merged.organization_context
+          : merged.organization_context_structured;
+
+      const payload = {
+        organization_context: orgCtxText,
+        organization_context_structured: structured || undefined,
+        specific_requirements: merged.specific_requirements,
+        tone: merged.tone || "professional",
+        language: merged.language || "English",
+        output_type: merged.output_type || merged.document_title || "Policy Document",
+        document_title: merged.document_title || merged.output_type || "Policy Document",
+        clause: merged.clause || undefined,
+        document_taxonomy: merged.document_taxonomy || undefined,
+      } as any;
+
+      const response = await generateDocument(payload).unwrap();
+
+      const doc = response?.data;
+      const content = (doc?.content || "").trim();
+      const structuredLen =
+        (doc?.documented_template || "").trim().length +
+        (doc?.implementation_guidance || "").trim().length +
+        (doc?.daily_usability || "").trim().length;
+
+      if (!response?.success || !doc || (content.length < 40 && structuredLen < 80)) {
+        toast.error(t('isoNavigator.emptyGenerate') || t('isoNavigator.failedGenerate'));
+        return;
+      }
+
+      if (doc?.metadata?.ims_guide_available === false) {
+        toast.warning(
+          "IMS Practical Guide was not found in the Library. Generation used selected ISO standards and organization context only.",
+        );
+      }
+
+      const missing = doc?.metadata?.missing_editions;
+      if (Array.isArray(missing) && missing.length > 0) {
+        toast.warning(
+          `Unavailable in Standards Library (not substituted): ${missing.join("; ")}. Generated using available standards only.`,
+        );
+      }
+
+      dispatch(setGeneratedDocument(doc));
+
+      dispatch(
+        setSessionId(
+          doc.generation_timestamp ||
+          Math.random().toString(36).substring(7),
+        ),
+      );
+
+    } catch (error: any) {
+      console.error("Failed to generate document:", error);
+
+      if (error?.status === 403 || error?.data?.statusCode === 403 || error?.data?.message?.includes("ULTRA plan")) {
+        toast.error(error?.data?.message || t('isoNavigator.upgradeUltra'));
+        router.push(`/${lang}/pricing`);
+      } else {
+        toast.error(error?.data?.message || t('isoNavigator.failedGenerate'));
+      }
+    }
+  };
+
+  /** Select a document/record and generate inline — never leave the Navigator workspace. */
+  const selectDocumentAndGenerate = (patch: Partial<ISONavigatorFormData>) => {
+    if (isGenerating) return;
+    const mergedReqs = patch.specific_requirements ?? formData.specific_requirements;
+    const docTitle = (patch.output_type || patch.document_title || "").trim();
+    const key = navigatorDocumentCacheKey(mergedReqs, docTitle);
+    handleUpdateFormData(patch);
+
+    // Reuse cached generation for this standard/IMS + template — avoid duplicate API calls
+    const cached = key ? generatedDocumentsByKey[key] : undefined;
+    if (cached) {
+      dispatch(restoreGeneratedDocument(cached));
+      return;
+    }
+
+    void handleGenerate(patch);
+  };
 
   const handleNextStep = () => {
 
@@ -564,76 +655,6 @@ export default function ISONavigator() {
   };
 
   const handlePrevStep = () => dispatch(setStep(currentStep - 1));
-
-
-
-  const handleGenerate = async () => {
-
-    try {
-
-      const orgCtxText = orgContextToString(formData.organization_context);
-
-      const structured =
-        typeof formData.organization_context === "object" && formData.organization_context
-          ? formData.organization_context
-          : formData.organization_context_structured;
-
-      const payload = {
-        organization_context: orgCtxText,
-        organization_context_structured: structured || undefined,
-        specific_requirements: formData.specific_requirements,
-        tone: formData.tone || "professional",
-        language: formData.language || "English",
-        output_type: formData.output_type || formData.document_title || "Policy Document",
-        document_title: formData.document_title || formData.output_type || "Policy Document",
-        clause: formData.clause || undefined,
-        document_taxonomy: formData.document_taxonomy || undefined,
-      } as any;
-
-      const response = await generateDocument(payload).unwrap();
-
-      const doc = response?.data;
-      const content = (doc?.content || "").trim();
-      const structuredLen =
-        (doc?.documented_template || "").trim().length +
-        (doc?.implementation_guidance || "").trim().length +
-        (doc?.daily_usability || "").trim().length;
-
-      if (!response?.success || !doc || (content.length < 40 && structuredLen < 80)) {
-        toast.error(t('isoNavigator.emptyGenerate') || t('isoNavigator.failedGenerate'));
-        return;
-      }
-
-      dispatch(setGeneratedDocument(doc));
-
-      dispatch(
-        setSessionId(
-          doc.generation_timestamp ||
-          Math.random().toString(36).substring(7),
-        ),
-      );
-
-    } catch (error: any) {
-
-      console.error("Failed to generate document:", error);
-
-      if (error?.status === 403 || error?.data?.statusCode === 403 || error?.data?.message?.includes("ULTRA plan")) {
-
-        toast.error(error?.data?.message || t('isoNavigator.upgradeUltra'));
-
-        router.push(`/${lang}/pricing`);
-
-      } else {
-
-        toast.error(error?.data?.message || t('isoNavigator.failedGenerate'));
-
-      }
-
-    }
-
-  };
-
-
 
   const handleSendChat = async (text?: string) => {
 
@@ -753,32 +774,10 @@ export default function ISONavigator() {
 
   return (
 
-    <div className="w-full mx-auto space-y-8 md:space-y-12 animate-in fade-in duration-500 bg-[#0A0F1C] min-h-screen p-2 md:p-8 overflow-x-hidden">
-
-      <FullPageLoader
-
-        isLoading={isGenerating}
-
-        title={t('isoNavigator.loaderTitle')}
-
-        description={t('isoNavigator.loaderDesc')}
-
-        steps={[
-
-          t('isoNavigator.loaderStep1'),
-
-          t('isoNavigator.loaderStep2'),
-
-          t('isoNavigator.loaderStep3'),
-
-        ]}
-
-      />
-
-
+    <div className="w-full mx-auto space-y-8 md:space-y-12 animate-in fade-in duration-500 bg-[#0A0F1C] min-h-screen p-2 sm:p-4 md:p-6 lg:p-8 overflow-x-hidden">
 
       {/* Header */}
-      <header className="space-y-4 px-2 sm:px-0 mb-12 mt-20">
+      <header className="space-y-4 px-2 sm:px-0 mb-8 md:mb-12 mt-12 md:mt-20">
         <div className="flex justify-center mb-6">
           <div className="px-4 py-1 text-[#00f0ff] border border-[#00f0ff]/20 rounded-full">
             <span className=" text-[10px] font-black uppercase tracking-[0.3em]">{t('isoNavigator.badge')}</span>
@@ -795,13 +794,13 @@ export default function ISONavigator() {
 
 
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 md:gap-4 items-stretch">
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-5 items-stretch w-full max-w-[1600px] mx-auto px-0 md:h-[calc(100dvh-7rem)] md:min-h-[600px] md:max-h-[920px] md:overflow-hidden">
 
         {/* Left Column - Form */}
 
-        <div className="lg:col-span-4 bg-[#131B2D] border border-[#1E293B] rounded-3xl shadow-2xl overflow-hidden min-h-[600px] flex flex-col">
+        <div className="md:col-span-5 lg:col-span-5 bg-[#131B2D] border border-[#1E293B] rounded-3xl shadow-2xl overflow-hidden min-h-[520px] md:min-h-0 md:h-full flex flex-col">
 
-          <div className="p-5 md:p-6 flex items-center gap-4 border-b border-[#1E293B] bg-[#0A0F1C]/50">
+          <div className="p-5 md:p-6 flex items-center gap-4 border-b border-[#1E293B] bg-[#0A0F1C]/50 shrink-0">
 
             <div className="p-2 bg-[#00f0ff] text-[#0F111A]/10 rounded-xl">
 
@@ -819,7 +818,7 @@ export default function ISONavigator() {
 
 
 
-          <div className="p-5 md:p-6 flex-1 space-y-8 overflow-y-auto custom-thin-scrollbar">
+          <div className="p-5 md:p-6 flex-1 min-h-0 basis-0 space-y-8 overflow-y-auto overscroll-contain custom-thin-scrollbar">
 
             {/* Stepper Progress using rc-steps */}
             <div className="mb-14 px-4 stepper-container">
@@ -1182,15 +1181,21 @@ export default function ISONavigator() {
 
                             key={index}
 
-                            onClick={() =>
-
+                            onClick={() => {
+                              const next = iso?.standard || "";
+                              if (next === formData?.specific_requirements) return;
+                              // Switching ISO/IMS: clear doc selection + visible result so
+                              // we never show output grounded on a different standard.
+                              // Per-standard cache is kept for reuse when returning later.
                               handleUpdateFormData({
-
-                                specific_requirements: iso?.standard,
-
-                              })
-
-                            }
+                                specific_requirements: next,
+                                output_type: "",
+                                document_title: "",
+                                clause: "",
+                                document_taxonomy: undefined,
+                              });
+                              dispatch(clearGeneratedDocument());
+                            }}
 
                             className={`bg-[#0A0F1C] border rounded-2xl p-3 text-xs cursor-pointer transition-all flex gap-3 items-start ${formData?.specific_requirements === iso?.standard
 
@@ -1208,17 +1213,24 @@ export default function ISONavigator() {
 
                                 <div className="flex-1">
 
-                                  <p className={`font-medium text-[11px] ${formData?.specific_requirements === iso?.standard
+                                  <div className="flex items-center gap-2 flex-wrap">
+                                    <p className={`font-medium text-[11px] ${formData?.specific_requirements === iso?.standard
 
-                                    ? "text-[#9CA3AF]"
+                                      ? "text-[#9CA3AF]"
 
-                                    : "text-[#F3F4F6]"
+                                      : "text-[#F3F4F6]"
 
-                                    }`}>
+                                      }`}>
 
-                                    {iso?.standard}
+                                      {iso?.standard}
 
-                                  </p>
+                                    </p>
+                                    {/integrated\s+management|\bims\b/i.test(String(iso?.standard || iso?.title || "")) && (
+                                      <span className="inline-flex items-center rounded-md border border-[#14B8A6]/30 bg-[#14B8A6]/10 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-[#5EEAD4]">
+                                        IMS
+                                      </span>
+                                    )}
+                                  </div>
 
                                   <p className={`text-[10px] font-medium ${formData?.specific_requirements === iso?.standard
 
@@ -1387,7 +1399,7 @@ export default function ISONavigator() {
                               <div
                                 key={`doc-${index}`}
                                 onClick={() =>
-                                  handleUpdateFormData({
+                                  selectDocumentAndGenerate({
                                     output_type: doc?.title,
                                     document_title: doc?.title,
                                     clause: doc?.clause || '',
@@ -1430,7 +1442,7 @@ export default function ISONavigator() {
                               <div
                                 key={`rec-${index}`}
                                 onClick={() =>
-                                  handleUpdateFormData({
+                                  selectDocumentAndGenerate({
                                     output_type: rec?.title,
                                     document_title: rec?.title,
                                     clause: rec?.clause || '',
@@ -1545,13 +1557,11 @@ export default function ISONavigator() {
 
         {/* Right Column - Document Viewer */}
 
-        <div className="lg:col-span-8 bg-[#090D16] border border-[#1E293B] rounded-3xl shadow-[0_4px_20px_-2px_rgba(0,0,0,0.25)] overflow-hidden min-h-[600px] lg:h-full flex flex-col relative min-w-0">
+        <div className="md:col-span-7 lg:col-span-7 bg-[#090D16] border border-[#1E293B] rounded-3xl shadow-[0_4px_20px_-2px_rgba(0,0,0,0.25)] overflow-hidden min-h-[520px] md:min-h-0 md:h-full md:max-h-full flex flex-col relative min-w-0">
 
-          <div className="lg:absolute lg:inset-0 flex flex-col w-full h-full">
+            {!generatedDocument || isGenerating ? (
 
-            {!generatedDocument ? (
-
-            <div className="flex-1 flex flex-col items-center justify-center p-8 md:p-12 text-center">
+            <div className="flex-1 min-h-0 flex flex-col items-center justify-center p-8 md:p-12 text-center overflow-y-auto overscroll-contain">
 
               {isGenerating ? (
 
@@ -1631,9 +1641,11 @@ export default function ISONavigator() {
 
           ) : (
 
-            <div className="flex flex-col h-full flex-1 animate-in fade-in duration-700">
+            <div className="flex flex-col flex-1 min-h-0 basis-0 h-full overflow-hidden animate-in fade-in duration-700">
 
-              <div className="p-4 md:p-5 border-b border-[#1E293B] bg-[#111827]/80 backdrop-blur-[8px] shrink-0 flex flex-col gap-3">
+              <div className="h-full min-h-0 overflow-y-auto overflow-x-hidden overscroll-contain custom-thin-scrollbar">
+
+              <div className="p-4 md:p-5 border-b border-[#1E293B] bg-[#111827]/80 backdrop-blur-[8px] flex flex-col gap-3">
 
                 <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
 
@@ -1679,11 +1691,71 @@ export default function ISONavigator() {
 
                     </div>
 
-                    <h2 className="text-[20px] font-semibold leading-[1.3] tracking-[-0.01em] text-[#F8FAFC] break-words">
+                    <h2 className="text-[20px] md:text-[22px] font-semibold leading-[1.3] tracking-[-0.01em] text-[#F8FAFC] break-words">
 
                       {generatedDocument.title}
 
                     </h2>
+
+                    {generatedDocument.metadata?.ims_guide_available === false && (
+                      <p className="text-[12px] leading-[1.4] text-amber-300/90">
+                        IMS Practical Guide unavailable — grounded on selected ISO standards and organization context only.
+                      </p>
+                    )}
+
+                    {Array.isArray(generatedDocument.metadata?.missing_editions) &&
+                      generatedDocument.metadata.missing_editions.length > 0 && (
+                      <p className="text-[12px] leading-[1.4] text-amber-300/90">
+                        Unavailable library editions (not substituted):{" "}
+                        {generatedDocument.metadata.missing_editions.join("; ")}
+                      </p>
+                    )}
+
+                    {(() => {
+                      const docs = [
+                        ...(selectedISO?.documents || []),
+                        ...(selectedISO?.records || []),
+                      ];
+                      if (docs.length < 2) return null;
+                      return (
+                        <div className="flex flex-wrap gap-1.5 pt-1 max-h-[7.5rem] overflow-y-auto overscroll-contain custom-thin-scrollbar content-start">
+                          {docs.map((d: any, idx: number) => {
+                            const active = formData.output_type === d?.title;
+                            return (
+                              <button
+                                key={`switch-${idx}-${d?.title}`}
+                                type="button"
+                                disabled={isGenerating}
+                                onClick={() =>
+                                  selectDocumentAndGenerate({
+                                    output_type: d?.title,
+                                    document_title: d?.title,
+                                    clause: d?.clause || "",
+                                    document_taxonomy:
+                                      d?.type === "recommended"
+                                        ? "recommended"
+                                        : d?.type === "record" ||
+                                            selectedISO?.records?.some(
+                                              (r: any) => r?.title === d?.title,
+                                            )
+                                          ? "mandatory_record"
+                                          : "mandatory_document",
+                                  })
+                                }
+                                title={d?.title}
+                                className={`max-w-full truncate rounded-lg border px-2 py-1 text-[11px] font-medium transition-colors disabled:opacity-40 ${
+                                  active
+                                    ? "border-[#00f0ff]/50 bg-[#00f0ff]/10 text-[#00f0ff]"
+                                    : "border-[#1E293B] bg-[#0F172A] text-[#94A3B8] hover:border-[#334155] hover:text-[#E2E8F0]"
+                                }`}
+                              >
+                                {d?.title}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      );
+                    })()}
 
                     {(generatedDocument.generation_timestamp || generatedDocument.word_count) && (
 
@@ -1744,7 +1816,7 @@ export default function ISONavigator() {
 
               </div>
 
-              <div className="p-4 sm:p-5 md:p-6 lg:p-8 flex-1 overflow-y-auto overflow-x-hidden bg-[#090D16] custom-thin-scrollbar min-w-0">
+              <div className="p-4 sm:p-5 md:p-6 lg:p-8 bg-[#090D16] min-w-0">
 
                 <NavigatorDocumentView
                   document={generatedDocument}
@@ -1761,6 +1833,8 @@ export default function ISONavigator() {
 
               </div>
 
+              </div>
+
             </div>
 
           )}
@@ -1773,7 +1847,7 @@ export default function ISONavigator() {
 
       {/* Bottom Row - Ask AI */}
 
-      <div className="mt-12 bg-[#131B2D] lg:col-span-12 border border-[#1E293B] rounded-3xl shadow-2xl overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-500">
+      <div className="mt-12 bg-[#131B2D] border border-[#1E293B] rounded-3xl shadow-2xl overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-500 max-w-[1600px] mx-auto w-full">
 
         <div className="p-2 sm:p-3 md:p-6 flex items-center gap-4 border-b border-[#1E293B] bg-[#0A0F1C]/50">
 
@@ -1907,8 +1981,6 @@ export default function ISONavigator() {
         </div>
 
       </div>
-
-    </div>
 
 
 
