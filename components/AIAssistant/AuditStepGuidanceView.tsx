@@ -37,6 +37,14 @@ function mergeClass(base: string, className?: string) {
   return [base, className].filter(Boolean).join(" ");
 }
 
+/**
+ * Presentation tokens — balance “full document” feel with readable measure.
+ * Spec: do NOT make everything full-width; narrative keeps a measure;
+ * tables/matrices/structured cards use available panel width.
+ */
+const NARRATIVE = "w-full max-w-[60rem]"; // ~960px — Case Study + long-form prose
+const FULL = "w-full max-w-none"; // templates, tables, evidence grids, WP cards
+
 function normalizeComparable(text: string) {
   return cleanMarkdown(text).replace(/\s+/g, " ").trim().toLowerCase();
 }
@@ -343,8 +351,8 @@ function MdUl({ className, ...props }: any) {
     <ul
       className={mergeClass(
         task
-          ? "list-none pl-0 mb-4 space-y-2.5 max-w-[768px]"
-          : "list-disc pl-5 mb-4 space-y-2 text-[14px] leading-[1.6] text-[#CBD5E1] max-w-[768px]",
+          ? "list-none pl-0 mb-3 space-y-2"
+          : "list-disc pl-5 mb-3 space-y-1.5 text-[14px] leading-[1.6] text-[#CBD5E1]",
         className,
       )}
       {...props}
@@ -358,8 +366,8 @@ function MdOl({ className, ...props }: any) {
     <ol
       className={mergeClass(
         checklist
-          ? "list-none pl-0 mb-4 space-y-2.5 max-w-[768px]"
-          : "list-decimal pl-5 mb-4 space-y-2 text-[14px] leading-[1.6] text-[#CBD5E1] max-w-[768px]",
+          ? "list-none pl-0 mb-3 space-y-2"
+          : "list-decimal pl-5 mb-3 space-y-1.5 text-[14px] leading-[1.6] text-[#CBD5E1]",
         className,
       )}
       {...props}
@@ -398,7 +406,7 @@ function MdLi({ className, children, ...props }: any) {
 
   return (
     <li className={mergeClass("list-none", className)} {...props}>
-      <div className="flex items-start gap-3 rounded-xl border border-[#334155] bg-[#1E293B] px-4 py-3.5">
+      <div className="flex items-start gap-3 rounded-xl border border-[#334155] bg-[#1E293B] px-3.5 py-3">
         {checkbox ? (
           <span className="mt-0.5 shrink-0">{checkbox}</span>
         ) : (
@@ -433,7 +441,7 @@ const mdComponents: any = {
   h1: ({ className, children, ...props }: any) => (
     <h1
       className={mergeClass(
-        "text-[20px] font-semibold leading-[1.3] tracking-[-0.01em] text-[#F1F5F9] mb-4 max-w-[768px]",
+        "text-[20px] font-semibold leading-[1.3] tracking-[-0.01em] text-[#F1F5F9] mb-3",
         className,
       )}
       {...props}
@@ -444,7 +452,7 @@ const mdComponents: any = {
   h2: ({ className, children, ...props }: any) => (
     <h2
       className={mergeClass(
-        "text-[16px] font-semibold leading-[1.4] text-[#F1F5F9] mt-6 mb-3 max-w-[768px]",
+        "text-[16px] font-semibold leading-[1.4] text-[#F1F5F9] mt-5 mb-2",
         className,
       )}
       {...props}
@@ -455,7 +463,7 @@ const mdComponents: any = {
   h3: ({ className, children, ...props }: any) => (
     <h3
       className={mergeClass(
-        "text-[14px] font-semibold leading-[1.4] text-[#E2E8F0] mt-4 mb-2 max-w-[768px]",
+        "text-[14px] font-semibold leading-[1.4] text-[#E2E8F0] mt-3.5 mb-1.5",
         className,
       )}
       {...props}
@@ -466,7 +474,7 @@ const mdComponents: any = {
   h4: ({ className, children, ...props }: any) => (
     <h4
       className={mergeClass(
-        "text-[13px] font-semibold leading-[1.4] text-[#E2E8F0] mt-3 mb-2 max-w-[768px]",
+        "text-[13px] font-semibold leading-[1.4] text-[#E2E8F0] mt-3 mb-1.5",
         className,
       )}
       {...props}
@@ -477,7 +485,7 @@ const mdComponents: any = {
   p: ({ className, children, ...props }: any) => (
     <p
       className={mergeClass(
-        "text-[14px] font-normal leading-[1.6] text-[#CBD5E1] mb-3.5 max-w-[768px]",
+        "text-[14px] font-normal leading-[1.6] text-[#CBD5E1] mb-3",
         className,
       )}
       {...props}
@@ -493,7 +501,7 @@ const mdComponents: any = {
   blockquote: ({ className, children, ...props }: any) => (
     <blockquote
       className={mergeClass(
-        "max-w-[768px] my-4 border-l-2 border-[#0D9488] bg-[#1E293B]/70 rounded-r-xl px-4 py-3 text-[14px] leading-[1.6] text-[#CBD5E1]",
+        "my-3 border-l-2 border-[#0D9488] bg-[#1E293B]/70 rounded-r-xl px-3.5 py-2.5 text-[14px] leading-[1.6] text-[#CBD5E1]",
         className,
       )}
       {...props}
@@ -528,7 +536,7 @@ const mdComponents: any = {
   pre: ({ className, children, ...props }: any) => (
     <pre
       className={mergeClass(
-        "w-full overflow-x-auto my-4 rounded-xl border border-[#334155] bg-[#0F172A] p-4 text-[13px] leading-[1.5]",
+        "w-full overflow-x-auto my-3 rounded-xl border border-[#334155] bg-[#0F172A] p-3 text-[13px] leading-[1.5]",
         className,
       )}
       {...props}
@@ -537,7 +545,7 @@ const mdComponents: any = {
     </pre>
   ),
   table: ({ className, ...props }: any) => (
-    <div className="w-full max-w-none overflow-x-auto my-4 rounded-xl border border-[#334155] bg-[#1E293B]/40">
+    <div className="w-full max-w-none overflow-x-auto my-3 rounded-xl border border-[#334155] bg-[#1E293B]/40">
       <table
         className={mergeClass("w-full min-w-[480px] border-collapse text-left", className)}
         {...props}
@@ -550,7 +558,7 @@ const mdComponents: any = {
   th: ({ className, children, ...props }: any) => (
     <th
       className={mergeClass(
-        "py-3 px-4 text-left text-[11px] font-semibold uppercase tracking-[0.05em] text-[#94A3B8] border-b border-[#334155]",
+        "py-2.5 px-3 text-left text-[12px] font-semibold uppercase tracking-[0.04em] text-[#94A3B8] border-b border-[#334155]",
         className,
       )}
       {...props}
@@ -561,7 +569,7 @@ const mdComponents: any = {
   td: ({ className, children, ...props }: any) => (
     <td
       className={mergeClass(
-        "py-3 px-4 text-[14px] leading-[1.6] text-[#CBD5E1] border-b border-[#334155]/50 align-top border-x-0",
+        "py-2.5 px-3 text-[14px] leading-[1.55] text-[#CBD5E1] border-b border-[#334155]/50 align-top border-x-0",
         className,
       )}
       {...props}
@@ -570,7 +578,7 @@ const mdComponents: any = {
     </td>
   ),
   hr: ({ className, ...props }: any) => (
-    <hr className={mergeClass("my-6 border-[#334155] max-w-[768px]", className)} {...props} />
+    <hr className={mergeClass("my-4 border-[#334155]", className)} {...props} />
   ),
   input: ({ type, checked, ...props }: any) => {
     if (type === "checkbox") {
@@ -662,7 +670,7 @@ function GuidanceBriefing({
         />
       </button>
       {open ? (
-        <div className="border-t border-[#334155] px-4 py-4 space-y-3">
+        <div className="border-t border-[#334155] px-3.5 py-3.5 space-y-3">
           {!cards.length && blob ? (
             <div className="flex justify-end mb-2">
               <CopyControl text={blob} label={copyLabel} />
@@ -675,7 +683,7 @@ function GuidanceBriefing({
                 return (
                   <div
                     key={card.title}
-                    className="rounded-xl border border-[#334155] bg-[#1E293B] px-4 py-3.5"
+                    className="rounded-xl border border-[#334155] bg-[#1E293B] px-3.5 py-3"
                   >
                     <div className="mb-2 flex items-start justify-between gap-2">
                       <h3 className="text-[12px] font-semibold uppercase tracking-[0.04em] text-[#94A3B8]">
@@ -689,7 +697,7 @@ function GuidanceBriefing({
               })}
             </div>
           ) : (
-            <div className="rounded-xl border-l-2 border-[#0D9488] bg-[#0F172A] px-4 py-4 max-w-[768px]">
+            <div className={`${NARRATIVE} rounded-xl border-l-2 border-[#0D9488] bg-[#0F172A] px-3.5 py-3.5`}>
               <MarkdownBody text={blob} />
             </div>
           )}
@@ -766,9 +774,9 @@ function WorkingPaperView({ text, copyLabel }: { text: string; copyLabel: string
     : parts;
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-start justify-between gap-3 max-w-[768px]">
-        <h2 className="text-[20px] font-semibold leading-[1.3] text-[#F1F5F9]">
+    <div className={`${FULL} space-y-4`}>
+      <div className="flex items-start justify-between gap-3">
+        <h2 className="text-[20px] font-semibold leading-[1.3] tracking-[-0.01em] text-[#F1F5F9]">
           Audit Working Paper
         </h2>
         <CopyControl text={cleaned} label={copyLabel} />
@@ -796,13 +804,11 @@ function WorkingPaperView({ text, copyLabel }: { text: string; copyLabel: string
             return (
               <article
                 key={`${part.title}-${idx}`}
-                className={`rounded-xl border border-[#334155] overflow-hidden ${tint} ${
-                  isGuideline ? "" : "max-w-[768px]"
-                }`}
+                className={`rounded-xl border border-[#334155] overflow-hidden ${tint} ${FULL}`}
               >
-                <div className="border-b border-[#334155] bg-[#0F172A]/50 px-4 py-2.5">
+                <div className="border-b border-[#334155] bg-[#0F172A]/50 px-3.5 py-2">
                   {label ? (
-                    <p className="text-[11px] uppercase tracking-[0.05em] text-[#64748B] mb-0.5">
+                    <p className="text-[12px] uppercase tracking-[0.04em] text-[#64748B] mb-0.5">
                       {label}
                     </p>
                   ) : null}
@@ -812,7 +818,7 @@ function WorkingPaperView({ text, copyLabel }: { text: string; copyLabel: string
                     </h3>
                   ) : null}
                 </div>
-                <div className="border-l-2 border-[#0D9488] px-4 py-4">
+                <div className="border-l-2 border-[#0D9488] px-3.5 py-3.5">
                   <MarkdownBody text={part.body} />
                 </div>
               </article>
@@ -820,7 +826,7 @@ function WorkingPaperView({ text, copyLabel }: { text: string; copyLabel: string
           })}
         </div>
       ) : (
-        <div className="rounded-xl border border-[#334155] bg-[#1E293B] border-l-2 border-l-[#0D9488] px-4 py-4 max-w-[768px]">
+        <div className={`${NARRATIVE} rounded-xl border border-[#334155] bg-[#1E293B] border-l-2 border-l-[#0D9488] px-3.5 py-3.5`}>
           <MarkdownBody text={cleaned} />
         </div>
       )}
@@ -837,27 +843,27 @@ function DocumentedInfoView({ text, copyLabel }: { text: string; copyLabel: stri
     cards.length > 1 || (cards.length === 1 && cards[0].name !== "Evidence item");
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-start justify-between gap-3 max-w-[800px]">
-        <h2 className="text-[20px] font-semibold leading-[1.3] text-[#F1F5F9]">
+    <div className={`${FULL} space-y-4`}>
+      <div className="flex items-start justify-between gap-3">
+        <h2 className="text-[20px] font-semibold leading-[1.3] tracking-[-0.01em] text-[#F1F5F9]">
           Documented Information
         </h2>
         <CopyControl text={cleaned} label={copyLabel} />
       </div>
 
       {structured ? (
-        <div className="grid gap-3 max-w-[800px] grid-cols-1">
+        <div className="grid gap-3 grid-cols-1 lg:grid-cols-2">
           {cards.map((card, idx) => (
             <article
               key={`${card.name}-${idx}`}
-              className="rounded-xl border border-[#334155] bg-[#1E293B] px-4 py-4"
+              className="rounded-xl border border-[#334155] bg-[#1E293B] px-3.5 py-3.5"
             >
-              <div className="flex flex-wrap items-start justify-between gap-2 mb-3">
+              <div className="flex flex-wrap items-start justify-between gap-2 mb-2.5">
                 <div className="min-w-0 flex-1">
-                  <p className="text-[11px] uppercase tracking-[0.05em] text-[#64748B] mb-1">
+                  <p className="text-[12px] uppercase tracking-[0.04em] text-[#64748B] mb-1">
                     Evidence Name
                   </p>
-                  <h3 className="text-[15px] font-semibold leading-[1.4] text-[#F1F5F9]">
+                  <h3 className="text-[14px] font-semibold leading-[1.4] text-[#F1F5F9]">
                     {card.name}
                   </h3>
                 </div>
@@ -871,7 +877,7 @@ function DocumentedInfoView({ text, copyLabel }: { text: string; copyLabel: stri
               </div>
               {card.body ? (
                 <>
-                  <p className="text-[11px] uppercase tracking-[0.05em] text-[#64748B] mb-1.5">
+                  <p className="text-[12px] uppercase tracking-[0.04em] text-[#64748B] mb-1.5">
                     Verification Action
                   </p>
                   <MarkdownBody text={card.body} />
@@ -881,7 +887,7 @@ function DocumentedInfoView({ text, copyLabel }: { text: string; copyLabel: stri
           ))}
         </div>
       ) : (
-        <div className="rounded-xl border border-[#334155] bg-[#1E293B] px-4 py-4 max-w-[800px]">
+        <div className={`${NARRATIVE} rounded-xl border border-[#334155] bg-[#1E293B] px-3.5 py-3.5`}>
           <MarkdownBody text={evidenceText} />
         </div>
       )}
@@ -915,9 +921,9 @@ function TemplateView({ text, copyLabel }: { text: string; copyLabel: string }) 
   };
 
   return (
-    <div className="space-y-4">
+    <div className={`${FULL} space-y-4`}>
       <div className="flex flex-wrap items-start justify-between gap-3">
-        <h2 className="text-[20px] font-semibold leading-[1.3] text-[#F1F5F9]">
+        <h2 className="text-[20px] font-semibold leading-[1.3] tracking-[-0.01em] text-[#F1F5F9]">
           Template
         </h2>
         <div className="flex flex-wrap items-center gap-2">
@@ -926,7 +932,7 @@ function TemplateView({ text, copyLabel }: { text: string; copyLabel: string }) 
             <button
               type="button"
               onClick={downloadCsv}
-              className="inline-flex items-center gap-1 rounded-lg border border-[#1E293B] bg-[#0F172A]/80 backdrop-blur-[8px] px-2 py-1 text-[11px] font-medium text-[#94A3B8] hover:text-[#F8FAFC] hover:border-[#0D9488]/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0D9488]"
+              className="inline-flex items-center gap-1 rounded-lg border border-[#1E293B] bg-[#0F172A]/80 backdrop-blur-[8px] px-2 py-1 text-[12px] font-medium text-[#94A3B8] hover:text-[#F8FAFC] hover:border-[#0D9488]/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0D9488]"
               aria-label="Export as CSV"
             >
               <Download className="w-3 h-3" />
@@ -936,7 +942,7 @@ function TemplateView({ text, copyLabel }: { text: string; copyLabel: string }) 
           {copyLabel ? <span className="sr-only">{copyLabel}</span> : null}
         </div>
       </div>
-      <div className="w-full rounded-xl border border-[#334155] bg-[#1E293B]/40 px-3 py-3 sm:px-4 sm:py-4">
+      <div className="w-full rounded-xl border border-[#334155] bg-[#1E293B]/40 px-3 py-3 sm:px-3.5 sm:py-3.5">
         <MarkdownBody text={cleaned} checklist={looksLikeChecklist} />
       </div>
     </div>
@@ -950,10 +956,13 @@ function CaseStudyView({ text, copyLabel }: { text: string; copyLabel: string })
 
   const classify = (title: string) => {
     const t = title.toLowerCase();
-    if (/situation|context|scenario|background/.test(t)) return "situation";
+    // Title-only "Scenario" / "Case Study" labels are not Situation sections
+    if (/^(?:the\s+)?(?:scenario|case\s*study|title)\s*$/i.test(t)) return "other";
+    if (/situation|context|background/.test(t)) return "situation";
     if (/complicat|problem|issue|finding|non[- ]?conform|challenge/.test(t))
       return "complication";
-    if (/action|resolution|auditor|response|outcome|remediat/.test(t)) return "action";
+    if (/action|resolution|auditor'?s?\s+action|response|remediat/.test(t)) return "action";
+    if (/outcome|learn|practic|takeaway|lesson|result/.test(t)) return "learning";
     return "other";
   };
 
@@ -963,7 +972,7 @@ function CaseStudyView({ text, copyLabel }: { text: string; copyLabel: string })
   // Bold-label editorial split when headings are missing
   if (!hasStructured) {
     const boldParts = cleaned.split(
-      /\n(?=\*\*(?:The\s+)?(?:Situation|Complication|Auditor'?s?\s+Action|Resolution|Context|Problem)\*\*)/i,
+      /\n(?=\*\*(?:The\s+)?(?:Situation|Complication|Auditor'?s?\s+Action|Resolution|Context|Problem|Outcome|Learning|Practical)\*\*)/i,
     );
     if (boldParts.length > 1) {
       structured = boldParts
@@ -986,17 +995,27 @@ function CaseStudyView({ text, copyLabel }: { text: string; copyLabel: string })
           { title: "The Situation", body: paras[0] },
           { title: "The Auditor's Action", body: paras[1] },
         ];
-      } else {
-        const third = Math.max(1, Math.floor(paras.length / 3));
+      } else if (paras.length === 3) {
         structured = [
-          { title: "The Situation", body: paras.slice(0, third).join("\n\n") },
+          { title: "The Situation", body: paras[0] },
+          { title: "The Complication", body: paras[1] },
+          { title: "The Auditor's Action", body: paras[2] },
+        ];
+      } else {
+        const quarter = Math.max(1, Math.floor(paras.length / 4));
+        structured = [
+          { title: "The Situation", body: paras.slice(0, quarter).join("\n\n") },
           {
             title: "The Complication",
-            body: paras.slice(third, third * 2).join("\n\n"),
+            body: paras.slice(quarter, quarter * 2).join("\n\n"),
           },
           {
             title: "The Auditor's Action",
-            body: paras.slice(third * 2).join("\n\n"),
+            body: paras.slice(quarter * 2, quarter * 3).join("\n\n"),
+          },
+          {
+            title: "Practical Outcome / Learning",
+            body: paras.slice(quarter * 3).join("\n\n"),
           },
         ];
       }
@@ -1008,17 +1027,22 @@ function CaseStudyView({ text, copyLabel }: { text: string; copyLabel: string })
     structured.find(
       (p) =>
         /scenario|case study|^title$/i.test(p.title) &&
-        !/situation|complicat|action|resolution|problem|context/i.test(p.title),
+        !/situation|complicat|action|resolution|problem|context|outcome|learn/i.test(
+          p.title,
+        ),
     )?.title || "Case Study";
 
+  const caseBodyClass =
+    "audit-lens-case [&_p]:text-[14px] [&_p]:leading-[1.65] [&_p]:mb-2.5 [&_li]:text-[14px] [&_li]:leading-[1.65] [&_h2]:text-[16px] [&_h2]:font-semibold [&_h2]:mt-4 [&_h2]:mb-2 [&_h3]:text-[14px] [&_h3]:font-semibold [&_h3]:mt-3 [&_h3]:mb-1.5";
+
   return (
-    <div className="space-y-5 max-w-[720px]">
+    <div className={`${NARRATIVE} space-y-4`}>
       <div className="flex items-start justify-between gap-3">
         <div>
-          <p className="text-[12px] uppercase tracking-[0.05em] text-[#64748B] mb-1">
+          <p className="text-[12px] uppercase tracking-[0.04em] text-[#64748B] mb-1">
             Case Study
           </p>
-          <h2 className="text-[20px] font-semibold leading-[1.3] text-[#F1F5F9]">
+          <h2 className="text-[20px] font-semibold leading-[1.3] tracking-[-0.01em] text-[#F1F5F9]">
             {hasStructured ? scenarioTitle : "Case Study"}
           </h2>
         </div>
@@ -1026,18 +1050,20 @@ function CaseStudyView({ text, copyLabel }: { text: string; copyLabel: string })
       </div>
 
       {hasStructured ? (
-        <div className="space-y-4">
+        <div className="space-y-3">
           {structured.map((part, idx) => {
             if (/scenario|title/i.test(part.title) && idx === 0 && !part.body) return null;
             const kind = classify(part.title || "");
             const fallbackTitle =
               kind === "situation"
-                ? "The Situation"
+                ? "The Situation / Context"
                 : kind === "complication"
-                  ? "The Complication"
+                  ? "The Complication / Problem"
                   : kind === "action"
-                    ? "The Auditor's Action"
-                    : part.title;
+                    ? "The Auditor's Action / Resolution"
+                    : kind === "learning"
+                      ? "Practical Outcome / Learning"
+                      : part.title;
             const accent =
               kind === "complication"
                 ? "border-l-amber-500/70 bg-amber-950/15"
@@ -1045,26 +1071,30 @@ function CaseStudyView({ text, copyLabel }: { text: string; copyLabel: string })
                   ? "border-l-[#0D9488] bg-[#0D9488]/5"
                   : kind === "situation"
                     ? "border-l-sky-500/60 bg-sky-950/15"
-                    : "border-l-[#334155] bg-[#1E293B]/60";
+                    : kind === "learning"
+                      ? "border-l-violet-400/50 bg-violet-950/10"
+                      : "border-l-[#334155] bg-[#1E293B]/60";
             return (
               <article
                 key={`${part.title}-${idx}`}
-                className={`rounded-r-xl border border-[#334155] border-l-2 px-4 py-4 ${accent}`}
+                className={`w-full rounded-r-xl border border-[#334155] border-l-2 px-3.5 py-3.5 sm:px-4 sm:py-4 ${accent}`}
               >
-                <h3 className="text-[16px] font-semibold leading-[1.4] text-[#F1F5F9] mb-2 inline-flex items-center gap-2">
+                <h3 className="text-[14px] font-semibold leading-[1.4] text-[#F1F5F9] mb-2 inline-flex items-center gap-2">
                   {kind === "complication" ? (
                     <AlertTriangle className="h-4 w-4 shrink-0 text-amber-400" aria-hidden />
                   ) : null}
                   {fallbackTitle || part.title}
                 </h3>
-                <MarkdownBody text={part.body} />
+                <div className="border-t border-[#334155]/60 pt-2.5 mt-0.5">
+                  <MarkdownBody text={part.body} className={caseBodyClass} />
+                </div>
               </article>
             );
           })}
         </div>
       ) : (
-        <article className="rounded-xl border border-[#334155] bg-[#1E293B]/70 px-4 py-5 space-y-1">
-          <MarkdownBody text={cleaned} />
+        <article className="w-full rounded-xl border border-[#334155] bg-[#1E293B]/70 px-3.5 py-4 sm:px-4">
+          <MarkdownBody text={cleaned} className={caseBodyClass} />
         </article>
       )}
     </div>
@@ -1073,7 +1103,7 @@ function CaseStudyView({ text, copyLabel }: { text: string; copyLabel: string })
 
 function EmptyTab({ label }: { label: string }) {
   return (
-    <div className="rounded-xl border border-dashed border-[#334155] bg-[#1E293B]/30 px-4 py-10 text-center max-w-[768px]">
+    <div className={`${FULL} rounded-xl border border-dashed border-[#334155] bg-[#1E293B]/30 px-4 py-6 text-center`}>
       <p className="text-[14px] leading-[1.6] text-[#94A3B8]">
         No {label.toLowerCase()} content for this step.
       </p>
@@ -1615,7 +1645,7 @@ export default function AuditStepGuidanceView({ data, emptyMessage }: Props) {
   }
 
   return (
-    <div className="space-y-5 font-inter text-[#CBD5E1]">
+    <div className="space-y-4 font-inter text-[14px] leading-[1.6] text-[#CBD5E1] w-full min-w-0">
       {hasGuidance ? <GuidanceBriefing data={data} copyLabel={copyLabel} /> : null}
 
       {(availableTabs.length > 0 || hasGuidance) && (
@@ -1623,7 +1653,7 @@ export default function AuditStepGuidanceView({ data, emptyMessage }: Props) {
           <div
             role="tablist"
             aria-label="Audit Lens output sections"
-            className="flex gap-1 overflow-x-auto border-b border-[#334155] bg-[#0F172A] px-2 py-2 custom-thin-scrollbar"
+            className="flex gap-1 overflow-x-auto border-b border-[#334155] bg-[#0F172A] px-2 py-1.5 custom-thin-scrollbar"
           >
             {TAB_ORDER.map((id) => {
               const hasContent = !!contentByTab[id];
@@ -1639,7 +1669,7 @@ export default function AuditStepGuidanceView({ data, emptyMessage }: Props) {
                     if (!hasContent) return;
                     setUserTab(id);
                   }}
-                  className={`shrink-0 rounded-lg px-3 py-2 text-[12px] font-semibold tracking-[0.02em] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0D9488] disabled:opacity-35 disabled:cursor-not-allowed ${
+                  className={`shrink-0 rounded-lg px-3 py-1.5 text-[12px] font-semibold tracking-[0.02em] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0D9488] disabled:opacity-35 disabled:cursor-not-allowed ${
                     selected
                       ? "bg-[#0D9488]/20 text-[#5EEAD4] border border-[#0D9488]/40"
                       : "text-[#94A3B8] border border-transparent hover:text-[#E2E8F0] hover:bg-[#1E293B]/60"
@@ -1651,7 +1681,7 @@ export default function AuditStepGuidanceView({ data, emptyMessage }: Props) {
             })}
           </div>
 
-          <div role="tabpanel" className="p-4 sm:p-5 md:p-6 bg-[#0F172A]">
+          <div role="tabpanel" className="p-3 sm:p-4 md:p-5 bg-[#0F172A]">
             {activeTab === "working" &&
               (workingPaper ? (
                 <WorkingPaperView text={workingPaper} copyLabel={copyLabel} />
@@ -1681,8 +1711,8 @@ export default function AuditStepGuidanceView({ data, emptyMessage }: Props) {
       )}
 
       {showFallbackGuidance ? (
-        <div className="rounded-xl border border-[#334155] bg-[#1E293B]/50 px-4 py-4 max-w-[768px]">
-          <div className="mb-3 flex justify-end">
+        <div className={`${NARRATIVE} rounded-xl border border-[#334155] bg-[#1E293B]/50 px-3.5 py-3.5`}>
+          <div className="mb-2.5 flex justify-end">
             <CopyControl text={guidance} label={copyLabel} />
           </div>
           <MarkdownBody text={guidance} />

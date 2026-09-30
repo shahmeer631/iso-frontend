@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 
 
 
@@ -307,6 +307,17 @@ const AuditLensPage = () => {
 
 
   const [isFetchingStep, setIsFetchingStep] = useState(false);
+  const [stepLoaderIdx, setStepLoaderIdx] = useState(0);
+  const fetchStepInFlightRef = useRef(false);
+
+  const STEP_LOADER_PHRASES = [
+    "Preparing audit guidance",
+    "Retrieving relevant ISO context",
+    "Generating working paper",
+    "Preparing documented information",
+    "Preparing template",
+    "Preparing case study",
+  ];
 
 
 
@@ -343,34 +354,25 @@ const AuditLensPage = () => {
 
 
   useEffect(() => {
-
-
-
     if (mode === 'steps') {
-
-
-
       const step = AUDIT_STEPS[currentStepNumber];
-
-
-
       if (step) {
-
-
-
         setExpandedStages(prev => ({ ...prev, [step.stage]: true }));
-
-
-
       }
-
-
-
     }
-
-
-
   }, [currentStepNumber, mode]);
+
+  useEffect(() => {
+    const busy = isFetchingStep || isGeneratingStep;
+    if (!busy) {
+      setStepLoaderIdx(0);
+      return;
+    }
+    const timer = setInterval(() => {
+      setStepLoaderIdx((prev) => (prev + 1) % STEP_LOADER_PHRASES.length);
+    }, 2800);
+    return () => clearInterval(timer);
+  }, [isFetchingStep, isGeneratingStep]);
 
 
 
@@ -730,40 +732,19 @@ const AuditLensPage = () => {
 
 
   const fetchStep = async (stepNum: number, context: any) => {
-
-
-
     if (stepsData[stepNum]) return;
+    if (fetchStepInFlightRef.current) return;
 
-
-
+    fetchStepInFlightRef.current = true;
     setIsFetchingStep(true);
 
-
-
     try {
-
-
-
       const res = await generateStep({
-
-
-
         locked_context: context,
-
-
-
         step_number: stepNum,
         step_title: AUDIT_STEPS[stepNum]?.title,
         stage: AUDIT_STEPS[stepNum]?.stage,
-
       }).unwrap();
-
-
-
-
-
-
 
       const data = res?.data;
       const guidance = (data?.guidance || "").trim();
@@ -777,13 +758,7 @@ const AuditLensPage = () => {
       }
 
       setStepsData(prev => ({ ...prev, [stepNum]: data }));
-
-
-
     } catch (err: any) {
-
-
-
       const message =
         err?.data?.message ||
         err?.error ||
@@ -792,21 +767,10 @@ const AuditLensPage = () => {
         `Failed to generate step ${stepNum}`;
       console.error("Error fetching audit step:", message, err);
       toast.error(message);
-
-
-
     } finally {
-
-
-
+      fetchStepInFlightRef.current = false;
       setIsFetchingStep(false);
-
-
-
     }
-
-
-
   };
 
 
@@ -979,7 +943,7 @@ const AuditLensPage = () => {
 
 
 
-            <div className="p-5 md:p-6 flex items-center gap-4 border-b border-[#1E293B] bg-[#0A0F1C]/50">
+            <div className="p-4 md:p-5 flex items-center gap-3 border-b border-[#1E293B] bg-[#0A0F1C]/50">
 
 
 
@@ -995,9 +959,9 @@ const AuditLensPage = () => {
 
 
 
-              <h2 className="text-base md:text-lg font-black text-[#F8F9FA] uppercase tracking-wider">{t('auditLens.provideContext')}</h2>
+              <h2 className="text-[16px] font-semibold leading-[1.4] text-[#F8F9FA] tracking-wide">{t('auditLens.provideContext')}</h2>
             </div>
-            <div className="p-5 md:p-6 space-y-6">
+            <div className="p-4 md:p-5 space-y-5">
               <div className="flex bg-[#0A0F1C] p-1 rounded-xl border border-[#1E293B]">
                 <button
                   onClick={() => setInputType('text')}
@@ -1087,7 +1051,7 @@ const AuditLensPage = () => {
 
 
 
-                <h2 className="text-base md:text-lg font-black text-[#F8F9FA] uppercase tracking-wider">Select Direction</h2>
+                <h2 className="text-[16px] font-semibold leading-[1.4] text-[#F8F9FA] tracking-wide">Select Direction</h2>
 
 
 
@@ -1103,7 +1067,7 @@ const AuditLensPage = () => {
 
 
 
-            <div className="p-5 md:p-6 space-y-4 max-h-[400px] overflow-y-auto custom-thin-scrollbar">
+            <div className="p-4 md:p-5 space-y-3 max-h-[400px] overflow-y-auto custom-thin-scrollbar">
 
 
 
@@ -1183,7 +1147,7 @@ const AuditLensPage = () => {
 
 
 
-          <div className="bg-[#131B2D] border border-[#1E293B] rounded-3xl shadow-2xl p-5 md:p-6 flex flex-col gap-2 relative overflow-hidden shrink-0">
+          <div className="bg-[#131B2D] border border-[#1E293B] rounded-3xl shadow-2xl p-4 md:p-5 flex flex-col gap-2 relative overflow-hidden shrink-0">
 
 
 
@@ -1191,11 +1155,11 @@ const AuditLensPage = () => {
 
 
 
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-[10px] font-black text-[#14B8A6] uppercase tracking-widest">{t('auditLens.activeContext')}</span>
+            <div className="flex items-center justify-between mb-1.5">
+              <span className="text-[12px] font-semibold text-[#14B8A6] uppercase tracking-[0.06em]">{t('auditLens.activeContext')}</span>
               <button onClick={handleReset} className="text-xs text-gray-400 hover:text-white uppercase tracking-widest relative z-10">{t('auditLens.change')}</button>
             </div>
-            <p className="text-sm font-bold text-white relative z-10 leading-relaxed">{lockedContext.scope}</p>
+            <p className="text-[14px] font-medium text-white relative z-10 leading-[1.6]">{lockedContext.scope}</p>
 
 
 
@@ -1235,7 +1199,7 @@ const AuditLensPage = () => {
 
 
 
-              <h2 className="text-sm md:text-base font-black text-[#F8F9FA] uppercase tracking-wider">{t('auditLens.auditSteps')}</h2>
+              <h2 className="text-[16px] font-semibold leading-[1.4] text-[#F8F9FA] tracking-wide">{t('auditLens.auditSteps')}</h2>
             </div>
             {mode === 'steps' && <button onClick={handleReset} className="text-xs text-gray-400 hover:text-white uppercase tracking-widest">{t('auditLens.restart')}</button>}
 
@@ -1325,11 +1289,11 @@ const AuditLensPage = () => {
 
 
 
-                        <span className="text-xs font-black uppercase tracking-wider text-[#F1F5F9]">{stage} Phase</span>
+                        <span className="text-[12px] font-semibold uppercase tracking-[0.06em] text-[#F1F5F9]">{stage} Phase</span>
 
 
 
-                        <span className="text-[10px] text-gray-500 font-bold">({stageSteps.length} Steps)</span>
+                        <span className="text-[12px] text-gray-500 font-medium">({stageSteps.length} Steps)</span>
 
 
 
@@ -1557,7 +1521,7 @@ const AuditLensPage = () => {
 
 
 
-        <div className="bg-[#131B2D] border border-[#1E293B] rounded-3xl shadow-2xl flex flex-col items-center justify-center p-12 text-center min-h-[500px] md:min-h-[600px] xl:h-[800px]">
+        <div className="bg-[#131B2D] border border-[#1E293B] rounded-3xl shadow-2xl flex flex-col items-center justify-center p-6 md:p-8 text-center min-h-[500px] md:min-h-[600px] xl:h-[800px]">
 
 
 
@@ -1565,7 +1529,7 @@ const AuditLensPage = () => {
 
 
 
-            <div className="space-y-8 flex flex-col items-center">
+            <div className="space-y-5 flex flex-col items-center">
 
 
 
@@ -1609,11 +1573,11 @@ const AuditLensPage = () => {
 
 
 
-              <h3 className="text-xl font-black text-[#F8F9FA] uppercase tracking-widest">Analyzing Context</h3>
+              <h3 className="text-[20px] font-semibold leading-[1.3] tracking-[-0.01em] text-[#F8F9FA]">Analyzing Context</h3>
 
 
 
-              <p className="text-sm text-[#9CA3AF] max-w-xs font-medium leading-relaxed">Processing your input to generate precise audit scope options.</p>
+              <p className="text-[14px] text-[#9CA3AF] max-w-sm font-normal leading-[1.6]">Processing your input to generate precise audit scope options.</p>
 
 
 
@@ -1641,8 +1605,8 @@ const AuditLensPage = () => {
 
 
 
-              <h3 className="text-lg font-black text-[#F8F9FA] uppercase tracking-[0.2em] mb-4">{t('auditLens.readyForScan')}</h3>
-              <p className="text-sm max-w-sm text-[#9CA3AF] font-medium leading-relaxed">{t('auditLens.readyForScanDesc')}</p>
+              <h3 className="text-[20px] font-semibold leading-[1.3] tracking-[-0.01em] text-[#F8F9FA] mb-3">{t('auditLens.readyForScan')}</h3>
+              <p className="text-[14px] max-w-sm text-[#9CA3AF] font-normal leading-[1.6]">{t('auditLens.readyForScanDesc')}</p>
 
 
 
@@ -1690,11 +1654,11 @@ const AuditLensPage = () => {
 
 
 
-          <div className="flex-1 flex flex-col items-center justify-center p-12 text-center">
+          <div className="flex-1 flex flex-col items-center justify-center p-6 md:p-8 text-center">
 
 
 
-            <div className="space-y-8 flex flex-col items-center">
+            <div className="space-y-5 flex flex-col items-center">
 
 
 
@@ -1738,11 +1702,11 @@ const AuditLensPage = () => {
 
 
 
-              <h3 className="text-xl font-black text-[#F8F9FA] uppercase tracking-widest">Generating Step {currentStepNumber}</h3>
+              <h3 className="text-[20px] font-semibold leading-[1.3] tracking-[-0.01em] text-[#F8F9FA]">Generating Audit Step {currentStepNumber}</h3>
 
-
-
-              <p className="text-sm text-[#9CA3AF] max-w-xs font-medium leading-relaxed">Compiling guidance and templates...</p>
+              <p className="text-[14px] text-[#9CA3AF] max-w-sm font-normal leading-[1.6]">
+                {STEP_LOADER_PHRASES[stepLoaderIdx]}…
+              </p>
 
 
 
@@ -1762,11 +1726,11 @@ const AuditLensPage = () => {
 
 
 
-            <div className="p-5 md:p-6 border-b border-[#1E293B] bg-[#0A0F1C]/50 shrink-0 flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div className="p-4 md:p-5 border-b border-[#1E293B] bg-[#0A0F1C]/50 shrink-0 flex flex-col md:flex-row md:items-center justify-between gap-3">
 
 
 
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-3">
 
 
 
@@ -1782,11 +1746,11 @@ const AuditLensPage = () => {
 
 
 
-                <div className="space-y-1">
+                <div className="space-y-0.5 min-w-0">
 
 
 
-                  <h2 className="text-base md:text-lg font-black text-[#F8F9FA] tracking-wide">
+                  <h2 className="text-[20px] font-semibold leading-[1.3] tracking-[-0.01em] text-[#F8F9FA]">
 
 
 
@@ -1798,7 +1762,7 @@ const AuditLensPage = () => {
 
 
 
-                  <p className="text-[10px] font-jetbrains-mono font-black text-[#14B8A6] uppercase tracking-[0.2em]">{currentData?.stage}</p>
+                  <p className="text-[12px] font-jetbrains-mono font-medium text-[#14B8A6] uppercase tracking-[0.08em]">{currentData?.stage}</p>
 
 
 
@@ -1818,14 +1782,16 @@ const AuditLensPage = () => {
 
 
 
-            <div className="flex-1 overflow-y-auto bg-[#0F172A] p-5 md:p-8 lg:p-12 custom-thin-scrollbar">
+            <div className="flex-1 overflow-y-auto bg-[#0F172A] p-4 sm:p-5 md:p-6 lg:p-7 custom-thin-scrollbar min-w-0">
 
 
 
+                            <div className="w-full min-w-0">
                             <AuditStepGuidanceView
                 data={currentData || {}}
                 emptyMessage="No guidance was generated for this step. Please retry."
               />
+                            </div>
 
 
 
@@ -1833,7 +1799,7 @@ const AuditLensPage = () => {
 
 
 
-              <div className="mt-12 pt-8 border-t border-[#1E293B] flex items-center justify-between">
+              <div className="mt-8 pt-6 border-t border-[#1E293B] flex items-center justify-between">
 
 
 
@@ -1921,7 +1887,7 @@ const AuditLensPage = () => {
 
 
 
-          <div className="flex-1 flex flex-col items-center justify-center text-gray-500 p-12 text-center">
+          <div className="flex-1 flex flex-col items-center justify-center text-gray-500 p-6 md:p-8 text-center">
 
 
 
@@ -1981,11 +1947,11 @@ const AuditLensPage = () => {
 
 
 
-      <div className="bg-[#131B2D] bormax-w-[85vw] sm:max-w-[80vw] md:max-w-[95vw] lg:max-w-[99vw] border-[#1E293B] rounded-3xl shadow-2xl overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-500">
+      <div className="bg-[#131B2D] w-full border border-[#1E293B] rounded-3xl shadow-2xl overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-500">
 
 
 
-        <div className="p-2 sm:p-3 md:p-6 flex items-center gap-4 border-b border-[#1E293B] bg-[#0A0F1C]/50">
+        <div className="p-2 sm:p-3 md:p-5 flex items-center gap-4 border-b border-[#1E293B] bg-[#0A0F1C]/50">
 
           <div className="p-2 bg-[#00f0ff] text-[#0F111A]/10 rounded-xl">
 
@@ -1994,15 +1960,15 @@ const AuditLensPage = () => {
           </div>
 
           <div>
-            <div className="text-[10px] sm:text-xs md:text-sm lg:text-base font-black text-[#F3F4F6] uppercase tracking-wider">{t('auditLens.chatTitle')}</div>
-            <p className="text-[8px] text-[#4B5563] font-black uppercase tracking-widest mt-1">{t('auditLens.chatDesc')}</p>
+            <div className="text-[12px] sm:text-sm font-semibold text-[#F3F4F6] uppercase tracking-wider">{t('auditLens.chatTitle')}</div>
+            <p className="text-[12px] text-[#4B5563] font-medium tracking-wide mt-0.5">{t('auditLens.chatDesc')}</p>
           </div>
 
         </div>
 
 
 
-        <div className="p-2 sm:p-3 md:p-8 space-y-8 max-w-[94.5vw] sm:max-w-[80vw] md:max-w-[90vw] lg:max-w-[99vw]">
+        <div className="p-3 sm:p-4 md:p-6 space-y-5 w-full min-w-0">
 
           <div className="flex flex-col space-y-6 min-w-0">
 
@@ -2014,7 +1980,7 @@ const AuditLensPage = () => {
 
                   <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} min-w-0`}>
 
-                    <div className={`max-w-full p-1.5 sm:p-2.5 md:p-4 rounded-2xl text-xs sm:text-sm font-medium leading-relaxed min-w-0 ${msg.role === 'user' ? 'bg-[#67E8F9] text-[#0F111A] rounded-tr-none shadow-[0_4px_15px_-3px_rgba(103,232,249,0.35)]' : 'bg-[#131B2D] border border-[#1E293B] text-[#F1F5F9] rounded-tl-none w-full'}`}>
+                    <div className={`max-w-full p-2 sm:p-3 md:p-4 rounded-2xl text-[13px] sm:text-sm md:text-[14px] font-medium leading-[1.6] min-w-0 ${msg.role === 'user' ? 'bg-[#67E8F9] text-[#0F111A] rounded-tr-none shadow-[0_4px_15px_-3px_rgba(103,232,249,0.35)]' : 'bg-[#131B2D] border border-[#1E293B] text-[#F1F5F9] rounded-tl-none w-full'}`}>
 
                       <div className={`prose prose-sm max-w-none w-full min-w-0 ${msg.role === 'user' ? 'text-black' : 'prose-invert text-[#F1F5F9]'}`}>
 
@@ -2024,13 +1990,13 @@ const AuditLensPage = () => {
 
                           components={{
 
-                            h1: (props) => <span className={`block font-black mb-3 uppercase tracking-wide text-[10px] sm:text-[12px] md:text-[14px] ${msg.role === 'user' ? 'text-black font-bold' : 'text-white font-bold'}`} {...props} />,
+                            h1: (props) => <span className={`block font-semibold mb-2 tracking-tight text-[16px] sm:text-[18px] md:text-[20px] leading-[1.3] ${msg.role === 'user' ? 'text-black' : 'text-white'}`} {...props} />,
 
-                            h2: (props) => <span className={`block font-black mt-4 mb-2 uppercase tracking-wide text-[9px] sm:text-[11px] md:text-[13px] ${msg.role === 'user' ? 'text-black font-bold' : 'text-white font-bold'}`} {...props} />,
+                            h2: (props) => <span className={`block font-semibold mt-3 mb-1.5 tracking-tight text-[14px] sm:text-[15px] md:text-[16px] leading-[1.4] ${msg.role === 'user' ? 'text-black' : 'text-white'}`} {...props} />,
 
-                            h3: (props) => <span className={`block font-bold mt-3 mb-1.5 uppercase tracking-wide text-[8px] sm:text-[10px] md:text-[12px] ${msg.role === 'user' ? 'text-black' : 'text-white'}`} {...props} />,
+                            h3: (props) => <span className={`block font-semibold mt-2.5 mb-1 tracking-tight text-[13px] sm:text-[14px] leading-[1.4] ${msg.role === 'user' ? 'text-black' : 'text-white'}`} {...props} />,
 
-                            p: (props) => <p className={`mb-2 text-[10px] sm:text-xs md:text-sm leading-relaxed ${msg.role === 'user' ? 'text-black font-semibold' : 'text-gray-100'}`} {...props} />,
+                            p: (props) => <p className={`mb-2 text-[13px] sm:text-sm md:text-[14px] leading-[1.6] ${msg.role === 'user' ? 'text-black font-medium' : 'text-gray-100'}`} {...props} />,
 
                             ul: ({node, className, ...props}: any) => <ul className={`list-disc pl-4 mb-3 space-y-1 ${msg.role === 'user' ? 'text-black' : 'text-gray-100'} ${className || ''}`} {...props} />,
 
@@ -2040,7 +2006,7 @@ const AuditLensPage = () => {
 
                             
 
-                            li: ({node, className, ...props}: any) => <li className={`mb-1 text-[10px] sm:text-xs md:text-sm leading-relaxed ${msg.role === 'user' ? 'text-black' : 'text-gray-100'} ${className || ''}`} {...props} />,
+                            li: ({node, className, ...props}: any) => <li className={`mb-1 text-[13px] sm:text-sm md:text-[14px] leading-[1.6] ${msg.role === 'user' ? 'text-black' : 'text-gray-100'} ${className || ''}`} {...props} />,
 
                             table: ({ ...props }) => (
 
@@ -2372,6 +2338,20 @@ const AuditLensPage = () => {
 
 
 
+        }
+
+
+
+        .audit-lens-md > :first-child {
+          margin-top: 0 !important;
+        }
+
+        .audit-lens-md > :last-child {
+          margin-bottom: 0 !important;
+        }
+
+        .audit-lens-case p + p {
+          margin-top: 0.5rem;
         }
 
 
