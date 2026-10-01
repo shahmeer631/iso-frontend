@@ -16,7 +16,6 @@ import {
   Layout,
   MessageSquare,
   BookOpen,
-  Info,
   Loader2,
   CheckSquare,
   Sparkles,
@@ -49,6 +48,306 @@ import { useTranslation } from "react-i18next";
 import "@/lib/i18n/client";
 
 import remarkGfm from "remark-gfm";
+
+/** Prefer API fields (isoCode/title); tolerate legacy code/summary. */
+function getStandardCode(standard: any): string {
+  return String(standard?.isoCode || standard?.code || "").trim();
+}
+
+function getStandardSummary(standard: any, fallback = ""): string {
+  return String(
+    standard?.summary ||
+      standard?.description ||
+      standard?.title ||
+      fallback,
+  ).trim();
+}
+
+function getStandardLabel(standard: any): string {
+  return String(standard?.title || getStandardCode(standard) || "ISO Standard").trim();
+}
+
+/** Normalize flashcard deck shapes from API / history. */
+function normalizeClientFlashcardDeck(raw: any, fallbackTitle = "ISO Standard"): ISODeckData | null {
+  if (!raw || typeof raw !== "object") return null;
+  const root =
+    Array.isArray(raw.cards) || Array.isArray(raw.flashcards)
+      ? raw
+      : raw.data && typeof raw.data === "object"
+        ? raw.data
+        : raw;
+  const cardsRaw = Array.isArray(root.cards)
+    ? root.cards
+    : Array.isArray(root.flashcards)
+      ? root.flashcards
+      : [];
+  const cards = cardsRaw
+    .map((card: any, index: number) => {
+      if (!card || typeof card !== "object") return null;
+      if (card.front || card.back) {
+        const frontBody = String(card.front?.body || card.front?.text || card.front?.question || "").trim();
+        const backBody = String(card.back?.body || card.back?.text || card.back?.answer || "").trim();
+        if (!frontBody && !backBody) return null;
+        return {
+          front: {
+            title: String(card.front?.title || `Card ${index + 1}`).trim(),
+            body: frontBody || String(card.front?.title || "").trim(),
+          },
+          back: {
+            title: String(card.back?.title || "Answer").trim(),
+            body: backBody || String(card.back?.title || "").trim(),
+          },
+        };
+      }
+      const q = String(card.question || card.q || "").trim();
+      const a = String(card.answer || card.a || "").trim();
+      if (!q && !a) return null;
+      return {
+        front: { title: `Card ${index + 1}`, body: q || a },
+        back: { title: String(card.clause || "Answer"), body: a || q },
+      };
+    })
+    .filter(Boolean);
+  if (!cards.length) return null;
+  return {
+    deck_title: String(root.deck_title || root.title || `Flashcards — ${fallbackTitle}`),
+    iso_standard: String(root.iso_standard || fallbackTitle),
+    total_cards: cards.length,
+    difficulty: String(root.difficulty || "intermediate"),
+    cards: cards as ISODeckData["cards"],
+    generated_at: String(root.generated_at || new Date().toISOString()),
+    session_id: String(root.session_id || ""),
+  };
+}
+
+function buildStudioToolPrompt(toolId: string, standardLabel: string): string {
+  switch (toolId) {
+    case "generate_notes":
+      return [
+        `GENERATE_NOTES for ${standardLabel}.`,
+        "Produce detailed study/reference NOTES from the selected ISO material — NOT a summary.",
+        "Preserve important requirements, concepts, terminology, clause-specific points, practical interpretation, and evidence/documentation where supported.",
+        "Structure with headings such as: Topic Overview; Key Concepts; Important Requirements; Detailed Explanation; Important Terms / Definitions; Clause-Specific Points; Practical Interpretation; Important Evidence / Documentation; Key Takeaways.",
+        "Prefer useful study detail over a short high-level overview.",
+      ].join(" ");
+    case "create_summary":
+      return [
+        `CREATE_SUMMARY for ${standardLabel}.`,
+        "Produce a concise high-level SUMMARY that condenses the main points — NOT detailed study notes.",
+        "Use sections: Summary; Key Requirements; Practical Interpretation; Important Evidence; Key Takeaways.",
+        "Keep it relatively short and overview-focused. Ground claims in the selected standard.",
+      ].join(" ");
+    case "practice_questions":
+      return [
+        `Generate difficult exam questions for ${standardLabel}.`,
+        "Produce 5 direct, standard-specific certification-style questions covering requirement interpretation, purpose, evidence, implementation, and documented information.",
+        "Do not use open-ended prompts like What is your scope or What do you know about. Do not invent clauses.",
+      ].join(" ");
+    case "generate_quiz":
+      return [
+        `Generate a difficult professional quiz for ${standardLabel}.`,
+        "Produce 5 multiple-choice questions (A–D), each with one correct answer, brief explanation, and a source-grounded rationale.",
+        "Questions must be exam-style and specific to this standard — not open-ended coaching prompts. Vary topics across the set.",
+      ].join(" ");
+    case "explain_eli5":
+      return [
+        `Explain the core requirements of ${standardLabel} in clear, simple professional language.`,
+        "Structure: Simple Explanation; Why It Matters; Practical Example (labeled hypothetical if needed); Key Takeaway.",
+        "Remain grounded in the selected standard.",
+      ].join(" ");
+    default:
+      return `Help me study ${standardLabel} as an ISO consultant.`;
+  }
+}
+
+function studioToolToLibraryTask(toolId: string): string | undefined {
+  switch (toolId) {
+    case "generate_notes":
+      return "notes";
+    case "create_summary":
+      return "summary";
+    case "generate_quiz":
+      return "quiz";
+    case "practice_questions":
+      return "exam_questions";
+    case "explain_eli5":
+      return "eli5";
+    case "build_flashcards":
+      return "flashcards";
+    default:
+      return undefined;
+  }
+}
+
+function isOpenEndedCoachingQuestion(text: string): boolean {
+  const q = String(text || "").trim().toLowerCase();
+  if (!q) return true;
+  return (
+    /^what is your scope\b/.test(q) ||
+    /^what do you know\b/.test(q) ||
+    /^can you explain\b/.test(q) ||
+    /^how would you define\b/.test(q) ||
+    /^tell me about\b/.test(q) ||
+    /^what is iso\b/.test(q)
+  );
+}
+
+function filterExamStyleFollowups(items: string[]): string[] {
+  return (items || [])
+    .map((q) => String(q || "").trim())
+    .filter((q) => q.length > 12 && !isOpenEndedCoachingQuestion(q))
+    .slice(0, 5);
+}
+
+type LibraryQuizItem = {
+  question: string;
+  options: { key: string; text: string }[];
+  correct: string;
+  explanation?: string;
+};
+
+/** Parse Library MCQ markdown from Generate Quiz into interactive items. */
+function parseLibraryQuizMarkdown(md: string): LibraryQuizItem[] | null {
+  const text = String(md || "").trim();
+  if (!text || !/\bcorrect answer\b/i.test(text)) return null;
+
+  const blocks = text.split(/###\s*Question\s*\d+/i).slice(1);
+  if (blocks.length < 2) return null;
+
+  const items: LibraryQuizItem[] = [];
+  for (const block of blocks) {
+    const lines = block
+      .split("\n")
+      .map((l) => l.trim())
+      .filter(Boolean);
+    if (!lines.length) continue;
+
+    const optionLines = lines.filter((l) => /^[A-D][\)\.\:]\s+/i.test(l));
+    if (optionLines.length < 2) continue;
+
+    const correctLine = lines.find((l) => /correct\s*answer/i.test(l));
+    const correctMatch = correctLine
+      ?.replace(/\*/g, "")
+      .match(/correct\s*answer\s*:\s*([A-D])/i);
+    const correct = (correctMatch?.[1] || "").toUpperCase();
+    if (!correct) continue;
+
+    const explLine = lines.find((l) => /explanation/i.test(l));
+    const explanation = explLine
+      ? explLine.replace(/\*/g, "").replace(/^.*?explanation\s*:\s*/i, "").trim()
+      : undefined;
+
+    const firstOptIdx = lines.findIndex((l) => /^[A-D][\)\.\:]\s+/i.test(l));
+    const question = lines.slice(0, firstOptIdx > 0 ? firstOptIdx : 1).join(" ").trim();
+    if (!question || question.length < 8) continue;
+
+    const options = optionLines.map((l) => {
+      const m = l.match(/^([A-D])[\)\.\:]\s+(.+)$/i);
+      return {
+        key: (m?.[1] || "").toUpperCase(),
+        text: (m?.[2] || l).trim(),
+      };
+    }).filter((o) => o.key && o.text);
+
+    if (options.length < 2) continue;
+    items.push({ question, options, correct, explanation });
+  }
+
+  return items.length >= 2 ? items : null;
+}
+
+function LibraryQuizPlayer({ items }: { items: LibraryQuizItem[] }) {
+  const [answers, setAnswers] = useState<Record<number, string>>({});
+  const [submitted, setSubmitted] = useState(false);
+
+  const score = items.reduce((acc, item, idx) => {
+    return acc + (answers[idx] === item.correct ? 1 : 0);
+  }, 0);
+
+  return (
+    <div className="space-y-5 mt-2">
+      <div className="flex items-center justify-between gap-3">
+        <h3 className="text-[15px] md:text-[16px] font-black text-white tracking-tight">
+          Knowledge Assessment
+        </h3>
+        {submitted && (
+          <span className="text-[11px] font-black uppercase tracking-widest text-emerald-400">
+            Score {score}/{items.length}
+          </span>
+        )}
+      </div>
+      {items.map((item, idx) => {
+        const selected = answers[idx];
+        return (
+          <div
+            key={idx}
+            className="rounded-2xl border border-white/10 bg-white/[0.02] p-4 md:p-5 space-y-3"
+          >
+            <p className="text-[14px] md:text-[15px] font-semibold text-[#EDEDED] leading-relaxed">
+              <span className="text-[#00f0ff] mr-2">Q{idx + 1}.</span>
+              {item.question}
+            </p>
+            <div className="space-y-2">
+              {item.options.map((opt) => {
+                const isSelected = selected === opt.key;
+                const isCorrect = submitted && opt.key === item.correct;
+                const isWrong = submitted && isSelected && opt.key !== item.correct;
+                return (
+                  <button
+                    key={opt.key}
+                    type="button"
+                    disabled={submitted}
+                    onClick={() =>
+                      setAnswers((prev) => ({ ...prev, [idx]: opt.key }))
+                    }
+                    className={`w-full text-left px-3 py-2.5 rounded-xl border text-[13px] md:text-[14px] transition-all ${
+                      isCorrect
+                        ? "border-emerald-400/50 bg-emerald-400/10 text-emerald-200"
+                        : isWrong
+                          ? "border-rose-400/50 bg-rose-400/10 text-rose-200"
+                          : isSelected
+                            ? "border-brand-cyan/40 bg-brand-cyan/10 text-white"
+                            : "border-white/10 bg-black/20 text-gray-300 hover:border-white/20"
+                    }`}
+                  >
+                    <span className="font-black text-[#00f0ff] mr-2">{opt.key})</span>
+                    {opt.text}
+                  </button>
+                );
+              })}
+            </div>
+            {submitted && item.explanation && (
+              <p className="text-[12px] md:text-[13px] text-gray-400 leading-relaxed border-t border-white/5 pt-3">
+                {item.explanation}
+              </p>
+            )}
+          </div>
+        );
+      })}
+      {!submitted ? (
+        <button
+          type="button"
+          disabled={Object.keys(answers).length < items.length}
+          onClick={() => setSubmitted(true)}
+          className="w-full py-3 rounded-xl bg-[#00f0ff] text-[#0F111A] font-black text-xs uppercase tracking-widest disabled:opacity-40 disabled:cursor-not-allowed"
+        >
+          Check answers
+        </button>
+      ) : (
+        <button
+          type="button"
+          onClick={() => {
+            setAnswers({});
+            setSubmitted(false);
+          }}
+          className="w-full py-3 rounded-xl border border-white/15 text-gray-300 font-black text-xs uppercase tracking-widest hover:border-white/30"
+        >
+          Retry quiz
+        </button>
+      )}
+    </div>
+  );
+}
 
 // --- Types ---
 interface Message {
@@ -371,14 +670,24 @@ const InitialChatView = ({ title, summary, code, category, standardId, onActionC
     const fetchSuggestions = async () => {
       try {
         const formData = new FormData();
-        formData.append("messages", "Can you Give 5 1 liner followup question. Max 10 words standard");
+        formData.append(
+          "messages",
+          [
+            "Generate exactly 5 difficult exam-style starter questions for this ISO standard.",
+            "Each question must be direct, specific, and suitable for testing knowledge of requirements, evidence, purpose, or responsibilities.",
+            "Do NOT use open-ended prompts like \"What is your scope?\" or \"What do you know about...\".",
+            "Return only a numbered list of 5 questions.",
+          ].join(" "),
+        );
         formData.append("context", JSON.stringify({ purpose: "library_standards", isoStandardId: standardId }));
 
         const result = await chatWithISOStandards(formData as any).unwrap();
 
         if (isMounted && result?.success && result?.data?.response) {
           const lines = result.data.response.split('\n').filter((l: string) => l.trim().length > 5);
-          const cleaned = lines.map((l: string) => l.replace(/^[\d\.\-\*]+\s*/, '').replace(/^"|"$/g, '').trim()).slice(0, 5);
+          const cleaned = filterExamStyleFollowups(
+            lines.map((l: string) => l.replace(/^[\d\.\-\*]+\s*/, '').replace(/^"|"$/g, '').trim()),
+          );
           setSuggestions(cleaned);
         }
       } catch (error) {
@@ -433,7 +742,7 @@ const InitialChatView = ({ title, summary, code, category, standardId, onActionC
   if (!title) return <DocumentSkeleton />;
 
   return (
-    <div className="flex-1 flex flex-col items-center justify-start px-6 md:px-12 lg:px-24 overflow-y-auto w-full h-full relative no-scrollbar mt-10">
+    <div className="flex-1 flex flex-col items-center justify-start px-4 md:px-8 lg:px-12 overflow-y-auto w-full h-full relative no-scrollbar mt-4 md:mt-6">
       {/* Decorative background elements */}
       <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-[#00f0ff]/5 rounded-full blur-[120px] -z-10 pointer-events-none" />
       <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-[#8B5CF6]/5 rounded-full blur-[120px] -z-10 pointer-events-none" />
@@ -578,9 +887,9 @@ const MessageList = ({ messages, isLoading, onActionClick, onStudyFlashcards }: 
     <div
       ref={containerRef}
       onScroll={handleScroll}
-      className="flex-1 overflow-y-auto overflow-x-hidden py-6 px-2 md:py-12 md:px-6 w-full h-full custom-scrollbar scroll-smooth"
+      className="flex-1 overflow-y-auto overflow-x-hidden py-4 px-2 md:py-6 md:px-4 w-full h-full custom-scrollbar scroll-smooth"
     >
-      <div className="max-w-full mx-auto space-y-4 px-0 md:space-y-8 md:px-8">
+      <div className="max-w-full mx-auto space-y-4 px-0 md:space-y-5 md:px-4 lg:px-6">
         {messages.map((msg, index) => (
           <motion.div
             key={msg.id}
@@ -595,9 +904,9 @@ const MessageList = ({ messages, isLoading, onActionClick, onStudyFlashcards }: 
               </div>
             )}
 
-            <div className={`flex flex-col gap-2 w-full max-w-full ${msg.role === "user" ? "md:max-w-[85%] md:w-auto items-end" : "md:max-w-[90%] md:w-auto"}`}>
+            <div className={`flex flex-col gap-2 w-full max-w-full ${msg.role === "user" ? "md:max-w-[85%] md:w-auto items-end" : "md:max-w-[52rem] md:w-auto"}`}>
               <div
-                className={`px-3.5 py-3 md:px-6 md:py-5 rounded-2xl md:rounded-3xl text-[13px] sm:text-[15px] md:text-[16px] leading-[1.7] ${msg.role === "bot"
+                className={`px-3.5 py-3 md:px-5 md:py-4 rounded-2xl md:rounded-3xl text-[14px] sm:text-[15px] md:text-[16px] leading-[1.7] ${msg.role === "bot"
                   ? "bg-[#0A0A0B] border border-white/10 text-[#EDEDED] rounded-tl-sm shadow-2xl"
                   : "bg-[#111827] border border-brand-cyan/20 text-white font-medium rounded-tr-sm shadow-lg shadow-black/40"
                   }`}
@@ -659,6 +968,12 @@ const MessageList = ({ messages, isLoading, onActionClick, onStudyFlashcards }: 
                   </div>
                 )}
                 {msg.role === "bot" ? (
+                  (() => {
+                    const quizItems = parseLibraryQuizMarkdown(msg.content);
+                    if (quizItems) {
+                      return <LibraryQuizPlayer items={quizItems} />;
+                    }
+                    return (
                   <div className="
                     max-w-none text-[#EDEDED]
                     [&_p]:mb-3 md:[&_p]:mb-4 [&_p]:last:mb-0
@@ -695,6 +1010,8 @@ const MessageList = ({ messages, isLoading, onActionClick, onStudyFlashcards }: 
                       </ReactMarkdown>
                     )}
                   </div>
+                    );
+                  })()
                 ) : (
                   msg.content
                 )}
@@ -711,26 +1028,16 @@ const MessageList = ({ messages, isLoading, onActionClick, onStudyFlashcards }: 
                   </div>
 
                   {msg.role === "bot" && msg.sources && msg.sources.length > 0 && (
-                    <div className="relative group/sources">
-                      <button className="p-1.5 hover:bg-white/5 text-gray-500 hover:text-[#FFFFFF] rounded-lg transition-colors">
-                        <Info size={14} />
-                      </button>
-                      <div className="absolute bottom-full left-0 mb-3 w-72 opacity-0 invisible group-hover/sources:opacity-100 group-hover/sources:visible transition-all duration-300 z-50">
-                        <div className="bg-[#141416] border border-white/10 rounded-2xl shadow-2xl p-5 backdrop-blur-xl">
-                          <h4 className="text-[10px] font-black text-[#818CF8] uppercase tracking-widest mb-3 flex items-center gap-2">
-                            <Sparkles size={12} /> {t('library.referenceSources')}
-                          </h4>
-                          <ul className="space-y-2">
-                            {msg.sources.map((source, sIdx) => (
-                              <li key={sIdx} className="text-[11px] font-bold text-gray-400 flex items-start gap-2">
-                                <div className="w-1 h-1 rounded-fullbg-[#00f0ff] text-[#0F111A] mt-1.5 shrink-0 shadow-[0_0_4px_#D4AF37]" />
-                                {source}
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                        <div className="w-3 h-3 bg-[#141416] border-r border-b border-white/10 rotate-45 absolute -bottom-1.5 left-4" />
-                      </div>
+                    <div className="flex flex-wrap items-center gap-1.5 mt-1 max-w-full">
+                      {msg.sources.slice(0, 4).map((source, sIdx) => (
+                        <span
+                          key={sIdx}
+                          className="inline-flex items-center max-w-[220px] truncate px-2 py-0.5 rounded-full border border-[#00f0ff]/20 bg-[#00f0ff]/5 text-[10px] font-bold text-[#7dd3fc]"
+                          title={source}
+                        >
+                          {source}
+                        </span>
+                      ))}
                     </div>
                   )}
                 </div>
@@ -862,7 +1169,7 @@ const StudioSidebar = ({ studyTools, isMobile, onClose, onToolClick }: any) => {
     <div
       className={`
     flex flex-col bg-[#0E1116] p-8 shrink-0 h-full
-    ${isMobile ? "w-full" : "hidden xl:flex w-[350px] border-l border-white/5"}
+    ${isMobile ? "w-full" : "hidden xl:flex w-[300px] border-l border-white/5"}
   `}
     >
       <div className="flex items-center justify-between mb-8 mt-20">
@@ -937,6 +1244,30 @@ const ChatInterface = ({ id }: { id: string }) => {
     console.log("Loaded Standard Data:", standard);
   }, [standard]);
 
+  // Prevent stale chat/flashcards when navigating to a different ISO standard
+  const previousStandardIdRef = useRef<string | null>(null);
+  useEffect(() => {
+    if (!standardId) return;
+    if (
+      previousStandardIdRef.current &&
+      previousStandardIdRef.current !== standardId
+    ) {
+      setMessages([]);
+      setFlashcardsData(null);
+      setViewMode("chat");
+      setCurrentCardIndex(0);
+      setIsCardFlipped(false);
+      setSessionId(null);
+      lastLoadedSessionId.current = null;
+      const params = new URLSearchParams(searchParams.toString());
+      if (params.has("sessionId")) {
+        params.delete("sessionId");
+        router.replace(`${pathname}?${params.toString()}`);
+      }
+    }
+    previousStandardIdRef.current = standardId;
+  }, [standardId, pathname, router, searchParams]);
+
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isLeftSidebarOpen, setIsLeftSidebarOpen] = useState(false);
   const [isDesktopLeftSidebarOpen, setIsDesktopLeftSidebarOpen] = useState(true);
@@ -965,14 +1296,17 @@ const ChatInterface = ({ id }: { id: string }) => {
       const formData = new FormData();
       formData.append("context", JSON.stringify({ purpose: "library_standards", isoStandardId: standardId }));
       formData.append("num_cards", "12");
-      formData.append("difficulty", "intermediate");
+      formData.append("difficulty", "advanced");
       if (sessionId) {
         formData.append("session_id", sessionId);
       }
 
       const result = await generateFlashcards(formData).unwrap();
-      if (result?.success && result?.data) {
-        const deck = result.data;
+      const deck = normalizeClientFlashcardDeck(
+        result?.data || result,
+        getStandardLabel(standard),
+      );
+      if (result?.success !== false && deck) {
         setFlashcardsData(deck);
 
         // Add a message to local chat state representing this flashcard deck
@@ -1019,6 +1353,14 @@ const ChatInterface = ({ id }: { id: string }) => {
       icon: Layout,
       color: "text-green-500",
       bgColor: "bg-green-50",
+    },
+    {
+      id: "practice_questions",
+      title: "Exam Questions",
+      description: "Difficult certification-style questions for this standard",
+      icon: CheckSquare,
+      color: "text-amber-400",
+      bgColor: "bg-amber-400/10",
     },
     {
       id: "generate_quiz",
@@ -1082,10 +1424,31 @@ const ChatInterface = ({ id }: { id: string }) => {
           let contentStr = "";
           let deckData: ISODeckData | undefined = undefined;
           if (typeof item.message === "object" && item.message !== null) {
-            const deck = item.message as ISODeckData;
-            loadedDeck = deck;
-            deckData = deck;
-            contentStr = `⚡ **Compliance Flashcards Generated**\n\nDeck: **${deck.deck_title}**\nTotal Cards: **${deck.total_cards}**\nDifficulty: **${deck.difficulty}**`;
+            const deck = normalizeClientFlashcardDeck(item.message, getStandardLabel(standard));
+            if (deck) {
+              loadedDeck = deck;
+              deckData = deck;
+              contentStr = `⚡ **Compliance Flashcards Generated**\n\nDeck: **${deck.deck_title}**\nTotal Cards: **${deck.total_cards}**\nDifficulty: **${deck.difficulty}**`;
+            } else {
+              contentStr = JSON.stringify(item.message);
+            }
+          } else if (
+            typeof item.message === "string" &&
+            (item.message.trim().startsWith("{") || item.message.trim().startsWith("["))
+          ) {
+            try {
+              const parsed = JSON.parse(item.message);
+              const deck = normalizeClientFlashcardDeck(parsed, getStandardLabel(standard));
+              if (deck) {
+                loadedDeck = deck;
+                deckData = deck;
+                contentStr = `⚡ **Compliance Flashcards Generated**\n\nDeck: **${deck.deck_title}**\nTotal Cards: **${deck.total_cards}**\nDifficulty: **${deck.difficulty}**`;
+              } else {
+                contentStr = item.message;
+              }
+            } catch {
+              contentStr = item.message;
+            }
           } else {
             contentStr = item.message as string;
           }
@@ -1126,8 +1489,13 @@ const ChatInterface = ({ id }: { id: string }) => {
                 },
                 body: JSON.stringify({
                   context: {
-                    topic: standard?.code || standard?.title || "ISO Standard",
-                    details: standard?.summary || "Standard guidelines and requirements"
+                    topic: getStandardLabel(standard),
+                    details: [
+                      getStandardCode(standard),
+                      "Generate difficult exam-style follow-up questions.",
+                      "Avoid open-ended prompts like What is your scope.",
+                      String(lastMsg.content || "").slice(0, 1200),
+                    ].filter(Boolean).join("\n"),
                   },
                   num_questions: 5
                 })
@@ -1135,6 +1503,7 @@ const ChatInterface = ({ id }: { id: string }) => {
                 .then(res => res.json())
                 .then(data => {
                   if (data && data.data && Array.isArray(data.data.questions)) {
+                    const filtered = filterExamStyleFollowups(data.data.questions);
                     setMessages((prev) => {
                       if (prev.length === 0) return prev;
                       const next = [...prev];
@@ -1142,7 +1511,7 @@ const ChatInterface = ({ id }: { id: string }) => {
                       if (next[lastIdx].id === lastMsg.id) {
                         next[lastIdx] = {
                           ...next[lastIdx],
-                          followups: data.data.questions
+                          followups: filtered
                         };
                       }
                       return next;
@@ -1164,7 +1533,7 @@ const ChatInterface = ({ id }: { id: string }) => {
     }
   }, [isHistorySuccess, isHistoryError, historyData, sessionId, t, token]);
 
-  const handleSend = async (text?: string) => {
+  const handleSend = async (text?: string, libraryTask?: string) => {
     const messageText = text || inputValue;
     const fileToSend = selectedFile;
     if ((!messageText.trim() && !fileToSend) || isChatSending) return;
@@ -1188,8 +1557,14 @@ const ChatInterface = ({ id }: { id: string }) => {
     try {
       const formData = new FormData();
       formData.append("messages", messageText);
-      formData.append("context", JSON.stringify({ purpose: "library_standards", isoStandardId: standardId }));
-
+      formData.append(
+        "context",
+        JSON.stringify({
+          purpose: "library_standards",
+          isoStandardId: standardId,
+          ...(libraryTask ? { library_task: libraryTask } : {}),
+        }),
+      );
       if (sessionId) {
         formData.append("session_id", sessionId);
       }
@@ -1209,37 +1584,48 @@ const ChatInterface = ({ id }: { id: string }) => {
           router.replace(`${pathname}?${params.toString()}`);
         }
 
-        // Fetch followups from NEXT_PUBLIC_API_URL/ai-assistant/quiz/followup using the response content
-        let followups = result.data.suggested_followups || [];
-        try {
-          const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-          let activeToken = token;
-          if (!activeToken && typeof document !== 'undefined') {
-            const match = document.cookie.match(/(^| )token=([^;]+)/);
-            if (match) activeToken = match[2];
-          }
-          const followupResponse = await fetch(`${apiUrl}/ai-assistant/quiz/followup`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              ...(activeToken ? { 'Authorization': `Bearer ${activeToken}` } : {}),
-            },
-            body: JSON.stringify({
-              context: {
-                topic: standard?.code || standard?.title || "ISO Standard",
-                details: standard?.summary || "Standard guidelines and requirements"
-              },
-              num_questions: 5
-            })
-          });
-          if (followupResponse.ok) {
-            const followupData = await followupResponse.json();
-            if (followupData && followupData.data && Array.isArray(followupData.data.questions)) {
-              followups = followupData.data.questions;
+        // Prefer model suggested follow-ups; only call quiz/followup when empty
+        let followups = filterExamStyleFollowups(
+          Array.isArray(result.data.suggested_followups)
+            ? result.data.suggested_followups
+            : [],
+        );
+        if (followups.length < 3) {
+          try {
+            const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+            let activeToken = token;
+            if (!activeToken && typeof document !== 'undefined') {
+              const match = document.cookie.match(/(^| )token=([^;]+)/);
+              if (match) activeToken = match[2];
             }
+            const followupResponse = await fetch(`${apiUrl}/ai-assistant/quiz/followup`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                ...(activeToken ? { 'Authorization': `Bearer ${activeToken}` } : {}),
+              },
+              body: JSON.stringify({
+                context: {
+                  topic: getStandardLabel(standard),
+                  details: [
+                    getStandardCode(standard),
+                    "Generate difficult exam-style follow-up questions about requirements, evidence, and responsibilities.",
+                    "Do not use open-ended prompts like What is your scope or What do you know.",
+                    String(result.data.response || "").slice(0, 1200),
+                  ].filter(Boolean).join("\n"),
+                },
+                num_questions: 5
+              })
+            });
+            if (followupResponse.ok) {
+              const followupData = await followupResponse.json();
+              if (followupData && followupData.data && Array.isArray(followupData.data.questions)) {
+                followups = filterExamStyleFollowups(followupData.data.questions);
+              }
+            }
+          } catch (fErr) {
+            console.error("Failed to fetch followup questions:", fErr);
           }
-        } catch (fErr) {
-          console.error("Failed to fetch followup questions:", fErr);
         }
 
         setMessages((prev) => [
@@ -1253,11 +1639,14 @@ const ChatInterface = ({ id }: { id: string }) => {
             timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
           },
         ]);
+      } else {
+        toast.error(t('library.couldNotGetResponse') || "Empty AI response. Please try again.");
       }
     } catch (error: any) {
       console.error("Chat error:", error);
 
       const errorMessage = error?.data?.message || error?.message || t('library.couldNotGetResponse');
+      toast.error(errorMessage);
 
       setMessages((prev) => [
         ...prev,
@@ -1361,7 +1750,7 @@ const ChatInterface = ({ id }: { id: string }) => {
                       {flashcardsData?.deck_title}
                     </h3>
                     <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">
-                      {flashcardsData?.iso_standard || standard?.code} • {flashcardsData?.difficulty || "intermediate"} level
+                      {flashcardsData?.iso_standard || getStandardCode(standard) || getStandardLabel(standard)} • {flashcardsData?.difficulty || "intermediate"} level
                     </p>
                   </div>
 
@@ -1592,8 +1981,8 @@ const ChatInterface = ({ id }: { id: string }) => {
                     ) : (
                       <InitialChatView
                         title={standard?.title || t('library.isoStandardAnalysis')}
-                        summary={standard?.summary || t('library.analyzingDetails')}
-                        code={standard?.code || "SC-0000"}
+                        summary={getStandardSummary(standard, t('library.analyzingDetails'))}
+                        code={getStandardCode(standard) || "ISO"}
                         category={standard?.category?.name || t('library.isoCompliance')}
                         standardId={standardId}
                         onActionClick={(action: string) => handleSend(action)}
@@ -1683,7 +2072,10 @@ const ChatInterface = ({ id }: { id: string }) => {
           if (tool.id === "build_flashcards") {
             handleBuildFlashcards();
           } else {
-            handleSend(`Can you ${tool.title.toLowerCase()}?`);
+            handleSend(
+              buildStudioToolPrompt(tool.id, getStandardLabel(standard)),
+              studioToolToLibraryTask(tool.id),
+            );
           }
         }}
       />
@@ -1741,7 +2133,10 @@ const ChatInterface = ({ id }: { id: string }) => {
                   if (tool.id === "build_flashcards") {
                     handleBuildFlashcards();
                   } else {
-                    handleSend(`Can you ${tool.title.toLowerCase()} for this standard?`);
+                    handleSend(
+                      buildStudioToolPrompt(tool.id, getStandardLabel(standard)),
+                      studioToolToLibraryTask(tool.id),
+                    );
                   }
                   setIsSidebarOpen(false);
                 }}

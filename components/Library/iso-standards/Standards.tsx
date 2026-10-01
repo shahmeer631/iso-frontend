@@ -79,9 +79,9 @@ const StandardCard = ({
           {item.category?.name || "Standard"}
         </span>
 
-        {item.code && (
+        {(item.isoCode || item.code) && (
           <span style={{ fontSize: 11, color: "#475569", fontWeight: 500, fontFamily: "'Space Grotesk', sans-serif" }}>
-            {item.code}
+            {item.isoCode || item.code}
           </span>
         )}
       </div>
@@ -95,14 +95,14 @@ const StandardCard = ({
       </h3>
 
       {/* Summary preview */}
-      {item.summary && (
+      {(item.summary || item.description) && (
         <p style={{
           color: "#475569", fontSize: 13, lineHeight: 1.6,
           display: "-webkit-box", WebkitLineClamp: 2,
           WebkitBoxOrient: "vertical", overflow: "hidden",
           margin: 0,
         }}>
-          {item.summary}
+          {item.summary || item.description}
         </p>
       )}
 
@@ -298,7 +298,7 @@ const Standards = ({ searchTerm = "", selectedCategoryId }: StandardsProps) => {
       <div style={{ maxWidth: 1280, margin: "0 auto" }}>
 
         {/* ── Section Header ── */}
-        <div style={{ textAlign: "center", marginBottom: 64 }}>
+        <div style={{ textAlign: "center", marginBottom: 40 }}>
           <h2 className="space-grotesk" style={{ fontSize: "clamp(24px, 5vw, 40px)", fontWeight: 500, color: "#FFFFFF", marginBottom: 16 }}>
             {t('library.head')}
           </h2>
