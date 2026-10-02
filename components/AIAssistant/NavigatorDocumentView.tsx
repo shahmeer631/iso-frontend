@@ -187,8 +187,8 @@ function MdUl({ className, ...props }: any) {
     <ul
       className={mergeClass(
         task
-          ? "list-none pl-0 mb-4 space-y-2 max-w-5xl"
-          : "list-disc pl-5 mb-4 space-y-1.5 text-[14px] leading-[1.6] text-[#CBD5E1] max-w-5xl",
+          ? "list-none pl-0 mb-4 space-y-2 w-full max-w-none"
+          : "list-disc pl-5 mb-4 space-y-1.5 text-[14px] leading-[1.6] text-[#CBD5E1] w-full max-w-none",
         className,
       )}
       {...props}
@@ -202,8 +202,8 @@ function MdOl({ className, ...props }: any) {
     <ol
       className={mergeClass(
         checklist
-          ? "list-none pl-0 mb-4 space-y-2 max-w-5xl"
-          : "list-decimal pl-5 mb-4 space-y-1.5 text-[14px] leading-[1.6] text-[#CBD5E1] max-w-5xl",
+          ? "list-none pl-0 mb-4 space-y-2 w-full max-w-none"
+          : "list-decimal pl-5 mb-4 space-y-1.5 text-[14px] leading-[1.6] text-[#CBD5E1] w-full max-w-none",
         className,
       )}
       {...props}
@@ -283,7 +283,7 @@ const mdComponents = {
   h1: ({ className, children, ...props }: any) => (
     <h1
       className={mergeClass(
-        "text-[22px] md:text-[24px] font-semibold leading-[1.25] tracking-[-0.015em] text-[#F1F5F9] mb-4 max-w-5xl",
+        "text-[22px] md:text-[24px] font-semibold leading-[1.25] tracking-[-0.015em] text-[#F1F5F9] mb-4 w-full max-w-none",
         className,
       )}
       {...props}
@@ -316,7 +316,7 @@ const mdComponents = {
   p: ({ className, children, ...props }: any) => (
     <p
       className={mergeClass(
-        "text-[14px] md:text-[15px] font-normal leading-[1.65] text-[#CBD5E1] mb-3 max-w-5xl",
+        "text-[14px] md:text-[15px] font-normal leading-[1.65] text-[#CBD5E1] mb-3 w-full max-w-3xl",
         className,
       )}
       {...props}
@@ -337,7 +337,7 @@ const mdComponents = {
   blockquote: ({ className, children, ...props }: any) => (
     <blockquote
       className={mergeClass(
-        "max-w-5xl my-4 border-l-2 border-[#3B82F6]/50 bg-[#0B1220] rounded-r-xl px-4 py-3 text-[14px] leading-[1.6] text-[#CBD5E1]",
+        "w-full max-w-none my-4 border-l-2 border-[#3B82F6]/50 bg-[#0B1220] rounded-r-xl px-4 py-3 text-[14px] leading-[1.6] text-[#CBD5E1]",
         className,
       )}
       {...props}

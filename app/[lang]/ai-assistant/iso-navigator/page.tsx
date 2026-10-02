@@ -1645,138 +1645,52 @@ export default function ISONavigator() {
 
               <div className="h-full min-h-0 overflow-y-auto overflow-x-hidden overscroll-contain custom-thin-scrollbar">
 
-              <div className="p-4 md:p-5 border-b border-[#1E293B] bg-[#111827]/80 backdrop-blur-[8px] flex flex-col gap-3">
+              <div className="p-4 md:p-5 border-b border-[#1E293B] bg-[#111827]/80 backdrop-blur-[8px] flex flex-col gap-3 w-full min-w-0">
 
-                <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
+                {/* Meta row only: badges left, actions right — title must NOT sit in this flex row */}
+                <div className="flex flex-wrap items-start justify-between gap-x-3 gap-y-2 w-full min-w-0">
 
-                  <div className="min-w-0 space-y-2">
-
-                    <div className="flex flex-wrap items-center gap-2">
-
-                      {(() => {
-                        const isoBadge =
-                          extractIsoStandardBadge(generatedDocument.metadata?.iso_standard) ||
-                          extractIsoStandardBadge(generatedDocument.metadata?.grounded_standard) ||
-                          extractIsoStandardBadge(formData.specific_requirements);
-                        return isoBadge ? (
-                        <span className="inline-flex items-center px-2 py-1 rounded-md bg-[#1D4ED8]/15 text-[#93C5FD] font-jetbrains-mono text-[12px] font-medium tracking-[0.02em] border border-[#3B82F6]/20">
-                          {isoBadge}
-                        </span>
-                        ) : null;
-                      })()}
-
-                      {(formData.clause || generatedDocument.metadata?.clause) && (
-
-                        <span className="inline-flex items-center px-2 py-1 rounded-md bg-[#0F172A] text-[#BFDBFE] font-jetbrains-mono text-[12px] font-medium tracking-[0.02em] border border-[#1E293B]">
-
-                          {t('isoNavigator.clauseLabel')} {formData.clause || generatedDocument.metadata?.clause}
-
-                        </span>
-
-                      )}
-
-                      {(formData.document_taxonomy || generatedDocument.metadata?.document_taxonomy) && (
-
-                        <span className="inline-flex items-center px-2 py-1 rounded-full bg-[#FFFBEB]/10 text-[#FBBF24] text-[11px] font-medium leading-[1.3] border border-[#F59E0B]/20">
-
-                          {(formData.document_taxonomy || generatedDocument.metadata?.document_taxonomy) === 'recommended'
-                            ? 'Recommended'
-                            : (formData.document_taxonomy || generatedDocument.metadata?.document_taxonomy) === 'mandatory_record'
-                              ? (t('isoNavigator.recordsLabel') || 'Mandatory Record')
-                              : (t('isoNavigator.documentsLabel') || 'Mandatory Document')}
-
-                        </span>
-
-                      )}
-
-                    </div>
-
-                    <h2 className="text-[20px] md:text-[22px] font-semibold leading-[1.3] tracking-[-0.01em] text-[#F8FAFC] break-words">
-
-                      {generatedDocument.title}
-
-                    </h2>
-
-                    {generatedDocument.metadata?.ims_guide_available === false && (
-                      <p className="text-[12px] leading-[1.4] text-amber-300/90">
-                        IMS Practical Guide unavailable — grounded on selected ISO standards and organization context only.
-                      </p>
-                    )}
-
-                    {Array.isArray(generatedDocument.metadata?.missing_editions) &&
-                      generatedDocument.metadata.missing_editions.length > 0 && (
-                      <p className="text-[12px] leading-[1.4] text-amber-300/90">
-                        Unavailable library editions (not substituted):{" "}
-                        {generatedDocument.metadata.missing_editions.join("; ")}
-                      </p>
-                    )}
+                  <div className="flex flex-wrap items-center gap-2 min-w-0">
 
                     {(() => {
-                      const docs = [
-                        ...(selectedISO?.documents || []),
-                        ...(selectedISO?.records || []),
-                      ];
-                      if (docs.length < 2) return null;
-                      return (
-                        <div className="flex flex-wrap gap-1.5 pt-1 max-h-[7.5rem] overflow-y-auto overscroll-contain custom-thin-scrollbar content-start">
-                          {docs.map((d: any, idx: number) => {
-                            const active = formData.output_type === d?.title;
-                            return (
-                              <button
-                                key={`switch-${idx}-${d?.title}`}
-                                type="button"
-                                disabled={isGenerating}
-                                onClick={() =>
-                                  selectDocumentAndGenerate({
-                                    output_type: d?.title,
-                                    document_title: d?.title,
-                                    clause: d?.clause || "",
-                                    document_taxonomy:
-                                      d?.type === "recommended"
-                                        ? "recommended"
-                                        : d?.type === "record" ||
-                                            selectedISO?.records?.some(
-                                              (r: any) => r?.title === d?.title,
-                                            )
-                                          ? "mandatory_record"
-                                          : "mandatory_document",
-                                  })
-                                }
-                                title={d?.title}
-                                className={`max-w-full truncate rounded-lg border px-2 py-1 text-[11px] font-medium transition-colors disabled:opacity-40 ${
-                                  active
-                                    ? "border-[#00f0ff]/50 bg-[#00f0ff]/10 text-[#00f0ff]"
-                                    : "border-[#1E293B] bg-[#0F172A] text-[#94A3B8] hover:border-[#334155] hover:text-[#E2E8F0]"
-                                }`}
-                              >
-                                {d?.title}
-                              </button>
-                            );
-                          })}
-                        </div>
-                      );
+                      const isoBadge =
+                        extractIsoStandardBadge(generatedDocument.metadata?.iso_standard) ||
+                        extractIsoStandardBadge(generatedDocument.metadata?.grounded_standard) ||
+                        extractIsoStandardBadge(formData.specific_requirements);
+                      return isoBadge ? (
+                      <span className="inline-flex items-center px-2 py-1 rounded-md bg-[#1D4ED8]/15 text-[#93C5FD] font-jetbrains-mono text-[12px] font-medium tracking-[0.02em] border border-[#3B82F6]/20">
+                        {isoBadge}
+                      </span>
+                      ) : null;
                     })()}
 
-                    {(generatedDocument.generation_timestamp || generatedDocument.word_count) && (
+                    {(formData.clause || generatedDocument.metadata?.clause) && (
 
-                      <p className="text-[11px] font-normal leading-[1.3] text-[#64748B]">
+                      <span className="inline-flex items-center px-2 py-1 rounded-md bg-[#0F172A] text-[#BFDBFE] font-jetbrains-mono text-[12px] font-medium tracking-[0.02em] border border-[#1E293B]">
 
-                        {[
-                          generatedDocument.generation_timestamp
-                            ? new Date(generatedDocument.generation_timestamp).toLocaleString()
-                            : null,
-                          typeof generatedDocument.word_count === "number" && generatedDocument.word_count > 0
-                            ? `${generatedDocument.word_count} words`
-                            : null,
-                        ].filter(Boolean).join(" · ")}
+                        {t('isoNavigator.clauseLabel')} {formData.clause || generatedDocument.metadata?.clause}
 
-                      </p>
+                      </span>
+
+                    )}
+
+                    {(formData.document_taxonomy || generatedDocument.metadata?.document_taxonomy) && (
+
+                      <span className="inline-flex items-center px-2 py-1 rounded-full bg-[#FFFBEB]/10 text-[#FBBF24] text-[11px] font-medium leading-[1.3] border border-[#F59E0B]/20">
+
+                        {(formData.document_taxonomy || generatedDocument.metadata?.document_taxonomy) === 'recommended'
+                          ? 'Recommended'
+                          : (formData.document_taxonomy || generatedDocument.metadata?.document_taxonomy) === 'mandatory_record'
+                            ? (t('isoNavigator.recordsLabel') || 'Mandatory Record')
+                            : (t('isoNavigator.documentsLabel') || 'Mandatory Document')}
+
+                      </span>
 
                     )}
 
                   </div>
 
-                  <div className="flex items-center gap-2 flex-wrap shrink-0">
+                  <div className="flex items-center gap-2 flex-wrap shrink-0 ml-auto">
 
                     {typeof generatedDocument.confidence_score === 'number' && (
 
@@ -1811,6 +1725,94 @@ export default function ISONavigator() {
                     </button>
 
                   </div>
+
+                </div>
+
+                {/* Full-bleed title + switcher — not beside Match/Copy */}
+                <div className="w-full min-w-0 space-y-2">
+
+                  <h2 className="block w-full max-w-none text-[20px] md:text-[22px] font-semibold leading-[1.3] tracking-[-0.01em] text-[#F8FAFC] text-balance break-normal">
+
+                    {generatedDocument.title}
+
+                  </h2>
+
+                  {generatedDocument.metadata?.ims_guide_available === false && (
+                    <p className="text-[12px] leading-[1.4] text-amber-300/90">
+                      IMS Practical Guide unavailable — grounded on selected ISO standards and organization context only.
+                    </p>
+                  )}
+
+                  {Array.isArray(generatedDocument.metadata?.missing_editions) &&
+                    generatedDocument.metadata.missing_editions.length > 0 && (
+                    <p className="text-[12px] leading-[1.4] text-amber-300/90">
+                      Unavailable library editions (not substituted):{" "}
+                      {generatedDocument.metadata.missing_editions.join("; ")}
+                    </p>
+                  )}
+
+                  {(() => {
+                    const docs = [
+                      ...(selectedISO?.documents || []),
+                      ...(selectedISO?.records || []),
+                    ];
+                    if (docs.length < 2) return null;
+                    return (
+                      <div className="flex flex-wrap gap-1.5 pt-1 w-full min-w-0 content-start">
+                        {docs.map((d: any, idx: number) => {
+                          const active = formData.output_type === d?.title;
+                          return (
+                            <button
+                              key={`switch-${idx}-${d?.title}`}
+                              type="button"
+                              disabled={isGenerating}
+                              onClick={() =>
+                                selectDocumentAndGenerate({
+                                  output_type: d?.title,
+                                  document_title: d?.title,
+                                  clause: d?.clause || "",
+                                  document_taxonomy:
+                                    d?.type === "recommended"
+                                      ? "recommended"
+                                      : d?.type === "record" ||
+                                          selectedISO?.records?.some(
+                                            (r: any) => r?.title === d?.title,
+                                          )
+                                        ? "mandatory_record"
+                                        : "mandatory_document",
+                                })
+                              }
+                              title={d?.title}
+                              className={`max-w-full truncate rounded-lg border px-2.5 py-1.5 text-[11px] font-medium transition-colors disabled:opacity-40 ${
+                                active
+                                  ? "border-[#00f0ff]/50 bg-[#00f0ff]/10 text-[#00f0ff]"
+                                  : "border-[#1E293B] bg-[#0F172A] text-[#94A3B8] hover:border-[#334155] hover:text-[#E2E8F0]"
+                              }`}
+                            >
+                              {d?.title}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    );
+                  })()}
+
+                  {(generatedDocument.generation_timestamp || generatedDocument.word_count) && (
+
+                    <p className="text-[11px] font-normal leading-[1.3] text-[#64748B]">
+
+                      {[
+                        generatedDocument.generation_timestamp
+                          ? new Date(generatedDocument.generation_timestamp).toLocaleString()
+                          : null,
+                        typeof generatedDocument.word_count === "number" && generatedDocument.word_count > 0
+                          ? `${generatedDocument.word_count} words`
+                          : null,
+                      ].filter(Boolean).join(" · ")}
+
+                    </p>
+
+                  )}
 
                 </div>
 
