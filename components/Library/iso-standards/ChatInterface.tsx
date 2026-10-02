@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import React, { useState, useRef, useEffect, useMemo } from "react";
+import React, { useState, useRef, useEffect, useMemo, useCallback } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -121,44 +121,96 @@ function normalizeClientFlashcardDeck(raw: any, fallbackTitle = "ISO Standard"):
   };
 }
 
-function buildStudioToolPrompt(toolId: string, standardLabel: string): string {
+function studioToolStatusLabel(toolId: string): string {
   switch (toolId) {
     case "generate_notes":
-      return [
-        `GENERATE_NOTES for ${standardLabel}.`,
-        "Produce detailed study/reference NOTES from the selected ISO material — NOT a summary.",
-        "Preserve important requirements, concepts, terminology, clause-specific points, practical interpretation, and evidence/documentation where supported.",
-        "Structure with headings such as: Topic Overview; Key Concepts; Important Requirements; Detailed Explanation; Important Terms / Definitions; Clause-Specific Points; Practical Interpretation; Important Evidence / Documentation; Key Takeaways.",
-        "Prefer useful study detail over a short high-level overview.",
-      ].join(" ");
+      return "Generating notes…";
     case "create_summary":
-      return [
-        `CREATE_SUMMARY for ${standardLabel}.`,
-        "Produce a concise high-level SUMMARY that condenses the main points — NOT detailed study notes.",
-        "Use sections: Summary; Key Requirements; Practical Interpretation; Important Evidence; Key Takeaways.",
-        "Keep it relatively short and overview-focused. Ground claims in the selected standard.",
-      ].join(" ");
+      return "Creating summary…";
     case "practice_questions":
-      return [
-        `Generate difficult exam questions for ${standardLabel}.`,
-        "Produce 5 direct, standard-specific certification-style questions covering requirement interpretation, purpose, evidence, implementation, and documented information.",
-        "Do not use open-ended prompts like What is your scope or What do you know about. Do not invent clauses.",
-      ].join(" ");
+      return "Generating questions…";
     case "generate_quiz":
-      return [
-        `Generate a difficult professional quiz for ${standardLabel}.`,
-        "Produce 5 multiple-choice questions (A–D), each with one correct answer, brief explanation, and a source-grounded rationale.",
-        "Questions must be exam-style and specific to this standard — not open-ended coaching prompts. Vary topics across the set.",
-      ].join(" ");
+      return "Generating quiz…";
     case "explain_eli5":
-      return [
-        `Explain the core requirements of ${standardLabel} in clear, simple professional language.`,
-        "Structure: Simple Explanation; Why It Matters; Practical Example (labeled hypothetical if needed); Key Takeaway.",
-        "Remain grounded in the selected standard.",
-      ].join(" ");
+      return "Explaining simply…";
+    case "build_flashcards":
+      return "Generating flashcards…";
     default:
-      return `Help me study ${standardLabel} as an ISO consultant.`;
+      return "Working…";
   }
+}
+
+/** Short API request text — full instructions live in backend library_task prompts. */
+function studioToolApiMessage(toolId: string, standardLabel: string): string {
+  switch (toolId) {
+    case "generate_notes":
+      return `Generate detailed study notes for ${standardLabel}.`;
+    case "create_summary":
+      return `Create a concise summary of ${standardLabel}.`;
+    case "practice_questions":
+      return `Generate 5 difficult exam questions for ${standardLabel}.`;
+    case "generate_quiz":
+      return `Generate a difficult professional quiz for ${standardLabel}.`;
+    case "explain_eli5":
+      return `Explain the core requirements of ${standardLabel} in clear, simple language.`;
+    default:
+      return `Help me study ${standardLabel}.`;
+  }
+}
+
+/** History / chat titles must never show internal prompt templates. */
+function sanitizeVisibleChatLabel(text: string): string {
+  const raw = String(text || "").trim();
+  if (!raw) return "New Chat";
+  const lower = raw.toLowerCase();
+  if (
+    /generate_notes|produce detailed study|preserve important requirements/.test(
+      lower,
+    ) ||
+    /^generate notes for\b/.test(lower) ||
+    /\bgenerate detailed study notes\b/.test(lower)
+  ) {
+    return "Generating notes…";
+  }
+  if (
+    /create_summary|produce a concise|high-level summary/.test(lower) ||
+    /\bcreate a concise summary\b/.test(lower)
+  ) {
+    return "Creating summary…";
+  }
+  if (
+    /generate exactly 5 difficult|exam-style starter questions|starter study questions/.test(
+      lower,
+    )
+  ) {
+    return "Suggested study questions";
+  }
+  if (
+    /generate difficult exam questions|certification-style questions|practice_questions/.test(
+      lower,
+    )
+  ) {
+    return "Generating questions…";
+  }
+  if (/generate a difficult professional quiz|multiple-choice/.test(lower)) {
+    return "Generating quiz…";
+  }
+  if (/explain the core requirements|explain_eli5|simple professional language/.test(lower)) {
+    return "Explaining simply…";
+  }
+  if (/generate_notes for|structure with headings such as/.test(lower)) {
+    return "Generating notes…";
+  }
+  // Truncate long internal-looking blobs
+  if (raw.length > 90 && /(do not|produce|structure with|ground claims)/i.test(raw)) {
+    return "Library study request";
+  }
+  return raw.length > 72 ? `${raw.slice(0, 72)}…` : raw;
+}
+
+function buildStudioToolPrompt(toolId: string, standardLabel: string): string {
+  // Kept for backward compatibility; Expert Studio should use status + library_task instead.
+  return studioToolApiMessage(toolId, standardLabel);
 }
 
 function studioToolToLibraryTask(toolId: string): string | undefined {
@@ -180,24 +232,128 @@ function studioToolToLibraryTask(toolId: string): string | undefined {
   }
 }
 
+/** Dedupe InitialChatView starter-question AI calls (React Strict Mode remounts). */
+/** In-flight + short-lived result cache for starter chips (dedupe Strict Mode / remounts). */
+const starterQuestionsInflight = new Map<string, Promise<string[]>>();
+const starterQuestionsCache = new Map<
+  string,
+  { questions: string[]; expiresAt: number }
+>();
+const STARTER_CACHE_TTL_MS = 10 * 60 * 1000;
+
 function isOpenEndedCoachingQuestion(text: string): boolean {
-  const q = String(text || "").trim().toLowerCase();
-  if (!q) return true;
+  const q = String(text || "")
+    .trim()
+    .toLowerCase()
+    .replace(/^[\d\.\)\-\*]+\s*/, "")
+    .replace(/^\*+\s*q\d+\.?\**\s*/i, "");
+  if (!q || q.length < 12) return true;
   return (
-    /^what is your scope\b/.test(q) ||
+    /^what is your (scope|organization|company|qms|process)\b/.test(q) ||
+    /\bin your (own )?organization\b/.test(q) ||
+    /\byour (company|organization|qms|isms|ams|scope)\b/.test(q) ||
     /^what do you know\b/.test(q) ||
-    /^can you explain\b/.test(q) ||
-    /^how would you define\b/.test(q) ||
+    /^can you (give|provide|show|explain|tell|describe|help)\b/.test(q) ||
+    /^how would you (define|describe|determine your)\b/.test(q) ||
     /^tell me about\b/.test(q) ||
-    /^what is iso\b/.test(q)
+    /^what is iso\b/.test(q) ||
+    /^what are the benefits of\b/.test(q) ||
+    /^why is iso (important|useful)\b/.test(q) ||
+    /^how do you (manage|ensure|handle)\b/.test(q) ||
+    /^what is your approach\b/.test(q) ||
+    // Static / vague follow-up chips from the remote model
+    /\bpractical example\b/.test(q) ||
+    /\bcommon non-?conform/.test(q) ||
+    /\bsmall organis(?:z)?ation\b/.test(q) ||
+    /\bhow does this apply\b/.test(q) ||
+    /\bin this area\b/.test(q) ||
+    /^what documentation is required\??$/.test(q) ||
+    /^what (else|next)\b/.test(q) ||
+    /^any (tips|advice|examples)\b/.test(q)
   );
 }
 
 function filterExamStyleFollowups(items: string[]): string[] {
-  return (items || [])
-    .map((q) => String(q || "").trim())
-    .filter((q) => q.length > 12 && !isOpenEndedCoachingQuestion(q))
-    .slice(0, 5);
+  const seen = new Set<string>();
+  const out: string[] = [];
+  for (const raw of items || []) {
+    const q = String(raw || "")
+      .trim()
+      .replace(/^[\d\.\)\-\*]+\s*/, "")
+      .replace(/^\*\*q\d+\.\*\*\s*/i, "")
+      .replace(/^q\d+\.\s*/i, "")
+      .replace(/^"|"$/g, "")
+      .trim();
+    if (!q || q.length < 20) continue;
+    if (/^#{1,3}\s/.test(q) || /^model answer/i.test(q)) continue;
+    if (isOpenEndedCoachingQuestion(q)) continue;
+    // Prefer exam-style probes over vague coaching
+    const looksExam =
+      /\b(requirement|evidence|clause|documented information|purpose|auditor|shall|compliance|responsibility|implementation|verify|demonstrate)\b/i.test(
+        q,
+      ) ||
+      /^(what|how|why|which|when|identify|state|outline|distinguish|explain)\b/i.test(q);
+    if (!looksExam) continue;
+    const key = q.toLowerCase().replace(/[^a-z0-9]+/g, " ").trim().slice(0, 80);
+    if (seen.has(key)) continue;
+    seen.add(key);
+    out.push(q);
+    if (out.length >= 5) break;
+  }
+  return out;
+}
+
+/** Fetch grounded exam-style follow-ups for the selected Library standard. */
+async function fetchGroundedLibraryFollowups(params: {
+  apiUrl: string;
+  token?: string | null;
+  standardId: string;
+  standardLabel: string;
+  standardCode?: string;
+  answerSnippet?: string;
+  userQuestion?: string;
+}): Promise<string[]> {
+  const { apiUrl, token, standardId, standardLabel, standardCode, answerSnippet, userQuestion } =
+    params;
+  if (!apiUrl || !standardId) return [];
+  try {
+    const followupResponse = await fetch(`${apiUrl}/ai-assistant/quiz/followup`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+      body: JSON.stringify({
+        context: {
+          topic: standardLabel,
+          isoStandardId: standardId,
+          details: [
+            standardCode || "",
+            userQuestion ? `Prior user question: ${userQuestion.slice(0, 400)}` : "",
+            "Generate difficult exam-style follow-up questions about requirements, evidence, purpose, and responsibilities for THIS selected ISO standard.",
+            "Each question must be specific to the selected standard — not generic coaching chips.",
+            'Do NOT use: "Can you give me a practical example?", "What are the common non-conformances in this area?", "How does this apply to a small organisation?", "What documentation is required?"',
+            "Do not ask about the learner's own organization.",
+            answerSnippet ? String(answerSnippet).slice(0, 1200) : "",
+          ]
+            .filter(Boolean)
+            .join("\n"),
+        },
+        num_questions: 5,
+        isoStandardId: standardId,
+      }),
+    });
+    if (!followupResponse.ok) return [];
+    const followupData = await followupResponse.json();
+    const raw =
+      followupData?.data?.questions ||
+      followupData?.questions ||
+      [];
+    return filterExamStyleFollowups(Array.isArray(raw) ? raw : []);
+  } catch (err) {
+    console.error("Failed to fetch grounded library followups:", err);
+    return [];
+  }
 }
 
 type LibraryQuizItem = {
@@ -535,7 +691,7 @@ const HistorySidebar = ({
                     <div className={`w-1.5 h-1.5 rounded-full ${currentSessionId === session.id ? "bg-brand-cyan text-[#0F111A] shadow-[0_0_8px_#D4AF37]" : "bg-gray-700 group-hover:bg-gray-500"}`} />
                     <div className="min-w-0 flex-1">
                       <p className={`text-[11.5px] font-black truncate font-jetbrains-mono ${currentSessionId === session.id ? "text-[#00f0ff]" : "text-gray-400 group-hover:text-gray-200"}`}>
-                        {session.title || t('library.newSession')}
+                        {sanitizeVisibleChatLabel(session.title || t('library.newSession'))}
                       </p>
                       <p className="text-[9px] font-black text-gray-600 mt-0.5 uppercase tracking-widest font-jetbrains-mono">
                         {new Date(session.updatedAt || session.createdAt).toLocaleDateString()}
@@ -668,37 +824,77 @@ const InitialChatView = ({ title, summary, code, category, standardId, onActionC
     if (!standardId) return;
 
     let isMounted = true;
-    const fetchSuggestions = async () => {
-      try {
+    setSuggestions([]); // clear stale chips when standard changes
+
+    const cached = starterQuestionsCache.get(standardId);
+    if (cached && cached.expiresAt > Date.now() && cached.questions.length) {
+      setSuggestions(cached.questions);
+      return;
+    }
+
+    // Dedupe Strict Mode / remount double-fetches for the same standard
+    const existing = starterQuestionsInflight.get(standardId);
+    const fetchPromise =
+      existing ||
+      (async () => {
         const formData = new FormData();
         formData.append(
           "messages",
-          [
-            "Generate exactly 5 difficult exam-style starter questions for this ISO standard.",
-            "Each question must be direct, specific, and suitable for testing knowledge of requirements, evidence, purpose, or responsibilities.",
-            "Do NOT use open-ended prompts like \"What is your scope?\" or \"What do you know about...\".",
-            "Return only a numbered list of 5 questions.",
-          ].join(" "),
+          "Generate exam-style starter study questions for the selected ISO standard.",
         );
-        formData.append("context", JSON.stringify({ purpose: "library_standards", isoStandardId: standardId }));
+        formData.append(
+          "context",
+          JSON.stringify({
+            purpose: "library_standards",
+            isoStandardId: standardId,
+            library_task: "starter_questions",
+          }),
+        );
 
         const result = await chatWithISOStandards(formData as any).unwrap();
+        if (!result?.success || !result?.data?.response) return [] as string[];
 
-        if (isMounted && result?.success && result?.data?.response) {
-          const lines = result.data.response.split('\n').filter((l: string) => l.trim().length > 5);
-          const cleaned = filterExamStyleFollowups(
-            lines.map((l: string) => l.replace(/^[\d\.\-\*]+\s*/, '').replace(/^"|"$/g, '').trim()),
-          );
-          setSuggestions(cleaned);
+        const fromFollowups = filterExamStyleFollowups(
+          Array.isArray(result.data.suggested_followups)
+            ? result.data.suggested_followups
+            : [],
+        );
+        const lines = String(result.data.response)
+          .split("\n")
+          .filter((l: string) => l.trim().length > 5);
+        const cleaned = filterExamStyleFollowups([
+          ...fromFollowups,
+          ...lines.map((l: string) =>
+            l.replace(/^[\d\.\-\*]+\s*/, "").replace(/^"|"$/g, "").trim(),
+          ),
+        ]);
+        if (cleaned.length) {
+          starterQuestionsCache.set(standardId, {
+            questions: cleaned,
+            expiresAt: Date.now() + STARTER_CACHE_TTL_MS,
+          });
         }
-      } catch (error) {
+        return cleaned;
+      })().finally(() => {
+        // Keep result briefly so Strict Mode remount reuses it; then allow refresh
+        setTimeout(() => starterQuestionsInflight.delete(standardId), 8000);
+      });
+
+    if (!existing) {
+      starterQuestionsInflight.set(standardId, fetchPromise);
+    }
+
+    fetchPromise
+      .then((cleaned) => {
+        if (isMounted && cleaned.length) setSuggestions(cleaned);
+      })
+      .catch((error) => {
         console.error("Failed to fetch suggestions:", error);
-      }
+      });
+
+    return () => {
+      isMounted = false;
     };
-
-    fetchSuggestions();
-
-    return () => { isMounted = false; };
   }, [standardId, chatWithISOStandards]);
 
   const quickActions = [
@@ -820,26 +1016,16 @@ const InitialChatView = ({ title, summary, code, category, standardId, onActionC
   );
 };
 
-const TypewriterMarkdown = ({ content, speed = 5, onUpdate }: { content: string, speed?: number, onUpdate?: () => void }) => {
-  const [displayedText, setDisplayedText] = useState("");
-  const [index, setIndex] = useState(0);
-
+const TypewriterMarkdown = ({ content, onUpdate }: { content: string, speed?: number, onUpdate?: () => void }) => {
+  // Render full content immediately — character typewriter left the bubble blank
+  // until timeouts/paint caught up (looked like "dots gone, stuck, then appears on click").
   useEffect(() => {
-    if (index < content.length) {
-      const timeout = setTimeout(() => {
-        const chunkSize = 1; // type 1 character at a time for a visible typewriter effect
-        const nextIndex = Math.min(index + chunkSize, content.length);
-        setDisplayedText(content.substring(0, nextIndex));
-        setIndex(nextIndex);
-        onUpdate?.();
-      }, 15); // 15ms delay per character
-      return () => clearTimeout(timeout);
-    }
-  }, [index, content, onUpdate]);
+    onUpdate?.();
+  }, [content, onUpdate]);
 
   return (
     <ReactMarkdown remarkPlugins={[remarkGfm]}>
-      {displayedText}
+      {content}
     </ReactMarkdown>
   );
 };
@@ -850,14 +1036,14 @@ const MessageList = ({ messages, isLoading, onActionClick, onStudyFlashcards }: 
   const lastMessageCount = useRef(messages.length);
   const isUserScrolledUp = useRef(false);
 
-  const scrollToBottom = (behavior: "smooth" | "instant" = "smooth") => {
+  const scrollToBottom = useCallback((behavior: "smooth" | "instant" = "smooth") => {
     if (containerRef.current && !isUserScrolledUp.current) {
       containerRef.current.scrollTo({
         top: containerRef.current.scrollHeight,
         behavior,
       });
     }
-  };
+  }, []);
 
   const handleScroll = () => {
     if (containerRef.current) {
@@ -876,13 +1062,13 @@ const MessageList = ({ messages, isLoading, onActionClick, onStudyFlashcards }: 
       scrollToBottom("smooth");
     }
     lastMessageCount.current = messages.length;
-  }, [messages]);
+  }, [messages, scrollToBottom]);
 
   useEffect(() => {
     if (isLoading) {
       scrollToBottom("smooth");
     }
-  }, [isLoading]);
+  }, [isLoading, scrollToBottom]);
 
   return (
     <div
@@ -1003,7 +1189,7 @@ const MessageList = ({ messages, isLoading, onActionClick, onStudyFlashcards }: 
                     {typeof msg.id === "number" && index === messages.length - 1 ? (
                       <TypewriterMarkdown
                         content={msg.content}
-                        onUpdate={() => scrollToBottom("smooth")}
+                        onUpdate={scrollToBottom}
                       />
                     ) : (
                       <ReactMarkdown remarkPlugins={[remarkGfm]}>
@@ -1234,6 +1420,8 @@ const ChatInterface = ({ id }: { id: string }) => {
 
   const { data: standardData, isLoading: isStandardLoading } = useGetISOStandardByIdQuery(standardId);
   const { setAskAiContext } = useAskAiPageContext();
+  // Must be declared before any effect/callback that closes over it (TDZ).
+  const token = useSelector(selectCurrentToken);
 
   // Use fallback data immediately while loading for a better user experience
   const standard = useMemo(() => {
@@ -1264,6 +1452,30 @@ const ChatInterface = ({ id }: { id: string }) => {
       setAskAiContext(null);
     };
   }, [standardId, standard, searchParams, setAskAiContext]);
+
+  // Prefetch / cache selected ISO PDF on the backend so the first chat is not cold.
+  useEffect(() => {
+    if (!standardId) return;
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "";
+    if (!apiUrl) return;
+
+    let activeToken = token;
+    if (!activeToken && typeof document !== "undefined") {
+      const match = document.cookie.match(/(^| )token=([^;]+)/);
+      if (match) activeToken = match[2];
+    }
+
+    void fetch(`${apiUrl}/ai-assistant/library/warm-pdf`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        ...(activeToken ? { Authorization: `Bearer ${activeToken}` } : {}),
+      },
+      body: JSON.stringify({ isoStandardId: standardId }),
+    }).catch(() => {
+      // Warm is best-effort — never block chat UX
+    });
+  }, [standardId, token]);
 
   useEffect(() => {
     console.log("Loaded Standard Data:", standard);
@@ -1405,7 +1617,6 @@ const ChatInterface = ({ id }: { id: string }) => {
     },
   ];
 
-  const token = useSelector(selectCurrentToken);
   const [isClient, setIsClient] = useState(false);
   useEffect(() => { setIsClient(true); }, []);
 
@@ -1429,6 +1640,9 @@ const ChatInterface = ({ id }: { id: string }) => {
   }, [urlSessionId, sessionId]);
 
   const [sendChat, { isLoading: isChatSending, error: chatError }] = useChatWithISOStandardsNewMutation();
+  /** True from send until the assistant message is committed — prevents blank gap after RTK loading ends. */
+  const [isAwaitingReply, setIsAwaitingReply] = useState(false);
+  const isChatBusy = isChatSending || isAwaitingReply;
   const {
     currentData: historyData,
     isFetching: isHistoryFetching,
@@ -1480,7 +1694,10 @@ const ChatInterface = ({ id }: { id: string }) => {
           return {
             id: item.id,
             role: item.role === "assistant" ? "bot" : "user",
-            content: contentStr,
+            content:
+              item.role === "assistant"
+                ? contentStr
+                : sanitizeVisibleChatLabel(contentStr),
             followups: item.followUps || [],
             sources: item.sources || [],
             timestamp: new Date(item.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
@@ -1496,54 +1713,51 @@ const ChatInterface = ({ id }: { id: string }) => {
           }
           lastLoadedSessionId.current = sessionId;
 
-          // Fetch followups for the last message if it's a bot message
+          // Fetch grounded followups for the last message if it's a bot message
           if (formattedMessages.length > 0) {
             const lastMsg = formattedMessages[formattedMessages.length - 1];
-            if (lastMsg.role === "bot" && !lastMsg.flashcardDeck) {
-              const aiUrl = process.env.NEXT_PUBLIC_API_URL;
+            const existing = filterExamStyleFollowups(
+              Array.isArray(lastMsg.followups) ? lastMsg.followups : [],
+            );
+            if (lastMsg.role === "bot" && !lastMsg.flashcardDeck && existing.length < 4) {
+              const aiUrl = process.env.NEXT_PUBLIC_API_URL || "";
               let activeToken = token;
-              if (!activeToken && typeof document !== 'undefined') {
+              if (!activeToken && typeof document !== "undefined") {
                 const match = document.cookie.match(/(^| )token=([^;]+)/);
                 if (match) activeToken = match[2];
               }
-              fetch(`${aiUrl}/ai-assistant/quiz/followup`, {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json',
-                  ...(activeToken ? { 'Authorization': `Bearer ${activeToken}` } : {}),
-                },
-                body: JSON.stringify({
-                  context: {
-                    topic: getStandardLabel(standard),
-                    details: [
-                      getStandardCode(standard),
-                      "Generate difficult exam-style follow-up questions.",
-                      "Avoid open-ended prompts like What is your scope.",
-                      String(lastMsg.content || "").slice(0, 1200),
-                    ].filter(Boolean).join("\n"),
-                  },
-                  num_questions: 5
-                })
-              })
-                .then(res => res.json())
-                .then(data => {
-                  if (data && data.data && Array.isArray(data.data.questions)) {
-                    const filtered = filterExamStyleFollowups(data.data.questions);
-                    setMessages((prev) => {
-                      if (prev.length === 0) return prev;
-                      const next = [...prev];
-                      const lastIdx = next.length - 1;
-                      if (next[lastIdx].id === lastMsg.id) {
-                        next[lastIdx] = {
-                          ...next[lastIdx],
-                          followups: filtered
-                        };
-                      }
-                      return next;
-                    });
+              fetchGroundedLibraryFollowups({
+                apiUrl: aiUrl,
+                token: activeToken,
+                standardId,
+                standardLabel: getStandardLabel(standard),
+                standardCode: getStandardCode(standard),
+                answerSnippet: String(lastMsg.content || ""),
+              }).then((filtered) => {
+                if (filtered.length < 3) return;
+                setMessages((prev) => {
+                  if (prev.length === 0) return prev;
+                  const next = [...prev];
+                  const lastIdx = next.length - 1;
+                  if (next[lastIdx].id === lastMsg.id) {
+                    next[lastIdx] = {
+                      ...next[lastIdx],
+                      followups: filtered,
+                    };
                   }
-                })
-                .catch(err => console.error("Failed to fetch followup questions for history:", err));
+                  return next;
+                });
+              });
+            } else if (existing.length >= 3 && lastMsg.role === "bot") {
+              setMessages((prev) => {
+                if (prev.length === 0) return prev;
+                const next = [...prev];
+                const lastIdx = next.length - 1;
+                if (next[lastIdx].id === lastMsg.id) {
+                  next[lastIdx] = { ...next[lastIdx], followups: existing };
+                }
+                return next;
+              });
             }
           }
         }, 0);
@@ -1558,15 +1772,20 @@ const ChatInterface = ({ id }: { id: string }) => {
     }
   }, [isHistorySuccess, isHistoryError, historyData, sessionId, t, token]);
 
-  const handleSend = async (text?: string, libraryTask?: string) => {
-    const messageText = text || inputValue;
+  const handleSend = async (
+    text?: string,
+    libraryTask?: string,
+    options?: { displayText?: string; apiMessage?: string },
+  ) => {
+    const apiMessage = (options?.apiMessage ?? text ?? inputValue).trim();
+    const displayText = (options?.displayText ?? apiMessage).trim();
     const fileToSend = selectedFile;
-    if ((!messageText.trim() && !fileToSend) || isChatSending) return;
+    if ((!apiMessage && !fileToSend) || isChatBusy) return;
 
     const newMessage: Message = {
       id: Date.now(),
       role: "user",
-      content: messageText,
+      content: displayText,
       timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
       attachment: fileToSend ? {
         name: fileToSend.name,
@@ -1575,18 +1794,32 @@ const ChatInterface = ({ id }: { id: string }) => {
       } : undefined
     };
 
+    setIsAwaitingReply(true);
     setMessages((prev) => [...prev, newMessage]);
     setInputValue("");
     setSelectedFile(null);
 
     try {
       const formData = new FormData();
-      formData.append("messages", messageText);
+      formData.append("messages", apiMessage);
+      const clauseFromMessage = (() => {
+        const m = String(apiMessage || "").match(
+          /\b(?:clause|cl\.?|section)\s*(\d+(?:\s*[.\u00B7•]\s*\d+){0,4})\b/i,
+        );
+        if (m?.[1]) return m[1].replace(/\s*[.\u00B7•]\s*/g, ".").replace(/\s+/g, "");
+        const bare = String(apiMessage || "").match(
+          /\b(\d+\s*[.\u00B7•]\s*\d+(?:\s*[.\u00B7•]\s*\d+){0,3})\b/,
+        );
+        return bare?.[1]
+          ? bare[1].replace(/\s*[.\u00B7•]\s*/g, ".").replace(/\s+/g, "")
+          : undefined;
+      })();
       formData.append(
         "context",
         JSON.stringify({
           purpose: "library_standards",
           isoStandardId: standardId,
+          ...(clauseFromMessage ? { clause: clauseFromMessage } : {}),
           ...(libraryTask ? { library_task: libraryTask } : {}),
         }),
       );
@@ -1609,66 +1842,63 @@ const ChatInterface = ({ id }: { id: string }) => {
           router.replace(`${pathname}?${params.toString()}`);
         }
 
-        // Prefer model suggested follow-ups; only call quiz/followup when empty
-        let followups = filterExamStyleFollowups(
+        const remoteFollowups = filterExamStyleFollowups(
           Array.isArray(result.data.suggested_followups)
             ? result.data.suggested_followups
             : [],
         );
-        if (followups.length < 3) {
-          try {
-            const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-            let activeToken = token;
-            if (!activeToken && typeof document !== 'undefined') {
-              const match = document.cookie.match(/(^| )token=([^;]+)/);
-              if (match) activeToken = match[2];
-            }
-            const followupResponse = await fetch(`${apiUrl}/ai-assistant/quiz/followup`, {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-                ...(activeToken ? { 'Authorization': `Bearer ${activeToken}` } : {}),
-              },
-              body: JSON.stringify({
-                context: {
-                  topic: getStandardLabel(standard),
-                  details: [
-                    getStandardCode(standard),
-                    "Generate difficult exam-style follow-up questions about requirements, evidence, and responsibilities.",
-                    "Do not use open-ended prompts like What is your scope or What do you know.",
-                    String(result.data.response || "").slice(0, 1200),
-                  ].filter(Boolean).join("\n"),
-                },
-                num_questions: 5
-              })
-            });
-            if (followupResponse.ok) {
-              const followupData = await followupResponse.json();
-              if (followupData && followupData.data && Array.isArray(followupData.data.questions)) {
-                followups = filterExamStyleFollowups(followupData.data.questions);
-              }
-            }
-          } catch (fErr) {
-            console.error("Failed to fetch followup questions:", fErr);
-          }
-        }
+        const botId = Date.now() + 1;
 
+        // Commit the assistant message immediately so the UI never goes blank
+        // between RTK loading end and follow-up generation.
         setMessages((prev) => [
           ...prev,
           {
-            id: Date.now() + 1,
+            id: botId,
             role: "bot",
             content: result.data.response,
-            followups: followups,
+            followups: remoteFollowups,
             sources: result.data.sources || [],
-            timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+            timestamp: new Date().toLocaleTimeString([], {
+              hour: "2-digit",
+              minute: "2-digit",
+            }),
           },
         ]);
+        setIsAwaitingReply(false);
+
+        // Enrich follow-ups in the background (does not block response render)
+        if (!libraryTask) {
+          const apiUrl = process.env.NEXT_PUBLIC_API_URL || "";
+          let activeToken = token;
+          if (!activeToken && typeof document !== "undefined") {
+            const match = document.cookie.match(/(^| )token=([^;]+)/);
+            if (match) activeToken = match[2];
+          }
+          void fetchGroundedLibraryFollowups({
+            apiUrl,
+            token: activeToken,
+            standardId,
+            standardLabel: getStandardLabel(standard),
+            standardCode: getStandardCode(standard),
+            answerSnippet: String(result.data.response || ""),
+            userQuestion: apiMessage,
+          }).then((grounded) => {
+            if (grounded.length < 3) return;
+            setMessages((prev) =>
+              prev.map((m) =>
+                m.id === botId ? { ...m, followups: grounded } : m,
+              ),
+            );
+          });
+        }
       } else {
+        setIsAwaitingReply(false);
         toast.error(t('library.couldNotGetResponse') || "Empty AI response. Please try again.");
       }
     } catch (error: any) {
       console.error("Chat error:", error);
+      setIsAwaitingReply(false);
 
       const errorMessage = error?.data?.message || error?.message || t('library.couldNotGetResponse');
       toast.error(errorMessage);
@@ -2016,7 +2246,7 @@ const ChatInterface = ({ id }: { id: string }) => {
                   ) : (
                     <MessageList
                       messages={messages}
-                      isLoading={isChatSending}
+                      isLoading={isChatBusy}
                       onActionClick={(action: string) => handleSend(action)}
                       onStudyFlashcards={(deck) => {
                         setFlashcardsData(deck);
@@ -2033,7 +2263,7 @@ const ChatInterface = ({ id }: { id: string }) => {
                   value={inputValue}
                   onChange={setInputValue}
                   onSend={(text?: string) => handleSend(text)}
-                  isLoading={isChatSending}
+                  isLoading={isChatBusy}
                   showSuggestions={!isChatStarted}
                   onFileSelect={setSelectedFile}
                   selectedFile={selectedFile}
@@ -2097,10 +2327,11 @@ const ChatInterface = ({ id }: { id: string }) => {
           if (tool.id === "build_flashcards") {
             handleBuildFlashcards();
           } else {
-            handleSend(
-              buildStudioToolPrompt(tool.id, getStandardLabel(standard)),
-              studioToolToLibraryTask(tool.id),
-            );
+            const label = getStandardLabel(standard);
+            handleSend(undefined, studioToolToLibraryTask(tool.id), {
+              displayText: studioToolStatusLabel(tool.id),
+              apiMessage: studioToolApiMessage(tool.id, label),
+            });
           }
         }}
       />
@@ -2158,10 +2389,11 @@ const ChatInterface = ({ id }: { id: string }) => {
                   if (tool.id === "build_flashcards") {
                     handleBuildFlashcards();
                   } else {
-                    handleSend(
-                      buildStudioToolPrompt(tool.id, getStandardLabel(standard)),
-                      studioToolToLibraryTask(tool.id),
-                    );
+                    const label = getStandardLabel(standard);
+                    handleSend(undefined, studioToolToLibraryTask(tool.id), {
+                      displayText: studioToolStatusLabel(tool.id),
+                      apiMessage: studioToolApiMessage(tool.id, label),
+                    });
                   }
                   setIsSidebarOpen(false);
                 }}
