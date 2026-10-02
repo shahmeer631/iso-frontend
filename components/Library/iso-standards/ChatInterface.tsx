@@ -46,6 +46,7 @@ import { toast } from "sonner";
 import ReactMarkdown from "react-markdown";
 import { useTranslation } from "react-i18next";
 import "@/lib/i18n/client";
+import { useAskAiPageContext } from "@/components/ask-ai/AskAiPageContext";
 
 import remarkGfm from "remark-gfm";
 
@@ -1232,6 +1233,7 @@ const ChatInterface = ({ id }: { id: string }) => {
   const standardId = id || (pathParams?.id as string);
 
   const { data: standardData, isLoading: isStandardLoading } = useGetISOStandardByIdQuery(standardId);
+  const { setAskAiContext } = useAskAiPageContext();
 
   // Use fallback data immediately while loading for a better user experience
   const standard = useMemo(() => {
@@ -1239,6 +1241,29 @@ const ChatInterface = ({ id }: { id: string }) => {
     const fallback = (standardsData as any[]).find((s) => s.id.toString() === standardId);
     return fallback || null;
   }, [standardData, standardId]);
+
+  // Publish selected Library ISO context to Universal Ask AI
+  useEffect(() => {
+    if (!standardId) return;
+    const clauseParam =
+      searchParams.get("clause") ||
+      searchParams.get("clauseId") ||
+      undefined;
+    const yearMatch = String(standard?.title || "").match(/\b(19|20)\d{2}\b/);
+    setAskAiContext({
+      isoStandardId: standardId,
+      standardTitle: standard?.title || getStandardLabel(standard),
+      standardCode: getStandardCode(standard) || undefined,
+      standardVersion: yearMatch?.[0],
+      clause: clauseParam || undefined,
+      libraryContext: standard?.title
+        ? `ISOBrain Library — ${standard.title}`
+        : "ISOBrain Library — ISO Standards",
+    });
+    return () => {
+      setAskAiContext(null);
+    };
+  }, [standardId, standard, searchParams, setAskAiContext]);
 
   useEffect(() => {
     console.log("Loaded Standard Data:", standard);

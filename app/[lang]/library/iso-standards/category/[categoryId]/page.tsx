@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { useGetISOStandardsQuery, useGetCategoriesQuery } from "@/lib/redux/api/isoStandardsApi";
 import "@/lib/i18n/client";
+import AskAiLibraryRoutePublisher from "@/components/ask-ai/AskAiLibraryRoutePublisher";
 
 const getCategoryIcon = (slug: string, name: string = "") => {
   const textToMatch = (slug + " " + name).toLowerCase();
@@ -130,6 +131,10 @@ const CategoryStandardsPage = () => {
 
   return (
     <div className="min-h-screen bg-[#09090B] text-white font-inter selection:bg-brand-cyan text-[#0F111A]/30">
+      <AskAiLibraryRoutePublisher
+        libraryContext={`ISOBrain Library — ${categoryName}`}
+        standardTitle={categoryName}
+      />
       {/* ── Header Section ─────────────────────────── */}
       <section className="relative pt-32 pb-10 px-6 overflow-hidden">
         {/* Animated Background Gradients */}

@@ -8,6 +8,7 @@ import Link from "next/link";
 import { useTranslation } from "react-i18next";
 import { useParams } from "next/navigation";
 import "@/lib/i18n/client";
+import AskAiLibraryRoutePublisher from "@/components/ask-ai/AskAiLibraryRoutePublisher";
 
 const ExplorerContent = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -40,6 +41,7 @@ const ExplorerContent = () => {
 
   return (
     <div className="min-h-screen bg-[#050505] text-white font-inter selection:bg-brand-cyan text-[#0F111A]/30 pb-20">
+      <AskAiLibraryRoutePublisher libraryContext="ISOBrain Library — ISO Standards Explorer" />
       {/* ── Header ── */}
       <header className="sticky top-0 z-50 bg-[#050505]/80 backdrop-blur-xl border-b border-white/5 py-6 px-6">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-6">
