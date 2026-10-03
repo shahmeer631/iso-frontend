@@ -29,6 +29,8 @@ import {
   Send,
   ChevronLeft,
   ChevronRight,
+  Copy,
+  Check,
 } from "lucide-react";
 import { useSearchParams, useRouter, usePathname, useParams } from "next/navigation";
 import {
@@ -234,12 +236,180 @@ function studioToolToLibraryTask(toolId: string): string | undefined {
 
 /** Dedupe InitialChatView starter-question AI calls (React Strict Mode remounts). */
 /** In-flight + short-lived result cache for starter chips (dedupe Strict Mode / remounts). */
-const starterQuestionsInflight = new Map<string, Promise<string[]>>();
+const starterQuestionsInflight = new Map<
+  string,
+  { promise: Promise<string[]>; abort?: AbortController }
+>();
 const starterQuestionsCache = new Map<
   string,
   { questions: string[]; expiresAt: number }
 >();
 const STARTER_CACHE_TTL_MS = 10 * 60 * 1000;
+
+function suggestionsErrorText(error: unknown): string {
+  if (!error) return "";
+  if (typeof error === "string") return error;
+  if (error instanceof Error) return error.message || "";
+  if (typeof error === "object") {
+    const e = error as Record<string, unknown>;
+    return String(
+      e.message ||
+        (e.data as any)?.message ||
+        e.error ||
+        e.status ||
+        "",
+    );
+  }
+  return String(error);
+}
+
+function isBenignSuggestionsError(error: unknown): boolean {
+  if (!error) return true;
+  const msg = suggestionsErrorText(error).toLowerCase();
+  if (
+    msg.includes("abort") ||
+    msg.includes("socket hang up") ||
+    msg.includes("failed to fetch") ||
+    msg.includes("networkerror") ||
+    msg.includes("econnreset") ||
+    msg.includes("econnrefused") ||
+    msg.includes("timed out") ||
+    msg.includes("timeout")
+  ) {
+    return true;
+  }
+  if (typeof error === "object") {
+    const e = error as Record<string, unknown>;
+    const status = e.status;
+    const name = String(e.name || "");
+    if (
+      name === "AbortError" ||
+      (status === "FETCH_ERROR" &&
+        String(e.error || "").toLowerCase().includes("abort"))
+    ) {
+      return true;
+    }
+    if (status === "ABORT_ERR" || e.message === "The user aborted a request.") {
+      return true;
+    }
+    if (Object.keys(e).length === 0) return true;
+  }
+  return false;
+}
+
+function isRetryableSuggestionsError(error: unknown): boolean {
+  const msg = suggestionsErrorText(error).toLowerCase();
+  return (
+    msg.includes("socket hang up") ||
+    msg.includes("failed to fetch") ||
+    msg.includes("networkerror") ||
+    msg.includes("econnreset") ||
+    msg.includes("econnrefused") ||
+    msg.includes("timed out") ||
+    msg.includes("timeout") ||
+    msg.includes("502") ||
+    msg.includes("503") ||
+    msg.includes("504")
+  );
+}
+
+/** Stable fetch for starter chips — not tied to RTK mutation lifecycle / unmount abort. */
+async function fetchLibraryStarterQuestions(
+  standardId: string,
+  token?: string | null,
+  signal?: AbortSignal,
+): Promise<string[]> {
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL || "";
+  if (!apiUrl || !standardId) return [];
+
+  let activeToken = token;
+  if (!activeToken && typeof document !== "undefined") {
+    const match = document.cookie.match(/(^| )token=([^;]+)/);
+    if (match) activeToken = match[2];
+  }
+
+  const maxAttempts = 3;
+  let lastError: unknown;
+
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    if (signal?.aborted) {
+      throw Object.assign(new Error("The user aborted a request."), {
+        name: "AbortError",
+      });
+    }
+
+    try {
+      // Rebuild FormData each attempt — body streams are one-shot.
+      const formData = new FormData();
+      formData.append(
+        "messages",
+        "Generate exam-style starter study questions for the selected ISO standard.",
+      );
+      formData.append(
+        "context",
+        JSON.stringify({
+          purpose: "library_standards",
+          isoStandardId: standardId,
+          library_task: "starter_questions",
+        }),
+      );
+
+      const res = await fetch(`${apiUrl}/ai-assistant/library/chat`, {
+        method: "POST",
+        headers: {
+          ...(activeToken ? { Authorization: `Bearer ${activeToken}` } : {}),
+        },
+        body: formData,
+        signal,
+      });
+
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        const err = Object.assign(
+          new Error(body?.message || `HTTP ${res.status}`),
+          { status: res.status, data: body },
+        );
+        if (
+          attempt < maxAttempts &&
+          (res.status === 502 || res.status === 503 || res.status === 504)
+        ) {
+          lastError = err;
+          await new Promise((r) => setTimeout(r, 400 * attempt));
+          continue;
+        }
+        throw err;
+      }
+
+      const result = await res.json();
+      if (!result?.success || !result?.data?.response) return [];
+
+      const fromFollowups = filterExamStyleFollowups(
+        Array.isArray(result.data.suggested_followups)
+          ? result.data.suggested_followups
+          : [],
+      );
+      const lines = String(result.data.response)
+        .split("\n")
+        .filter((l: string) => l.trim().length > 5);
+      return filterExamStyleFollowups([
+        ...fromFollowups,
+        ...lines.map((l: string) =>
+          l.replace(/^[\d\.\-\*]+\s*/, "").replace(/^"|"$/g, "").trim(),
+        ),
+      ]);
+    } catch (error) {
+      lastError = error;
+      if (signal?.aborted || (error as any)?.name === "AbortError") throw error;
+      if (attempt < maxAttempts && isRetryableSuggestionsError(error)) {
+        await new Promise((r) => setTimeout(r, 500 * attempt));
+        continue;
+      }
+      throw error;
+    }
+  }
+
+  throw lastError || new Error("Failed to fetch suggestions");
+}
 
 function isOpenEndedCoachingQuestion(text: string): boolean {
   const q = String(text || "")
@@ -816,9 +986,10 @@ const DocumentSkeleton = () => {
 
 const InitialChatView = ({ title, summary, code, category, standardId, onActionClick }: any) => {
   const { t } = useTranslation();
+  const token = useSelector(selectCurrentToken);
 
-  const [chatWithISOStandards, { isLoading: isFetchingSuggestions }] = useChatWithISOStandardsNewMutation();
   const [suggestions, setSuggestions] = useState<string[]>([]);
+  const [isFetchingSuggestions, setIsFetchingSuggestions] = useState(false);
 
   useEffect(() => {
     if (!standardId) return;
@@ -832,70 +1003,67 @@ const InitialChatView = ({ title, summary, code, category, standardId, onActionC
       return;
     }
 
-    // Dedupe Strict Mode / remount double-fetches for the same standard
-    const existing = starterQuestionsInflight.get(standardId);
-    const fetchPromise =
-      existing ||
-      (async () => {
-        const formData = new FormData();
-        formData.append(
-          "messages",
-          "Generate exam-style starter study questions for the selected ISO standard.",
-        );
-        formData.append(
-          "context",
-          JSON.stringify({
-            purpose: "library_standards",
-            isoStandardId: standardId,
-            library_task: "starter_questions",
-          }),
-        );
-
-        const result = await chatWithISOStandards(formData as any).unwrap();
-        if (!result?.success || !result?.data?.response) return [] as string[];
-
-        const fromFollowups = filterExamStyleFollowups(
-          Array.isArray(result.data.suggested_followups)
-            ? result.data.suggested_followups
-            : [],
-        );
-        const lines = String(result.data.response)
-          .split("\n")
-          .filter((l: string) => l.trim().length > 5);
-        const cleaned = filterExamStyleFollowups([
-          ...fromFollowups,
-          ...lines.map((l: string) =>
-            l.replace(/^[\d\.\-\*]+\s*/, "").replace(/^"|"$/g, "").trim(),
-          ),
-        ]);
-        if (cleaned.length) {
-          starterQuestionsCache.set(standardId, {
-            questions: cleaned,
-            expiresAt: Date.now() + STARTER_CACHE_TTL_MS,
-          });
-        }
-        return cleaned;
-      })().finally(() => {
-        // Keep result briefly so Strict Mode remount reuses it; then allow refresh
-        setTimeout(() => starterQuestionsInflight.delete(standardId), 8000);
-      });
-
-    if (!existing) {
-      starterQuestionsInflight.set(standardId, fetchPromise);
+    // Cancel in-flight starter fetches for other standards (rapid Library browsing).
+    for (const [id, entry] of starterQuestionsInflight.entries()) {
+      if (id !== standardId) {
+        entry.abort?.abort();
+        starterQuestionsInflight.delete(id);
+      }
     }
 
+    const existing = starterQuestionsInflight.get(standardId);
+    let abort = existing?.abort;
+    let fetchPromise = existing?.promise;
+
+    if (!fetchPromise) {
+      abort = new AbortController();
+      fetchPromise = (async () => {
+        try {
+          const cleaned = await fetchLibraryStarterQuestions(
+            standardId,
+            token,
+            abort!.signal,
+          );
+          if (cleaned.length) {
+            starterQuestionsCache.set(standardId, {
+              questions: cleaned,
+              expiresAt: Date.now() + STARTER_CACHE_TTL_MS,
+            });
+          }
+          return cleaned;
+        } finally {
+          // Drop inflight as soon as settled so failures can retry on remount
+          const current = starterQuestionsInflight.get(standardId);
+          if (current?.promise === fetchPromise) {
+            starterQuestionsInflight.delete(standardId);
+          }
+        }
+      })();
+      starterQuestionsInflight.set(standardId, { promise: fetchPromise, abort });
+    }
+
+    setIsFetchingSuggestions(true);
     fetchPromise
       .then((cleaned) => {
         if (isMounted && cleaned.length) setSuggestions(cleaned);
       })
       .catch((error) => {
-        console.error("Failed to fetch suggestions:", error);
+        // Transient network / abort while switching standards — no red console spam
+        if (!isBenignSuggestionsError(error)) {
+          console.error(
+            "Failed to fetch suggestions:",
+            suggestionsErrorText(error) || error,
+          );
+        }
+      })
+      .finally(() => {
+        if (isMounted) setIsFetchingSuggestions(false);
       });
 
     return () => {
       isMounted = false;
     };
-  }, [standardId, chatWithISOStandards]);
+  }, [standardId, token]);
 
   const quickActions = [
     {
@@ -1030,6 +1198,221 @@ const TypewriterMarkdown = ({ content, onUpdate }: { content: string, speed?: nu
   );
 };
 
+/** Split AI markdown into heading-based sections for section-level copy. */
+function splitMarkdownByHeadings(
+  markdown: string,
+): Array<{ id: string; heading: string; markdown: string }> {
+  const text = String(markdown || "").replace(/\r\n/g, "\n");
+  if (!text.trim()) return [];
+
+  const lines = text.split("\n");
+  const sections: Array<{ heading: string; lines: string[] }> = [];
+  let current: { heading: string; lines: string[] } = { heading: "", lines: [] };
+
+  for (const line of lines) {
+    const m = /^(#{1,3})\s+(.+?)\s*$/.exec(line);
+    if (m) {
+      if (current.heading || current.lines.some((l) => l.trim())) {
+        sections.push(current);
+      }
+      current = {
+        heading: m[2].replace(/\s+#+\s*$/, "").trim(),
+        lines: [line],
+      };
+    } else {
+      current.lines.push(line);
+    }
+  }
+  if (current.heading || current.lines.some((l) => l.trim())) {
+    sections.push(current);
+  }
+
+  const hasHeadings = sections.some((s) => Boolean(s.heading));
+  if (!hasHeadings) {
+    return [{ id: "full", heading: "", markdown: text.trim() }];
+  }
+
+  return sections.map((s, i) => ({
+    id: `s-${i}`,
+    heading: s.heading,
+    markdown: s.lines.join("\n").trim(),
+  }));
+}
+
+function stripLeadingMarkdownHeading(markdown: string): string {
+  return String(markdown || "")
+    .replace(/\r\n/g, "\n")
+    .replace(/^#{1,3}\s+.+?\n*/, "")
+    .trim();
+}
+
+/** Plain-text clipboard form — keeps lists/tables readable without copying UI chrome. */
+function markdownSectionToClipboard(sectionMarkdown: string): string {
+  return String(sectionMarkdown || "")
+    .replace(/\r\n/g, "\n")
+    .replace(/^#{1,6}\s+/gm, "") // keep heading text, drop hashes
+    .replace(/\*\*(.*?)\*\*/g, "$1")
+    .replace(/__(.*?)__/g, "$1")
+    .replace(/\*(.*?)\*/g, "$1")
+    .replace(/_(.*?)_/g, "$1")
+    .replace(/`([^`]+)`/g, "$1")
+    .replace(/^\s*[-*+]\s+/gm, "• ")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
+}
+
+async function copyTextToClipboard(text: string): Promise<boolean> {
+  const value = String(text || "").trim();
+  if (!value) return false;
+  try {
+    if (navigator?.clipboard?.writeText) {
+      await navigator.clipboard.writeText(value);
+      return true;
+    }
+  } catch {
+    /* fall through */
+  }
+  try {
+    const ta = document.createElement("textarea");
+    ta.value = value;
+    ta.setAttribute("readonly", "");
+    ta.style.position = "fixed";
+    ta.style.left = "-9999px";
+    document.body.appendChild(ta);
+    ta.select();
+    const ok = document.execCommand("copy");
+    document.body.removeChild(ta);
+    return ok;
+  } catch {
+    return false;
+  }
+}
+
+const InlineCopyButton = ({
+  getText,
+  label = "Copy",
+}: {
+  getText: () => string;
+  label?: string;
+}) => {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const ok = await copyTextToClipboard(getText());
+    if (!ok) return;
+    setCopied(true);
+    window.setTimeout(() => setCopied(false), 1600);
+  };
+
+  return (
+    <button
+      type="button"
+      onClick={handleCopy}
+      className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full border border-white/10 bg-white/5 text-[10px] font-bold uppercase tracking-wider text-gray-400 hover:text-[#00f0ff] hover:border-[#00f0ff]/40 transition-colors shrink-0"
+      aria-label={copied ? "Copied" : label}
+    >
+      {copied ? <Check size={11} className="text-emerald-400" /> : <Copy size={11} />}
+      <span>{copied ? "Copied" : label}</span>
+    </button>
+  );
+};
+
+const LIBRARY_BOT_MARKDOWN_CLASS = `
+  max-w-none w-full text-[#EDEDED]
+  [&_p]:mb-3 md:[&_p]:mb-4 [&_p]:last:mb-0
+  [&_h1]:text-[1.1rem] md:[&_h1]:text-[1.25rem] [&_h1]:font-black [&_h1]:text-white [&_h1]:mb-3 md:[&_h1]:mb-4 [&_h1]:mt-0 [&_h1]:tracking-tight
+  [&_h2]:text-[1rem] md:[&_h2]:text-[1.1rem] [&_h2]:font-bold [&_h2]:text-white [&_h2]:mb-2 md:[&_h2]:mb-3 [&_h2]:mt-0
+  [&_h3]:text-[0.95rem] md:[&_h3]:text-[1rem] [&_h3]:font-bold [&_h3]:text-white/90 [&_h3]:mb-1.5 md:[&_h3]:mb-2 [&_h3]:mt-0
+  [&_ul]:list-none [&_ul]:pl-0 [&_ul]:mb-3 md:[&_ul]:mb-4 [&_ul]:space-y-1.5 md:[&_ul]:space-y-2
+  [&_ol]:list-decimal [&_ol]:pl-5 [&_ol]:mb-3 md:[&_ol]:mb-4 [&_ol]:space-y-1.5 md:[&_ol]:space-y-2
+  [&_li]:relative [&_li]:pl-5
+  [&_ul>li]:before:content-[''] [&_ul>li]:before:absolute [&_ul>li]:before:left-0 [&_ul>li]:before:top-[0.6em] [&_ul>li]:before:w-2 [&_ul>li]:before:h-2 [&_ul>li]:before:bg-[#00f0ff] [&_ul>li]:before:rounded-full [&_ul>li]:before:shadow-[0_0_8px_#D4AF37]
+  [&_strong]:font-black [&_strong]:text-[#00f0ff]
+  [&_em]:italic [&_em]:text-gray-500
+  [&_code]:font-jetbrains-mono [&_code]:text-[0.9em] [&_code]:bg-white/10 [&_code]:text-[#818CF8] [&_code]:px-2 [&_code]:py-1 [&_code]:rounded-md
+  [&_pre]:bg-[#020202] [&_pre]:border [&_pre]:border-white/5 [&_pre]:rounded-xl md:[&_pre]:rounded-2xl [&_pre]:p-3 md:[&_pre]:p-6 [&_pre]:my-3 md:[&_pre]:my-6 [&_pre]:overflow-x-auto [&_pre_code]:bg-transparent [&_pre_code]:p-0 [&_pre_code]:text-[#D1D5DB] [&_pre_code]:font-jetbrains-mono
+  [&_blockquote]:border-l-4 [&_blockquote]:border-[#818CF8] [&_blockquote]:bg-brand-cyan text-[#0F111A]/5 [&_blockquote]:px-4 md:[&_blockquote]:px-6 [&_blockquote]:py-3 md:[&_blockquote]:py-4 [&_blockquote]:my-3 md:[&_blockquote]:my-6 [&_blockquote]:rounded-r-xl md:[&_blockquote]:rounded-r-2xl [&_blockquote]:italic [&_blockquote]:text-gray-300
+  [&_table]:block [&_table]:w-full [&_table]:overflow-x-auto [&_table]:no-scrollbar [&_table]:my-3 md:[&_table]:my-6 [&_table]:border-collapse [&_table]:rounded-xl [&_table]:border [&_table]:border-white/5
+  [&_th]:bg-white/5 [&_th]:text-white [&_th]:font-bold [&_th]:px-2.5 md:[&_th]:px-4 [&_th]:py-2 md:[&_th]:py-3 [&_th]:text-left [&_th]:border-b [&_th]:border-white/10 [&_th]:text-[12px] md:[&_th]:text-sm
+  [&_td]:px-2.5 md:[&_td]:px-4 [&_td]:py-2 md:[&_td]:py-3 [&_td]:border-b [&_td]:border-white/5 [&_td]:text-gray-300 [&_td]:text-[12px] md:[&_td]:text-sm
+`;
+
+const LibraryBotMarkdown = ({
+  content,
+  animate,
+  onUpdate,
+}: {
+  content: string;
+  animate?: boolean;
+  onUpdate?: () => void;
+}) => {
+  const sections = useMemo(() => splitMarkdownByHeadings(content), [content]);
+  const multiSection = sections.length > 1;
+
+  useEffect(() => {
+    onUpdate?.();
+  }, [content, onUpdate]);
+
+  if (!multiSection) {
+    return (
+      <div className={LIBRARY_BOT_MARKDOWN_CLASS}>
+        {animate ? (
+          <TypewriterMarkdown content={content} onUpdate={onUpdate} />
+        ) : (
+          <ReactMarkdown remarkPlugins={[remarkGfm]}>{content}</ReactMarkdown>
+        )}
+      </div>
+    );
+  }
+
+  return (
+    <div className="w-full min-w-0 space-y-4 md:space-y-5">
+      {sections.map((section) => {
+        const bodyMd = section.heading
+          ? stripLeadingMarkdownHeading(section.markdown)
+          : section.markdown;
+        return (
+          <div
+            key={section.id}
+            className="relative w-full min-w-0 rounded-xl border border-white/5 bg-white/[0.015] px-3 py-3 md:px-4 md:py-4"
+          >
+            <div className="flex items-start justify-between gap-3 mb-2 md:mb-3">
+              {section.heading ? (
+                <h3 className="min-w-0 text-[1rem] md:text-[1.1rem] font-bold text-white tracking-tight">
+                  {section.heading}
+                </h3>
+              ) : (
+                <span className="min-w-0 text-[11px] font-black uppercase tracking-wider text-gray-500">
+                  Section
+                </span>
+              )}
+              <InlineCopyButton
+                getText={() => {
+                  const body = markdownSectionToClipboard(
+                    section.heading ? bodyMd : section.markdown,
+                  );
+                  return section.heading
+                    ? `${section.heading}\n\n${body}`
+                    : body;
+                }}
+              />
+            </div>
+            {bodyMd ? (
+              <div className={LIBRARY_BOT_MARKDOWN_CLASS}>
+                <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                  {bodyMd}
+                </ReactMarkdown>
+              </div>
+            ) : null}
+          </div>
+        );
+      })}
+    </div>
+  );
+};
+
 const MessageList = ({ messages, isLoading, onActionClick, onStudyFlashcards }: { messages: Message[], isLoading: boolean, onActionClick: (text: string) => void, onStudyFlashcards: (deck: ISODeckData) => void }) => {
   const { t } = useTranslation();
   const containerRef = useRef<HTMLDivElement>(null);
@@ -1083,7 +1466,7 @@ const MessageList = ({ messages, isLoading, onActionClick, onStudyFlashcards }: 
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3, ease: "easeOut" }}
-            className={`flex gap-4 ${msg.role === "user" ? "justify-end" : "justify-start"}`}
+            className={`flex gap-3 md:gap-4 w-full min-w-0 ${msg.role === "user" ? "justify-end" : "justify-start"}`}
           >
             {msg.role === "bot" && (
               <div className="hidden sm:flex w-8 h-8 rounded-full bg-white/5 border border-white/10 items-center justify-center shrink-0 mt-1 shadow-lg shadow-black/20">
@@ -1091,9 +1474,10 @@ const MessageList = ({ messages, isLoading, onActionClick, onStudyFlashcards }: 
               </div>
             )}
 
-            <div className={`flex flex-col gap-2 w-full max-w-full ${msg.role === "user" ? "md:max-w-[85%] md:w-auto items-end" : "md:max-w-[52rem] md:w-auto"}`}>
+            {/* Bot: fill available chat column (no fixed 52rem cap). User stays bubble-sized. */}
+            <div className={`flex flex-col gap-2 min-w-0 ${msg.role === "user" ? "w-full max-w-full md:max-w-[85%] md:w-auto items-end" : "w-full flex-1"}`}>
               <div
-                className={`px-3.5 py-3 md:px-5 md:py-4 rounded-2xl md:rounded-3xl text-[14px] sm:text-[15px] md:text-[16px] leading-[1.7] ${msg.role === "bot"
+                className={`w-full min-w-0 px-3.5 py-3 md:px-5 md:py-4 rounded-2xl md:rounded-3xl text-[14px] sm:text-[15px] md:text-[16px] leading-[1.7] ${msg.role === "bot"
                   ? "bg-[#0A0A0B] border border-white/10 text-[#EDEDED] rounded-tl-sm shadow-2xl"
                   : "bg-[#111827] border border-brand-cyan/20 text-white font-medium rounded-tr-sm shadow-lg shadow-black/40"
                   }`}
@@ -1161,50 +1545,22 @@ const MessageList = ({ messages, isLoading, onActionClick, onStudyFlashcards }: 
                       return <LibraryQuizPlayer items={quizItems} />;
                     }
                     return (
-                  <div className="
-                    max-w-none text-[#EDEDED]
-                    [&_p]:mb-3 md:[&_p]:mb-4 [&_p]:last:mb-0
-                    [&_h1]:text-[1.1rem] md:[&_h1]:text-[1.25rem] [&_h1]:font-black [&_h1]:text-white [&_h1]:mb-3 md:[&_h1]:mb-4 [&_h1]:mt-4 md:[&_h1]:mt-6 [&_h1]:tracking-tight
-                    [&_h2]:text-[1rem] md:[&_h2]:text-[1.1rem] [&_h2]:font-bold [&_h2]:text-white [&_h2]:mb-2 md:[&_h2]:mb-3 [&_h2]:mt-3 md:[&_h2]:mt-5
-                    [&_h3]:text-[0.95rem] md:[&_h3]:text-[1rem] [&_h3]:font-bold [&_h3]:text-white/90 [&_h3]:mb-1.5 md:[&_h3]:mb-2 [&_h3]:mt-3 md:[&_h3]:mt-4
-                    
-                    [&_ul]:list-none [&_ul]:pl-0 [&_ul]:mb-3 md:[&_ul]:mb-4 [&_ul]:space-y-1.5 md:[&_ul]:space-y-2
-                    [&_ol]:list-decimal [&_ol]:pl-5 [&_ol]:mb-3 md:[&_ol]:mb-4 [&_ol]:space-y-1.5 md:[&_ol]:space-y-2
-                    
-                    [&_li]:relative [&_li]:pl-5
-                    [&_ul>li]:before:content-[''] [&_ul>li]:before:absolute [&_ul>li]:before:left-0 [&_ul>li]:before:top-[0.6em] [&_ul>li]:before:w-2 [&_ul>li]:before:h-2 [&_ul>li]:before:bg-[#00f0ff] [&_ul>li]:before:rounded-full [&_ul>li]:before:shadow-[0_0_8px_#D4AF37]
-                    
-                    [&_strong]:font-black [&_strong]:text-[#00f0ff]
-                    [&_em]:italic [&_em]:text-gray-500
-                    
-                    [&_code]:font-jetbrains-mono [&_code]:text-[0.9em] [&_code]:bg-white/10 [&_code]:text-[#818CF8] [&_code]:px-2 [&_code]:py-1 [&_code]:rounded-md
-                    [&_pre]:bg-[#020202] [&_pre]:border [&_pre]:border-white/5 [&_pre]:rounded-xl md:[&_pre]:rounded-2xl [&_pre]:p-3 md:[&_pre]:p-6 [&_pre]:my-3 md:[&_pre]:my-6 [&_pre]:overflow-x-auto [&_pre_code]:bg-transparent [&_pre_code]:p-0 [&_pre_code]:text-[#D1D5DB] [&_pre_code]:font-jetbrains-mono
-                    
-                    [&_blockquote]:border-l-4 [&_blockquote]:border-[#818CF8] [&_blockquote]:bg-brand-cyan text-[#0F111A]/5 [&_blockquote]:px-4 md:[&_blockquote]:px-6 [&_blockquote]:py-3 md:[&_blockquote]:py-4 [&_blockquote]:my-3 md:[&_blockquote]:my-6 [&_blockquote]:rounded-r-xl md:[&_blockquote]:rounded-r-2xl [&_blockquote]:italic [&_blockquote]:text-gray-300
-                    
-                    [&_table]:block [&_table]:w-full [&_table]:overflow-x-auto [&_table]:no-scrollbar [&_table]:my-3 md:[&_table]:my-6 [&_table]:border-collapse [&_table]:rounded-xl [&_table]:border [&_table]:border-white/5
-                    [&_th]:bg-white/5 [&_th]:text-white [&_th]:font-bold [&_th]:px-2.5 md:[&_th]:px-4 [&_th]:py-2 md:[&_th]:py-3 [&_th]:text-left [&_th]:border-b [&_th]:border-white/10 [&_th]:text-[12px] md:[&_th]:text-sm
-                    [&_td]:px-2.5 md:[&_td]:px-4 [&_td]:py-2 md:[&_td]:py-3 [&_td]:border-b [&_td]:border-white/5 [&_td]:text-gray-300 [&_td]:text-[12px] md:[&_td]:text-sm
-                  ">
-                    {typeof msg.id === "number" && index === messages.length - 1 ? (
-                      <TypewriterMarkdown
+                      <LibraryBotMarkdown
                         content={msg.content}
+                        animate={
+                          typeof msg.id === "number" &&
+                          index === messages.length - 1
+                        }
                         onUpdate={scrollToBottom}
                       />
-                    ) : (
-                      <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                        {msg.content}
-                      </ReactMarkdown>
-                    )}
-                  </div>
                     );
                   })()
                 ) : (
                   msg.content
                 )}
 
-                <div className={`mt-2 md:mt-3 pt-2 md:pt-3 border-t border-white/5 flex items-center justify-between ${msg.role === "user" ? "flex-row-reverse" : ""}`}>
-                  <div className="flex items-center gap-2">
+                <div className={`mt-2 md:mt-3 pt-2 md:pt-3 border-t border-white/5 flex flex-wrap items-center justify-between gap-2 ${msg.role === "user" ? "flex-row-reverse" : ""}`}>
+                  <div className="flex items-center gap-2 min-w-0">
                     <span className="text-[9px] font-black text-gray-500 uppercase tracking-widest">{msg.timestamp}</span>
                     {msg.role === "bot" && (
                       <div className="flex items-center gap-1.5 px-2 py-0.5 bg-green-500/10 border border-green-500/20 rounded-full">
@@ -1212,10 +1568,16 @@ const MessageList = ({ messages, isLoading, onActionClick, onStudyFlashcards }: 
                         <span className="text-[8px] font-black text-green-500 uppercase">{t('library.verified')}</span>
                       </div>
                     )}
+                    {msg.role === "bot" && msg.content?.trim() && !msg.flashcardDeck && (
+                      <InlineCopyButton
+                        label="Copy all"
+                        getText={() => markdownSectionToClipboard(msg.content)}
+                      />
+                    )}
                   </div>
 
                   {msg.role === "bot" && msg.sources && msg.sources.length > 0 && (
-                    <div className="flex flex-wrap items-center gap-1.5 mt-1 max-w-full">
+                    <div className="flex flex-wrap items-center gap-1.5 mt-1 max-w-full min-w-0">
                       {msg.sources.slice(0, 4).map((source, sIdx) => (
                         <span
                           key={sIdx}
@@ -1279,8 +1641,8 @@ const ChatInput = ({
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   return (
-    <div className="pt-1 pb-3 sm:pt-2 sm:pb-4 md:pt-3 md:pb-8 px-3 sm:px-4 md:px-8 bg-transparent shrink-0 relative z-30 mb-4">
-      <div className="max-w-[800px] mx-auto">
+    <div className="pt-1 pb-3 sm:pt-2 sm:pb-4 md:pt-3 md:pb-8 px-3 sm:px-4 md:px-6 lg:px-8 bg-transparent shrink-0 relative z-30 mb-4 w-full min-w-0">
+      <div className="w-full max-w-full mx-auto">
 
 
         <div className="relative group mb-12">
@@ -1975,8 +2337,8 @@ const ChatInterface = ({ id }: { id: string }) => {
           standardTitle={standard?.title}
         />
         <div className="flex-1 overflow-hidden flex flex-row w-full h-full pt-[64px]">
-          {/* Main Chat Area */}
-          <div className="w-full flex flex-col h-full border-r border-white/5 transition-all duration-500 relative">
+          {/* Main Chat Area — min-w-0 so flex child can shrink/grow with viewport */}
+          <div className="flex-1 min-w-0 w-full flex flex-col h-full border-r border-white/5 transition-all duration-500 relative">
 
             {/* Back to Chat button inside flashcards view removed from absolute position to avoid overlap */}
 
