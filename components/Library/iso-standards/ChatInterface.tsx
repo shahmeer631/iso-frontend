@@ -1239,11 +1239,58 @@ function splitMarkdownByHeadings(
   }));
 }
 
-function stripLeadingMarkdownHeading(markdown: string): string {
-  return String(markdown || "")
-    .replace(/\r\n/g, "\n")
-    .replace(/^#{1,3}\s+.+?\n*/, "")
-    .trim();
+/** Normalize heading/title text for duplicate detection. */
+function normalizeSectionTitle(text: string): string {
+  return String(text || "")
+    .replace(/^#{1,6}\s+/, "")
+    .replace(/\*\*/g, "")
+    .replace(/__/g, "")
+    .replace(/^\s*[-*+]\s+/, "")
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, " ");
+}
+
+/**
+ * Remove the leading ATX heading from a section body, plus any immediate
+ * duplicate title line the model repeats (e.g. "## Topic Overview" then
+ * "Topic Overview" / "opic Overview"). The UI already renders section.heading.
+ */
+function stripLeadingMarkdownHeading(
+  markdown: string,
+  heading?: string,
+): string {
+  const lines = String(markdown || "").replace(/\r\n/g, "\n").split("\n");
+
+  // Drop leading blank lines
+  while (lines.length && !lines[0].trim()) lines.shift();
+
+  // Drop the first ATX heading line only (line-based — avoid fragile regex
+  // that could swallow the first character of the next line).
+  if (lines.length && /^#{1,3}\s+\S/.test(lines[0].trim())) {
+    lines.shift();
+  }
+
+  const headingNorm = normalizeSectionTitle(heading || "");
+  while (lines.length && headingNorm) {
+    if (!lines[0].trim()) {
+      lines.shift();
+      continue;
+    }
+    const lineNorm = normalizeSectionTitle(lines[0]);
+    // Exact duplicate, or truncated/mangled repeat ("opic Overview")
+    if (
+      lineNorm === headingNorm ||
+      (lineNorm.length >= 4 && headingNorm.endsWith(lineNorm)) ||
+      (headingNorm.length >= 4 && lineNorm.endsWith(headingNorm))
+    ) {
+      lines.shift();
+      continue;
+    }
+    break;
+  }
+
+  return lines.join("\n").trim();
 }
 
 /** Plain-text clipboard form — keeps lists/tables readable without copying UI chrome. */
@@ -1371,7 +1418,7 @@ const LibraryBotMarkdown = ({
     <div className="w-full min-w-0 space-y-4 md:space-y-5">
       {sections.map((section) => {
         const bodyMd = section.heading
-          ? stripLeadingMarkdownHeading(section.markdown)
+          ? stripLeadingMarkdownHeading(section.markdown, section.heading)
           : section.markdown;
         return (
           <div
