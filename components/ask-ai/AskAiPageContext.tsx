@@ -9,9 +9,8 @@ import React, {
 } from "react";
 
 /**
- * Page-level context for Universal Ask AI.
- * Screens publish selected ISO/library/document/clause info;
- * GlobalChatbot reads it without a second AI system.
+ * Page-level retrieval hints for Universal Ask AI (standard/document IDs only).
+ * GlobalChatbot whitelists these fields — workflow/page labels must not be sent.
  */
 export type AskAiPageContextValue = {
   isoStandardId?: string;
@@ -19,13 +18,7 @@ export type AskAiPageContextValue = {
   standardCode?: string;
   standardVersion?: string;
   clause?: string;
-  libraryContext?: string;
   documentId?: string;
-  documentContext?: string;
-  /** Soft module label: Library | ISO Navigator | Audit Lens | Benchmark AI */
-  currentModule?: string;
-  /** Optional pathname echoed for backend workspace awareness */
-  currentRoute?: string;
 };
 
 type AskAiPageContextApi = {

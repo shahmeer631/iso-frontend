@@ -4,42 +4,52 @@ import { useEffect } from "react";
 import { useAskAiPageContext } from "@/components/ask-ai/AskAiPageContext";
 
 /**
- * Lightweight publisher for Library routes that do not already own Ask AI context
- * (hub, store, category, explorer). ChatInterface publishes richer standard context.
+ * Publishes optional retrieval hints when a Library route has a selected standard/document.
+ * Does not publish Library/Navigator/Audit workflow labels — Ask AI stays universal.
  */
 export default function AskAiLibraryRoutePublisher({
-  libraryContext,
   standardTitle,
   standardCode,
   standardVersion,
   isoStandardId,
+  documentId,
   clause,
 }: {
-  libraryContext?: string;
   standardTitle?: string;
   standardCode?: string;
   standardVersion?: string;
   isoStandardId?: string;
+  documentId?: string;
   clause?: string;
 }) {
   const { setAskAiContext } = useAskAiPageContext();
 
   useEffect(() => {
+    const hasRetrievalHint =
+      isoStandardId ||
+      documentId ||
+      standardTitle ||
+      standardCode ||
+      clause;
+    if (!hasRetrievalHint) {
+      setAskAiContext(null);
+      return () => setAskAiContext(null);
+    }
     setAskAiContext({
-      ...(libraryContext ? { libraryContext } : {}),
       ...(standardTitle ? { standardTitle } : {}),
       ...(standardCode ? { standardCode } : {}),
       ...(standardVersion ? { standardVersion } : {}),
       ...(isoStandardId ? { isoStandardId } : {}),
+      ...(documentId ? { documentId } : {}),
       ...(clause ? { clause } : {}),
     });
     return () => setAskAiContext(null);
   }, [
-    libraryContext,
     standardTitle,
     standardCode,
     standardVersion,
     isoStandardId,
+    documentId,
     clause,
     setAskAiContext,
   ]);

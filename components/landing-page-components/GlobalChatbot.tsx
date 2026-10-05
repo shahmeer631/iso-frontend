@@ -3,16 +3,13 @@
 import React, { useState, useRef, useEffect, useMemo } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { useTranslation } from "react-i18next";
 import { usePathname, useSearchParams } from "next/navigation";
 import { X, MessageCircle, Send } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { toast } from "sonner";
-import { useSelector } from "react-redux";
 import { useChatSimpleMutation } from "@/lib/redux/api/auditLensApi";
 import { useAskAiPageContext } from "@/components/ask-ai/AskAiPageContext";
-import type { RootState } from "@/lib/redux/store";
 import "@/lib/i18n/client";
 
 interface ChatMessage {
@@ -68,36 +65,6 @@ function buildConversationSnippet(history: ChatMessage[]): string {
     .join("\n");
 }
 
-function inferLibraryModuleLabel(pathname: string | null): string | undefined {
-  if (!pathname) return undefined;
-  if (pathname.includes("/library/iso-standards")) return "ISOBrain Library — ISO Standards";
-  if (pathname.includes("/library/store")) return "ISOBrain Library — Store";
-  if (pathname.includes("/library")) return "ISOBrain Library";
-  return undefined;
-}
-
-function inferCurrentModule(pathname: string | null): string | undefined {
-  if (!pathname) return undefined;
-  if (pathname.includes("/ai-assistant/iso-navigator")) return "ISO Navigator";
-  if (pathname.includes("/ai-assistant/audit-lens")) return "Audit Lens";
-  if (pathname.includes("/ai-assistant/benchmark-ai")) return "Benchmark AI";
-  if (pathname.includes("/ai-assistant-home")) return "AI Assistant";
-  if (pathname.includes("/library")) return "ISOBrain Library";
-  if (pathname.includes("/academy") || pathname.includes("/lessons")) return "Academy";
-  if (pathname.includes("/dashboard")) return "Dashboard";
-  return undefined;
-}
-
-type AskAiRouteExtras = {
-  currentModule?: string;
-  standardTitle?: string;
-  standardCode?: string;
-  standardVersion?: string;
-  clause?: string;
-  libraryContext?: string;
-  documentContext?: string;
-};
-
 function loadPersistedChatHistory(): ChatMessage[] {
   if (typeof window === "undefined") return [];
   try {
@@ -148,184 +115,139 @@ export default function GlobalChatbot() {
   );
   const [sessionId] = useState(() => createClientSessionId());
   const [statusHint, setStatusHint] = useState<string | null>(null);
+  const [dynamicQuestions, setDynamicQuestions] = useState<string[]>([]);
+  const [dynamicQuestionsLoading, setDynamicQuestionsLoading] = useState(false);
   const [chatSimple, { isLoading: isProcessing }] = useChatSimpleMutation();
-  const { t } = useTranslation();
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const { context: pageContext } = useAskAiPageContext();
-
-  const navigatorForm = useSelector(
-    (s: RootState) => s.isoNavigator?.formData,
-  );
-  const navigatorDoc = useSelector(
-    (s: RootState) => s.isoNavigator?.generatedDocument,
-  );
-  const auditForm = useSelector((s: RootState) => s.auditLens?.formData);
-  const auditDoc = useSelector(
-    (s: RootState) => s.auditLens?.generatedDocument,
-  );
-  const auditStep = useSelector((s: RootState) => s.auditLens?.currentStep);
-  const benchmarkResults = useSelector(
-    (s: RootState) => s.benchmark?.analysisResults,
-  );
 
   const urlStandardId = useMemo(
     () => extractLibraryStandardId(pathname),
     [pathname],
   );
   const urlDocumentId = useMemo(() => extractDocumentId(pathname), [pathname]);
-  const currentModule =
-    pageContext.currentModule || inferCurrentModule(pathname);
 
-  const routeModuleContext = useMemo(() => {
-    if (!pathname) return {} as AskAiRouteExtras;
-
-    if (pathname.includes("/ai-assistant/iso-navigator")) {
-      const std = String(navigatorForm?.specific_requirements || "").trim();
-      const clause = String(navigatorForm?.clause || "").trim() || undefined;
-      const docTitle =
-        String(
-          navigatorDoc?.title ||
-            navigatorForm?.document_title ||
-            navigatorForm?.output_type ||
-            "",
-        ).trim() || undefined;
-      const yearMatch = std.match(/\b(19|20)\d{2}\b/);
-      return {
-        currentModule: "ISO Navigator",
-        standardTitle: std || undefined,
-        standardCode: std || undefined,
-        standardVersion: yearMatch?.[0],
-        clause,
-        libraryContext: "ISO Navigator",
-        documentContext: docTitle
-          ? `Navigator document: ${docTitle}`
-          : "ISO Navigator workspace",
-      } satisfies AskAiRouteExtras;
-    }
-
-    if (pathname.includes("/ai-assistant/audit-lens")) {
-      const stage = String(auditForm?.stage || "").trim();
-      const material = String(auditForm?.material_type || "").trim();
-      const scope = String(auditForm?.scope_description || "").trim();
-      const parts = [
-        "Audit Lens",
-        stage ? `stage: ${stage}` : "",
-        material ? `material: ${material}` : "",
-        typeof auditStep === "number" ? `step: ${auditStep}` : "",
-      ].filter(Boolean);
-      const clauses = Array.isArray(auditDoc?.iso_clauses_covered)
-        ? auditDoc!.iso_clauses_covered.filter(Boolean).slice(0, 3)
-        : [];
-      return {
-        currentModule: "Audit Lens",
-        libraryContext: parts.join(" — "),
-        clause: clauses[0] ? String(clauses[0]).replace(/[^\d.]/g, "") || undefined : undefined,
-        documentContext: [
-          auditDoc?.title ? `Audit material: ${auditDoc.title}` : "",
-          scope ? `Scope: ${scope.slice(0, 240)}` : "",
-          clauses.length ? `Clauses: ${clauses.join(", ")}` : "",
-        ]
-          .filter(Boolean)
-          .join("\n")
-          .slice(0, 400) || "Audit Lens workspace",
-      } satisfies AskAiRouteExtras;
-    }
-
-    if (pathname.includes("/ai-assistant/benchmark-ai")) {
-      const title =
-        (benchmarkResults as any)?.title ||
-        (benchmarkResults as any)?.document_title ||
-        (benchmarkResults as any)?.file_name ||
-        "";
-      return {
-        currentModule: "Benchmark AI",
-        libraryContext: "Benchmark AI",
-        documentContext: title
-          ? `Benchmark analysis: ${String(title).slice(0, 200)}`
-          : "Benchmark AI workspace",
-      } satisfies AskAiRouteExtras;
-    }
-
-    return {} as AskAiRouteExtras;
-  }, [
-    pathname,
-    navigatorForm,
-    navigatorDoc,
-    auditForm,
-    auditDoc,
-    auditStep,
-    benchmarkResults,
-  ]);
-
+  // Soft retrieval prefs: ONLY when the user is viewing a specific standard/document
+  // (published via AskAiPageContext or URL id). Never inject Navigator/Audit form state.
   const urlClause =
     searchParams.get("clause") ||
     searchParams.get("clauseId") ||
     pageContext.clause ||
-    routeModuleContext.clause ||
     undefined;
 
   const resolvedContext = useMemo(() => {
     const isoStandardId =
       pageContext.isoStandardId || urlStandardId || undefined;
     const documentId = pageContext.documentId || urlDocumentId || undefined;
-    const libraryContext =
-      pageContext.libraryContext ||
-      routeModuleContext.libraryContext ||
-      inferLibraryModuleLabel(pathname) ||
-      (currentModule ? currentModule : undefined);
+    // Titles/codes only when a concrete document/standard is selected — not page workflow.
     const standardTitle =
-      pageContext.standardTitle ||
-      routeModuleContext.standardTitle ||
-      undefined;
+      isoStandardId || documentId ? pageContext.standardTitle : undefined;
     const standardCode =
-      pageContext.standardCode || routeModuleContext.standardCode || undefined;
+      isoStandardId || documentId ? pageContext.standardCode : undefined;
     const standardVersion =
-      pageContext.standardVersion ||
-      routeModuleContext.standardVersion ||
-      undefined;
-    const documentContext =
-      pageContext.documentContext ||
-      routeModuleContext.documentContext ||
-      undefined;
+      isoStandardId || documentId ? pageContext.standardVersion : undefined;
 
     return {
       purpose: "universal_ask" as const,
-      ...(currentModule ? { currentModule } : {}),
-      ...(pathname ? { currentRoute: pathname } : {}),
       ...(isoStandardId ? { isoStandardId } : {}),
       ...(standardTitle ? { standardTitle } : {}),
       ...(standardCode ? { standardCode } : {}),
       ...(standardVersion ? { standardVersion } : {}),
       ...(urlClause ? { clause: urlClause } : {}),
-      ...(libraryContext ? { libraryContext } : {}),
       ...(documentId ? { documentId } : {}),
-      ...(documentContext ? { documentContext } : {}),
     };
-  }, [
-    pageContext,
-    routeModuleContext,
-    urlStandardId,
-    urlDocumentId,
-    urlClause,
-    pathname,
-    currentModule,
-  ]);
+  }, [pageContext, urlStandardId, urlDocumentId, urlClause]);
 
   const contextBanner = useMemo(() => {
-    const moduleLabel =
-      currentModule || routeModuleContext.currentModule || undefined;
     if (resolvedContext.standardTitle || resolvedContext.isoStandardId) {
       const title = resolvedContext.standardTitle || "Selected ISO standard";
-      const withClause = resolvedContext.clause
+      return resolvedContext.clause
         ? `${title} · Clause ${resolvedContext.clause}`
         : title;
-      return moduleLabel ? `${moduleLabel} · ${withClause}` : withClause;
     }
-    if (resolvedContext.libraryContext) return resolvedContext.libraryContext;
-    if (moduleLabel) return moduleLabel;
-    return "ISO Standards · Library · Knowledge base";
-  }, [resolvedContext, currentModule, routeModuleContext.currentModule]);
+    return "Document chat · uploaded standards & Library";
+  }, [resolvedContext]);
+
+  // When a standard is open, load starter questions grounded in THAT document only.
+  useEffect(() => {
+    const standardId = resolvedContext.isoStandardId;
+    if (!standardId || !/^[a-fA-F0-9]{24}$/.test(standardId)) {
+      setDynamicQuestions([]);
+      setDynamicQuestionsLoading(false);
+      return;
+    }
+
+    let cancelled = false;
+    setDynamicQuestionsLoading(true);
+    setDynamicQuestions([]);
+
+    (async () => {
+      try {
+        const res = await chatSimple({
+          messages: [
+            {
+              content:
+                "Generate five document-grounded starter questions for this standard.",
+            },
+          ],
+          context: {
+            purpose: "universal_ask",
+            task: "document_starter_questions",
+            isoStandardId: standardId,
+            ...(resolvedContext.standardTitle
+              ? { standardTitle: resolvedContext.standardTitle }
+              : {}),
+          },
+          session_id: sessionId,
+        }).unwrap();
+
+        if (cancelled) return;
+        const payload = res?.data ?? res;
+        const fromFollowups = Array.isArray(payload?.suggested_followups)
+          ? payload.suggested_followups.map((q: unknown) =>
+              String(q || "").trim(),
+            )
+          : [];
+        const lines = String(payload?.response || "")
+          .split("\n")
+          .map((l: string) =>
+            l
+              .replace(/^[\d\.\-\*]+\s*/, "")
+              .replace(/^"|"$/g, "")
+              .trim(),
+          )
+          .filter((l: string) => l.length > 20);
+        const cleaned = [...fromFollowups, ...lines]
+          .map((q) => String(q || "").trim())
+          .filter(
+            (q, i, arr) =>
+              q.length >= 20 &&
+              !/^what is iso\b/i.test(q) &&
+              !/^what are the benefits\b/i.test(q) &&
+              arr.findIndex(
+                (x) =>
+                  x.toLowerCase().slice(0, 60) === q.toLowerCase().slice(0, 60),
+              ) === i,
+          )
+          .slice(0, 5);
+        if (!cancelled) setDynamicQuestions(cleaned);
+      } catch (err: any) {
+        if (err?.name === "AbortError") return;
+      } finally {
+        if (!cancelled) setDynamicQuestionsLoading(false);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [
+    resolvedContext.isoStandardId,
+    resolvedContext.standardTitle,
+    chatSimple,
+    sessionId,
+  ]);
 
   // Dense AI module shells: keep launcher clear of bottom toolbars
   const isDenseAiShell = Boolean(
@@ -435,17 +357,13 @@ export default function GlobalChatbot() {
     setChatHistory((prev) => [...prev, userMsg]);
     userScrolledUpRef.current = false;
     setQuery("");
-    setStatusHint(
-      currentModule
-        ? `Using ${currentModule} context…`
-        : "Searching ISO Standards…",
-    );
+    setStatusHint("Searching uploaded documents…");
     clearStatusTimers();
 
     try {
       statusTimersRef.current.push(
         window.setTimeout(() => {
-          setStatusHint("Checking relevant Library content…");
+          setStatusHint("Retrieving relevant sections…");
         }, 900),
       );
       statusTimersRef.current.push(
@@ -555,55 +473,34 @@ export default function GlobalChatbot() {
                   </div>
                   <h3 className="text-white font-bold mb-2">How can I help you today?</h3>
                   <p className="text-gray-400 text-sm">
-                    {currentModule
-                      ? `Ask about ${currentModule}, ISO standards, or Library content.`
-                      : "Ask about ISOBrain modules, ISO standards, and Library content."}
+                    Ask a question about any uploaded standard or Library document.
+                    {!resolvedContext.isoStandardId
+                      ? " Tip: open a standard in the Library first for document-specific suggestions."
+                      : ""}
                   </p>
 
                   <div className="flex flex-wrap items-center justify-center gap-2 mt-6">
-                    {(currentModule === "ISO Navigator"
-                      ? [
-                          "Tell me about the ISO Navigator.",
-                          "How does it generate documents?",
-                        ]
-                      : currentModule === "Audit Lens"
-                        ? [
-                            "Tell me about Audit Lens.",
-                            "What should I do on this page?",
-                          ]
-                        : currentModule === "Benchmark AI"
-                          ? [
-                              "Tell me about Benchmark AI.",
-                              "How does benchmarking work here?",
-                            ]
-                          : currentModule === "ISOBrain Library" ||
-                              Boolean(currentModule?.includes("Library"))
-                            ? [
-                                "What can I do here?",
-                                t(
-                                  "heroPills.pill2",
-                                  "Explain ISO 27001 controls",
-                                ),
-                              ]
-                            : [
-                                t(
-                                  "heroPills.pill1",
-                                  "What are the requirements of ISO 9001?",
-                                ),
-                                t(
-                                  "heroPills.pill2",
-                                  "Explain ISO 27001 controls",
-                                ),
-                              ]
-                    ).map((pill, i) => (
-                      <button
-                        key={i}
-                        onClick={() => handleProcess(pill)}
-                        className="px-3 py-1.5 rounded-full border border-white/10 bg-white/5 hover:bg-white/10 transition-colors text-[11px] text-gray-300 text-left cursor-pointer"
-                      >
-                        {pill}
-                      </button>
-                    ))}
+                    {dynamicQuestions.length > 0
+                      ? dynamicQuestions.map((pill, i) => (
+                          <button
+                            key={i}
+                            onClick={() => handleProcess(pill)}
+                            className="px-3 py-1.5 rounded-full border border-white/10 bg-white/5 hover:bg-white/10 transition-colors text-[11px] text-gray-300 text-left cursor-pointer"
+                          >
+                            {pill}
+                          </button>
+                        ))
+                      : dynamicQuestionsLoading && resolvedContext.isoStandardId
+                        ? (
+                            <span className="text-[11px] text-gray-500">
+                              Generating questions from the open document…
+                            </span>
+                          )
+                        : (
+                            <span className="text-[11px] text-gray-500 max-w-[280px]">
+                              Example: “What does clause 7.5 say about documented information in ISO 45001?”
+                            </span>
+                          )}
                   </div>
                 </div>
               ) : (
@@ -753,10 +650,7 @@ export default function GlobalChatbot() {
               <div className="flex items-center gap-2 bg-[#0A0F1C] border border-white/10 rounded-full px-3 py-1.5 focus-within:border-[#00f0ff]/50 transition-colors">
                 <input
                   type="text"
-                  placeholder={t(
-                    "dynamic.dyn_askaboutISO42001_51",
-                    "Ask about ISO compliance...",
-                  )}
+                  placeholder="Ask a question about an uploaded document…"
                   className="flex-1 bg-transparent border-none text-white px-2 py-1.5 focus:outline-none placeholder:text-gray-500 font-inter text-sm"
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}

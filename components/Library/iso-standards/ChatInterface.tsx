@@ -1853,9 +1853,6 @@ const ChatInterface = ({ id }: { id: string }) => {
       standardCode: getStandardCode(standard) || undefined,
       standardVersion: yearMatch?.[0],
       clause: clauseParam || undefined,
-      libraryContext: standard?.title
-        ? `ISOBrain Library — ${standard.title}`
-        : "ISOBrain Library — ISO Standards",
     });
     return () => {
       setAskAiContext(null);

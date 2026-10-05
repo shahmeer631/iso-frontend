@@ -18,7 +18,6 @@ import { selectCurrentUser, selectCurrentToken } from "@/lib/redux/features/auth
 import { toast } from "sonner";
 import OfferTimer from "@/components/landing-page-components/OfferTimer";
 import { userHasFeature, userOwnsPlanId } from "@/lib/access/effectiveAccess";
-import AskAiLibraryRoutePublisher from "@/components/ask-ai/AskAiLibraryRoutePublisher";
 
 const decodeJwt = (token: string) => {
   try {
@@ -237,7 +236,6 @@ const Page = () => {
 
   return (
     <div className="min-h-screen bg-[#09090B] text-white font-inter selection:bg-brand-cyan text-[#0F111A]/30">
-      <AskAiLibraryRoutePublisher libraryContext="ISOBrain Library — ISO Standards" />
       {/* ── Pricing Hero Section ─────────────────────────── */}
       <section className="relative pt-32 pb-16 px-4 sm:px-6 overflow-hidden">
         {/* Animated Background Gradients */}

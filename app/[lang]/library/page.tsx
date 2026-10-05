@@ -5,7 +5,6 @@ import FAQ from "@/components/AIAssistant/FAQ";
 import { Button } from "@/components/ui/button";
 import SlidingButton from "@/components/Library/SlidingButton";
 import CTCBanner from "@/components/landing-page-components/CTCBanner";
-import AskAiLibraryRoutePublisher from "@/components/ask-ai/AskAiLibraryRoutePublisher";
 interface FAQItem {
   question: string;
   answer: string;
@@ -40,7 +39,6 @@ const faqData: FAQItem[] = [
 const page = () => {
   return (
     <>
-      <AskAiLibraryRoutePublisher libraryContext="ISOBrain Library" />
       {/* header section  */}
       <section className="w-full bg-[#111827] py-24 text-center text-white">
         <div className="max-w-4xl mx-auto px-4 flex flex-col items-center">

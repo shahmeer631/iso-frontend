@@ -7,7 +7,6 @@ import TopStandards from "@/components/Library/store/TopStandards";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
 import React from "react";
-import AskAiLibraryRoutePublisher from "@/components/ask-ai/AskAiLibraryRoutePublisher";
 
 interface FAQItem {
   question: string;
@@ -44,7 +43,6 @@ const faqData: FAQItem[] = [
 const page = () => {
   return (
     <>
-      <AskAiLibraryRoutePublisher libraryContext="ISOBrain Library — Store" />
       {/* header section  */}
       <section className="w-full bg-[#111827] py-24 text-center text-white">
         <div className="max-w-4xl mx-auto px-4 flex flex-col items-center">
