@@ -34,6 +34,14 @@ export interface ISONavigatorFormData {
 export interface ChatHistoryItem {
   role: 'user' | 'ai';
   content: string;
+  sources?: Array<{
+    title: string;
+    standard?: string;
+    version?: string;
+    pages?: number[];
+    page_count?: number;
+    clauses?: string[];
+  }>;
 }
 
 export interface ContextSuggestion {
@@ -71,6 +79,14 @@ export interface GeneratedDocumentData {
     ims_guide_title?: string;
     ims_guide_available?: boolean;
     missing_editions?: string[];
+    grounding_sources?: Array<{
+      standard: string;
+      version?: string;
+      page_count?: number;
+      retrieved_pages?: number[];
+      clauses?: string[];
+      retrieval_mode?: string;
+    }>;
   };
   iso_clauses_referenced: string[];
   generation_timestamp: string;

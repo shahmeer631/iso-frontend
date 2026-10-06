@@ -678,13 +678,11 @@ export default function ISONavigator() {
 
       const orgCtxText = orgContextToString(formData.organization_context);
 
-      const contextStr = generatedDocument
-
-        ? generatedDocument.content
-
-        : `ISO Navigator assistant. Organization Context: ${orgCtxText || "not selected"} Standard: ${formData.specific_requirements || "not specified"}.`;
-
-
+      // Keep generated doc as secondary context only — primary grounding is
+      // selected Standards Library PDFs via Navigator chat on the backend.
+      const generatedSnippet = generatedDocument?.content
+        ? String(generatedDocument.content).slice(0, 3500)
+        : "";
 
       const response = await chatSimple({
 
@@ -692,7 +690,17 @@ export default function ISONavigator() {
 
         context: {
 
-          full_document_context: contextStr
+          purpose: "iso_navigator",
+
+          organization_context: orgCtxText || "",
+
+          specific_requirements: formData.specific_requirements || "",
+
+          document_title: formData.document_title || formData.output_type || "",
+
+          clause: formData.clause || "",
+
+          full_document_context: generatedSnippet,
 
         },
 
@@ -704,15 +712,30 @@ export default function ISONavigator() {
 
       // Assuming assistant response is the last message in the returned messages array
 
-      const aiResponse = response.messages?.[response.messages.length - 1]?.content || response.data?.response;
+      const aiResponse = response.messages?.[response.messages.length - 1]?.content || response.response || response.data?.response;
 
-
+      const chatSources = Array.isArray(response.sources)
+        ? response.sources
+            .filter((s: any) => s && (s.title || s.standard))
+            .map((s: any) => ({
+              title: String(s.title || s.standard || ""),
+              standard: s.standard ? String(s.standard) : undefined,
+              version: s.version ? String(s.version) : undefined,
+              pages: Array.isArray(s.pages) ? s.pages : undefined,
+              page_count: typeof s.page_count === "number" ? s.page_count : undefined,
+              clauses: Array.isArray(s.clauses) ? s.clauses : undefined,
+            }))
+        : undefined;
 
       if (aiResponse) {
 
         dispatch(
 
-          addChatMessage({ role: "ai", content: aiResponse }),
+          addChatMessage({
+            role: "ai",
+            content: aiResponse,
+            sources: chatSources,
+          }),
 
         );
 
@@ -1751,6 +1774,30 @@ export default function ISONavigator() {
                     </p>
                   )}
 
+                  {Array.isArray(generatedDocument.metadata?.grounding_sources) &&
+                    generatedDocument.metadata.grounding_sources.length > 0 && (
+                    <p className="text-[11px] leading-[1.45] text-white/45">
+                      Grounded on{" "}
+                      {generatedDocument.metadata.grounding_sources
+                        .map((s) => {
+                          const ver = s.version ? `:${s.version}` : "";
+                          const pages =
+                            Array.isArray(s.retrieved_pages) &&
+                            s.retrieved_pages.length > 0
+                              ? ` (pp. ${s.retrieved_pages.join(", ")})`
+                              : s.page_count
+                                ? ` (${s.page_count} pp. indexed)`
+                                : "";
+                          const clauses =
+                            Array.isArray(s.clauses) && s.clauses.length > 0
+                              ? ` [cl. ${s.clauses.slice(0, 6).join(", ")}]`
+                              : "";
+                          return `${s.standard}${ver}${pages}${clauses}`;
+                        })
+                        .join(" · ")}
+                    </p>
+                  )}
+
                   {(() => {
                     const docs = [
                       ...(selectedISO?.documents || []),
@@ -1914,6 +1961,27 @@ export default function ISONavigator() {
                           >
                             {msg.content}
                           </ReactMarkdown>
+                          {Array.isArray(msg.sources) && msg.sources.length > 0 && (
+                            <p className="mt-2 text-[10px] leading-[1.45] text-white/40">
+                              Sources:{" "}
+                              {msg.sources
+                                .map((s) => {
+                                  const ver = s.version ? `:${s.version}` : "";
+                                  const pages =
+                                    Array.isArray(s.pages) && s.pages.length > 0
+                                      ? ` (pp. ${s.pages.join(", ")})`
+                                      : s.page_count
+                                        ? ` (${s.page_count} pp.)`
+                                        : "";
+                                  const clauses =
+                                    Array.isArray(s.clauses) && s.clauses.length > 0
+                                      ? ` [cl. ${s.clauses.slice(0, 5).join(", ")}]`
+                                      : "";
+                                  return `${s.title || s.standard || ""}${ver}${pages}${clauses}`;
+                                })
+                                .join(" · ")}
+                            </p>
+                          )}
                           <div className="mt-2 flex items-center cursor-pointer text-[#00f0ff]" onClick={() => { navigator.clipboard.writeText(msg.content); toast.success(t('isoNavigator.textCopied')) }}>
                             <span className="ml-2 border border-[#00f0ff] rounded-full px-2 py-1 text-[#00f0ff] font-medium">{t('isoNavigator.copyClipboard')}</span>
                           </div>

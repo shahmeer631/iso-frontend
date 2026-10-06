@@ -84,7 +84,14 @@ const isoNavigatorSlice = createSlice({
     clearGeneratedDocument: (state) => {
       state.generatedDocument = null;
     },
-    addChatMessage: (state, action: PayloadAction<{ role: 'user' | 'ai'; content: string }>) => {
+    addChatMessage: (
+      state,
+      action: PayloadAction<{
+        role: 'user' | 'ai';
+        content: string;
+        sources?: ChatHistoryItem['sources'];
+      }>,
+    ) => {
       state.chatHistory.push(action.payload);
     },
     setSessionId: (state, action: PayloadAction<string>) => {
