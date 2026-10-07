@@ -166,7 +166,7 @@ export default function GlobalChatbot() {
         ? `${title} · Clause ${resolvedContext.clause}`
         : title;
     }
-    return "Document chat · uploaded standards & Library";
+    return "ISOBrain Ask AI · Library standards & documents";
   }, [resolvedContext]);
 
   // When a standard is open, load starter questions grounded in THAT document only.
