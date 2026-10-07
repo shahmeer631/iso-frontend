@@ -150,9 +150,9 @@ function studioToolApiMessage(toolId: string, standardLabel: string): string {
     case "create_summary":
       return `Create a concise summary of ${standardLabel}.`;
     case "practice_questions":
-      return `Generate 5 difficult exam questions for ${standardLabel}.`;
+      return `Generate 20 difficult exam questions for ${standardLabel}.`;
     case "generate_quiz":
-      return `Generate a difficult professional quiz for ${standardLabel}.`;
+      return `Generate a difficult professional quiz with 20 multiple-choice questions for ${standardLabel}.`;
     case "explain_eli5":
       return `Explain the core requirements of ${standardLabel} in clear, simple language.`;
     default:
@@ -583,11 +583,74 @@ function parseLibraryQuizMarkdown(md: string): LibraryQuizItem[] | null {
   return items.length >= 2 ? items : null;
 }
 
-function LibraryQuizPlayer({ items }: { items: LibraryQuizItem[] }) {
+/** Stable fingerprint for excluding previous-attempt questions on Retry. */
+function libraryQuestionFingerprint(text: string): string {
+  return String(text || "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim()
+    .slice(0, 120);
+}
+
+function shuffleArrayInPlace<T>(arr: T[]): T[] {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+/** Shuffle question order and option labels while preserving correctness. */
+function randomizeLibraryQuizAttempt(items: LibraryQuizItem[]): LibraryQuizItem[] {
+  const keys = ["A", "B", "C", "D"] as const;
+  const cloned = items.map((item) => {
+    const opts = item.options.map((o) => ({ ...o }));
+    const correctText =
+      opts.find((o) => o.key === item.correct)?.text || "";
+    shuffleArrayInPlace(opts);
+    const remapped = opts.slice(0, 4).map((o, i) => ({
+      key: keys[i] || o.key,
+      text: o.text,
+    }));
+    const correct =
+      remapped.find((o) => o.text === correctText)?.key || remapped[0]?.key || "A";
+    return {
+      ...item,
+      options: remapped,
+      correct,
+    };
+  });
+  return shuffleArrayInPlace(cloned);
+}
+
+function LibraryQuizPlayer({
+  items,
+  onRetry,
+  isRetrying,
+}: {
+  items: LibraryQuizItem[];
+  onRetry?: (previousQuestions: string[]) => void;
+  isRetrying?: boolean;
+}) {
+  const [attemptItems, setAttemptItems] = useState(() =>
+    randomizeLibraryQuizAttempt(items),
+  );
   const [answers, setAnswers] = useState<Record<number, string>>({});
   const [submitted, setSubmitted] = useState(false);
+  // Stabilize identity across parent re-renders (parse creates a new array each time).
+  const itemsSignature = items
+    .map((i) => libraryQuestionFingerprint(i.question))
+    .join("|");
 
-  const score = items.reduce((acc, item, idx) => {
+  useEffect(() => {
+    setAttemptItems(randomizeLibraryQuizAttempt(items));
+    setAnswers({});
+    setSubmitted(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- only re-seed when question set changes
+  }, [itemsSignature]);
+
+  const score = attemptItems.reduce((acc, item, idx) => {
     return acc + (answers[idx] === item.correct ? 1 : 0);
   }, 0);
 
@@ -597,17 +660,20 @@ function LibraryQuizPlayer({ items }: { items: LibraryQuizItem[] }) {
         <h3 className="text-[15px] md:text-[16px] font-black text-white tracking-tight">
           Knowledge Assessment
         </h3>
+        <span className="text-[10px] font-bold uppercase tracking-widest text-gray-500">
+          {attemptItems.length} questions
+        </span>
         {submitted && (
           <span className="text-[11px] font-black uppercase tracking-widest text-emerald-400">
-            Score {score}/{items.length}
+            Score {score}/{attemptItems.length}
           </span>
         )}
       </div>
-      {items.map((item, idx) => {
+      {attemptItems.map((item, idx) => {
         const selected = answers[idx];
         return (
           <div
-            key={idx}
+            key={`${libraryQuestionFingerprint(item.question)}-${idx}`}
             className="rounded-2xl border border-white/10 bg-white/[0.02] p-4 md:p-5 space-y-3"
           >
             <p className="text-[14px] md:text-[15px] font-semibold text-[#EDEDED] leading-relaxed">
@@ -623,7 +689,7 @@ function LibraryQuizPlayer({ items }: { items: LibraryQuizItem[] }) {
                   <button
                     key={opt.key}
                     type="button"
-                    disabled={submitted}
+                    disabled={submitted || isRetrying}
                     onClick={() =>
                       setAnswers((prev) => ({ ...prev, [idx]: opt.key }))
                     }
@@ -654,7 +720,9 @@ function LibraryQuizPlayer({ items }: { items: LibraryQuizItem[] }) {
       {!submitted ? (
         <button
           type="button"
-          disabled={Object.keys(answers).length < items.length}
+          disabled={
+            Object.keys(answers).length < attemptItems.length || isRetrying
+          }
           onClick={() => setSubmitted(true)}
           className="w-full py-3 rounded-xl bg-[#00f0ff] text-[#0F111A] font-black text-xs uppercase tracking-widest disabled:opacity-40 disabled:cursor-not-allowed"
         >
@@ -663,15 +731,98 @@ function LibraryQuizPlayer({ items }: { items: LibraryQuizItem[] }) {
       ) : (
         <button
           type="button"
+          disabled={isRetrying}
           onClick={() => {
+            if (onRetry) {
+              onRetry(attemptItems.map((i) => i.question));
+              return;
+            }
+            // Fallback: local reshuffle only if no regenerate handler
+            setAttemptItems(randomizeLibraryQuizAttempt(items));
             setAnswers({});
             setSubmitted(false);
           }}
-          className="w-full py-3 rounded-xl border border-white/15 text-gray-300 font-black text-xs uppercase tracking-widest hover:border-white/30"
+          className="w-full py-3 rounded-xl border border-white/15 text-gray-300 font-black text-xs uppercase tracking-widest hover:border-white/30 disabled:opacity-40 flex items-center justify-center gap-2"
         >
-          Retry quiz
+          {isRetrying ? (
+            <>
+              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+              Generating new quiz…
+            </>
+          ) : (
+            "Retry quiz"
+          )}
         </button>
       )}
+    </div>
+  );
+}
+
+function looksLikeLibraryExamMarkdown(md: string): boolean {
+  const text = String(md || "");
+  if (/##\s*Exam Questions/i.test(text)) return true;
+  const qMarks = text.match(/\*\*Q\s*\d+\.\*\*/gi);
+  return Boolean(qMarks && qMarks.length >= 3);
+}
+
+/** Extract exam question stems for Retry exclusion. */
+function extractExamQuestionTexts(md: string): string[] {
+  const lines = String(md || "")
+    .split(/\n+/)
+    .map((l) => l.trim())
+    .filter(Boolean);
+  const out: string[] = [];
+  const seen = new Set<string>();
+  for (const line of lines) {
+    if (/model answer/i.test(line)) continue;
+    const m =
+      line.match(/^\*\*q\s*\d+\.\*\*\s*(.+)$/i) ||
+      line.match(/^q\s*\d+[\.:)\-]\s*(.+)$/i) ||
+      line.match(/^\d+[\.:)\-]\s*(.+)$/);
+    if (!m?.[1]) continue;
+    const q = m[1].replace(/\*\*/g, "").trim();
+    if (q.length < 12) continue;
+    const key = libraryQuestionFingerprint(q);
+    if (seen.has(key)) continue;
+    seen.add(key);
+    out.push(q);
+  }
+  return out;
+}
+
+function LibraryExamRetryBar({
+  content,
+  onRetry,
+  isRetrying,
+}: {
+  content: string;
+  onRetry?: (previousQuestions: string[]) => void;
+  isRetrying?: boolean;
+}) {
+  if (!onRetry || !looksLikeLibraryExamMarkdown(content)) return null;
+  const count = extractExamQuestionTexts(content).length;
+  return (
+    <div className="mt-4 space-y-2">
+      {count > 0 && (
+        <p className="text-[10px] font-bold uppercase tracking-widest text-gray-500">
+          {count} exam questions
+        </p>
+      )}
+      <button
+        type="button"
+        disabled={isRetrying}
+        onClick={() => onRetry(extractExamQuestionTexts(content))}
+        className="w-full py-3 rounded-xl border border-white/15 text-gray-300 font-black text-xs uppercase tracking-widest hover:border-white/30 disabled:opacity-40 flex items-center justify-center gap-2"
+      >
+        {isRetrying ? (
+          <>
+            <Loader2 className="w-3.5 h-3.5 animate-spin" />
+            Generating new exam questions…
+          </>
+        ) : (
+          "Retry — new questions"
+        )}
+      </button>
     </div>
   );
 }
@@ -1460,7 +1611,21 @@ const LibraryBotMarkdown = ({
   );
 };
 
-const MessageList = ({ messages, isLoading, onActionClick, onStudyFlashcards }: { messages: Message[], isLoading: boolean, onActionClick: (text: string) => void, onStudyFlashcards: (deck: ISODeckData) => void }) => {
+const MessageList = ({
+  messages,
+  isLoading,
+  onActionClick,
+  onStudyFlashcards,
+  onRetryQuiz,
+  onRetryExam,
+}: {
+  messages: Message[];
+  isLoading: boolean;
+  onActionClick: (text: string) => void;
+  onStudyFlashcards: (deck: ISODeckData) => void;
+  onRetryQuiz?: (previousQuestions: string[]) => void;
+  onRetryExam?: (previousQuestions: string[]) => void;
+}) => {
   const { t } = useTranslation();
   const containerRef = useRef<HTMLDivElement>(null);
   const lastMessageCount = useRef(messages.length);
@@ -1589,17 +1754,30 @@ const MessageList = ({ messages, isLoading, onActionClick, onStudyFlashcards }: 
                   (() => {
                     const quizItems = parseLibraryQuizMarkdown(msg.content);
                     if (quizItems) {
-                      return <LibraryQuizPlayer items={quizItems} />;
+                      return (
+                        <LibraryQuizPlayer
+                          items={quizItems}
+                          isRetrying={isLoading}
+                          onRetry={onRetryQuiz}
+                        />
+                      );
                     }
                     return (
-                      <LibraryBotMarkdown
-                        content={msg.content}
-                        animate={
-                          typeof msg.id === "number" &&
-                          index === messages.length - 1
-                        }
-                        onUpdate={scrollToBottom}
-                      />
+                      <>
+                        <LibraryBotMarkdown
+                          content={msg.content}
+                          animate={
+                            typeof msg.id === "number" &&
+                            index === messages.length - 1
+                          }
+                          onUpdate={scrollToBottom}
+                        />
+                        <LibraryExamRetryBar
+                          content={msg.content}
+                          isRetrying={isLoading}
+                          onRetry={onRetryExam}
+                        />
+                      </>
                     );
                   })()
                 ) : (
@@ -2049,6 +2227,21 @@ const ChatInterface = ({ id }: { id: string }) => {
   /** True from send until the assistant message is committed — prevents blank gap after RTK loading ends. */
   const [isAwaitingReply, setIsAwaitingReply] = useState(false);
   const isChatBusy = isChatSending || isAwaitingReply;
+  /** Accumulate prior quiz/exam question stems across Retries (separate pools). */
+  const usedQuizQuestionsRef = useRef<string[]>([]);
+  const usedExamQuestionsRef = useRef<string[]>([]);
+
+  const mergeUsedQuestions = (pool: string[], incoming: string[]) => {
+    const seen = new Set(pool.map(libraryQuestionFingerprint));
+    const next = [...pool];
+    for (const q of incoming) {
+      const key = libraryQuestionFingerprint(q);
+      if (!key || seen.has(key)) continue;
+      seen.add(key);
+      next.push(q);
+    }
+    return next.slice(-80);
+  };
   const {
     currentData: historyData,
     isFetching: isHistoryFetching,
@@ -2181,7 +2374,13 @@ const ChatInterface = ({ id }: { id: string }) => {
   const handleSend = async (
     text?: string,
     libraryTask?: string,
-    options?: { displayText?: string; apiMessage?: string },
+    options?: {
+      displayText?: string;
+      apiMessage?: string;
+      excludeQuestions?: string[];
+      questionCount?: number;
+      attemptId?: string;
+    },
   ) => {
     const apiMessage = (options?.apiMessage ?? text ?? inputValue).trim();
     const displayText = (options?.displayText ?? apiMessage).trim();
@@ -2220,6 +2419,15 @@ const ChatInterface = ({ id }: { id: string }) => {
           ? bare[1].replace(/\s*[.\u00B7•]\s*/g, ".").replace(/\s+/g, "")
           : undefined;
       })();
+      const excludeQuestions = (options?.excludeQuestions || [])
+        .map((q) => String(q || "").replace(/\s+/g, " ").trim())
+        .filter((q) => q.length >= 12)
+        .slice(0, 40);
+      const questionCount =
+        options?.questionCount ||
+        (libraryTask === "quiz" || libraryTask === "exam_questions"
+          ? 20
+          : undefined);
       formData.append(
         "context",
         JSON.stringify({
@@ -2227,6 +2435,11 @@ const ChatInterface = ({ id }: { id: string }) => {
           isoStandardId: standardId,
           ...(clauseFromMessage ? { clause: clauseFromMessage } : {}),
           ...(libraryTask ? { library_task: libraryTask } : {}),
+          ...(questionCount ? { question_count: questionCount } : {}),
+          ...(excludeQuestions.length
+            ? { exclude_questions: excludeQuestions }
+            : {}),
+          ...(options?.attemptId ? { attempt_id: options.attemptId } : {}),
         }),
       );
       if (sessionId) {
@@ -2341,9 +2554,35 @@ const ChatInterface = ({ id }: { id: string }) => {
     setFlashcardsData(null);
     setViewMode("chat");
     setSessionId(null);
+    usedQuizQuestionsRef.current = [];
+    usedExamQuestionsRef.current = [];
     const params = new URLSearchParams(searchParams.toString());
     params.delete("sessionId");
     router.replace(`${pathname}?${params.toString()}`);
+  };
+
+  const handleStudioToolClick = (tool: StudyTool) => {
+    if (tool.id === "build_flashcards") {
+      handleBuildFlashcards();
+      return;
+    }
+    const label = getStandardLabel(standard);
+    const libraryTask = studioToolToLibraryTask(tool.id);
+    // Fresh Generate Quiz / Exam starts a new attempt pool (not a Retry).
+    if (tool.id === "generate_quiz") usedQuizQuestionsRef.current = [];
+    if (tool.id === "practice_questions") usedExamQuestionsRef.current = [];
+    handleSend(undefined, libraryTask, {
+      displayText: studioToolStatusLabel(tool.id),
+      apiMessage: studioToolApiMessage(tool.id, label),
+      questionCount:
+        libraryTask === "quiz" || libraryTask === "exam_questions"
+          ? 20
+          : undefined,
+      attemptId:
+        libraryTask === "quiz" || libraryTask === "exam_questions"
+          ? `${libraryTask}-${Date.now()}`
+          : undefined,
+    });
   };
 
   return (
@@ -2661,6 +2900,37 @@ const ChatInterface = ({ id }: { id: string }) => {
                         setIsCardFlipped(false);
                         setSwipeDirection(0);
                       }}
+                      onRetryQuiz={(previousQuestions) => {
+                        usedQuizQuestionsRef.current = mergeUsedQuestions(
+                          usedQuizQuestionsRef.current,
+                          previousQuestions,
+                        );
+                        const label = getStandardLabel(standard);
+                        handleSend(undefined, "quiz", {
+                          displayText: "Retry quiz — new questions",
+                          apiMessage: studioToolApiMessage("generate_quiz", label),
+                          excludeQuestions: usedQuizQuestionsRef.current,
+                          questionCount: 20,
+                          attemptId: `quiz-${Date.now()}`,
+                        });
+                      }}
+                      onRetryExam={(previousQuestions) => {
+                        usedExamQuestionsRef.current = mergeUsedQuestions(
+                          usedExamQuestionsRef.current,
+                          previousQuestions,
+                        );
+                        const label = getStandardLabel(standard);
+                        handleSend(undefined, "exam_questions", {
+                          displayText: "Retry exam — new questions",
+                          apiMessage: studioToolApiMessage(
+                            "practice_questions",
+                            label,
+                          ),
+                          excludeQuestions: usedExamQuestionsRef.current,
+                          questionCount: 20,
+                          attemptId: `exam-${Date.now()}`,
+                        });
+                      }}
                     />
                   )}
                 </div>
@@ -2729,17 +2999,7 @@ const ChatInterface = ({ id }: { id: string }) => {
 
       <StudioSidebar
         studyTools={studyTools}
-        onToolClick={(tool: StudyTool) => {
-          if (tool.id === "build_flashcards") {
-            handleBuildFlashcards();
-          } else {
-            const label = getStandardLabel(standard);
-            handleSend(undefined, studioToolToLibraryTask(tool.id), {
-              displayText: studioToolStatusLabel(tool.id),
-              apiMessage: studioToolApiMessage(tool.id, label),
-            });
-          }
-        }}
+        onToolClick={handleStudioToolClick}
       />
 
       <AnimatePresence>
@@ -2792,15 +3052,7 @@ const ChatInterface = ({ id }: { id: string }) => {
                 isMobile
                 onClose={() => setIsSidebarOpen(false)}
                 onToolClick={(tool: StudyTool) => {
-                  if (tool.id === "build_flashcards") {
-                    handleBuildFlashcards();
-                  } else {
-                    const label = getStandardLabel(standard);
-                    handleSend(undefined, studioToolToLibraryTask(tool.id), {
-                      displayText: studioToolStatusLabel(tool.id),
-                      apiMessage: studioToolApiMessage(tool.id, label),
-                    });
-                  }
+                  handleStudioToolClick(tool);
                   setIsSidebarOpen(false);
                 }}
               />
