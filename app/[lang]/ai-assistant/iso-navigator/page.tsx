@@ -53,8 +53,10 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
 import NavigatorDocumentView, {
+  extractImsIntegratedStandards,
   extractIsoStandardBadge,
   getNavigatorPlainText,
+  isNavigatorImsLabel,
 } from "@/components/AIAssistant/NavigatorDocumentView";
 
 import { useRouter, useParams } from 'next/navigation';
@@ -95,9 +97,38 @@ import {
 
   useGetISOSuggestionsMutation,
 
+  useGetNavigatorImsDocumentsMutation,
+
 } from "@/lib/redux/api/isoNavigatorApi";
 
 import { ISONavigatorFormData } from "@/types/iso-navigator";
+
+/** Format clause + standard metadata for Documents & Records cards. */
+function formatNavigatorDocMeta(item: any, clauseLabel: string): string {
+  if (!item) return "";
+  const parts: string[] = [];
+  const clause = String(item.clause || "").trim();
+  if (clause && !/^ims$/i.test(clause)) {
+    parts.push(`${clauseLabel}: ${clause}`);
+  }
+  const standards = Array.isArray(item.standards)
+    ? item.standards.map((s: any) => String(s || "").trim()).filter(Boolean)
+    : [];
+  if (standards.length > 1) {
+    parts.push(standards.join(" + "));
+  } else if (standards.length === 1) {
+    parts.push(standards[0]);
+  } else if (item.standard) {
+    parts.push(String(item.standard));
+  }
+  if (item.requirement === "recommended" || item.taxonomy === "recommended") {
+    parts.push("Recommended");
+  } else if (item.requirement === "necessary") {
+    parts.push("Necessary for effectiveness");
+  }
+  if (parts.length) return parts.join(" · ");
+  return String(item.integration_note || item.description || "").trim();
+}
 
 import Steps, { Step } from 'rc-steps';
 
@@ -180,6 +211,14 @@ export default function ISONavigator() {
   const [getISOSuggestions, { isLoading: isFetchingISOSuggestions }] =
 
     useGetISOSuggestionsMutation();
+
+  const [getNavigatorImsDocuments, { isLoading: isFetchingImsDocuments }] =
+
+    useGetNavigatorImsDocumentsMutation();
+
+  const imsInventoryRequestId = useRef(0);
+  const imsInventoryEnrichedRef = useRef<Set<string>>(new Set());
+  const imsInventoryFailedRef = useRef<Set<string>>(new Set());
 
 
 
@@ -497,6 +536,8 @@ export default function ISONavigator() {
 
       console.log('Parsed ISO suggestions:', suggestions);
 
+      imsInventoryEnrichedRef.current = new Set();
+      imsInventoryFailedRef.current = new Set();
       setIsoSuggestions(Array.isArray(suggestions) ? suggestions : []);
 
     } catch (error: any) {
@@ -525,7 +566,94 @@ export default function ISONavigator() {
 
   // Do not auto-fetch using the organization context when entering Step 2.
 
+  // Enrich IMS Documents & Records from IMS Practical Guide + selected standards
+  // when the user selects an IMS card (or opens Step 3 with a pending inventory).
+  useEffect(() => {
+    const label = String(formData?.specific_requirements || "").trim();
+    if (!label || !isNavigatorImsLabel(label)) return;
+    if (imsInventoryEnrichedRef.current.has(label)) return;
+    if (imsInventoryFailedRef.current.has(label)) return;
 
+    const sug = isoSuggestions.find((iso) => iso?.standard === label);
+    if (!sug) return;
+
+    const hasRealDocs =
+      Array.isArray(sug.documents) &&
+      sug.documents.length > 0 &&
+      sug.documents.every(
+        (d: any) =>
+          d?.ims_role !== "analysis" &&
+          !/^ims$/i.test(String(d?.clause || "")) &&
+          !/Integrated \/ Common|Standard-Specific Requirements|Maintain vs Retain|Integration \/ IMS Mapping|Documented Information Required for the Integrated/i.test(
+            String(d?.title || ""),
+          ),
+      );
+    if (hasRealDocs && sug.ims_inventory_pending !== true) {
+      imsInventoryEnrichedRef.current.add(label);
+      return;
+    }
+
+    const needsInventory =
+      sug.ims_inventory_pending === true ||
+      !Array.isArray(sug.documents) ||
+      sug.documents.length === 0 ||
+      !hasRealDocs;
+
+    if (!needsInventory) {
+      imsInventoryEnrichedRef.current.add(label);
+      return;
+    }
+
+    const reqId = ++imsInventoryRequestId.current;
+    (async () => {
+      try {
+        const result = await getNavigatorImsDocuments({
+          specific_requirements: label,
+        }).unwrap();
+        if (reqId !== imsInventoryRequestId.current) return;
+
+        imsInventoryEnrichedRef.current.add(label);
+        imsInventoryFailedRef.current.delete(label);
+
+        setIsoSuggestions((prev) =>
+          prev.map((iso) =>
+            iso?.standard === label
+              ? {
+                  ...iso,
+                  documents: result.documents || [],
+                  records: result.records || [],
+                  ims_inventory_pending: false,
+                  ims_guide_title: result.ims_guide_title,
+                }
+              : iso,
+          ),
+        );
+        setSelectedISODetail((prev: any) =>
+          prev?.standard === label
+            ? {
+                ...prev,
+                documents: result.documents || [],
+                records: result.records || [],
+                ims_inventory_pending: false,
+              }
+            : prev,
+        );
+      } catch (error: any) {
+        if (reqId !== imsInventoryRequestId.current) return;
+        imsInventoryFailedRef.current.add(label);
+        const message =
+          error?.data?.message ||
+          error?.error ||
+          "Failed to load IMS Documents & Records from library sources";
+        console.error("IMS inventory enrichment failed:", message, error);
+        toast.error(message);
+      }
+    })();
+  }, [
+    formData?.specific_requirements,
+    isoSuggestions,
+    getNavigatorImsDocuments,
+  ]);
 
 
 
@@ -566,12 +694,6 @@ export default function ISONavigator() {
       if (!response?.success || !doc || (content.length < 40 && structuredLen < 80)) {
         toast.error(t('isoNavigator.emptyGenerate') || t('isoNavigator.failedGenerate'));
         return;
-      }
-
-      if (doc?.metadata?.ims_guide_available === false) {
-        toast.warning(
-          "IMS Practical Guide was not found in the Library. Generation used selected ISO standards and organization context only.",
-        );
       }
 
       const missing = doc?.metadata?.missing_editions;
@@ -1202,7 +1324,7 @@ export default function ISONavigator() {
 
                           <div
 
-                            key={index}
+                            key={`${String(iso?.standard || "std")}-${index}`}
 
                             onClick={() => {
                               const next = iso?.standard || "";
@@ -1220,12 +1342,15 @@ export default function ISONavigator() {
                               dispatch(clearGeneratedDocument());
                             }}
 
-                            className={`bg-[#0A0F1C] border rounded-2xl p-3 text-xs cursor-pointer transition-all flex gap-3 items-start ${formData?.specific_requirements === iso?.standard
-
+                            className={`bg-[#0A0F1C] border rounded-2xl text-xs cursor-pointer transition-all flex gap-3 items-start ${
+                              isNavigatorImsLabel(iso?.standard || iso?.title)
+                                ? "p-5"
+                                : "p-3"
+                            } ${formData?.specific_requirements === iso?.standard
                               ? "border-[#00f0ff] bg-[#00f0ff]/10 text-[#0F111A]/5 shadow-[0_0_20px_rgba(63,62,237,0.1)]"
-
-                              : "border-[#1E293B] hover:border-[#4B5563] hover:bg-[#232736]"
-
+                              : isNavigatorImsLabel(iso?.standard || iso?.title)
+                                ? "border-[#1E293B] hover:border-brand-cyan/50 hover:bg-[#0A0F1C]/80"
+                                : "border-[#1E293B] hover:border-[#4B5563] hover:bg-[#232736]"
                               }`}
 
                           >
@@ -1234,49 +1359,61 @@ export default function ISONavigator() {
 
                               <div className="flex items-start justify-between gap-2">
 
-                                <div className="flex-1">
+                                <div className="flex-1 min-w-0">
 
-                                  <div className="flex items-center gap-2 flex-wrap">
-                                    <p className={`font-medium text-[11px] ${formData?.specific_requirements === iso?.standard
-
-                                      ? "text-[#9CA3AF]"
-
-                                      : "text-[#F3F4F6]"
-
-                                      }`}>
-
-                                      {iso?.standard}
-
-                                    </p>
-                                    {/integrated\s+management|\bims\b/i.test(String(iso?.standard || iso?.title || "")) && (
-                                      <span className="inline-flex items-center rounded-md border border-[#14B8A6]/30 bg-[#14B8A6]/10 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-[#5EEAD4]">
-                                        IMS
-                                      </span>
+                                  <div className="flex flex-col gap-2 min-w-0">
+                                    {isNavigatorImsLabel(iso?.standard || iso?.title) ? (
+                                      <>
+                                        {/* Audit Lens–style criteria badge: full IMS + standards visible */}
+                                        <span className="inline-flex w-fit max-w-full text-left text-xs font-bold text-[#14B8A6] bg-[#14B8A6]/10 px-2 py-1 rounded-md uppercase tracking-wider border border-[#14B8A6]/25 whitespace-normal break-words">
+                                          {extractIsoStandardBadge(iso?.standard) ||
+                                            String(iso?.standard || "Integrated Management Systems")}
+                                        </span>
+                                        {extractImsIntegratedStandards(iso?.standard).length > 0 && (
+                                          <div className="flex flex-wrap gap-1.5">
+                                            {extractImsIntegratedStandards(iso?.standard).map(
+                                              (token) => (
+                                                <span
+                                                  key={token}
+                                                  className="inline-flex items-center px-2 py-0.5 rounded-md bg-[#1D4ED8]/15 text-[#93C5FD] font-jetbrains-mono text-[10px] font-medium border border-[#3B82F6]/20"
+                                                >
+                                                  {token}
+                                                </span>
+                                              ),
+                                            )}
+                                          </div>
+                                        )}
+                                        {iso?.title &&
+                                          !/^integrated\s+management/i.test(
+                                            String(iso.title),
+                                          ) && (
+                                            <p className="text-sm font-bold text-white leading-relaxed">
+                                              {iso.title}
+                                            </p>
+                                          )}
+                                      </>
+                                    ) : (
+                                      <>
+                                        <p className={`font-medium text-[11px] ${formData?.specific_requirements === iso?.standard
+                                          ? "text-[#9CA3AF]"
+                                          : "text-[#F3F4F6]"
+                                          }`}>
+                                          {iso?.standard}
+                                        </p>
+                                        <p className="text-[10px] font-medium text-[#9CA3AF]">
+                                          {iso?.title}
+                                        </p>
+                                      </>
                                     )}
                                   </div>
-
-                                  <p className={`text-[10px] font-medium ${formData?.specific_requirements === iso?.standard
-
-                                    ? "text-[#9CA3AF]"
-
-                                    : "text-[#9CA3AF]"
-
-                                    }`}>
-
-                                    {iso?.title}
-
-                                  </p>
 
                                 </div>
 
                               </div>
 
-                              <p className={`text-[9px] leading-relaxed line-clamp-2 mt-2 ${formData?.specific_requirements === iso?.standard
-
+                              <p className={`text-[9px] leading-relaxed line-clamp-3 mt-2 ${formData?.specific_requirements === iso?.standard
                                 ? "text-[#9CA3AF]"
-
                                 : "text-[#4B5563]"
-
                                 }`}>
 
                                 {iso?.relevance}
@@ -1377,11 +1514,33 @@ export default function ISONavigator() {
 
                   </div>
 
-                  <p className="text-sm font-medium text-[#F3F4F6] leading-relaxed">
-
-                    {formData.specific_requirements}
-
-                  </p>
+                  {isNavigatorImsLabel(formData.specific_requirements) ? (
+                    <div className="space-y-2">
+                      <span className="inline-flex max-w-full text-left text-xs font-bold text-[#14B8A6] bg-[#14B8A6]/10 px-2 py-1 rounded-md uppercase tracking-wider border border-[#14B8A6]/25 whitespace-normal break-words">
+                        {extractIsoStandardBadge(formData.specific_requirements) ||
+                          formData.specific_requirements}
+                      </span>
+                      {extractImsIntegratedStandards(formData.specific_requirements).length >
+                        0 && (
+                        <div className="flex flex-wrap gap-1.5">
+                          {extractImsIntegratedStandards(
+                            formData.specific_requirements,
+                          ).map((token) => (
+                            <span
+                              key={token}
+                              className="inline-flex items-center px-2 py-0.5 rounded-md bg-[#1D4ED8]/15 text-[#93C5FD] font-jetbrains-mono text-[11px] font-medium border border-[#3B82F6]/20"
+                            >
+                              {token}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <p className="text-sm font-medium text-[#F3F4F6] leading-relaxed">
+                      {formData.specific_requirements}
+                    </p>
+                  )}
 
                 </div>
 
@@ -1427,6 +1586,8 @@ export default function ISONavigator() {
                                     document_title: doc?.title,
                                     clause: doc?.clause || '',
                                     document_taxonomy:
+                                      doc?.taxonomy === 'recommended' ||
+                                      doc?.requirement === 'recommended' ||
                                       doc?.type === 'recommended'
                                         ? 'recommended'
                                         : 'mandatory_document',
@@ -1441,8 +1602,8 @@ export default function ISONavigator() {
                                   <p className={`font-medium text-[11px] ${isSelected ? "text-[#00f0ff]" : "text-[#F3F4F6]"}`}>
                                     {doc?.title}
                                   </p>
-                                  <p className="text-[9px] text-[#9CA3AF] mt-1">
-                                    {t('isoNavigator.clauseLabel')}: {doc?.clause}
+                                  <p className="text-[9px] text-[#9CA3AF] mt-1 line-clamp-2">
+                                    {formatNavigatorDocMeta(doc, t('isoNavigator.clauseLabel'))}
                                   </p>
                                 </div>
                                 {isSelected && <CheckCircle2 className="w-4 h-4 text-[#00f0ff]" />}
@@ -1470,6 +1631,8 @@ export default function ISONavigator() {
                                     document_title: rec?.title,
                                     clause: rec?.clause || '',
                                     document_taxonomy:
+                                      rec?.taxonomy === 'recommended' ||
+                                      rec?.requirement === 'recommended' ||
                                       rec?.type === 'recommended'
                                         ? 'recommended'
                                         : 'mandatory_record',
@@ -1484,8 +1647,8 @@ export default function ISONavigator() {
                                   <p className={`font-medium text-[11px] ${isSelected ? "text-[#00f0ff]" : "text-[#F3F4F6]"}`}>
                                     {rec?.title}
                                   </p>
-                                  <p className="text-[9px] text-[#9CA3AF] mt-1">
-                                    {t('isoNavigator.clauseLabel')}: {rec?.clause}
+                                  <p className="text-[9px] text-[#9CA3AF] mt-1 line-clamp-2">
+                                    {formatNavigatorDocMeta(rec, t('isoNavigator.clauseLabel'))}
                                   </p>
                                 </div>
                                 {isSelected && <CheckCircle2 className="w-4 h-4 text-[#00f0ff]" />}
@@ -1496,7 +1659,16 @@ export default function ISONavigator() {
                       </div>
                     )}
 
-                    {(!selectedISO?.documents?.length && !selectedISO?.records?.length) && (
+                    {isFetchingImsDocuments &&
+                      isNavigatorImsLabel(formData?.specific_requirements || "") && (
+                      <p className="text-[10px] text-[#14B8A6] py-4 text-center flex items-center justify-center gap-2">
+                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                        Loading documented information from IMS Practical Guide + selected standards…
+                      </p>
+                    )}
+
+                    {(!selectedISO?.documents?.length && !selectedISO?.records?.length) &&
+                      !isFetchingImsDocuments && (
                       <p className="text-[10px] text-[#4B5563] py-4 text-center">
                         {t('isoNavigator.noDocsAvailable')}
                       </p>
@@ -1676,6 +1848,37 @@ export default function ISONavigator() {
                   <div className="flex flex-wrap items-center gap-2 min-w-0">
 
                     {(() => {
+                      const imsSource =
+                        generatedDocument.metadata?.iso_standard ||
+                        formData.specific_requirements ||
+                        generatedDocument.metadata?.grounded_standard ||
+                        "";
+                      if (
+                        generatedDocument.metadata?.is_ims ||
+                        isNavigatorImsLabel(imsSource)
+                      ) {
+                        const standards = extractImsIntegratedStandards(imsSource);
+                        return (
+                          <div className="flex flex-col gap-1.5 min-w-0 max-w-full">
+                            <span className="inline-flex w-fit max-w-full text-left text-xs font-bold text-[#14B8A6] bg-[#14B8A6]/10 px-2 py-1 rounded-md uppercase tracking-wider border border-[#14B8A6]/25 whitespace-normal break-words">
+                              {extractIsoStandardBadge(imsSource) ||
+                                "Integrated Management Systems"}
+                            </span>
+                            {standards.length > 0 && (
+                              <div className="flex flex-wrap gap-1.5">
+                                {standards.map((token) => (
+                                  <span
+                                    key={token}
+                                    className="inline-flex items-center px-2 py-1 rounded-md bg-[#1D4ED8]/15 text-[#93C5FD] font-jetbrains-mono text-[11px] font-medium tracking-[0.02em] border border-[#3B82F6]/20"
+                                  >
+                                    {token}
+                                  </span>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        );
+                      }
                       const isoBadge =
                         extractIsoStandardBadge(generatedDocument.metadata?.iso_standard) ||
                         extractIsoStandardBadge(generatedDocument.metadata?.grounded_standard) ||
@@ -1687,7 +1890,9 @@ export default function ISONavigator() {
                       ) : null;
                     })()}
 
-                    {(formData.clause || generatedDocument.metadata?.clause) && (
+                    {(formData.clause || generatedDocument.metadata?.clause) &&
+                      formData.clause !== "IMS" &&
+                      generatedDocument.metadata?.clause !== "IMS" && (
 
                       <span className="inline-flex items-center px-2 py-1 rounded-md bg-[#0F172A] text-[#BFDBFE] font-jetbrains-mono text-[12px] font-medium tracking-[0.02em] border border-[#1E293B]">
 
@@ -1760,9 +1965,10 @@ export default function ISONavigator() {
 
                   </h2>
 
-                  {generatedDocument.metadata?.ims_guide_available === false && (
-                    <p className="text-[12px] leading-[1.4] text-amber-300/90">
-                      IMS Practical Guide unavailable — grounded on selected ISO standards and organization context only.
+                  {generatedDocument.metadata?.ims_guide_available === true &&
+                    generatedDocument.metadata?.ims_guide_title && (
+                    <p className="text-[12px] leading-[1.4] text-[#5EEAD4]/90">
+                      Primary IMS source: {generatedDocument.metadata.ims_guide_title} + selected ISO standards.
                     </p>
                   )}
 
@@ -2076,20 +2282,38 @@ export default function ISONavigator() {
 
             <div className="p-6 border-b border-[#1E293B] sticky top-0 bg-[#0A0F1C]/50 flex items-center justify-between">
 
-              <div>
+              <div className="min-w-0 pr-2">
+                {isNavigatorImsLabel(selectedISODetail.standard) ? (
+                  <div className="space-y-2">
+                    <span className="inline-flex max-w-full text-left text-xs font-bold text-[#14B8A6] bg-[#14B8A6]/10 px-2 py-1 rounded-md uppercase tracking-wider border border-[#14B8A6]/25 whitespace-normal break-words">
+                      {extractIsoStandardBadge(selectedISODetail.standard) ||
+                        selectedISODetail.standard}
+                    </span>
+                    {extractImsIntegratedStandards(selectedISODetail.standard).length >
+                      0 && (
+                      <div className="flex flex-wrap gap-1.5">
+                        {extractImsIntegratedStandards(selectedISODetail.standard).map(
+                          (token) => (
+                            <span
+                              key={token}
+                              className="inline-flex items-center px-2 py-0.5 rounded-md bg-[#1D4ED8]/15 text-[#93C5FD] font-jetbrains-mono text-[11px] font-medium border border-[#3B82F6]/20"
+                            >
+                              {token}
+                            </span>
+                          ),
+                        )}
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <p className="text-[#14B8A6] text-[11px] font-black uppercase tracking-[0.2em]">
+                    {selectedISODetail.standard}
+                  </p>
+                )}
 
-                <p className="text-[#14B8A6] text-[11px] font-black uppercase tracking-[0.2em]">
-
-                  {selectedISODetail.standard}
-
-                </p>
-
-                <h3 className="text-[#F3F4F6] text-lg font-black mt-1">
-
+                <h3 className="text-[#F3F4F6] text-lg font-black mt-2">
                   {selectedISODetail.title}
-
                 </h3>
-
               </div>
 
               <button
@@ -2150,7 +2374,9 @@ export default function ISONavigator() {
 
                         <p className="text-[#F3F4F6] text-sm font-medium">{doc.title}</p>
 
-                        <p className="text-[#4B5563] text-sm mt-1">{t('isoNavigator.clauseLabel')}: {doc.clause}</p>
+                        <p className="text-[#4B5563] text-sm mt-1">
+                          {formatNavigatorDocMeta(doc, t('isoNavigator.clauseLabel'))}
+                        </p>
 
                       </div>
 
@@ -2184,7 +2410,9 @@ export default function ISONavigator() {
 
                         <p className="text-[#F3F4F6] text-sm font-medium">{record.title}</p>
 
-                        <p className="text-[#4B5563] text-sm mt-1">{t('isoNavigator.clauseLabel')}: {record.clause}</p>
+                        <p className="text-[#4B5563] text-sm mt-1">
+                          {formatNavigatorDocMeta(record, t('isoNavigator.clauseLabel'))}
+                        </p>
 
                       </div>
 

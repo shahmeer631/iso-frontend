@@ -76,6 +76,7 @@ export interface GeneratedDocumentData {
     document_taxonomy?: string;
     iso_standard?: string;
     grounded_standard?: string;
+    is_ims?: boolean;
     ims_guide_title?: string;
     ims_guide_available?: boolean;
     missing_editions?: string[];

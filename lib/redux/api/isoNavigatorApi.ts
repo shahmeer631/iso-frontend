@@ -179,6 +179,34 @@ export const isoNavigatorApi = baseApi.injectEndpoints({
         return Array.isArray(nested) ? nested : [];
       },
     }),
+    getNavigatorImsDocuments: builder.mutation<
+      {
+        standard: string;
+        documents: any[];
+        records: any[];
+        ims_inventory_pending?: boolean;
+        ims_guide_title?: string;
+        missing_editions?: string[];
+      },
+      { specific_requirements: string }
+    >({
+      query: (data) => ({
+        url: '/ai-assistant/navigator/ims-documents',
+        method: 'POST',
+        body: data,
+      }),
+      transformResponse: (response: any) => {
+        const data = response?.data?.data || response?.data || response;
+        return {
+          standard: data?.standard || '',
+          documents: Array.isArray(data?.documents) ? data.documents : [],
+          records: Array.isArray(data?.records) ? data.records : [],
+          ims_inventory_pending: data?.ims_inventory_pending === true,
+          ims_guide_title: data?.ims_guide_title,
+          missing_editions: data?.missing_editions || [],
+        };
+      },
+    }),
   }),
 });
 
@@ -188,4 +216,5 @@ export const {
   useChatSimpleMutation,
   useGenerateContextSuggestionsMutation,
   useGetISOSuggestionsMutation,
+  useGetNavigatorImsDocumentsMutation,
 } = isoNavigatorApi;

@@ -1009,12 +1009,57 @@ export function getNavigatorPlainText(document: GeneratedDocumentData): string {
   return parts.join("\n\n");
 }
 
+/** True when the Navigator selection is an Integrated Management System context. */
+export function isNavigatorImsLabel(value?: string | null): boolean {
+  return /integrated\s+management|\bims\b/i.test(String(value || ""));
+}
+
+/**
+ * Parse ISO family tokens from an IMS label like:
+ * "Integrated Management Systems (ISO/IEC 27001:2022, ISO/IEC 42001:2023)"
+ * Prefer the parenthetical list so unrelated prose does not pollute chips.
+ */
+export function extractImsIntegratedStandards(
+  value?: string | null,
+): string[] {
+  const trimmed = String(value || "").trim();
+  if (!trimmed || !isNavigatorImsLabel(trimmed)) return [];
+  const paren = trimmed.match(
+    /integrated\s+management\s+systems?\s*\(([^)]+)\)/i,
+  );
+  const source = paren?.[1] || trimmed;
+  const found: string[] = [];
+  const seen = new Set<string>();
+  const re =
+    /\b((?:ISO(?:\s*\/\s*IEC)?|IEC)\s*\d+(?:\s*-\s*\d+)?)(?:\s*[:\-]\s*(\d{4}))?\b/gi;
+  let match: RegExpExecArray | null;
+  while ((match = re.exec(source)) !== null) {
+    const family = match[1].replace(/\s+/g, " ").replace(/\s*\/\s*/g, "/").trim();
+    const year = match[2] ? `:${match[2]}` : "";
+    const token = `${family}${year}`;
+    const key = family.toLowerCase();
+    if (seen.has(key)) continue;
+    seen.add(key);
+    found.push(token);
+  }
+  return found;
+}
+
+/**
+ * Badge label for Navigator output chrome.
+ * For IMS: keep the full "Integrated Management Systems (…)" string so
+ * selected standards remain visible — never collapse to a tiny "IMS" chip.
+ */
 export function extractIsoStandardBadge(value?: string | null): string | null {
   if (!value) return null;
   const trimmed = String(value).trim();
   if (!trimmed) return null;
-  if (/integrated\s+management|\bims\b/i.test(trimmed)) {
-    if (trimmed.length <= 72) return trimmed;
+  if (isNavigatorImsLabel(trimmed)) {
+    const standards = extractImsIntegratedStandards(trimmed);
+    if (standards.length > 0) {
+      return `Integrated Management Systems (${standards.join(", ")})`;
+    }
+    if (/^integrated\s+management/i.test(trimmed)) return trimmed;
     return "Integrated Management Systems";
   }
   const m = trimmed.match(/\b(?:ISO\/IEC|ISO|IEC)\s*[\d][\dA-Za-z\s:.-]{1,32}/i);
