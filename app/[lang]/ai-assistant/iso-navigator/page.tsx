@@ -103,31 +103,68 @@ import {
 
 import { ISONavigatorFormData } from "@/types/iso-navigator";
 
-/** Format clause + standard metadata for Documents & Records cards. */
-function formatNavigatorDocMeta(item: any, clauseLabel: string): string {
-  if (!item) return "";
-  const parts: string[] = [];
+/**
+ * Reference table fields:
+ * Clause | Documented Information Requirement | Applicable Standards | Organizational Context & Application
+ */
+function NavigatorImsDocFields({
+  item,
+  clauseLabel,
+  compact,
+}: {
+  item: any;
+  clauseLabel: string;
+  compact?: boolean;
+}) {
+  if (!item) return null;
   const clause = String(item.clause || "").trim();
-  if (clause && !/^ims$/i.test(clause)) {
-    parts.push(`${clauseLabel}: ${clause}`);
-  }
   const standards = Array.isArray(item.standards)
     ? item.standards.map((s: any) => String(s || "").trim()).filter(Boolean)
-    : [];
-  if (standards.length > 1) {
-    parts.push(standards.join(" + "));
-  } else if (standards.length === 1) {
-    parts.push(standards[0]);
-  } else if (item.standard) {
-    parts.push(String(item.standard));
-  }
-  if (item.requirement === "recommended" || item.taxonomy === "recommended") {
-    parts.push("Recommended");
-  } else if (item.requirement === "necessary") {
-    parts.push("Necessary for effectiveness");
-  }
-  if (parts.length) return parts.join(" · ");
-  return String(item.integration_note || item.description || "").trim();
+    : item.standard
+      ? [String(item.standard)]
+      : [];
+  const cbs =
+    item.clausesByStandard && typeof item.clausesByStandard === "object"
+      ? Object.entries(item.clausesByStandard)
+          .map(([std, cl]) => `${std}: ${cl}`)
+          .filter(Boolean)
+      : [];
+  const requirement = String(item.description || item.integration_note || "").trim();
+  const application = String(item.organizational_application || "").trim();
+  const showRequirement =
+    requirement &&
+    application &&
+    requirement !== application;
+  const contextText = application || requirement;
+  const textClass = compact ? "text-[9px] text-[#9CA3AF]" : "text-[#4B5563] text-sm";
+  const clamp = compact ? "line-clamp-2" : undefined;
+  return (
+    <div className={`${textClass} mt-1 space-y-0.5`}>
+      {clause && !/^ims$/i.test(clause) && (
+        <p>
+          <span className="text-[#64748B]">{clauseLabel}:</span> {clause}
+          {cbs.length > 1 ? ` (${cbs.join("; ")})` : ""}
+        </p>
+      )}
+      {standards.length > 0 && (
+        <p>
+          <span className="text-[#64748B]">Applicable standards:</span>{" "}
+          {standards.join(" · ")}
+        </p>
+      )}
+      {showRequirement && (
+        <p className={clamp}>
+          <span className="text-[#64748B]">Requirement:</span> {requirement}
+        </p>
+      )}
+      {contextText && (
+        <p className={compact ? "line-clamp-3" : undefined}>
+          <span className="text-[#64748B]">Context &amp; application:</span>{" "}
+          {contextText}
+        </p>
+      )}
+    </div>
+  );
 }
 
 import Steps, { Step } from 'rc-steps';
@@ -217,6 +254,7 @@ export default function ISONavigator() {
     useGetNavigatorImsDocumentsMutation();
 
   const imsInventoryRequestId = useRef(0);
+  /** Cache key = IMS label + org-context fingerprint so context changes re-enrich. */
   const imsInventoryEnrichedRef = useRef<Set<string>>(new Set());
   const imsInventoryFailedRef = useRef<Set<string>>(new Set());
 
@@ -571,8 +609,11 @@ export default function ISONavigator() {
   useEffect(() => {
     const label = String(formData?.specific_requirements || "").trim();
     if (!label || !isNavigatorImsLabel(label)) return;
-    if (imsInventoryEnrichedRef.current.has(label)) return;
-    if (imsInventoryFailedRef.current.has(label)) return;
+
+    const orgCtxText = orgContextToString(formData?.organization_context);
+    const cacheKey = `${label}::${orgCtxText.slice(0, 200)}`;
+    if (imsInventoryEnrichedRef.current.has(cacheKey)) return;
+    if (imsInventoryFailedRef.current.has(cacheKey)) return;
 
     const sug = isoSuggestions.find((iso) => iso?.standard === label);
     if (!sug) return;
@@ -588,8 +629,17 @@ export default function ISONavigator() {
             String(d?.title || ""),
           ),
       );
-    if (hasRealDocs && sug.ims_inventory_pending !== true) {
-      imsInventoryEnrichedRef.current.add(label);
+    // Stale pre-fix inventories lack additional[] and/or org application fields
+    const inventoryLooksComplete =
+      hasRealDocs &&
+      Array.isArray((sug as any).additional) &&
+      [...(sug.documents || []), ...(sug.records || [])].some(
+        (d: any) =>
+          String(d?.organizational_application || "").trim().length > 0 ||
+          String(d?.description || "").trim().length > 20,
+      );
+    if (inventoryLooksComplete && sug.ims_inventory_pending !== true) {
+      imsInventoryEnrichedRef.current.add(cacheKey);
       return;
     }
 
@@ -597,23 +647,30 @@ export default function ISONavigator() {
       sug.ims_inventory_pending === true ||
       !Array.isArray(sug.documents) ||
       sug.documents.length === 0 ||
-      !hasRealDocs;
+      !inventoryLooksComplete;
 
     if (!needsInventory) {
-      imsInventoryEnrichedRef.current.add(label);
+      imsInventoryEnrichedRef.current.add(cacheKey);
       return;
     }
 
     const reqId = ++imsInventoryRequestId.current;
     (async () => {
       try {
+        const structured =
+          typeof formData?.organization_context === "object" &&
+          formData.organization_context
+            ? formData.organization_context
+            : undefined;
         const result = await getNavigatorImsDocuments({
           specific_requirements: label,
+          organization_context: orgCtxText || undefined,
+          organization_context_structured: structured || undefined,
         }).unwrap();
         if (reqId !== imsInventoryRequestId.current) return;
 
-        imsInventoryEnrichedRef.current.add(label);
-        imsInventoryFailedRef.current.delete(label);
+        imsInventoryEnrichedRef.current.add(cacheKey);
+        imsInventoryFailedRef.current.delete(cacheKey);
 
         setIsoSuggestions((prev) =>
           prev.map((iso) =>
@@ -622,6 +679,7 @@ export default function ISONavigator() {
                   ...iso,
                   documents: result.documents || [],
                   records: result.records || [],
+                  additional: result.additional || [],
                   ims_inventory_pending: false,
                   ims_guide_title: result.ims_guide_title,
                 }
@@ -634,13 +692,14 @@ export default function ISONavigator() {
                 ...prev,
                 documents: result.documents || [],
                 records: result.records || [],
+                additional: result.additional || [],
                 ims_inventory_pending: false,
               }
             : prev,
         );
       } catch (error: any) {
         if (reqId !== imsInventoryRequestId.current) return;
-        imsInventoryFailedRef.current.add(label);
+        imsInventoryFailedRef.current.add(cacheKey);
         const message =
           error?.data?.message ||
           error?.error ||
@@ -651,6 +710,7 @@ export default function ISONavigator() {
     })();
   }, [
     formData?.specific_requirements,
+    formData?.organization_context,
     isoSuggestions,
     getNavigatorImsDocuments,
   ]);
@@ -1572,7 +1632,7 @@ export default function ISONavigator() {
                     {selectedISO?.documents && selectedISO.documents.length > 0 && (
                       <div className="space-y-2">
                         <p className="text-[10px] font-bold text-[#64748B] uppercase tracking-wider">
-                          {t('isoNavigator.documentsLabel')}
+                          Mandatory IMS Documents
                         </p>
                         <div className="space-y-2">
                           {selectedISO?.documents?.map((doc: any, index: number) => {
@@ -1602,9 +1662,11 @@ export default function ISONavigator() {
                                   <p className={`font-medium text-[11px] ${isSelected ? "text-[#00f0ff]" : "text-[#F3F4F6]"}`}>
                                     {doc?.title}
                                   </p>
-                                  <p className="text-[9px] text-[#9CA3AF] mt-1 line-clamp-2">
-                                    {formatNavigatorDocMeta(doc, t('isoNavigator.clauseLabel'))}
-                                  </p>
+                                  <NavigatorImsDocFields
+                                    item={doc}
+                                    clauseLabel={t('isoNavigator.clauseLabel')}
+                                    compact
+                                  />
                                 </div>
                                 {isSelected && <CheckCircle2 className="w-4 h-4 text-[#00f0ff]" />}
                               </div>
@@ -1617,7 +1679,7 @@ export default function ISONavigator() {
                     {selectedISO?.records && selectedISO.records.length > 0 && (
                       <div className="space-y-2">
                         <p className="text-[10px] font-bold text-[#64748B] uppercase tracking-wider">
-                          {t('isoNavigator.recordsLabel')}
+                          Mandatory IMS Records — Evidence of Implementation
                         </p>
                         <div className="space-y-2">
                           {selectedISO?.records?.map((rec: any, index: number) => {
@@ -1647,9 +1709,54 @@ export default function ISONavigator() {
                                   <p className={`font-medium text-[11px] ${isSelected ? "text-[#00f0ff]" : "text-[#F3F4F6]"}`}>
                                     {rec?.title}
                                   </p>
-                                  <p className="text-[9px] text-[#9CA3AF] mt-1 line-clamp-2">
-                                    {formatNavigatorDocMeta(rec, t('isoNavigator.clauseLabel'))}
+                                  <NavigatorImsDocFields
+                                    item={rec}
+                                    clauseLabel={t('isoNavigator.clauseLabel')}
+                                    compact
+                                  />
+                                </div>
+                                {isSelected && <CheckCircle2 className="w-4 h-4 text-[#00f0ff]" />}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
+
+                    {Array.isArray((selectedISO as any)?.additional) &&
+                      (selectedISO as any).additional.length > 0 && (
+                      <div className="space-y-2">
+                        <p className="text-[10px] font-bold text-[#64748B] uppercase tracking-wider">
+                          Additional Documented Information Necessary for IMS Effectiveness
+                        </p>
+                        <div className="space-y-2">
+                          {(selectedISO as any).additional.map((item: any, index: number) => {
+                            const isSelected = formData?.output_type === item?.title;
+                            return (
+                              <div
+                                key={`add-${index}`}
+                                onClick={() =>
+                                  selectDocumentAndGenerate({
+                                    output_type: item?.title,
+                                    document_title: item?.title,
+                                    clause: item?.clause || '',
+                                    document_taxonomy: 'recommended',
+                                  })
+                                }
+                                className={`bg-[#0A0F1C] border rounded-2xl p-3 text-xs cursor-pointer transition-all flex gap-3 items-center ${isSelected
+                                  ? "border-[#00f0ff] bg-[#00f0ff]/10 shadow-[0_0_20px_rgba(63,62,237,0.1)]"
+                                  : "border-[#1E293B] hover:border-[#4B5563] hover:bg-[#232736]"
+                                  }`}
+                              >
+                                <div className="flex-1 min-w-0">
+                                  <p className={`font-medium text-[11px] ${isSelected ? "text-[#00f0ff]" : "text-[#F3F4F6]"}`}>
+                                    {item?.title}
                                   </p>
+                                  <NavigatorImsDocFields
+                                    item={item}
+                                    clauseLabel={t('isoNavigator.clauseLabel')}
+                                    compact
+                                  />
                                 </div>
                                 {isSelected && <CheckCircle2 className="w-4 h-4 text-[#00f0ff]" />}
                               </div>
@@ -1667,7 +1774,9 @@ export default function ISONavigator() {
                       </p>
                     )}
 
-                    {(!selectedISO?.documents?.length && !selectedISO?.records?.length) &&
+                    {(!selectedISO?.documents?.length &&
+                      !selectedISO?.records?.length &&
+                      !(selectedISO as any)?.additional?.length) &&
                       !isFetchingImsDocuments && (
                       <p className="text-[10px] text-[#4B5563] py-4 text-center">
                         {t('isoNavigator.noDocsAvailable')}
@@ -2354,7 +2463,7 @@ export default function ISONavigator() {
 
 
 
-              {/* Documents */}
+              {/* Mandatory Documents */}
 
               {selectedISODetail.documents && selectedISODetail.documents.length > 0 && (
 
@@ -2362,7 +2471,7 @@ export default function ISONavigator() {
 
                   <p className="text-[10px] font-black text-[#4B5563] uppercase tracking-[0.2em] mb-3">
 
-                    {t('isoNavigator.documentsLabel')}
+                    Mandatory IMS Documents
 
                   </p>
 
@@ -2374,9 +2483,10 @@ export default function ISONavigator() {
 
                         <p className="text-[#F3F4F6] text-sm font-medium">{doc.title}</p>
 
-                        <p className="text-[#4B5563] text-sm mt-1">
-                          {formatNavigatorDocMeta(doc, t('isoNavigator.clauseLabel'))}
-                        </p>
+                        <NavigatorImsDocFields
+                          item={doc}
+                          clauseLabel={t('isoNavigator.clauseLabel')}
+                        />
 
                       </div>
 
@@ -2390,7 +2500,7 @@ export default function ISONavigator() {
 
 
 
-              {/* Records */}
+              {/* Mandatory Records */}
 
               {selectedISODetail.records && selectedISODetail.records.length > 0 && (
 
@@ -2398,7 +2508,7 @@ export default function ISONavigator() {
 
                   <p className="text-[10px] font-black text-[#4B5563] uppercase tracking-[0.2em] mb-3">
 
-                    {t('isoNavigator.recordsLabel')}
+                    Mandatory IMS Records — Evidence of Implementation
 
                   </p>
 
@@ -2410,9 +2520,46 @@ export default function ISONavigator() {
 
                         <p className="text-[#F3F4F6] text-sm font-medium">{record.title}</p>
 
-                        <p className="text-[#4B5563] text-sm mt-1">
-                          {formatNavigatorDocMeta(record, t('isoNavigator.clauseLabel'))}
-                        </p>
+                        <NavigatorImsDocFields
+                          item={record}
+                          clauseLabel={t('isoNavigator.clauseLabel')}
+                        />
+
+                      </div>
+
+                    ))}
+
+                  </div>
+
+                </div>
+
+              )}
+
+              {/* Additional for effectiveness */}
+
+              {Array.isArray(selectedISODetail.additional) &&
+                selectedISODetail.additional.length > 0 && (
+
+                <div>
+
+                  <p className="text-[10px] font-black text-[#4B5563] uppercase tracking-[0.2em] mb-3">
+
+                    Additional Documented Information Necessary for IMS Effectiveness
+
+                  </p>
+
+                  <div className="space-y-2">
+
+                    {selectedISODetail.additional.map((item: any, idx: number) => (
+
+                      <div key={idx} className="bg-[#0A0F1C] border border-[#1E293B] rounded-xl p-3">
+
+                        <p className="text-[#F3F4F6] text-sm font-medium">{item.title}</p>
+
+                        <NavigatorImsDocFields
+                          item={item}
+                          clauseLabel={t('isoNavigator.clauseLabel')}
+                        />
 
                       </div>
 

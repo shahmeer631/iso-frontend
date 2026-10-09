@@ -184,11 +184,16 @@ export const isoNavigatorApi = baseApi.injectEndpoints({
         standard: string;
         documents: any[];
         records: any[];
+        additional: any[];
         ims_inventory_pending?: boolean;
         ims_guide_title?: string;
         missing_editions?: string[];
       },
-      { specific_requirements: string }
+      {
+        specific_requirements: string;
+        organization_context?: string;
+        organization_context_structured?: Record<string, string>;
+      }
     >({
       query: (data) => ({
         url: '/ai-assistant/navigator/ims-documents',
@@ -201,6 +206,7 @@ export const isoNavigatorApi = baseApi.injectEndpoints({
           standard: data?.standard || '',
           documents: Array.isArray(data?.documents) ? data.documents : [],
           records: Array.isArray(data?.records) ? data.records : [],
+          additional: Array.isArray(data?.additional) ? data.additional : [],
           ims_inventory_pending: data?.ims_inventory_pending === true,
           ims_guide_title: data?.ims_guide_title,
           missing_editions: data?.missing_editions || [],
