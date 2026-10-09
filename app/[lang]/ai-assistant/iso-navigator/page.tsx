@@ -1633,6 +1633,11 @@ export default function ISONavigator() {
                       <div className="space-y-2">
                         <p className="text-[10px] font-bold text-[#64748B] uppercase tracking-wider">
                           Mandatory IMS Documents
+                          {isNavigatorImsLabel(formData?.specific_requirements || "") &&
+                          /27001/i.test(formData?.specific_requirements || "") &&
+                          /42001/i.test(formData?.specific_requirements || "")
+                            ? " (Clauses 4–10 · Annex controls)"
+                            : ""}
                         </p>
                         <div className="space-y-2">
                           {selectedISO?.documents?.map((doc: any, index: number) => {
