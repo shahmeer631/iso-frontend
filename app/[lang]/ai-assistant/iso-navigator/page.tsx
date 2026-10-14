@@ -59,6 +59,12 @@ import NavigatorDocumentView, {
   isNavigatorImsLabel,
 } from "@/components/AIAssistant/NavigatorDocumentView";
 
+/** QHSE IMS: ISO 9001 + 14001 + 45001 (client Annex SL / downloadfile.docx path). */
+function isQhseAnnexSlImsLabel(label: string): boolean {
+  if (!isNavigatorImsLabel(label)) return false;
+  return /9001/i.test(label) && /14001/i.test(label) && /45001/i.test(label);
+}
+
 import { useRouter, useParams } from 'next/navigation';
 
 import { toast } from 'sonner';
@@ -1629,15 +1635,55 @@ export default function ISONavigator() {
               {currentStep === 3 ? (
                 <div className="space-y-5 animate-in slide-in-from-top-4 duration-500">
                   <div className="space-y-4">
+                    {isQhseAnnexSlImsLabel(formData?.specific_requirements || "") &&
+                      ((selectedISO?.documents?.length ?? 0) > 0 ||
+                        (selectedISO?.records?.length ?? 0) > 0) && (
+                      <div className="rounded-2xl border border-[#1E293B] bg-[#0A0F1C]/80 p-3.5 space-y-2.5">
+                        <p className="text-[10px] font-bold text-[#94A3B8] uppercase tracking-wider">
+                          Annex SL Harmonized Structure (HS)
+                        </p>
+                        <p className="text-[11px] leading-relaxed text-[#CBD5E1]">
+                          Under the Annex SL Harmonized Structure (HS), ISO 9001 (Quality),
+                          ISO 14001 (Environmental), and ISO 45001 (Occupational Health &amp; Safety)
+                          share an identical core clause structure (Clauses 4 through 10) and common
+                          terminology. Standardized management systems classify documented
+                          information into two fundamental categories:
+                        </p>
+                        <ul className="space-y-1.5 text-[11px] leading-relaxed text-[#E2E8F0] list-none pl-0">
+                          <li className="flex gap-2">
+                            <span className="text-[#14B8A6] shrink-0">●</span>
+                            <span>
+                              <span className="font-semibold text-[#F3F4F6]">
+                                Maintained Documented Information:
+                              </span>{" "}
+                              Systems, scopes, policies, plans, and procedures kept up-to-date to
+                              direct operational execution.
+                            </span>
+                          </li>
+                          <li className="flex gap-2">
+                            <span className="text-[#14B8A6] shrink-0">●</span>
+                            <span>
+                              <span className="font-semibold text-[#F3F4F6]">
+                                Retained Documented Information (Records):
+                              </span>{" "}
+                              Objective evidence preserved unaltered to prove that activities were
+                              carried out as planned and results were achieved.
+                            </span>
+                          </li>
+                        </ul>
+                      </div>
+                    )}
+
                     {selectedISO?.documents && selectedISO.documents.length > 0 && (
                       <div className="space-y-2">
                         <p className="text-[10px] font-bold text-[#64748B] uppercase tracking-wider">
-                          Mandatory IMS Documents
-                          {isNavigatorImsLabel(formData?.specific_requirements || "") &&
-                          /27001/i.test(formData?.specific_requirements || "") &&
-                          /42001/i.test(formData?.specific_requirements || "")
-                            ? " (Clauses 4–10 · Annex controls)"
-                            : ""}
+                          {isQhseAnnexSlImsLabel(formData?.specific_requirements || "")
+                            ? "Maintained Documented Information (Common · 9001 · 14001 · 45001)"
+                            : isNavigatorImsLabel(formData?.specific_requirements || "") &&
+                                /27001/i.test(formData?.specific_requirements || "") &&
+                                /42001/i.test(formData?.specific_requirements || "")
+                              ? "Mandatory IMS Documents (Clauses 4–10 · Annex controls)"
+                              : "Mandatory IMS Documents"}
                         </p>
                         <div className="space-y-2">
                           {selectedISO?.documents?.map((doc: any, index: number) => {
@@ -1684,7 +1730,9 @@ export default function ISONavigator() {
                     {selectedISO?.records && selectedISO.records.length > 0 && (
                       <div className="space-y-2">
                         <p className="text-[10px] font-bold text-[#64748B] uppercase tracking-wider">
-                          Mandatory IMS Records — Evidence of Implementation
+                          {isQhseAnnexSlImsLabel(formData?.specific_requirements || "")
+                            ? "Retained Documented Information (Records)"
+                            : "Mandatory IMS Records — Evidence of Implementation"}
                         </p>
                         <div className="space-y-2">
                           {selectedISO?.records?.map((rec: any, index: number) => {
@@ -2468,6 +2516,43 @@ export default function ISONavigator() {
 
 
 
+              {isQhseAnnexSlImsLabel(selectedISODetail.standard || "") && (
+                <div className="rounded-2xl border border-[#1E293B] bg-[#0A0F1C]/80 p-3.5 space-y-2.5">
+                  <p className="text-[10px] font-bold text-[#94A3B8] uppercase tracking-wider">
+                    Annex SL Harmonized Structure (HS)
+                  </p>
+                  <p className="text-[11px] leading-relaxed text-[#CBD5E1]">
+                    Under the Annex SL Harmonized Structure (HS), ISO 9001 (Quality),
+                    ISO 14001 (Environmental), and ISO 45001 (Occupational Health &amp; Safety)
+                    share an identical core clause structure (Clauses 4 through 10) and common
+                    terminology. Standardized management systems classify documented
+                    information into two fundamental categories:
+                  </p>
+                  <ul className="space-y-1.5 text-[11px] leading-relaxed text-[#E2E8F0] list-none pl-0">
+                    <li className="flex gap-2">
+                      <span className="text-[#14B8A6] shrink-0">●</span>
+                      <span>
+                        <span className="font-semibold text-[#F3F4F6]">
+                          Maintained Documented Information:
+                        </span>{" "}
+                        Systems, scopes, policies, plans, and procedures kept up-to-date to
+                        direct operational execution.
+                      </span>
+                    </li>
+                    <li className="flex gap-2">
+                      <span className="text-[#14B8A6] shrink-0">●</span>
+                      <span>
+                        <span className="font-semibold text-[#F3F4F6]">
+                          Retained Documented Information (Records):
+                        </span>{" "}
+                        Objective evidence preserved unaltered to prove that activities were
+                        carried out as planned and results were achieved.
+                      </span>
+                    </li>
+                  </ul>
+                </div>
+              )}
+
               {/* Mandatory Documents */}
 
               {selectedISODetail.documents && selectedISODetail.documents.length > 0 && (
@@ -2476,7 +2561,9 @@ export default function ISONavigator() {
 
                   <p className="text-[10px] font-black text-[#4B5563] uppercase tracking-[0.2em] mb-3">
 
-                    Mandatory IMS Documents
+                    {isQhseAnnexSlImsLabel(selectedISODetail.standard || "")
+                      ? "Maintained Documented Information (Common · 9001 · 14001 · 45001)"
+                      : "Mandatory IMS Documents"}
 
                   </p>
 
@@ -2513,7 +2600,9 @@ export default function ISONavigator() {
 
                   <p className="text-[10px] font-black text-[#4B5563] uppercase tracking-[0.2em] mb-3">
 
-                    Mandatory IMS Records — Evidence of Implementation
+                    {isQhseAnnexSlImsLabel(selectedISODetail.standard || "")
+                      ? "Retained Documented Information (Records)"
+                      : "Mandatory IMS Records — Evidence of Implementation"}
 
                   </p>
 
