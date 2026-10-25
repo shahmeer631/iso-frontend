@@ -1,15 +1,18 @@
-import ContactSection from '@/components/contact/contactForm'
-import GetInTouchWithForm from '@/components/contact/contactTopSection'
-import DynamicHeroSectionProps from '@/components/landing-page-components/DynamicHeroSection'
-import React from 'react'
+import ContactSection from "@/components/contact/contactForm";
+import GetInTouchWithForm from "@/components/contact/contactTopSection";
+import { Metadata } from "next";
 
-const page = () => {
+export const metadata: Metadata = {
+  title: "Contact ISOBrain | Get in Touch",
+  description:
+    "Have questions about ISOBrain? Send a message or reach our team by email, phone, or office location.",
+};
+
+export default function ContactPage() {
   return (
-    <div className=' '>
-    <GetInTouchWithForm></GetInTouchWithForm>
-    <ContactSection/>
+    <div className="bg-[var(--ib-bg)] text-[var(--ib-ink)]">
+      <GetInTouchWithForm />
+      <ContactSection />
     </div>
-  )
+  );
 }
-
-export default page

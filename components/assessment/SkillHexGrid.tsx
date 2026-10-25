@@ -16,7 +16,7 @@ interface SkillHexGridProps {
   color?: string;
 }
 
-export const SkillHexGrid: React.FC<SkillHexGridProps> = ({ data, color = "#D4AF37" }) => {
+export const SkillHexGrid: React.FC<SkillHexGridProps> = ({ data, color = "var(--ib-acc)" }) => {
   const { t } = useTranslation();
   const width = 380;
   const height = 300;
@@ -50,8 +50,8 @@ export const SkillHexGrid: React.FC<SkillHexGridProps> = ({ data, color = "#D4AF
     .join(" ");
 
   return (
-    <div className="flex flex-col items-center justify-center p-4 sm:p-6 bg-[#1E212B] rounded-[32px] border border-white/5 shadow-inner w-full">
-      <h4 className="text-sm font-bold text-gray-500 uppercase tracking-widest mb-6">
+    <div className="flex flex-col items-center justify-center p-4 sm:p-6 bg-[var(--ib-card)] rounded-[32px] border border-[var(--ib-line)] shadow-inner w-full">
+      <h4 className="text-sm font-bold text-[var(--ib-mute)] uppercase tracking-widest mb-6">
         {t('mastery.skillMatrix')}
       </h4>
       <div className="relative w-full max-w-[380px] h-[300px] flex items-center justify-center">
@@ -126,7 +126,7 @@ export const SkillHexGrid: React.FC<SkillHexGridProps> = ({ data, color = "#D4AF
                 textAnchor={textAnchor}
                 dominantBaseline="middle"
                 className="text-[9px] sm:text-[10px] font-bold"
-                fill="#A0AAB2"
+                fill="var(--ib-mute)"
               >
                 {d.subject}
               </text>

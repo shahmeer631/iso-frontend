@@ -46,11 +46,11 @@ const page = () => {
       {/* header section  */}
       <section className="w-full bg-[#111827] py-24 text-center text-white">
         <div className="max-w-4xl mx-auto px-4 flex flex-col items-center">
-          <h1 className="space-grotesk text-5xl lg:text-[52px] font-semibold text-white mb-6 leading-[1.1] tracking-tight">
+          <h1 className="text-5xl lg:text-[52px] font-semibold text-white mb-6 leading-[1.1] tracking-tight">
             Store
           </h1>
 
-          <p className="text-[#A1A1A6] text-sm lg:text-lg max-w-4xl mx-auto leading-relaxed mb-10 font-inter">
+          <p className="text-[var(--ib-mute)] text-sm lg:text-lg max-w-4xl mx-auto leading-relaxed mb-10 font-inter">
             Access 250+ ISO standards organized by categories with AI-powered
             insights
           </p>
@@ -64,10 +64,10 @@ const page = () => {
               className="
           h-14 pl-12 pr-4
           rounded-lg
-          bg-white/10
+          bg-[var(--ib-accbg)]
           border border-white/20
           text-white
-          placeholder:text-gray-400
+          placeholder:text-[var(--ib-mute)]
           backdrop-blur-md
           focus-visible:ring-2
           focus-visible:ring-white/40
@@ -107,7 +107,7 @@ const page = () => {
             Ready to Get Started?
           </h1>
 
-          <p className="text-lg md:text-2xl text-gray-300 mb-10">
+          <p className="text-lg md:text-2xl text-[var(--ib-mute)] mb-10">
             Start exploring ISO standards with AI-powered tools
           </p>
 

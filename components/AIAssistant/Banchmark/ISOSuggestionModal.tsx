@@ -34,14 +34,14 @@ export const ISOSuggestionModal: React.FC<ISOSuggestionModalProps> = ({
     >
       <div
         style={{
-          background: "#131B2D",
+          background: "var(--ib-card)",
           borderRadius: 24,
           maxWidth: 600,
           width: "100%",
           maxHeight: "90vh",
           padding: 32,
           position: "relative",
-          border: "1px solid #1E293B",
+          border: "1px solid var(--ib-ink)",
           boxShadow: "0 20px 40px rgba(0, 0, 0, 0.5)",
           overflowY: "auto",
         }}
@@ -60,7 +60,7 @@ export const ISOSuggestionModal: React.FC<ISOSuggestionModalProps> = ({
             cursor: "pointer",
             transition: "color 0.2s",
           }}
-          onMouseEnter={(e) => (e.currentTarget.style.color = "#F1F5F9")}
+          onMouseEnter={(e) => (e.currentTarget.style.color = "#fff")}
           onMouseLeave={(e) => (e.currentTarget.style.color = "#94A3B8")}
         >
           <X size={20} />
@@ -72,22 +72,22 @@ export const ISOSuggestionModal: React.FC<ISOSuggestionModalProps> = ({
             style={{
               width: 48,
               height: 48,
-              background: "#00F0FF",
+              background: "var(--ib-acc)",
               borderRadius: 12,
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              border: "1px solid #00F0FF",
+              border: "1px solid var(--ib-acc)",
             }}
           >
-            <BookOpen size={24} color="#F1F5F9" />
+            <BookOpen size={24} color="#fff" />
           </div>
           <div style={{ flex: 1 }}>
             <h2
               style={{
                 fontSize: 24,
                 fontWeight: 500,
-                color: "#F1F5F9",
+                color: "#fff",
                 margin: 0,
                 marginBottom: 4,
               }}
@@ -98,7 +98,7 @@ export const ISOSuggestionModal: React.FC<ISOSuggestionModalProps> = ({
               style={{
                 fontSize: 14,
                 fontWeight: 500,
-                color: "#00F0FF",
+                color: "var(--ib-acc)",
                 margin: 0,
               }}
             >
@@ -110,8 +110,8 @@ export const ISOSuggestionModal: React.FC<ISOSuggestionModalProps> = ({
         {/* Relevance */}
         <div
           style={{
-            backgroundColor: "rgba(63, 62, 237, 0.1)",
-            borderLeft: "4px solid #00F0FF",
+            backgroundColor: "var(--ib-accbg)",
+            borderLeft: "4px solid var(--ib-acc)",
             borderRadius: 12,
             padding: 16,
             marginBottom: 24,
@@ -124,7 +124,7 @@ export const ISOSuggestionModal: React.FC<ISOSuggestionModalProps> = ({
               gap: 6,
               fontSize: 11,
               fontWeight: 500,
-              color: "#00F0FF",
+              color: "var(--ib-acc)",
               marginBottom: 8,
               textTransform: "uppercase",
             }}
@@ -135,7 +135,7 @@ export const ISOSuggestionModal: React.FC<ISOSuggestionModalProps> = ({
           <p
             style={{
               fontSize: 13,
-              color: "#F1F5F9",
+              color: "#fff",
               margin: 0,
               lineHeight: 1.6,
             }}
@@ -151,14 +151,14 @@ export const ISOSuggestionModal: React.FC<ISOSuggestionModalProps> = ({
               style={{
                 fontSize: 14,
                 fontWeight: 500,
-                color: "#F1F5F9",
+                color: "#fff",
                 marginBottom: 12,
                 display: "flex",
                 alignItems: "center",
                 gap: 8,
               }}
             >
-              <FileCheck size={16} style={{ color: "#14B8A6" }} />
+              <FileCheck size={16} style={{ color: "var(--ib-ok)" }} />
               Required Documents
             </h3>
             <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
@@ -166,8 +166,8 @@ export const ISOSuggestionModal: React.FC<ISOSuggestionModalProps> = ({
                 <div
                   key={idx}
                   style={{
-                    background: "#0A0F1C",
-                    border: "1px solid #1E293B",
+                    background: "var(--ib-bg)",
+                    border: "1px solid var(--ib-ink)",
                     borderRadius: 12,
                     padding: 12,
                     display: "flex",
@@ -179,7 +179,7 @@ export const ISOSuggestionModal: React.FC<ISOSuggestionModalProps> = ({
                     style={{
                       width: 28,
                       height: 28,
-                      background: "#14B8A6",
+                      background: "var(--ib-ok)",
                       borderRadius: 12,
                       display: "flex",
                       alignItems: "center",
@@ -187,14 +187,14 @@ export const ISOSuggestionModal: React.FC<ISOSuggestionModalProps> = ({
                       flexShrink: 0,
                     }}
                   >
-                    <FileCheck size={14} color="#0A0F1C" />
+                    <FileCheck size={14} color="var(--ib-bg)" />
                   </div>
                   <div>
                     <p
                       style={{
                         fontSize: 13,
                         fontWeight: 500,
-                        color: "#F1F5F9",
+                        color: "#fff",
                         margin: 0,
                         marginBottom: 2,
                       }}
@@ -224,14 +224,14 @@ export const ISOSuggestionModal: React.FC<ISOSuggestionModalProps> = ({
               style={{
                 fontSize: 14,
                 fontWeight: 500,
-                color: "#F1F5F9",
+                color: "#fff",
                 marginBottom: 12,
                 display: "flex",
                 alignItems: "center",
                 gap: 8,
               }}
             >
-              <FileCheck size={16} style={{ color: "#00F0FF" }} />
+              <FileCheck size={16} style={{ color: "var(--ib-acc)" }} />
               Required Records
             </h3>
             <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
@@ -239,8 +239,8 @@ export const ISOSuggestionModal: React.FC<ISOSuggestionModalProps> = ({
                 <div
                   key={idx}
                   style={{
-                    background: "#0A0F1C",
-                    border: "1px solid #1E293B",
+                    background: "var(--ib-bg)",
+                    border: "1px solid var(--ib-ink)",
                     borderRadius: 12,
                     padding: 12,
                     display: "flex",
@@ -252,7 +252,7 @@ export const ISOSuggestionModal: React.FC<ISOSuggestionModalProps> = ({
                     style={{
                       width: 28,
                       height: 28,
-                      background: "#00F0FF",
+                      background: "var(--ib-acc)",
                       borderRadius: 12,
                       display: "flex",
                       alignItems: "center",
@@ -260,14 +260,14 @@ export const ISOSuggestionModal: React.FC<ISOSuggestionModalProps> = ({
                       flexShrink: 0,
                     }}
                   >
-                    <FileCheck size={14} color="#F1F5F9" />
+                    <FileCheck size={14} color="#fff" />
                   </div>
                   <div>
                     <p
                       style={{
                         fontSize: 13,
                         fontWeight: 500,
-                        color: "#F1F5F9",
+                        color: "#fff",
                         margin: 0,
                         marginBottom: 2,
                       }}
@@ -295,7 +295,7 @@ export const ISOSuggestionModal: React.FC<ISOSuggestionModalProps> = ({
           onClick={onClose}
           style={{
             width: "100%",
-            background: "#00F0FF",
+            background: "var(--ib-acc)",
             color: "#FFFFFF",
             padding: "14px 0",
             borderRadius: 16,
@@ -308,7 +308,7 @@ export const ISOSuggestionModal: React.FC<ISOSuggestionModalProps> = ({
             letterSpacing: "0.05em",
           }}
           onMouseEnter={(e) => (e.currentTarget.style.background = "#3433D6")}
-          onMouseLeave={(e) => (e.currentTarget.style.background = "#00F0FF")}
+          onMouseLeave={(e) => (e.currentTarget.style.background = "var(--ib-acc)")}
         >
           Close
         </button>

@@ -27,7 +27,7 @@ export default function SlidingButton({ left, right }: SlidingButtonProps) {
 
   return (
     <div className="mt-8 flex justify-center">
-      <div className="relative flex border border-white rounded-xl overflow-hidden w-max bg-white/5 backdrop-blur-sm">
+      <div className="relative flex border border-white rounded-xl overflow-hidden w-max bg-[var(--ib-card)] backdrop-blur-sm">
         {/* Sliding background */}
         <div
           className="absolute top-0 left-0 h-full w-1/2 bg-white rounded-lg transition-all duration-300 ease-in-out"

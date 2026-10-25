@@ -24,7 +24,7 @@
 //   ];
 
 //   return (
-//     <aside className="h-full  bg-[#0F172A] text-white flex flex-col p-4 justify-between">
+//     <aside className="h-full  bg-[var(--ib-ink)] text-white flex flex-col p-4 justify-between">
 //       <div>
 //         <div className="space-y-2 mt-4">
 //           {navItems.map((item) => (
@@ -32,7 +32,7 @@
 //               key={item.name}
 //               href={item.href}
 //               className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
-//                 pathname === item.href ? 'bg-[#6366F1]' : 'hover:bg-slate-800'
+//                 pathname === item.href ? 'bg-[var(--ib-acc)]' : 'hover:bg-slate-800'
 //               }`}
 //             >
 //               <item.icon size={20} />
@@ -49,7 +49,7 @@
 //                 <span className="text-slate-400 font-normal text-[9px]">1000 limit</span>
 //              </div>
 //              <div className="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
-//                 <div className="bg-indigo-600 h-full w-full" />
+//                 <div className="bg-[var(--ib-acc)] h-full w-full" />
 //              </div>
 //           </div>
 //         </div>

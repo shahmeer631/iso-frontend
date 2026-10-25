@@ -45,12 +45,12 @@ const ComplianceBundles = () => {
   };
 
   return (
-    <section style={{ padding: "80px 24px", background: "#0B0F19" }}>
+    <section style={{ padding: "80px 24px", background: "var(--ib-bg)" }}>
       <div style={{ maxWidth: 1280, margin: "0 auto" }}>
-        <h2 className="space-grotesk" style={{
+        <h2 className="font-sans" style={{
           fontSize: "42px",
           fontWeight: 700,
-          color: "#FFFFFF",
+          color: "var(--ib-ink)",
           marginBottom: 48,
           textAlign: "center"
         }}>
@@ -68,9 +68,9 @@ const ComplianceBundles = () => {
               key={bundle.id}
               onClick={() => handleCardClick(bundle.slug)}
               style={{
-                background: "#161A22",
+                background: "var(--ib-bg)",
                 borderRadius: 20,
-                border: "1px solid rgba(255,255,255,0.05)",
+                border: "1px solid var(--ib-line)",
                 overflow: "hidden",
                 display: "flex",
                 flexDirection: "column",
@@ -108,14 +108,14 @@ const ComplianceBundles = () => {
 
               {/* Content Container */}
               <div style={{ padding: "24px", flex: 1, display: "flex", flexDirection: "column", borderTop: "1px solid rgba(255,255,255,0.02)" }}>
-                <span style={{ color: "#00F0FF", fontSize: 13, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 16 }}>
+                <span style={{ color: "var(--ib-acc)", fontSize: 13, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 16 }}>
                   {bundle.category}
                 </span>
 
                 <h3 className="font-inter" style={{
                   fontSize: 22,
                   fontWeight: 600,
-                  color: "#FFFFFF",
+                  color: "var(--ib-ink)",
                   marginBottom: 20,
                   lineHeight: 1.3
                 }}>
@@ -125,7 +125,7 @@ const ComplianceBundles = () => {
 
 
                 <p style={{
-                  color: "#A0AAB2",
+                  color: "var(--ib-mute)",
                   fontSize: 14,
                   lineHeight: 1.6,
                   margin: 0,

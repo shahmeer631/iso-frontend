@@ -18,8 +18,8 @@ const SuccessPage = () => {
   }, [router]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50/50 p-4">
-      <Card className="w-full max-w-md border-none shadow-xl shadow-black/5 p-8">
+    <div className="min-h-screen flex items-center justify-center bg-[var(--ib-bg)] p-4">
+      <Card className="w-full max-w-md border border-[var(--ib-line)] bg-[var(--ib-card)] shadow-sm rounded-2xl p-8">
         <CardContent className="flex flex-col items-center justify-center space-y-6 pt-6">
           {/* Animated Lottie Container */}
           <div className="relative w-48 h-48">
@@ -36,7 +36,7 @@ const SuccessPage = () => {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
-              className="text-2xl font-bold text-gray-900"
+              className="text-2xl font-bold text-[var(--ib-ink)]"
             >
               Congratulations!
             </motion.h1>
@@ -44,7 +44,7 @@ const SuccessPage = () => {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4 }}
-              className="text-muted-foreground"
+              className="text-[var(--ib-mute)]"
             >
               You have successfully created your account .
             </motion.p>

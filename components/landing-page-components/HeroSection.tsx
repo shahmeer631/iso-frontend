@@ -51,23 +51,23 @@ export default function HeroSection({
   const typewriterWords = t("hero.typewriterWords", { returnObjects: true }) as string[];
 
   return (
-    <section className="relative bg-[#0F111A] overflow-visible pt-24 pb-16 lg:pt-32 lg:pb-24">
+    <section className="relative bg-[var(--ib-bg)] overflow-visible pt-24 pb-16 lg:pt-32 lg:pb-24">
       {/* Premium Glow Effects */}
-      <div className="absolute top-0 left-1/4 w-[500px] h-[500px]bg-[#00f0ff] text-[#0F111A]/10 rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-0 right-1/4 w-[600px] h-[600px] bg-[#B026FF]/5 rounded-full blur-[140px] pointer-events-none" />
+      <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-[var(--ib-acc)]/10 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-0 right-1/4 w-[600px] h-[600px] bg-[var(--ib-acc)]/5 rounded-full blur-[140px] pointer-events-none" />
 
       <div className="container mx-auto px-6 relative z-10">
         <div className="text-center max-w-5xl mx-auto">
           {/* Top Badge */}
-          <div data-aos="fade-down" className="inline-flex items-center gap-2 px-3 py-1.5 sm:px-4 sm:py-2 rounded-full bg-white/5 border border-white/10 mb-8 max-w-full">
-            <span className="flex h-2 w-2 rounded-full  bg-[#00f0ff] animate-pulse shrink-0" />
-            <span className="text-[#00f0ff] text-[10px] sm:text-xs font-light tracking-widest uppercase font-inter whitespace-nowrap overflow-hidden text-ellipsis">{t("hero.badge")}</span>
+          <div data-aos="fade-down" className="inline-flex items-center gap-2 px-3 py-1.5 sm:px-4 sm:py-2 rounded-full bg-[var(--ib-accbg)] border border-[var(--ib-line)] mb-8 max-w-full">
+            <span className="flex h-2 w-2 rounded-full  bg-[var(--ib-acc)] animate-pulse shrink-0" />
+            <span className="text-[var(--ib-acc)] text-[10px] sm:text-xs font-light tracking-widest uppercase font-inter whitespace-nowrap overflow-hidden text-ellipsis">{t("hero.badge")}</span>
           </div>
 
           {/* Main Heading */}
-          <h2 className="space-grotesk text-lg   font-thin text-white leading-[1.1] mb-8" data-aos="fade-up">{t("hero.heading1")}
+          <h2 className="text-lg   font-thin text-[var(--ib-ink)] leading-[1.1] mb-8" data-aos="fade-up">{t("hero.heading1")}
             {" "} <br />
-            <span className="text-[#00f0ff]">
+            <span className="text-[var(--ib-acc)]">
               <Typewriter
                 words={typewriterWords}
                 loop={0}
@@ -81,16 +81,16 @@ export default function HeroSection({
           </h2>
 
           {/* Subheadline */}
-          <p className="text-[#A1A1A6] text-sm lg:text-base max-w-4xl mx-auto leading-relaxed mb-12 font-inter" data-aos="fade-up" data-aos-delay="100">{t("hero.description")}</p>
+          <p className="text-[var(--ib-mute)] text-sm lg:text-base max-w-4xl mx-auto leading-relaxed mb-12 font-inter" data-aos="fade-up" data-aos-delay="100">{t("hero.description")}</p>
 
           {/* Primary Hero CTA button */}
           <div className="mb-10 flex flex-col items-center gap-3" data-aos="fade-up" data-aos-delay="150">
             <Link href={`/${lang}/pricing`}>
-              <Button className="bg-[#00f0ff] hover:bg-[#00f0ff] text-black font-bold px-8 py-6 rounded-full text-base sm:text-lg transition-all active:scale-95 flex items-center gap-2 cursor-pointer shadow-lg shadow-cyan-500/10 border-none">
+              <Button className="bg-[var(--ib-acc)] hover:bg-[var(--ib-acc)] text-white font-bold px-8 py-6 rounded-full text-base sm:text-lg transition-all active:scale-95 flex items-center gap-2 cursor-pointer shadow-lg shadow-[0_4px_20px_rgba(27,77,219,0.1)] border-none">
                 Get Started Now →
               </Button>
             </Link>
-            <p className="text-xs text-gray-500 font-medium">
+            <p className="text-xs text-[var(--ib-mute)] font-medium">
               Cancel anytime in 2 clicks.
             </p>
           </div>

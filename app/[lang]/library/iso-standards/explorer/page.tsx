@@ -39,14 +39,14 @@ const ExplorerContent = () => {
   }, [handleKeydown]);
 
   return (
-    <div className="min-h-screen bg-[#050505] text-white font-inter selection:bg-brand-cyan text-[#0F111A]/30 pb-20">
+    <div className="min-h-screen bg-[var(--ib-bg)] text-white font-inter selection:bg-[var(--ib-acc)] text-white/30 pb-20">
       {/* ── Header ── */}
-      <header className="sticky top-0 z-50 bg-[#050505]/80 backdrop-blur-xl border-b border-white/5 py-6 px-6">
+      <header className="sticky top-0 z-50 bg-[var(--ib-bg)]/80 backdrop-blur-xl border-b border-[var(--ib-line)] py-6 px-6">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="flex items-center gap-4">
             <Link 
               href={`/${lang}/library/iso-standards`}
-              className="p-2 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors"
+              className="p-2 rounded-xl bg-[var(--ib-card)] border border-[var(--ib-line)] hover:bg-[var(--ib-accbg)] transition-colors"
             >
               <ArrowLeft className="w-5 h-5" />
             </Link>
@@ -59,10 +59,10 @@ const ExplorerContent = () => {
           {/* ── Search Bar ── */}
           <div className="relative w-full md:w-[400px]">
             <div className={`
-              group flex items-center gap-3 bg-white/5 border backdrop-blur-xl rounded-xl px-4 h-12 transition-all duration-300
-              ${isBarFocused ? 'border-brand-cyan ring-2 ring-brand-cyan/10 shadow-[0_0_20px_-10px_#00F0FF44]' : 'border-white/10 hover:border-white/20'}
+              group flex items-center gap-3 bg-[var(--ib-card)] border backdrop-blur-xl rounded-xl px-4 h-12 transition-all duration-300
+              ${isBarFocused ? 'border-[var(--ib-acc)] ring-2 ring-brand-cyan/10 shadow-[0_0_20px_-10px_var(--ib-acc)44]' : 'border-[var(--ib-line)] hover:border-white/20'}
             `}>
-              <Search className={`w-4 h-4 transition-colors duration-300 ${isBarFocused ? 'text-brand-cyan' : 'text-[#64748B]'}`} />
+              <Search className={`w-4 h-4 transition-colors duration-300 ${isBarFocused ? 'text-[var(--ib-acc)]' : 'text-[#64748B]'}`} />
               <input
                 ref={inputRef}
                 value={inputValue}
@@ -72,7 +72,7 @@ const ExplorerContent = () => {
                 placeholder={t('library.searchPlaceholder')}
                 className="flex-1 bg-transparent border-none outline-none text-white placeholder:text-[#475569] text-sm"
               />
-              <div className="hidden md:flex items-center gap-1 px-1.5 py-0.5 rounded bg-white/5 border border-white/10 text-[#64748B] text-[10px] font-bold uppercase">
+              <div className="hidden md:flex items-center gap-1 px-1.5 py-0.5 rounded bg-[var(--ib-card)] border border-[var(--ib-line)] text-[#64748B] text-[10px] font-bold uppercase">
                 <Command className="w-2.5 h-2.5" />
                 <span>K</span>
               </div>
@@ -92,8 +92,8 @@ const ExplorerContent = () => {
 const Page = () => {
   return (
     <Suspense fallback={
-      <div className="min-h-screen bg-[#050505] flex items-center justify-center">
-        <div className="w-12 h-12 border-4 border-brand-cyan/20 border-t-[#00F0FF] rounded-full animate-spin" />
+      <div className="min-h-screen bg-[var(--ib-bg)] flex items-center justify-center">
+        <div className="w-12 h-12 border-4 border-[var(--ib-acc)]/20 border-t-[var(--ib-acc)] rounded-full animate-spin" />
       </div>
     }>
       <ExplorerContent />

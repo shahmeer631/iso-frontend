@@ -16,15 +16,15 @@ export default function WhatYouGet() {
       icon: BookOpen,
       title: t('academy.lessonsPerCourse'),
       description: t('academy.lessonsDesc'),
-      color: "#00F0FF",
-      bg: "rgba(0,240,255,0.1)",
+      color: "var(--ib-acc)",
+      bg: "rgba(27, 77, 219, 0.1)",
     },
     {
       icon: BrainCircuit,
       title: t('academy.aiQuizzes'),
       description: t('academy.aiQuizzesDesc'),
-      color: "#00F0FF",
-      bg: "rgba(212,175,55,0.1)",
+      color: "var(--ib-acc)",
+      bg: "rgba(27, 77, 219,0.1)",
     },
     {
       icon: Award,
@@ -36,19 +36,19 @@ export default function WhatYouGet() {
   ];
 
   return (
-    <section style={{ background: "#0B0F19", padding: "80px 24px", borderTop: "1px solid rgba(255,255,255,0.02)" }}>
+    <section style={{ background: "var(--ib-bg)", padding: "80px 24px", borderTop: "1px solid rgba(255,255,255,0.02)" }}>
       <div style={{ maxWidth: 1280, margin: "0 auto" }}>
 
         <div style={{ textAlign: "center", marginBottom: 64 }}>
-          <h2 className="space-grotesk" style={{ fontSize: "42px", fontWeight: 700, color: "#FFFFFF", marginBottom: 16 }}>
+          <h2 className="font-sans" style={{ fontSize: "42px", fontWeight: 700, color: "var(--ib-ink)", marginBottom: 16 }}>
             {t('academy.outcomeTitle')}
           </h2>
-          <p style={{ color: "#A0AAB2", fontSize: 18, maxWidth: 800, margin: "0 auto" }}>
+          <p style={{ color: "var(--ib-mute)", fontSize: 18, maxWidth: 800, margin: "0 auto" }}>
             {t('academy.outcomeDescription')}
           </p>
 
           <button style={{
-            background: "#00F0FF", color: "#0F111A", padding: "12px 24px",
+            background: "var(--ib-acc)", color: "#ffffff", padding: "12px 24px",
             borderRadius: 10, fontSize: 15, fontWeight: 700, cursor: "pointer",
             border: "none", display: "flex", alignItems: "center", gap: 8,
             transition: "all 0.2s"
@@ -70,7 +70,7 @@ export default function WhatYouGet() {
               style={{
                 background: "rgba(255,255,255,0.02)",
                 borderRadius: 24, padding: 40,
-                border: "1px solid rgba(255,255,255,0.05)",
+                border: "1px solid var(--ib-line)",
                 display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center"
               }}
             >
@@ -82,11 +82,11 @@ export default function WhatYouGet() {
                 <benefit.icon size={32} color={benefit.color} />
               </div>
 
-              <h3 className="font-inter" style={{ fontSize: 24, fontWeight: 600, color: "#ffffff", marginBottom: 16 }}>
+              <h3 className="font-inter" style={{ fontSize: 24, fontWeight: 600, color: "var(--ib-ink)", marginBottom: 16 }}>
                 {benefit.title}
               </h3>
 
-              <p style={{ color: "#A0AAB2", fontSize: 15, lineHeight: 1.6 }}>
+              <p style={{ color: "var(--ib-mute)", fontSize: 15, lineHeight: 1.6 }}>
                 {benefit.description}
               </p>
             </div>

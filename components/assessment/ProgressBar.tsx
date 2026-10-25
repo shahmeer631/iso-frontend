@@ -20,7 +20,7 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({
   return (
     <div style={{ width: "100%", marginBottom: 16 }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: 12 }}>
-        <span className="font-inter" style={{ color: "#A0AAB2", fontWeight: 600, fontSize: 13, textTransform: "uppercase" }}>
+        <span className="font-inter" style={{ color: "var(--ib-mute)", fontWeight: 600, fontSize: 13, textTransform: "uppercase" }}>
           {t('mastery.questionLabel')} <span style={{ color: "#FFFFFF" }}>{currentQuestion + 1}</span> {t('mastery.ofLabel')} <span style={{ color: "#FFFFFF" }}>{totalQuestions}</span>
         </span>
         <span className="font-inter" style={{ color: "#FFFFFF", fontWeight: 700, fontSize: 13 }}>
@@ -32,8 +32,8 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({
         <motion.div
           style={{ 
             height: "100%", 
-            background: "#00F0FF",
-            boxShadow: "0 0 10px rgba(63, 62, 237, 0.3)"
+            background: "var(--ib-acc)",
+            boxShadow: "0 0 10px rgba(27, 77, 219, 0.3)"
           }}
           initial={{ width: 0 }}
           animate={{ width: `${progress}%` }}

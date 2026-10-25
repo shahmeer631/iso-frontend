@@ -22,73 +22,73 @@ export default function ISOPlatform() {
     {
       id: "ai-assistant",
       title: t('platform.aiAssistant.title'),
-      icon: <Brain className="text-[#00f0ff]" size={24} />,
+      icon: <Brain className="text-[var(--ib-acc)]" size={24} />,
       iconBg: "bg-[#2563EB]/10",
       iconBorder: "border-[#2563EB]/20",
       description: t('platform.aiAssistant.description'),
       image: "/ai-assistant.png",
       link: `/${lang}/ai-assistant-home`,
       btnText: t('platform.aiAssistant.btn', 'Explore AI Assistant'),
-      btnColor: "text-[#00f0ff]",
+      btnColor: "text-[var(--ib-acc)]",
       glowColor: "bg-[#2563EB]/5",
       reverse: false,
     },
     {
       id: "academy",
       title: t('platform.academy.title'),
-      icon: <GraduationCap className="text-[#00f0ff]" size={24} />,
+      icon: <GraduationCap className="text-[var(--ib-acc)]" size={24} />,
       iconBg: "bg-[#2563EB]/10",
       iconBorder: "border-[#2563EB]/20",
       description: t('platform.academy.description'),
       image: "/academy.png",
       link: `/${lang}/academy`,
       btnText: t('platform.academy.btn', 'Explore Academy Courses'),
-      btnColor: "text-[#00f0ff]",
+      btnColor: "text-[var(--ib-acc)]",
       glowColor: "bg-[#2563EB]/5",
       reverse: true,
     },
     {
       id: "assessment",
       title: t('platform.masteryLab.title'),
-      icon: <Microscope className="text-[#00f0ff]" size={24} />,
+      icon: <Microscope className="text-[var(--ib-acc)]" size={24} />,
       iconBg: "bg-[#2563EB]/10",
       iconBorder: "border-[#2563EB]/20",
       description: t('platform.masteryLab.description'),
       image: "/mastery-lab.png",
       link: `/${lang}/mastery-lab`,
       btnText: t('platform.masteryLab.btn', 'Test Your Knowledge'),
-      btnColor: "text-[#00f0ff]",
+      btnColor: "text-[var(--ib-acc)]",
       glowColor: "bg-[#2563EB]/5",
       reverse: false,
     },
     {
       id: "library",
       title: t('platform.library.title'),
-      icon: <Library className="text-[#00f0ff]" size={24} />,
+      icon: <Library className="text-[var(--ib-acc)]" size={24} />,
       iconBg: "bg-[#2563EB]/10",
       iconBorder: "border-[#2563EB]/20",
       description: t('platform.library.description'),
       image: "/library.png",
       link: `/${lang}/library/iso-standards`,
       btnText: t('platform.library.btn', 'Explore ISO Standards'),
-      btnColor: "text-[#00f0ff]",
+      btnColor: "text-[var(--ib-acc)]",
       glowColor: "bg-[#2563EB]/5",
       reverse: true,
     },
   ];
 
   return (
-    <section id="platform" className="bg-[#0F111A] py-24 lg:py-32 overflow-hidden">
+    <section id="platform" className="bg-[var(--ib-bg)] py-24 lg:py-32 overflow-hidden">
       <div className="container mx-auto px-6">
         {/* Section Header */}
         <div className="text-center mb-24" data-aos="fade-up">
-          <h2 className="space-grotesk text-4xl lg:text-[42px] font-semibold text-white leading-[1.2] tracking-tight mb-6">
+          <h2 className="text-4xl lg:text-[42px] font-semibold text-[var(--ib-ink)] leading-[1.2] tracking-tight mb-6">
             {t('platform.heading1')}{" "}
-            <span className="text-[#00f0ff]">{t('platform.headingHighlightText')}</span>
+            <span className="text-[var(--ib-acc)]">{t('platform.headingHighlightText')}</span>
           </h2>
-          <p className="text-[#A1A1A6] text-base max-w-3xl mx-auto font-inter mb-10 leading-relaxed">{t('platform.description')}</p>
+          <p className="text-[var(--ib-mute)] text-base max-w-3xl mx-auto font-inter mb-10 leading-relaxed">{t('platform.description')}</p>
           <Link href={`/${lang}/mastery-lab`}>
-            <button className="bg-[#00f0ff]  text-[#0F111A] border border-white/10 px-8 py-3 rounded-full font-medium transition-all mb-16 cursor-pointer">{t('platform.moreAboutUs')}</button>
+            <button className="bg-[var(--ib-acc)] text-white border border-[var(--ib-acc)] px-8 py-3 rounded-[10px] font-semibold transition-all mb-16 cursor-pointer hover:opacity-92">{t('platform.moreAboutUs')}</button>
           </Link>
         </div>
 
@@ -97,7 +97,7 @@ export default function ISOPlatform() {
           {featureCards.map((card) => (
             <div
               key={card.id}
-              className="bg-[#1E212B] rounded-[40px] p-8 lg:p-16 border border-white/5 relative overflow-hidden group"
+              className="bg-[var(--ib-card)] rounded-3xl p-8 lg:p-16 border border-[var(--ib-line)] relative overflow-hidden group shadow-[0_24px_60px_-24px_rgba(11,18,32,0.18)]"
               data-aos={card.reverse ? "fade-left" : "fade-right"}
             >
               <div
@@ -110,10 +110,10 @@ export default function ISOPlatform() {
                   >
                     {card.icon}
                   </div>
-                  <h3 className="space-grotesk text-3xl lg:text-4xl font-medium text-white tracking-tight">
+                  <h3 className="text-3xl lg:text-4xl font-medium text-[var(--ib-ink)] tracking-tight">
                     {card.title}
                   </h3>
-                  <p className="text-[#A1A1A6] text-lg leading-relaxed font-inter text-justify break-words">
+                  <p className="text-[var(--ib-mute)] text-lg leading-relaxed font-inter text-justify break-words">
                     {card.description}
                   </p>
                   <Link
@@ -128,7 +128,7 @@ export default function ISOPlatform() {
                   </Link>
                 </div>
                 <div className="lg:w-1/2 relative w-full">
-                  <div className="relative rounded-3xl overflow-hidden border border-white/10 shadow-[0_32px_64px_rgba(0,0,0,0.4)] transform transition-transform duration-700 group-hover:scale-[1.02]">
+                  <div className="relative rounded-2xl overflow-hidden border border-[var(--ib-line)] shadow-[0_24px_60px_-24px_rgba(11,18,32,0.25)] transform transition-transform duration-700 group-hover:scale-[1.02]">
                     <Image
                       src={card.image}
                       alt={card.title}

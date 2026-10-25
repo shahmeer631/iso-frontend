@@ -44,7 +44,7 @@ const ExploreBySector = () => {
       <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-10">
         {/* Header */}
         <div className="mb-12">
-          <h2 className="space-grotesk text-4xl lg:text-[42px] font-semibold text-[#1E293B] mb-4 leading-[1.2] tracking-tight">
+          <h2 className="text-4xl lg:text-[42px] font-semibold text-[var(--ib-card)] mb-4 leading-[1.2] tracking-tight">
             Explore by sector
           </h2>
         </div>
@@ -54,9 +54,9 @@ const ExploreBySector = () => {
           {sectors.map((sector, index) => (
             <div
               key={index}
-              className="bg-white border border-[#F1F5F9] rounded-lg p-6 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col items-center text-center group cursor-pointer aspect-square justify-center"
+              className="bg-white border border-[var(--ib-dktx)] rounded-lg p-6 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col items-center text-center group cursor-pointer aspect-square justify-center"
             >
-              <div className="mb-4 text-[#1E293B] group-hover:scale-110 transition-transform duration-300">
+              <div className="mb-4 text-[var(--ib-card)] group-hover:scale-110 transition-transform duration-300">
                 <sector.icon
                   strokeWidth={1.2}
                   size={40}

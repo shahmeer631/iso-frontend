@@ -190,7 +190,7 @@ const CategoryCoursesPage = () => {
   };
 
   return (
-    <div style={{ background: "#0B0F19", minHeight: "100vh", fontFamily: "'Space Grotesk', sans-serif", paddingTop: "100px", paddingBottom: "100px" }}>
+    <div style={{ background: "var(--ib-bg)", minHeight: "100vh", fontFamily: "'Inter', sans-serif", paddingTop: "100px", paddingBottom: "100px" }}>
       <div style={{ maxWidth: 1280, margin: "0 auto", padding: "0 24px" }}>
 
         {/* Back Link */}
@@ -198,11 +198,11 @@ const CategoryCoursesPage = () => {
           <button
             onClick={() => router.push(`/${lang}/academy`)}
             style={{
-              background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)",
+              background: "rgba(255,255,255,0.05)", border: "1px solid var(--ib-line)",
               borderRadius: "99px", display: "flex", alignItems: "center", gap: 8, padding: "8px 16px",
-              cursor: "pointer", color: "#FFFFFF", transition: "all 0.2s", fontSize: 14, fontWeight: 600
+              cursor: "pointer", color: "var(--ib-ink)", transition: "all 0.2s", fontSize: 14, fontWeight: 600
             }}
-            className="hover:bg-white/10 transition-colors"
+            className="hover:bg-[var(--ib-accbg)] transition-colors"
           >
             <ArrowLeft size={16} /> {t('academy.backToAcademy', 'Back to Academy')}
           </button>
@@ -214,7 +214,7 @@ const CategoryCoursesPage = () => {
           width: "100%",
           height: "380px",
           borderRadius: "24px",
-          border: "1px solid rgba(255,255,255,0.08)",
+          border: "1px solid var(--ib-line)",
           overflow: "hidden",
           marginBottom: "40px",
           background: "rgba(22, 26, 34, 0.4)",
@@ -238,23 +238,23 @@ const CategoryCoursesPage = () => {
             <div style={{
               position: "absolute",
               inset: 0,
-              background: "linear-gradient(135deg, rgba(0, 240, 255, 0.1) 0%, rgba(15, 23, 42, 0.8) 100%)"
+              background: "linear-gradient(135deg, rgba(27, 77, 219, 0.1) 0%, rgba(15, 23, 42, 0.8) 100%)"
             }} />
           )}
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(0,240,255,0.08),transparent_70%)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(27, 77, 219,0.08),transparent_70%)]" />
         </div>
 
         {/* Two-Column Category Header & Featured Card */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-12 items-center">
           {/* Left Column: Title & Subtitle */}
           <div className="lg:col-span-7 space-y-5 text-left">
-            <h2 className="space-grotesk text-lg sm:text-xl font-bold text-white m-0 leading-tight">
+            <h2 className="text-lg sm:text-xl font-bold text-[var(--ib-ink)] m-0 leading-tight">
               {meta.title}
             </h2>
-            <p className="space-grotesk text-lg sm:text-xl text-[#00F0FF] font-medium tracking-wide">
+            <p className="text-lg sm:text-xl text-[var(--ib-acc)] font-medium tracking-wide">
               {meta.subtitle}
             </p>
-            <p className="font-inter text-[#A0AAB2] text-sm sm:text-base leading-relaxed max-w-2xl">
+            <p className="font-inter text-[var(--ib-mute)] text-sm sm:text-base leading-relaxed max-w-2xl">
               {meta.desc}
             </p>
 
@@ -263,8 +263,8 @@ const CategoryCoursesPage = () => {
               <button
                 onClick={scrollToCourses}
                 style={{
-                  background: "#00F0FF",
-                  color: "#0F111A",
+                  background: "var(--ib-acc)",
+                  color: "var(--ib-bg)",
                   border: "none",
                   borderRadius: 12,
                   padding: "14px 28px",
@@ -273,16 +273,16 @@ const CategoryCoursesPage = () => {
                   cursor: "pointer",
                   transition: "all 0.2s"
                 }}
-                className="hover:scale-[1.02] active:scale-[0.98] transition-all hover:shadow-[0_0_20px_rgba(0,240,255,0.25)]"
+                className="hover:scale-[1.02] active:scale-[0.98] transition-all hover:shadow-[0_0_20px_rgba(27, 77, 219,0.25)]"
               >
                 {t('academy.browseCourses', 'Browse Courses')}
               </button>
               <Link href={`/${lang}/pricing`} style={{ textDecoration: "none" }}>
                 <button
                   style={{
-                    background: "rgba(0, 240, 255, 0.05)",
-                    color: "#00F0FF",
-                    border: "1px solid rgba(0, 240, 255, 0.25)",
+                    background: "rgba(27, 77, 219, 0.05)",
+                    color: "var(--ib-acc)",
+                    border: "1px solid rgba(27, 77, 219, 0.25)",
                     borderRadius: 12,
                     padding: "14px 28px",
                     fontSize: 15,
@@ -290,7 +290,7 @@ const CategoryCoursesPage = () => {
                     cursor: "pointer",
                     transition: "all 0.2s"
                   }}
-                  className="hover:bg-[#00F0FF]/15 transition-colors"
+                  className="hover:bg-[var(--ib-acc)]/15 transition-colors"
                 >
                   {t('academy.startFreeTrial', 'Start Free Trial')}
                 </button>
@@ -302,9 +302,9 @@ const CategoryCoursesPage = () => {
           <div className="lg:col-span-5 w-full flex justify-center lg:justify-end">
             {courses[0] && (
               <div style={{
-                background: "#161A22",
+                background: "var(--ib-bg)",
                 borderRadius: 20,
-                border: "1px solid rgba(255,255,255,0.05)",
+                border: "1px solid var(--ib-line)",
                 padding: 24,
                 width: "100%",
                 maxWidth: 420,
@@ -312,7 +312,7 @@ const CategoryCoursesPage = () => {
               }} className="text-left">
                 <span style={{
                   background: "rgba(255,255,255,0.05)",
-                  color: "#A0AAB2",
+                  color: "var(--ib-mute)",
                   fontSize: 10,
                   fontWeight: 700,
                   padding: "4px 8px",
@@ -323,11 +323,11 @@ const CategoryCoursesPage = () => {
                   {t('academy.featuredCourse', 'Featured Program')}
                 </span>
 
-                <h3 className="font-space-grotesk text-lg sm:text-xl font-bold text-white mt-3 mb-2 leading-snug">
+                <h3 className="font-sans text-lg sm:text-xl font-bold text-[var(--ib-ink)] mt-3 mb-2 leading-snug">
                   {courses[0].title}
                 </h3>
 
-                <p style={{ color: "#A0AAB2", fontSize: 13, lineHeight: 1.4, margin: "0 0 20px 0" }}>
+                <p style={{ color: "var(--ib-mute)", fontSize: 13, lineHeight: 1.4, margin: "0 0 20px 0" }}>
                   {courses[0].description ? (courses[0].description.slice(0, 150) + "...") : "Master implementation guidelines and prep for audit certification."}
                 </p>
 
@@ -337,16 +337,16 @@ const CategoryCoursesPage = () => {
                   justifyContent: "space-between",
                   paddingTop: 16,
                   paddingBottom: 16,
-                  borderTop: "1px solid rgba(255,255,255,0.05)",
+                  borderTop: "1px solid var(--ib-line)",
                   fontSize: 12,
-                  color: "#A0AAB2"
+                  color: "var(--ib-mute)"
                 }}>
                   <span className="flex items-center gap-2">
-                    <BookOpen size={14} color="#00F0FF" />
+                    <BookOpen size={14} color="var(--ib-acc)" />
                     {courses[0]._count?.lessons || 12} {t('academy.lessons', 'Modules')}
                   </span>
                   <span className="flex items-center gap-2">
-                    <Clock size={14} color="#00F0FF" />
+                    <Clock size={14} color="var(--ib-acc)" />
                     {courses[0].cpdHours || 0} CPD Hours
                   </span>
                 </div>
@@ -358,9 +358,9 @@ const CategoryCoursesPage = () => {
                     style={{
                       width: "100%", padding: "12px 20px", borderRadius: 12, fontSize: 14, fontWeight: 700,
                       display: "flex", alignItems: "center", justifyContent: "center", gap: 8, cursor: "pointer",
-                      background: (token && enrollmentStatus[courses[0].id]) ? "#00F0FF" : "rgba(255,255,255,0.05)", 
+                      background: (token && enrollmentStatus[courses[0].id]) ? "var(--ib-acc)" : "rgba(255,255,255,0.05)", 
                       color: (token && enrollmentStatus[courses[0].id]) ? "black" : "#FFFFFF", 
-                      border: (token && enrollmentStatus[courses[0].id]) ? "none" : "1px solid rgba(255,255,255,0.1)",
+                      border: (token && enrollmentStatus[courses[0].id]) ? "none" : "1px solid var(--ib-line)",
                       transition: "all 0.2s"
                     }}
                     className="hover:scale-[1.02] active:scale-[0.98]"
@@ -378,9 +378,9 @@ const CategoryCoursesPage = () => {
                     style={{
                       width: "100%", padding: "12px 20px", borderRadius: 12, fontSize: 14, fontWeight: 700,
                       display: "flex", alignItems: "center", justifyContent: "center", gap: 8, cursor: "pointer",
-                      background: (token && enrollmentStatus[courses[0].id]) ? "#00F0FF" : "rgba(255,255,255,0.05)", 
+                      background: (token && enrollmentStatus[courses[0].id]) ? "var(--ib-acc)" : "rgba(255,255,255,0.05)", 
                       color: (token && enrollmentStatus[courses[0].id]) ? "black" : "#FFFFFF", 
-                      border: (token && enrollmentStatus[courses[0].id]) ? "none" : "1px solid rgba(255,255,255,0.1)",
+                      border: (token && enrollmentStatus[courses[0].id]) ? "none" : "1px solid var(--ib-line)",
                       transition: "all 0.2s"
                     }}
                     className="hover:scale-[1.02] active:scale-[0.98]"
@@ -402,20 +402,20 @@ const CategoryCoursesPage = () => {
         }}>
           {/* Card 1 */}
           <div style={{
-            background: "#161A22", borderRadius: 16, border: "1px solid rgba(255,255,255,0.05)",
+            background: "var(--ib-bg)", borderRadius: 16, border: "1px solid var(--ib-line)",
             padding: 24, display: "flex", gap: 16, alignItems: "start"
           }}>
             <div style={{
-              background: "rgba(0,240,255,0.08)",
+              background: "rgba(27, 77, 219,0.08)",
               borderRadius: 12, padding: 12, display: "flex", alignItems: "center", justifyItems: "center"
             }}>
-              <Clock size={24} color="#00F0FF" />
+              <Clock size={24} color="var(--ib-acc)" />
             </div>
             <div className="text-left">
-              <h4 style={{ color: "#FFFFFF", fontSize: 16, fontWeight: 700, margin: "0 0 8px 0" }}>
+              <h4 style={{ color: "var(--ib-ink)", fontSize: 16, fontWeight: 700, margin: "0 0 8px 0" }}>
                 {totalCpdHours} {t('academy.cpdHours', 'CPD Hours')}
               </h4>
-              <p style={{ color: "#A0AAB2", fontSize: 13, lineHeight: 1.4, margin: 0 }}>
+              <p style={{ color: "var(--ib-mute)", fontSize: 13, lineHeight: 1.4, margin: 0 }}>
                 {t('academy.cpdHoursDesc', 'Accredited Continuing Professional Development hours directly trackable upon course completion.')}
               </p>
             </div>
@@ -423,20 +423,20 @@ const CategoryCoursesPage = () => {
 
           {/* Card 2 */}
           <div style={{
-            background: "#161A22", borderRadius: 16, border: "1px solid rgba(255,255,255,0.05)",
+            background: "var(--ib-bg)", borderRadius: 16, border: "1px solid var(--ib-line)",
             padding: 24, display: "flex", gap: 16, alignItems: "start"
           }}>
             <div style={{
-              background: "rgba(0,240,255,0.08)",
+              background: "rgba(27, 77, 219,0.08)",
               borderRadius: 12, padding: 12, display: "flex", alignItems: "center", justifyItems: "center"
             }}>
-              <Award size={24} color="#00F0FF" />
+              <Award size={24} color="var(--ib-acc)" />
             </div>
             <div className="text-left">
-              <h4 style={{ color: "#FFFFFF", fontSize: 16, fontWeight: 700, margin: "0 0 8px 0" }}>
+              <h4 style={{ color: "var(--ib-ink)", fontSize: 16, fontWeight: 700, margin: "0 0 8px 0" }}>
                 {t('academy.accreditedCert', 'Accredited CPD Certification')}
               </h4>
-              <p style={{ color: "#A0AAB2", fontSize: 13, lineHeight: 1.4, margin: 0 }}>
+              <p style={{ color: "var(--ib-mute)", fontSize: 13, lineHeight: 1.4, margin: 0 }}>
                 {t('academy.cpdCertDesc', 'Earn a verified Certificate of Competency recognized globally by leading standard auditing bodies.')}
               </p>
             </div>
@@ -444,20 +444,20 @@ const CategoryCoursesPage = () => {
 
           {/* Card 3 */}
           <div style={{
-            background: "#161A22", borderRadius: 16, border: "1px solid rgba(255,255,255,0.05)",
+            background: "var(--ib-bg)", borderRadius: 16, border: "1px solid var(--ib-line)",
             padding: 24, display: "flex", gap: 16, alignItems: "start"
           }}>
             <div style={{
-              background: "rgba(0,240,255,0.08)",
+              background: "rgba(27, 77, 219,0.08)",
               borderRadius: 12, padding: 12, display: "flex", alignItems: "center", justifyItems: "center"
             }}>
-              <Brain size={24} color="#00F0FF" />
+              <Brain size={24} color="var(--ib-acc)" />
             </div>
             <div className="text-left">
-              <h4 style={{ color: "#FFFFFF", fontSize: 16, fontWeight: 700, margin: "0 0 8px 0" }}>
+              <h4 style={{ color: "var(--ib-ink)", fontSize: 16, fontWeight: 700, margin: "0 0 8px 0" }}>
                 {t('academy.neuralVerify', 'Neural Simulation Checked')}
               </h4>
-              <p style={{ color: "#A0AAB2", fontSize: 13, lineHeight: 1.4, margin: 0 }}>
+              <p style={{ color: "var(--ib-mute)", fontSize: 13, lineHeight: 1.4, margin: 0 }}>
                 {t('academy.neuralVerifyDesc', 'Engage in custom interactive audit lens exercises powered by our neural compliance engines.')}
               </p>
             </div>
@@ -466,7 +466,7 @@ const CategoryCoursesPage = () => {
 
         {/* Loading / Error Fallbacks */}
         {isLoading && (
-          <div style={{ color: "#00F0FF", textAlign: "center", padding: "40px 0" }}>{t('academy.loadingCourses')}</div>
+          <div style={{ color: "var(--ib-acc)", textAlign: "center", padding: "40px 0" }}>{t('academy.loadingCourses')}</div>
         )}
 
         {isError && (
@@ -474,7 +474,7 @@ const CategoryCoursesPage = () => {
         )}
 
         {!isLoading && !isError && courses.length === 0 && (
-          <div style={{ color: "#A0AAB2", textAlign: "center", padding: "40px 0", fontSize: 18 }}>
+          <div style={{ color: "var(--ib-mute)", textAlign: "center", padding: "40px 0", fontSize: 18 }}>
             No courses found for this category.
           </div>
         )}
@@ -483,10 +483,10 @@ const CategoryCoursesPage = () => {
           <>
             {/* Available Programs Header */}
             <div ref={coursesSectionRef} style={{ marginTop: 64, marginBottom: 32 }} className="text-left">
-              <h2 className="space-grotesk text-2xl sm:text-4xl font-bold text-white mb-2">
+              <h2 className="text-2xl sm:text-4xl font-bold text-[var(--ib-ink)] mb-2">
                 {t('academy.availablePrograms', 'Available Programs')}
               </h2>
-              <p className="font-inter text-sm sm:text-base text-[#A0AAB2] m-0">
+              <p className="font-inter text-sm sm:text-base text-[var(--ib-mute)] m-0">
                 {t('academy.availableProgramsDesc', 'Fully accredited ISO courses built for immediate corporate auditing competency.')}
               </p>
             </div>
@@ -510,7 +510,7 @@ const CategoryCoursesPage = () => {
                       exit={{ opacity: 0, scale: 0.9 }}
                       whileHover="hover"
                       style={{
-                        background: "#161A22", borderRadius: 20, border: "1px solid rgba(255,255,255,0.05)",
+                        background: "var(--ib-bg)", borderRadius: 20, border: "1px solid var(--ib-line)",
                         overflow: "hidden", position: "relative", display: "flex", flexDirection: "column"
                       }}
                     >
@@ -519,7 +519,7 @@ const CategoryCoursesPage = () => {
                         variants={{ hover: { opacity: 1 } }}
                         initial={{ opacity: 0 }}
                         style={{
-                          position: "absolute", inset: 0, background: "radial-gradient(circle at 50% 0%, rgba(0,240,255,0.1), transparent 70%)",
+                          position: "absolute", inset: 0, background: "radial-gradient(circle at 50% 0%, rgba(27, 77, 219, 0.1), transparent 70%)",
                           pointerEvents: "none", zIndex: 0
                         }}
                       />
@@ -545,15 +545,15 @@ const CategoryCoursesPage = () => {
                         ) : (
                           <div style={{
                             width: 80, height: 80, borderRadius: 24, background: "rgba(30,41,59,0.8)",
-                            border: "1px solid rgba(255,255,255,0.05)", display: "flex", alignItems: "center", justifyContent: "center",
+                            border: "1px solid var(--ib-line)", display: "flex", alignItems: "center", justifyContent: "center",
                             boxShadow: "0 20px 40px rgba(0,0,0,0.4)"
                           }}>
-                            <ShieldCheck size={40} color="#00F0FF" />
+                            <ShieldCheck size={40} color="var(--ib-acc)" />
                           </div>
                         )}
 
                         {isPurchased && (
-                          <div style={{ position: "absolute", top: 16, right: 16, background: "#00F0FF", color: "#000000", fontSize: 11, fontWeight: 800, padding: "4px 10px", borderRadius: 99, textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                          <div style={{ position: "absolute", top: 16, right: 16, background: "var(--ib-acc)", color: "#000000", fontSize: 11, fontWeight: 800, padding: "4px 10px", borderRadius: 99, textTransform: "uppercase", letterSpacing: "0.05em" }}>
                             {t('academy.enrolled')}
                           </div>
                         )}
@@ -562,30 +562,30 @@ const CategoryCoursesPage = () => {
                       {/* Content Section */}
                       <div style={{ padding: 24, display: "flex", flexDirection: "column", flex: 1, zIndex: 1, borderTop: "1px solid rgba(255,255,255,0.02)" }} className="text-left">
                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
-                          <span style={{ color: "#00F0FF", fontSize: 14, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                          <span style={{ color: "var(--ib-acc)", fontSize: 14, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.05em" }}>
                             {displayCategoryName}
                           </span>
                         </div>
-                        <h3 className="font-inter text-base sm:text-xl lg:text-[22px] font-semibold text-white mb-4 leading-snug">
+                        <h3 className="font-inter text-base sm:text-xl lg:text-[22px] font-semibold text-[var(--ib-ink)] mb-4 leading-snug">
                           {course.title}
                         </h3>
 
                         {/* Meta Tags */}
                         <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 24 }}>
-                          <span className="font-inter" style={{ background: "rgba(255,255,255,0.05)", color: "#A0AAB2", fontSize: 12, padding: "4px 10px", borderRadius: 6 }}>
+                          <span className="font-inter" style={{ background: "rgba(255,255,255,0.05)", color: "var(--ib-mute)", fontSize: 12, padding: "4px 10px", borderRadius: 6 }}>
                             {t('academy.proLevel')}
                           </span>
-                          <span className="font-inter" style={{ background: "rgba(255,255,255,0.05)", color: "#A0AAB2", fontSize: 12, padding: "4px 10px", borderRadius: 6, display: "flex", alignItems: "center", gap: 6 }}>
+                          <span className="font-inter" style={{ background: "rgba(255,255,255,0.05)", color: "var(--ib-mute)", fontSize: 12, padding: "4px 10px", borderRadius: 6, display: "flex", alignItems: "center", gap: 6 }}>
                             <Clock size={12} /> {course._count?.lessons || 12} {t('academy.modules')}
                           </span>
-                          <span className="font-inter" style={{ background: "rgba(0,240,255,0.1)", color: "#00F0FF", fontSize: 12, padding: "4px 10px", borderRadius: 6, display: "flex", alignItems: "center", gap: 6 }}>
+                          <span className="font-inter" style={{ background: "rgba(27, 77, 219, 0.1)", color: "var(--ib-acc)", fontSize: 12, padding: "4px 10px", borderRadius: 6, display: "flex", alignItems: "center", gap: 6 }}>
                             {t('academy.aiAssisted')}
                           </span>
                         </div>
 
                         {/* Description */}
                         <div style={{ marginBottom: 24 }}>
-                          <p style={{ color: "#A0AAB2", fontSize: 14, lineHeight: 1.5, margin: 0 }}>
+                          <p style={{ color: "var(--ib-mute)", fontSize: 14, lineHeight: 1.5, margin: 0 }}>
                             {course.description || "Master the requirements and implementation strategies for this ISO standard with our interactive AI tutor."}
                           </p>
                         </div>
@@ -598,7 +598,7 @@ const CategoryCoursesPage = () => {
                             style={{
                               width: "100%", padding: "14px 20px", borderRadius: 12, fontSize: 15, fontWeight: 700,
                               display: "flex", alignItems: "center", justifyContent: "center", gap: 8, cursor: "pointer",
-                              background: isPurchased ? "#00F0FF" : "rgba(255,255,255,0.05)", color: isPurchased ? "black" : "#FFFFFF", border: isPurchased ? "none" : "1px solid rgba(255,255,255,0.1)",
+                              background: isPurchased ? "var(--ib-acc)" : "rgba(255,255,255,0.05)", color: isPurchased ? "black" : "#FFFFFF", border: isPurchased ? "none" : "1px solid var(--ib-line)",
                               transition: "all 0.2s"
                             }}
                             className="hover:scale-[1.02] active:scale-[0.98]"
@@ -617,7 +617,7 @@ const CategoryCoursesPage = () => {
                             style={{
                               width: "100%", padding: "14px 20px", borderRadius: 12, fontSize: 15, fontWeight: 700,
                               display: "flex", alignItems: "center", justifyContent: "center", gap: 8, cursor: "pointer",
-                              background: isPurchased ? "#00F0FF" : "rgba(255,255,255,0.05)", color: isPurchased ? "black" : "#FFFFFF", border: isPurchased ? "none" : "1px solid rgba(255,255,255,0.1)",
+                              background: isPurchased ? "var(--ib-acc)" : "rgba(255,255,255,0.05)", color: isPurchased ? "black" : "#FFFFFF", border: isPurchased ? "none" : "1px solid var(--ib-line)",
                               transition: "all 0.2s"
                             }}
                             className="hover:scale-[1.02] active:scale-[0.98]"
@@ -643,8 +643,8 @@ const CategoryCoursesPage = () => {
                   disabled={currentPage === 1}
                   style={{
                     background: "rgba(255,255,255,0.05)",
-                    color: currentPage === 1 ? "rgba(255,255,255,0.2)" : "#D4AF37",
-                    border: "1px solid rgba(255,255,255,0.1)",
+                    color: currentPage === 1 ? "rgba(255,255,255,0.2)" : "var(--ib-acc)",
+                    border: "1px solid var(--ib-line)",
                     padding: "8px 16px", borderRadius: 8, cursor: currentPage === 1 ? "not-allowed" : "pointer",
                     fontSize: 14, fontWeight: 600, transition: "all 0.2s"
                   }}
@@ -658,9 +658,9 @@ const CategoryCoursesPage = () => {
                     onClick={() => setCurrentPage(i + 1)}
                     style={{
                       width: 40, height: 40, borderRadius: 8,
-                      background: currentPage === i + 1 ? "#D4AF37" : "rgba(255,255,255,0.05)",
-                      color: currentPage === i + 1 ? "#0B0F19" : "#FFFFFF",
-                      border: `1px solid ${currentPage === i + 1 ? "#D4AF37" : "rgba(255,255,255,0.1)"}`,
+                      background: currentPage === i + 1 ? "var(--ib-acc)" : "rgba(255,255,255,0.05)",
+                      color: currentPage === i + 1 ? "var(--ib-bg)" : "#FFFFFF",
+                      border: `1px solid ${currentPage === i + 1 ? "var(--ib-acc)" : "rgba(255,255,255,0.1)"}`,
                       cursor: "pointer", fontSize: 14, fontWeight: 600, transition: "all 0.2s"
                     }}
                   >
@@ -673,8 +673,8 @@ const CategoryCoursesPage = () => {
                   disabled={currentPage === totalPages}
                   style={{
                     background: "rgba(255,255,255,0.05)",
-                    color: currentPage === totalPages ? "rgba(255,255,255,0.2)" : "#D4AF37",
-                    border: "1px solid rgba(255,255,255,0.1)",
+                    color: currentPage === totalPages ? "rgba(255,255,255,0.2)" : "var(--ib-acc)",
+                    border: "1px solid var(--ib-line)",
                     padding: "8px 16px", borderRadius: 8, cursor: currentPage === totalPages ? "not-allowed" : "pointer",
                     fontSize: 14, fontWeight: 600, transition: "all 0.2s"
                   }}
@@ -691,20 +691,20 @@ const CategoryCoursesPage = () => {
         {/* AI Disclaimer / Neural Layer Footer Notice */}
         <div style={{
           background: "linear-gradient(90deg, rgba(255,255,255,0.01) 0%, rgba(255,255,255,0.02) 100%)",
-          borderRadius: 20, border: "1px solid rgba(255,255,255,0.03)", padding: "32px 40px",
+          borderRadius: 20, border: "1px solid var(--ib-card)", padding: "32px 40px",
           marginTop: 100, marginBottom: 80, display: "flex", gap: 24, alignItems: "center", flexWrap: "wrap"
         }} className="text-left">
           <div style={{
-            background: "rgba(0,240,255,0.05)", border: "1px solid rgba(0,240,255,0.1)",
+            background: "rgba(27, 77, 219, 0.05)", border: "1px solid rgba(27, 77, 219, 0.1)",
             width: 48, height: 48, borderRadius: 14, display: "flex", alignItems: "center", justifyContent: "center"
           }}>
-            <Sparkles size={24} color="#00F0FF" />
+            <Sparkles size={24} color="var(--ib-acc)" />
           </div>
           <div style={{ flex: 1, minWidth: 260 }}>
-            <h5 style={{ color: "#FFFFFF", fontSize: 15, fontWeight: 700, margin: "0 0 8px 0" }}>
+            <h5 style={{ color: "var(--ib-ink)", fontSize: 15, fontWeight: 700, margin: "0 0 8px 0" }}>
               {t('academy.disclaimerTitle', 'Neural Environment Disclaimer')}
             </h5>
-            <p style={{ color: "#A0AAB2", fontSize: 13, lineHeight: 1.5, margin: 0 }}>
+            <p style={{ color: "var(--ib-mute)", fontSize: 13, lineHeight: 1.5, margin: 0 }}>
               {t('academy.disclaimerText', 'ISOBrain Compliance Suite operates simulated sandbox frameworks. Course outlines, progress tracking, dynamic tutorials, and gap audits are generated in real-time by compliance models. Certifications and CPD credits align with control module verification.')}
             </p>
           </div>

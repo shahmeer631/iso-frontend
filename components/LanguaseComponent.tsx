@@ -85,38 +85,44 @@ const LanguaseComponent = () => {
   return (
     <div className="relative" ref={dropdownRef}>
       <button
+        type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-white/5 transition-all group"
+        className="flex items-center gap-2 rounded-[10px] px-3 py-2 transition-all hover:bg-[var(--ib-accbg)] group"
         aria-label="Select language"
         aria-expanded={isOpen}
       >
-        <Globe size={18} className="text-[#A1A1A6] group-hover:text-white transition-colors" />
-        <span className="text-sm font-bold text-[#A1A1A6] group-hover:text-white transition-colors uppercase">
+        <Globe
+          size={18}
+          className="text-[var(--ib-mute)] transition-colors group-hover:text-[var(--ib-acc)]"
+        />
+        <span className="text-sm font-semibold uppercase text-[var(--ib-mute)] transition-colors group-hover:text-[var(--ib-ink)]">
           {currentLang}
         </span>
         <ChevronDown
           size={14}
-          className={`text-gray-600 transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}
+          className={`text-[var(--ib-mute)] transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}
         />
       </button>
 
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            initial={{ opacity: 0, y: 10, scale: 0.95 }}
+            initial={{ opacity: 0, y: 8, scale: 0.98 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 10, scale: 0.95 }}
-            className="absolute right-0 bottom-full mb-3 lg:top-full lg:bottom-auto lg:mt-3 w-44 bg-[#121212] border border-white/10 rounded-2xl shadow-2xl z-[1000] overflow-hidden"
+            exit={{ opacity: 0, y: 8, scale: 0.98 }}
+            className="absolute right-0 bottom-full z-[1000] mb-3 w-44 overflow-hidden rounded-2xl border border-[var(--ib-line)] bg-[var(--ib-card)] shadow-[0_16px_40px_-20px_rgba(11,18,32,0.35)] lg:top-full lg:bottom-auto lg:mt-3"
           >
-            <div className="flex flex-col p-1">
+            <div className="flex flex-col p-1.5">
               {languages.map((lang) => (
                 <button
                   key={lang.code}
+                  type="button"
                   onClick={() => changeLanguage(lang.code)}
-                  className={`px-4 py-2 text-sm font-medium text-left rounded-xl transition-colors ${currentLang === lang.code
-                    ? "bg-brand-cyan text-[#0F111A] text-white"
-                    : "text-[#A1A1A6] hover:text-white hover:bg-white/5"
-                    }`}
+                  className={`rounded-[10px] px-4 py-2.5 text-left text-sm font-medium transition-colors ${
+                    currentLang === lang.code
+                      ? "bg-[var(--ib-accbg)] text-[var(--ib-acc)]"
+                      : "text-[var(--ib-ink)] hover:bg-[var(--ib-bg)] hover:text-[var(--ib-acc)]"
+                  }`}
                 >
                   {lang.label}
                 </button>

@@ -36,10 +36,10 @@ export const ResultCard: React.FC<ResultCardProps> = ({
 
   return (
     <div style={{
-      background: "rgba(255, 255, 255, 0.02)",
+      background: "var(--ib-card)",
       borderRadius: 24,
       padding: "32px",
-      border: "1px solid rgba(255, 255, 255, 0.05)",
+      border: "1px solid var(--ib-line)",
       marginBottom: 32
     }}>
       {/* Question */}
@@ -47,12 +47,12 @@ export const ResultCard: React.FC<ResultCardProps> = ({
         <span className="font-inter" style={{
           display: "flex", alignItems: "center", justifyContent: "center",
           width: 32, height: 32, borderRadius: 8,
-          background: "rgba(0, 240, 255, 0.1)", color: "#00F0FF",
+          background: "rgba(27, 77, 219, 0.1)", color: "var(--ib-acc)",
           fontWeight: 700, fontSize: 14, flexShrink: 0
         }}>
           {questionNumber}
         </span>
-        <h4 className="space-grotesk text-sm sm:text-lg" style={{ fontWeight: 400, color: "#FFFFFF", lineHeight: 1.6, margin: 0 }}>
+        <h4 className="text-sm sm:text-lg" style={{ fontWeight: 400, color: "var(--ib-ink)", lineHeight: 1.6, margin: 0 }}>
           {question}
         </h4>
       </div>
@@ -69,7 +69,7 @@ export const ResultCard: React.FC<ResultCardProps> = ({
                 <XCircle size={18} color="#EF4444" className="shrink-0" />
                 <span className="font-inter font-bold text-[#EF4444] shrink-0 text-sm sm:text-base">{userAnswer}.</span>
               </div>
-              <span className="text-[#A0AAB2] font-medium text-sm leading-relaxed pl-7 sm:pl-0">
+              <span className="text-[var(--ib-mute)] font-medium text-sm leading-relaxed pl-7 sm:pl-0">
                 {userAnswerText}
               </span>
             </div>
@@ -89,7 +89,7 @@ export const ResultCard: React.FC<ResultCardProps> = ({
               <CheckCircle2 size={18} color="#10B981" className="shrink-0" />
               <span className="font-inter font-bold text-[#10B981] shrink-0 text-sm sm:text-base">{correctAnswer}.</span>
             </div>
-            <span className="text-[#FFFFFF] font-semibold text-sm leading-relaxed pl-7 sm:pl-0">
+            <span className="text-white font-semibold text-sm leading-relaxed pl-7 sm:pl-0">
               {correctAnswerText}
             </span>
           </div>
@@ -101,8 +101,8 @@ export const ResultCard: React.FC<ResultCardProps> = ({
 
       {/* AI Explanation */}
       <div className="p-4 sm:p-6" style={{
-        background: "#0F111A", borderRadius: 20,
-        border: "1px solid rgba(255, 255, 255, 0.05)", position: "relative"
+        background: "var(--ib-bg)", borderRadius: 20,
+        border: "1px solid var(--ib-line)", position: "relative"
       }}>
         <div className="flex flex-col sm:flex-row items-start gap-4">
           <div style={{
@@ -110,13 +110,13 @@ export const ResultCard: React.FC<ResultCardProps> = ({
             borderRadius: 12, display: "flex", alignItems: "center", justifyContent: "center",
             flexShrink: 0, border: "1px solid rgba(176, 38, 255, 0.2)"
           }}>
-            <Lightbulb size={24} color="#B026FF" />
+            <Lightbulb size={24} color="var(--ib-acc)" />
           </div>
           <div style={{ flex: 1 }}>
-            <p className="space-grotesk text-base sm:text-lg" style={{ fontWeight: 700, color: "#FFFFFF", marginBottom: 8, margin: 0 }}>
+            <p className="text-base sm:text-lg" style={{ fontWeight: 700, color: "var(--ib-ink)", marginBottom: 8, margin: 0 }}>
               {t('mastery.explainerInsight')}
             </p>
-            <p style={{ fontSize: 14, color: "#A0AAB2", lineHeight: 1.6, fontWeight: 500, margin: "8px 0 0" }}>
+            <p style={{ fontSize: 14, color: "var(--ib-mute)", lineHeight: 1.6, fontWeight: 500, margin: "8px 0 0" }}>
               {explanation}
             </p>
           </div>

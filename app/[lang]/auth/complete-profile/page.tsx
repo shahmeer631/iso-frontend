@@ -112,11 +112,11 @@ const CompleteProfileContent = () => {
   const isError = isProfileError || isLoginError;
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50/50 p-4">
+    <div className="min-h-screen flex items-center justify-center bg-[var(--ib-bg)] p-4">
       <div className="w-full max-w-md space-y-8">
         {/* Logo Section */}
         <div className="flex justify-center items-center gap-2 mb-8">
-          <div className="bg-linear-to-r  text-primary-foreground h-10 w-10 rounded-lg flex items-center justify-center">
+          <div className="bg-[var(--ib-card)] border border-[var(--ib-line)] h-10 w-10 rounded-[10px] flex items-center justify-center">
             <div className="relative w-8 h-8">
               <Image
                 src="/Icon.png"
@@ -124,18 +124,17 @@ const CompleteProfileContent = () => {
                 fill
                 className="object-contain"
               />
-              <div className="absolute inset-0 rounded-lg bg-indigo-500/30 blur-lg opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
             </div>
           </div>
-          <span className="font-bold text-[#101828] text-2xl">ISOBrain.ai</span>
+          <span className="font-bold text-[var(--ib-ink)] text-2xl">ISOBrain.ai</span>
         </div>
 
-        <Card className="border-none shadow-lg shadow-gray-300">
+        <Card className="border border-[var(--ib-line)] bg-[var(--ib-card)] shadow-sm rounded-2xl">
           <CardHeader className="space-y-1 pb-6">
-            <CardTitle className="text-3xl font-bold text-[#101828]">
+            <CardTitle className="text-3xl font-bold text-[var(--ib-ink)]">
               {t('auth.completeProfileTitle')}
             </CardTitle>
-            <CardDescription className="text-[#4A5565]">
+            <CardDescription className="text-[var(--ib-mute)]">
               {t('auth.completeProfileSubtitle')}
             </CardDescription>
           </CardHeader>
@@ -149,13 +148,13 @@ const CompleteProfileContent = () => {
                     name="firstName"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-foreground font-semibold">{t('auth.firstName')}</FormLabel>
+                        <FormLabel className="text-[var(--ib-ink)] font-semibold">{t('auth.firstName')}</FormLabel>
                         <FormControl>
                           <div className="relative">
-                            <UserIcon className="absolute left-4 top-4.5 h-4 w-4 text-muted-foreground" />
+                            <UserIcon className="absolute left-4 top-4.5 h-4 w-4 text-[var(--ib-mute)]" />
                             <Input
                               placeholder={t('auth.firstName')}
-                              className="pl-10 py-6 bg-muted/30 border-muted-foreground/20"
+                              className="pl-10 py-6 bg-[var(--ib-bg)] border-[var(--ib-line)] text-[var(--ib-ink)] rounded-[10px]"
                               {...field}
                             />
                           </div>
@@ -169,13 +168,13 @@ const CompleteProfileContent = () => {
                     name="lastName"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-foreground font-semibold">{t('auth.lastName')}</FormLabel>
+                        <FormLabel className="text-[var(--ib-ink)] font-semibold">{t('auth.lastName')}</FormLabel>
                         <FormControl>
                           <div className="relative">
-                            <UserIcon className="absolute left-4 top-4.5 h-4 w-4 text-muted-foreground" />
+                            <UserIcon className="absolute left-4 top-4.5 h-4 w-4 text-[var(--ib-mute)]" />
                             <Input
                               placeholder={t('auth.lastName')}
-                              className="pl-10 py-6 bg-muted/30 border-muted-foreground/20"
+                              className="pl-10 py-6 bg-[var(--ib-bg)] border-[var(--ib-line)] text-[var(--ib-ink)] rounded-[10px]"
                               {...field}
                             />
                           </div>
@@ -191,14 +190,14 @@ const CompleteProfileContent = () => {
                   name="password"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-foreground font-semibold">{t('auth.password')}</FormLabel>
+                      <FormLabel className="text-[var(--ib-ink)] font-semibold">{t('auth.password')}</FormLabel>
                       <FormControl>
                         <div className="relative">
-                          <Lock className="absolute left-4 top-4.5 h-4 w-4 text-muted-foreground" />
+                          <Lock className="absolute left-4 top-4.5 h-4 w-4 text-[var(--ib-mute)]" />
                           <Input
                             type="password"
                             placeholder={t('auth.createPassword')}
-                            className="pl-10 py-6 bg-muted/30 border-muted-foreground/20"
+                            className="pl-10 py-6 bg-[var(--ib-bg)] border-[var(--ib-line)] text-[var(--ib-ink)] rounded-[10px]"
                             {...field}
                           />
                         </div>
@@ -209,7 +208,7 @@ const CompleteProfileContent = () => {
                 />
 
                 {isError && (
-                  <div className="text-red-500 text-sm font-medium text-center bg-red-50 p-3 rounded-lg">
+                  <div className="text-red-500 text-sm font-medium text-center bg-red-50 p-3 rounded-[10px]">
                     {t('auth.profileError')}
                   </div>
                 )}
@@ -218,7 +217,7 @@ const CompleteProfileContent = () => {
                   <Button
                     type="submit"
                     disabled={isLoading}
-                    className="w-full h-12 text-md bg-[#5046E5] hover:bg-[#4338ca] font-semibold disabled:opacity-75"
+                    className="w-full h-12 text-md rounded-[10px] bg-[var(--ib-acc)] hover:bg-[var(--ib-acc)]/90 text-white font-semibold disabled:opacity-75"
                   >
                     {isLoading ? t('auth.settingUp') : t('auth.completeSetup')}
                   </Button>
@@ -229,12 +228,12 @@ const CompleteProfileContent = () => {
         </Card>
 
         {/* Footer Text */}
-        <div className="text-center text-xs text-muted-foreground mt-6">
+        <div className="text-center text-xs text-[var(--ib-mute)] mt-6">
           <p>
             {t('auth.byContinuing')}{" "}
-            <Link href="#" className="text-[#5046E5] hover:underline">{t('footer.terms')}</Link>{" "}
+            <Link href="#" className="text-[var(--ib-acc)] hover:underline">{t('footer.terms')}</Link>{" "}
             {t('auth.and')}{" "}
-            <Link href="#" className="text-[#5046E5] hover:underline">{t('footer.privacy')}</Link>
+            <Link href="#" className="text-[var(--ib-acc)] hover:underline">{t('footer.privacy')}</Link>
           </p>
         </div>
       </div>
@@ -246,8 +245,8 @@ const CompleteProfilePage = () => {
   const { t } = useTranslation();
   return (
     <Suspense fallback={
-      <div className="min-h-screen bg-gray-50/50 flex justify-center items-center">
-        <div className="text-gray-500 font-medium tracking-wide">{t('auth.loadingProfile')}</div>
+      <div className="min-h-screen bg-[var(--ib-bg)] flex justify-center items-center">
+        <div className="text-[var(--ib-mute)] font-medium tracking-wide">{t('auth.loadingProfile')}</div>
       </div>
     }>
       <CompleteProfileContent />

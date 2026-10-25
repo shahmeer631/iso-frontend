@@ -13,7 +13,7 @@ const Hero: React.FC = () => {
         <div className="hidden lg:flex xl:hidden items-center justify-between gap-8">
           {/* LEFT */}
           <div className="flex flex-col ml-4 items-start text-left w-1/2 absolute bottom-0 left-0">
-            <h3 className="text-xl font-semibold text-[#1e293b] mb-4">
+            <h3 className="text-xl font-semibold text-[var(--ib-ink)] mb-4">
               Select your Option
             </h3>
 
@@ -39,7 +39,7 @@ const Hero: React.FC = () => {
 
           {/* RIGHT */}
           <div className="flex flex-col items-start text-left w-1/2 absolute top-0 right-0">
-            <h3 className="text-xl ml-10 font-semibold text-[#1e293b]  mb-4">
+            <h3 className="text-xl ml-10 font-semibold text-[var(--ib-ink)]  mb-4">
               Select your Option
             </h3>
 
@@ -59,7 +59,7 @@ const Hero: React.FC = () => {
         <div className="flex flex-col items-center gap-8 lg:gap-12 lg:hidden">
           {/* TOP */}
           <div className="flex flex-col items-start text-left w-full max-w-full">
-            <h3 className="text-xl font-semibold text-[#1e293b] mb-4">
+            <h3 className="text-xl font-semibold text-[var(--ib-ink)] mb-4">
               Select your Option
             </h3>
 
@@ -88,7 +88,7 @@ const Hero: React.FC = () => {
 
           {/* BOTTOM */}
           <div className="flex flex-col items-start text-left w-full max-w-full">
-            <h3 className="text-xl font-semibold text-[#1e293b] mb-4">
+            <h3 className="text-xl font-semibold text-[var(--ib-ink)] mb-4">
               Select your Option
             </h3>
 
@@ -106,7 +106,7 @@ const Hero: React.FC = () => {
 
         {/* LG RIGHT */}
         <div className="hidden xl:flex absolute bottom-0 left-0 flex-col items-start text-left">
-          <h3 className="text-2xl font-semibold text-[#1e293b] mb-6">
+          <h3 className="text-2xl font-semibold text-[var(--ib-ink)] mb-6">
             Select your Option
           </h3>
 
@@ -123,7 +123,7 @@ const Hero: React.FC = () => {
 
         {/* LG LEFT */}
         <div className="hidden xl:flex absolute top-0 right-0 flex-col items-start text-left">
-          <h3 className="text-2xl font-semibold text-[#1e293b] mb-6">
+          <h3 className="text-2xl font-semibold text-[var(--ib-ink)] mb-6">
             Select your Option
           </h3>
 

@@ -43,11 +43,11 @@ export default function AssessmentPage() {
 
   if (status === 'success') {
     return (
-      <div className="min-h-screen bg-gray-50 py-10 px-4 sm:px-6 lg:px-10">
+      <div className="min-h-screen bg-[var(--ib-bg)] py-10 px-4 sm:px-6 lg:px-10">
         <div className="mx-auto max-w-4xl">
-          <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+          <div className="overflow-hidden rounded-xl border border-[var(--ib-line)] bg-white shadow-sm">
             {/* Header */}
-            <div className="border-b border-gray-200 bg- text-black px-6 py-8 ">
+            <div className="border-b border-[var(--ib-line)] bg- text-black px-6 py-8 ">
               <h1 className="text-2xl font-bold md:text-3xl">
                 {t('academy.coursePlayer.assessment')}: {t('academy.coursePlayer.lesson')} 2 — {t('academy.coursePlayer.corePrinciples')}
               </h1>
@@ -69,17 +69,17 @@ export default function AssessmentPage() {
                 />
               </div>
 
-              <h2 className="mb-3 text-3xl font-bold text-gray-800">
+              <h2 className="mb-3 text-3xl font-bold text-[var(--ib-line)]">
                 {t('academy.coursePlayer.congratulations')}
               </h2>
-              <p className="mb-10 max-w-md text-lg text-gray-600">
+              <p className="mb-10 max-w-md text-lg text-[var(--ib-mute)]">
                 {t('academy.coursePlayer.passedAssessment')}<br />
                 {t('academy.coursePlayer.canProceed')}
               </p>
 
               <Link
                 href={`/lessons/complete` }// ← replace with real next lesson path
-                className="inline-flex items-center rounded-lg bg-blue-600 px-10 py-4 text-lg font-medium text-white shadow-md transition hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                className="inline-flex items-center rounded-lg bg-blue-600 px-10 py-4 text-lg font-medium text-[var(--ib-ink)] shadow-md transition hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
               >
                 {t('academy.coursePlayer.nextLesson')}
               </Link>
@@ -92,16 +92,16 @@ export default function AssessmentPage() {
 
   if (status === 'error') {
     return (
-      <div className="min-h-screen bg-gray-50 py-10 px-4">
+      <div className="min-h-screen bg-[var(--ib-bg)] py-10 px-4">
         <div className="mx-auto max-w-4xl text-center">
           <div className="rounded-xl border border-red-200 bg-white p-10 shadow-sm">
             <h2 className="mb-4 text-2xl font-bold text-red-600">{t('academy.coursePlayer.notQuite')}</h2>
-            <p className="mb-8 text-gray-700">
+            <p className="mb-8 text-[var(--ib-mute)]">
               {t('academy.coursePlayer.didNotReach')}
             </p>
             <button
               onClick={() => setStatus('idle')}
-              className="rounded-lg bg-gray-700 px-8 py-3 text-white hover:bg-gray-800"
+              className="rounded-lg bg-[var(--ib-mute)] px-8 py-3 text-[var(--ib-ink)] hover:bg-[var(--ib-mute)]"
             >
               {t('academy.coursePlayer.tryAgain')}
             </button>
@@ -112,11 +112,11 @@ export default function AssessmentPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-10 px-4 sm:px-6 lg:px-10">
+    <div className="min-h-screen bg-[var(--ib-bg)] py-10 px-4 sm:px-6 lg:px-10">
       <div className="mx-auto max-w-4xl">
-        <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+        <div className="overflow-hidden rounded-xl border border-[var(--ib-line)] bg-white shadow-sm">
           {/* Header */}
-          <div className="border-b border-gray-200 bg-gradient-to-r from-blue-600 to-blue-800 px-6 py-8 text-white">
+          <div className="border-b border-[var(--ib-line)] bg-gradient-to-r from-[var(--ib-acc)] to-[var(--ib-dk)] px-6 py-8 text-[var(--ib-ink)]">
             <h1 className="text-2xl font-bold md:text-3xl">
               {t('academy.coursePlayer.assessment')}: {t('academy.coursePlayer.lesson')} 2 — {t('academy.coursePlayer.corePrinciples')}
             </h1>
@@ -129,7 +129,7 @@ export default function AssessmentPage() {
           <form onSubmit={handleSubmit} className="p-6 md:p-10 space-y-10">
             {/* Question 1 */}
             <div className="space-y-4">
-              <h2 className="text-xl font-semibold text-gray-800">
+              <h2 className="text-xl font-semibold text-[var(--ib-line)]">
                 1. What is a core principle of ISO 9001?
               </h2>
               <div className="space-y-3">
@@ -144,7 +144,7 @@ export default function AssessmentPage() {
                     className={`flex cursor-pointer items-center rounded-lg border p-4 transition ${
                       answers['q1'] === opt.value
                         ? 'border-blue-600 bg-blue-50'
-                        : 'border-gray-200 hover:bg-gray-50'
+                        : 'border-[var(--ib-line)] hover:bg-[var(--ib-bg)]'
                     }`}
                   >
                     <input
@@ -163,7 +163,7 @@ export default function AssessmentPage() {
 
             {/* Question 2 */}
             <div className="space-y-4">
-              <h2 className="text-xl font-semibold text-gray-800">
+              <h2 className="text-xl font-semibold text-[var(--ib-line)]">
                 2. Which year was the latest version of ISO 9001 published?
               </h2>
               <div className="space-y-3">
@@ -173,7 +173,7 @@ export default function AssessmentPage() {
                     className={`flex cursor-pointer items-center rounded-lg border p-4 transition ${
                       answers['q2'] === year
                         ? 'border-blue-600 bg-blue-50'
-                        : 'border-gray-200 hover:bg-gray-50'
+                        : 'border-[var(--ib-line)] hover:bg-[var(--ib-bg)]'
                     }`}
                   >
                     <input
@@ -196,7 +196,7 @@ export default function AssessmentPage() {
                 type="submit"
                 disabled={status === 'submitting' || Object.keys(answers).length < 2}
                 className={`
-                  inline-flex items-center rounded-lg px-10 py-4 text-lg font-medium text-white shadow-md transition
+                  inline-flex items-center rounded-lg px-10 py-4 text-lg font-medium text-[var(--ib-ink)] shadow-md transition
                   ${status === 'submitting' ? 'bg-blue-400 cursor-wait' : 'bg-blue-600 hover:bg-blue-700'}
                 `}
               >

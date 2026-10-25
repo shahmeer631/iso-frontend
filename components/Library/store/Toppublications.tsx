@@ -53,7 +53,7 @@ const Toppublications = () => {
       <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-10">
         {/* Header */}
         <div className="mb-16">
-          <h2 className="space-grotesk text-4xl lg:text-[42px] font-semibold text-[#1E293B] mb-4 leading-[1.2] tracking-tight">
+          <h2 className="text-4xl lg:text-[42px] font-semibold text-[var(--ib-card)] mb-4 leading-[1.2] tracking-tight">
             Top publications
           </h2>
         </div>

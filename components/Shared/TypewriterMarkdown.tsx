@@ -44,7 +44,7 @@ const TypewriterMarkdown = ({
       remarkPlugins={[remarkGfm]}
       components={{
         h1: ({ ...props }) => <h3 className="text-xl font-bold text-white mt-4 mb-2" {...props} />,
-        h2: ({ ...props }) => <h3 className="text-lg font-semibold text-gray-200 mt-3 mb-2" {...props} />,
+        h2: ({ ...props }) => <h3 className="text-lg font-semibold text-[var(--ib-mute)] mt-3 mb-2" {...props} />,
         table: ({ ...props }) => (
           <div className="scrollable-table my-4 w-full rounded-xl border border-white/10 pb-2">
             <table className="w-full text-left border-collapse text-sm md:text-base min-w-[500px]" {...props} />

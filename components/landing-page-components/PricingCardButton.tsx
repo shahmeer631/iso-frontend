@@ -33,12 +33,12 @@ const PricingCardButton = ({
       onClick={() => onClick(plan)}
       disabled={isProcessing || isCurrentPlan}
       variant={isPopular ? "default" : "outline"}
-      className={`w-full py-7 text-lg rounded-xl font-bold transition-all mt-auto ${
+      className={`w-full py-7 text-[14.5px] rounded-[10px] font-semibold transition-all mt-auto ${
         isCurrentPlan
-          ? "bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed"
+          ? "bg-[var(--ib-bg)] text-[var(--ib-mute)] border-[var(--ib-line)] cursor-not-allowed"
           : isPopular
-          ? "bg-[#6366f1] hover:bg-[#5046E5] text-white shadow-lg shadow-indigo-200 border-none"
-          : "text-[#6366f1] border-[#6366f1] hover:bg-[#6366f1] hover:text-white"
+          ? "bg-[var(--ib-acc)] hover:opacity-92 text-white border border-[var(--ib-acc)] shadow-none"
+          : "text-[var(--ib-ink)] bg-[var(--ib-card)] border border-[var(--ib-line)] hover:bg-[var(--ib-bg)]"
       }`}
     >
       {buttonContent}

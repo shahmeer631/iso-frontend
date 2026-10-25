@@ -1,90 +1,61 @@
-import { motion } from "framer-motion";
+﻿"use client";
+
 import { Sparkles } from "lucide-react";
 import Image from "next/image";
-import { useEffect, useState } from "react";
 
 interface AISimulationProps {
-    customQuery?: string;
-    customResponse?: string;
+  customQuery?: string;
+  customResponse?: string;
 }
 
+const DEFAULT_QUERY =
+  "How do I implement Clause 8.1 for ISO 27001 in a cloud-based SaaS environment?";
+
+const DEFAULT_RESPONSE =
+  "To implement Clause 8.1 (Operational Planning and Control) for ISO 27001 in a SaaS environment, you should focus on:\n\n1. Establishing criteria for security processes.\n2. Implementing control of the processes in accordance with the criteria.\n3. Keeping documented information to have confidence that processes have been carried out as planned.";
+
 const AISimulation = ({ customQuery, customResponse }: AISimulationProps) => {
-    const [text, setText] = useState("");
-    const [isTyping, setIsTyping] = useState(true);
-    const fullText = customQuery || "How do I implement Clause 8.1 for ISO 27001 in a cloud-based SaaS environment?";
-    const [response, setResponse] = useState("");
-    const [showResponse, setShowResponse] = useState(false);
+  const query = customQuery || DEFAULT_QUERY;
+  const answer = customResponse || DEFAULT_RESPONSE;
 
-    useEffect(() => {
-        let i = 0;
-        if (isTyping) {
-            const interval = setInterval(() => {
-                setText(fullText.slice(0, i));
-                i++;
-                if (i > fullText.length) {
-                    clearInterval(interval);
-                    setTimeout(() => {
-                        setIsTyping(false);
-                        setShowResponse(true);
-                    }, 1000);
-                }
-            }, 50);
-            return () => clearInterval(interval);
-        }
-    }, [isTyping, fullText]);
+  return (
+    <div className="relative z-10 w-full max-w-2xl overflow-hidden rounded-2xl border border-[var(--ib-line)] bg-[var(--ib-card)] font-sans shadow-[0_24px_60px_-24px_rgba(11,18,32,0.25)]">
+      <div className="flex items-center gap-1.5 border-b border-[var(--ib-line)] bg-[linear-gradient(180deg,color-mix(in_srgb,var(--ib-card)_88%,var(--ib-accbg)),var(--ib-card))] px-3.5 py-[11px]">
+        <div className="size-[9px] rounded-full bg-[#FF5F57]/90" />
+        <div className="size-[9px] rounded-full bg-[#FEBC2E]/90" />
+        <div className="size-[9px] rounded-full bg-[#28C840]/90" />
+        <b className="ml-2.5 text-xs font-medium text-[var(--ib-mute)]">
+          AI Assistant · ISO/IEC 27001
+        </b>
+      </div>
 
-    useEffect(() => {
-        if (showResponse) {
-            const resp = customResponse || "To implement Clause 8.1 (Operational Planning and Control) for ISO 27001 in a SaaS environment, you should focus on:\n\n1. Establishing criteria for security processes.\n2. Implementing control of the processes in accordance with the criteria.\n3. Keeping documented information to have confidence that processes have been carried out as planned.";
-            let j = 0;
-            const interval = setInterval(() => {
-                setResponse(resp.slice(0, j));
-                j++;
-                if (j > resp.length) clearInterval(interval);
-            }, 20);
-            return () => clearInterval(interval);
-        }
-    }, [showResponse, customResponse]);
-
-    return (
-        <div className="w-full max-w-2xl bg-[#433ad9]/10 border border-white/10 rounded-2xl shadow-2xl overflow-hidden font-inter">
-            <div className="bg-white/5 px-4 py-3 border-b border-white/5 flex items-center justify-between">
-                <div className="flex gap-1.5">
-                    <div className="w-3 h-3 rounded-full bg-red-500/50" />
-                    <div className="w-3 h-3 rounded-full bg-amber-500/50" />
-                    <div className="w-3 h-3 rounded-full bg-emerald-500/50" />
-                </div>
-                <div className="text-[10px] sm:text-[11px] text-gray-500 font-medium uppercase tracking-widest">Neural Interaction Layer</div>
-            </div>
-            <div className="p-4 sm:p-6 space-y-4 sm:space-y-6 min-h-[280px] sm:min-h-[320px]">
-                <div className="flex items-start gap-3 sm:gap-4">
-                    <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-[#00f0ff]/10 border border-[#00f0ff]/20 flex items-center justify-center shrink-0 shadow-[0_0_15px_rgba(0,240,255,0.1)]">
-                        <Image src="/Icon.png" alt="User" width={14} height={14} className="sm:w-4 sm:h-4 text-[#00f0ff]" />
-                    </div>
-                    <div className="bg-[#00f0ff]/5 rounded-2xl p-3 sm:p-4 text-xs sm:text-sm text-cyan-50/90 leading-relaxed border border-[#00f0ff]/20">
-                        {text}
-                        {isTyping && <span className="inline-block w-1 h-3 sm:h-4 ml-1 bg-[#00f0ff] animate-pulse" />}
-                    </div>
-                </div>
-
-                {showResponse && (
-                    <motion.div
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="flex items-start gap-3 sm:gap-4"
-                    >
-                        <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-[#00f0ff]/10 border border-[#00f0ff]/20 flex items-center justify-center shrink-0 shadow-[0_0_15px_rgba(0,240,255,0.1)]">
-                            <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#00f0ff]" />
-                        </div>
-                        <div className="bg-[#00f0ff]/5 rounded-2xl p-3 sm:p-4 text-xs sm:text-sm text-cyan-50/90 leading-relaxed border border-[#00f0ff]/20 whitespace-pre-wrap">
-                            {response}
-                            {!response.endsWith(".") && <span className="inline-block w-1 h-3 sm:h-4 ml-1 bg-[#00f0ff] animate-pulse" />}
-                        </div>
-                    </motion.div>
-                )}
-            </div>
+      <div className="min-h-[280px] space-y-4 bg-[var(--ib-card)] p-4 sm:min-h-[320px] sm:space-y-5 sm:p-6">
+        <div className="flex items-start gap-3 sm:gap-4">
+          <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-[10px] border border-[var(--ib-line)] bg-[var(--ib-accbg)] sm:h-8 sm:w-8">
+            <Image
+              src="/Icon.png"
+              alt="User"
+              width={14}
+              height={14}
+              className="sm:h-4 sm:w-4"
+            />
+          </div>
+          <p className="max-w-[90%] rounded-[12px_12px_4px_12px] bg-[var(--ib-accbg)] p-3 text-xs font-semibold leading-relaxed text-[var(--ib-ink)] sm:p-3.5 sm:text-sm">
+            {query}
+          </p>
         </div>
-    );
+
+        <div className="flex items-start gap-3 sm:gap-4">
+          <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-[10px] border border-[color-mix(in_srgb,var(--ib-acc)_25%,var(--ib-line))] bg-[var(--ib-accbg)] sm:h-8 sm:w-8">
+            <Sparkles className="h-3.5 w-3.5 text-[var(--ib-acc)] sm:h-4 sm:w-4" />
+          </div>
+          <p className="max-w-[90%] whitespace-pre-wrap rounded-[12px_12px_12px_4px] border border-[var(--ib-line)] bg-[color-mix(in_srgb,var(--ib-bg)_80%,var(--ib-card))] p-3 text-xs font-medium leading-relaxed text-[var(--ib-ink)] sm:p-3.5 sm:text-sm">
+            {answer}
+          </p>
+        </div>
+      </div>
+    </div>
+  );
 };
 
 export default AISimulation;

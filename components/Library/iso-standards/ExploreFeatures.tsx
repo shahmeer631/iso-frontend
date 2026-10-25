@@ -43,7 +43,7 @@ const ExploreFeatures = () => {
       <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-10">
         {/* Header */}
         <div className="text-center mb-16">
-          <h2 className="space-grotesk text-4xl lg:text-[42px] font-semibold text-[#1E293B] mb-4 leading-[1.2] tracking-tight">
+          <h2 className="text-4xl lg:text-[42px] font-semibold text-[var(--ib-ink)] mb-4 leading-[1.2] tracking-tight">
             {t('mastery.exploreMore')}
           </h2>
           <p className="text-[#64748B] text-lg max-w-2xl mx-auto">
@@ -66,13 +66,13 @@ const ExploreFeatures = () => {
                   "0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05)",
                 transition: { duration: 0.2 },
               }}
-              className="bg-white rounded-2xl p-8 border border-gray-100 shadow-sm flex flex-col items-start transition-all"
+              className="bg-white rounded-2xl p-8 border border-[var(--ib-line)] shadow-sm flex flex-col items-start transition-all"
             >
-              <div className="bg-[#EEF2FF] p-3 rounded-xl mb-6 text-brand-cyan">
+              <div className="bg-[#EEF2FF] p-3 rounded-xl mb-6 text-[var(--ib-acc)]">
                 <feature.icon size={26} />
               </div>
 
-              <h3 className="text-xl font-bold text-[#1E293B] mb-3">
+              <h3 className="text-xl font-bold text-[var(--ib-ink)] mb-3">
                 {feature.title}
               </h3>
 
@@ -82,7 +82,7 @@ const ExploreFeatures = () => {
 
               <Link
                 href={feature.linkHref}
-                className="mt-auto text-brand-cyan font-semibold flex items-center gap-2 group hover:gap-3 transition-all"
+                className="mt-auto text-[var(--ib-acc)] font-semibold flex items-center gap-2 group hover:gap-3 transition-all"
               >
                 {feature.linkText}
                 <ArrowRight size={18} />

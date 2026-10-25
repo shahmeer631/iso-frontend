@@ -1,23 +1,29 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback, Fragment } from "react";
-import Standards from "@/components/Library/iso-standards/Standards";
 import ISOStandardsNexus from "@/components/Library/iso-standards/ISOStandardsNexus";
-import { Zap, ArrowRight, } from "lucide-react";
-import { motion } from "framer-motion";
+import {
+  ArrowRight,
+  Search,
+  Command,
+  X,
+  BookOpen,
+  Library,
+} from "lucide-react";
+import { motion, useReducedMotion } from "framer-motion";
 import Link from "next/link";
 import { useTranslation } from "react-i18next";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams, usePathname } from "next/navigation";
 import { useGetCategoriesQuery } from "@/lib/redux/api/isoStandardsApi";
-import { useSearchParams } from "next/navigation";
 import "@/lib/i18n/client";
 import { useSelector } from "react-redux";
 import { useGetPlansQuery, Plan } from "@/lib/redux/features/pricing/pricingApi";
 import { useCreatePaymentIntentMutation } from "@/lib/redux/features/payments/paymentApi";
 import { selectCurrentUser, selectCurrentToken } from "@/lib/redux/features/auth/authSlice";
 import { toast } from "sonner";
-import OfferTimer from "@/components/landing-page-components/OfferTimer";
 import { userHasFeature, userOwnsPlanId } from "@/lib/access/effectiveAccess";
+
+const ease = [0.22, 1, 0.36, 1] as const;
 
 const decodeJwt = (token: string) => {
   try {
@@ -30,16 +36,18 @@ const decodeJwt = (token: string) => {
         .join("")
     );
     return JSON.parse(jsonPayload);
-  } catch (e) {
+  } catch {
     return null;
   }
 };
 
 const Page = () => {
   const searchParams = useSearchParams();
+  const pathname = usePathname();
   const initialSearch = searchParams.get("search") || "";
+  const categoryInUrl = searchParams.get("category") || "all";
 
-  const { data: response, isLoading: isPlansLoading } = useGetPlansQuery();
+  const { data: response } = useGetPlansQuery();
   const [createPaymentIntent] = useCreatePaymentIntentMutation();
   const user = useSelector(selectCurrentUser);
   const token = useSelector(selectCurrentToken);
@@ -48,7 +56,6 @@ const Page = () => {
   const [searchTerm, setSearchTerm] = useState(initialSearch);
   const [inputValue, setInputValue] = useState(initialSearch);
   const [isBarFocused, setIsBarFocused] = useState(false);
-  const [selectedCategoryId, setSelectedCategoryId] = useState<string | undefined>(undefined);
 
   const [timeLeft, setTimeLeft] = useState({
     days: 0,
@@ -56,6 +63,17 @@ const Page = () => {
     minutes: 59,
     seconds: 59,
   });
+
+  const reduceMotion = useReducedMotion();
+  const inputRef = useRef<HTMLInputElement>(null);
+  const { t, i18n } = useTranslation();
+  const params = useParams();
+  const router = useRouter();
+  const lang = (params?.lang as string) || "en";
+  const isRTL = i18n.language === "ar";
+
+  const { data: categoriesData } = useGetCategoriesQuery();
+  const categories = categoriesData?.data || [];
 
   useEffect(() => {
     const storedEndTime = localStorage.getItem("offerEndTime");
@@ -84,18 +102,8 @@ const Page = () => {
 
     updateTimer();
     const interval = setInterval(updateTimer, 1000);
-
     return () => clearInterval(interval);
   }, []);
-
-  const inputRef = useRef<HTMLInputElement>(null);
-  const { t, i18n } = useTranslation();
-  const params = useParams();
-  const router = useRouter();
-  const lang = params?.lang as string || "en";
-
-  const { data: categoriesData } = useGetCategoriesQuery();
-  const isRTL = i18n.language === 'ar';
 
   const getUserId = () => {
     if (user?.id) return user.id;
@@ -112,10 +120,8 @@ const Page = () => {
   };
 
   const currentUserId = getUserId();
-
   const plans = response?.data || [];
-  const plan = plans.find(p => p.name?.toLowerCase().includes("plus")) || plans[1];
-  // Subscription purchase OR User Group grant (Plus+ via LIBRARY feature)
+  const plan = plans.find((p) => p.name?.toLowerCase().includes("plus")) || plans[1];
   const isPurchased =
     userOwnsPlanId(user, plan?.id || plan?._id) || userHasFeature(user, "LIBRARY");
 
@@ -128,18 +134,30 @@ const Page = () => {
       router.push(`/${lang}/auth/login`);
       return;
     }
-    const isFree = selectedPlan.discountedPrice === 0 || selectedPlan.name?.toLowerCase().includes("free");
+    const isFree =
+      selectedPlan.discountedPrice === 0 ||
+      selectedPlan.name?.toLowerCase().includes("free");
     if (isFree) {
       router.push(`/${lang}/academy`);
       return;
     }
-    const isAdmin = user?.role === "admin" || (token ? decodeJwt(token)?.role === "admin" : false);
+    const isAdmin =
+      user?.role === "admin" || (token ? decodeJwt(token)?.role === "admin" : false);
 
     if (isAdmin) {
-      toast.warning(t('pricingPage.adminWarning', 'Admin Account: Real payments are disabled for admin roles. Redirecting to Sandbox checkout...'), {
-        description: t('pricingPage.adminWarningDesc', 'Admins are not allowed to make live transactions. Test credentials have been prefilled for your convenience.'),
-        duration: 5000,
-      });
+      toast.warning(
+        t(
+          "pricingPage.adminWarning",
+          "Admin Account: Real payments are disabled for admin roles. Redirecting to Sandbox checkout..."
+        ),
+        {
+          description: t(
+            "pricingPage.adminWarningDesc",
+            "Admins are not allowed to make live transactions. Test credentials have been prefilled for your convenience."
+          ),
+          duration: 5000,
+        }
+      );
       setTimeout(() => {
         const mockQueryParams = new URLSearchParams({
           clientSecret: "pi_mock_123_secret_mock_456",
@@ -173,15 +191,24 @@ const Page = () => {
           courseId: courseId ?? "",
         }).toString();
         router.push(`/${lang}/payment?${queryParams}`);
-      } else if (result.success && (result.data as any)?.url) {
-        window.location.href = (result.data as any).url;
+      } else if (result.success && (result.data as { url?: string })?.url) {
+        window.location.href = (result.data as { url: string }).url;
       }
     } catch (error) {
-      const err = error as { data?: { err?: { type?: string } }; status?: number; message?: string };
+      const err = error as {
+        data?: { err?: { type?: string } };
+        status?: number;
+        message?: string;
+      };
       console.error("Failed to create payment intent:", error);
 
       if (err?.status === 500) {
-        toast.error(t('pricingPage.serverError', 'Internal Server Error: Could not initiate payment. Please try again later.'));
+        toast.error(
+          t(
+            "pricingPage.serverError",
+            "Internal Server Error: Could not initiate payment. Please try again later."
+          )
+        );
         return;
       }
 
@@ -191,7 +218,12 @@ const Page = () => {
         JSON.stringify(error).includes("customer");
 
       if (isStripeError) {
-        const confirmMock = window.confirm(t('pricingPage.stripeError', 'Stripe payment initiation failed. Do you want to proceed with a mock checkout?'));
+        const confirmMock = window.confirm(
+          t(
+            "pricingPage.stripeError",
+            "Stripe payment initiation failed. Do you want to proceed with a mock checkout?"
+          )
+        );
         if (confirmMock) {
           const mockQueryParams = new URLSearchParams({
             clientSecret: "pi_mock_123_secret_mock_456",
@@ -203,306 +235,397 @@ const Page = () => {
           router.push(`/${lang}/payment?${mockQueryParams}`);
         }
       } else {
-        toast.error(t('pricingPage.paymentError', 'Failed to initiate payment. Please try again.'));
+        toast.error(
+          t(
+            "pricingPage.paymentError",
+            "Failed to initiate payment. Please try again."
+          )
+        );
       }
     } finally {
       setProcessingPlanId(null);
     }
   };
 
-  // Debounce: only update searchTerm after 350ms idle
   useEffect(() => {
     const timer = setTimeout(() => setSearchTerm(inputValue.trim()), 350);
     return () => clearTimeout(timer);
   }, [inputValue]);
 
-
-
-  // Ctrl+K / Cmd+K shortcut
-  const handleKeydown = useCallback((e: KeyboardEvent) => {
-    if ((e.ctrlKey || e.metaKey) && e.key === "k") {
-      e.preventDefault();
-      // Redirect to explorer on shortcut
-      router.push(`/${lang}/library/iso-standards/explorer`);
-    }
-  }, [lang, router]);
+  const handleKeydown = useCallback(
+    (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === "k") {
+        e.preventDefault();
+        router.push(`/${lang}/library/iso-standards/explorer`);
+      }
+      if (e.key === "Escape") inputRef.current?.blur();
+    },
+    [lang, router]
+  );
 
   useEffect(() => {
     window.addEventListener("keydown", handleKeydown);
     return () => window.removeEventListener("keydown", handleKeydown);
   }, [handleKeydown]);
 
+  const setCategoryFilter = (categoryName: string) => {
+    const next = new URLSearchParams(searchParams.toString());
+    if (!categoryName || categoryName === "all") {
+      next.delete("category");
+    } else {
+      next.set("category", categoryName);
+    }
+    const qs = next.toString();
+    router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
+  };
 
+  const clearSearch = () => {
+    setInputValue("");
+    setSearchTerm("");
+  };
+
+  // handlePlanSelect retained for Plus checkout flows triggered from pricing CTA paths
+  void processingPlanId;
+  void handlePlanSelect;
 
   return (
-    <div className="min-h-screen bg-[#09090B] text-white font-inter selection:bg-brand-cyan text-[#0F111A]/30">
-      {/* ── Pricing Hero Section ─────────────────────────── */}
-      <section className="relative pt-32 pb-16 px-4 sm:px-6 overflow-hidden">
-        {/* Animated Background Gradients */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-[800px] pointer-events-none z-0">
-          <div className="absolute top-[-10%] left-1/4 w-[600px] h-[600px] bg-[#6366F1]/5 rounded-full blur-[160px] animate-pulse" />
-          <div className="absolute top-[20%] right-1/4 w-[500px] h-[500px] bg-[#00f0ff]/5 rounded-full blur-[140px] animate-pulse delay-700" />
+    <div
+      className="min-h-screen bg-[var(--ib-bg)] font-inter text-[var(--ib-ink)] selection:bg-[var(--ib-acc)] selection:text-white"
+      dir={isRTL ? "rtl" : "ltr"}
+    >
+      {/* ── Library Hero ─────────────────────────────────── */}
+      <header className="relative overflow-x-clip px-4 pb-10 pt-12 sm:px-6 sm:pb-14 sm:pt-16">
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 -z-0"
+        >
+          <div className="absolute left-1/2 top-[-12%] h-[520px] w-[min(920px,100%)] -translate-x-1/2 rounded-full bg-[radial-gradient(ellipse_at_center,color-mix(in_srgb,var(--ib-acc)_14%,transparent),transparent_70%)]" />
+          <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[var(--ib-line)] to-transparent" />
         </div>
 
-        <div className="relative z-10  ">
-
-
-          {/* Typography-Based Premium Pricing Layout */}
-          <div className="max-w-7xl mx-auto px-4 py-8 font-inter text-gray-300">
-            {/* Top Text & Pricing Summary */}
-            {!isPurchased && (
-              <div className="text-center space-y-8 mb-16 flex flex-col items-center">
-                {/* 1. ISOBrain Plus – USD $30/Month */}
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  className="text-2xl sm:text-3xl font-black font-space-grotesk tracking-tight text-white"
-                >
-                  ISOBrain Plus – <span className="text-[#00f0ff] drop-shadow-[0_0_15px_rgba(0,240,255,0.2)]">{t('library.plusPlanPrice')}</span>
-                </motion.div>
-
-                {/* 2. The essential toolkit for ISO professionals to master compliance and benchmark their expertise. */}
-                <motion.p
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: 0.1 }}
-                  className={
-                    isPurchased
-                      ? "text-2xl sm:text-3xl md:text-4xl font-black font-space-grotesk tracking-tight text-white max-w-4xl mx-auto leading-tight"
-                      : "text-gray-400 text-sm sm:text-base max-w-2xl mx-auto leading-relaxed"
-                  }
-                >
-                  {t('library.plusEssentialToolkit')}
-                </motion.p>
-
-                {/* 3. Perfect for compliance officers and quality managers who need immediate access to real-world standards and want to validate their baseline expertise. */}
-                <motion.p
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: 0.15 }}
-                  className="text-gray-500 text-xs sm:text-sm italic max-w-xl mx-auto"
-                >
-                  {t('library.plusPerfectFor')}
-                </motion.p>
-
-                {/* 4. Secure your spot - Skill development made affordable */}
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: 0.2 }}
-                  className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#00f0ff]/5 border border-[#00f0ff]/10 text-[#00f0ff] text-xs font-black uppercase tracking-[0.2em] w-fit mx-auto "
-                >
-                  {t('library.plusSecureSpot')}
-                </motion.div>
-
-                {/* 5. Take your skills to the next level */}
-                <motion.h3
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: 0.25 }}
-                  className="text-2xl sm:text-3xl font-black text-white tracking-tight font-space-grotesk"
-                >
-                  {t('library.plusTakeSkills')}
-                </motion.h3>
-
-                {/* 6. Get ISOBrain Plus - Limited time to save big! */}
-                <motion.div
-                  initial={{ opacity: 0, y: 15 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: 0.3 }}
-
-                >
-                  <button
-                    onClick={() => router.push(`/${lang}/pricing`)}
-                    className="group relative inline-flex items-center justify-center gap-3 bg-[#00f0ff] text-[#0F111A] font-bold text-sm sm:text-base px-8 py-5 rounded-[12px] hover:bg-[#00f0ff]/95 transition-all duration-300 shadow-[0_0_30px_rgba(0,240,255,0.25)] hover:shadow-[0_0_55px_rgba(0,240,255,0.45)] transform hover:-translate-y-0.5 active:translate-y-0 uppercase tracking-wider cursor-pointer mx-auto"
-                  >
-                    <span>{t('library.plusCta')}</span>
-                    <ArrowRight className="w-5 h-5 group-hover:translate-x-1.5 transition-transform text-[#0F111A]" />
-                  </button>
-                </motion.div>
-
-                {/* 7. Countdown Timer */}
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: 0.35 }}
-                  className="max-w-xl mx-auto my-6 relative group cursor-default pt-4"
-                >
-                  <div className="relative bg-[#0A0A0C]/90 backdrop-blur-2xl border border-white/10 hover:border-[#00F0FF]/40 rounded-3xl py-6 px-10 sm:px-14 flex items-center justify-center gap-8 shadow-2xl transition-all duration-500 overflow-hidden mx-auto w-fit">
-                    <div className="absolute top-0 inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-white/40 to-transparent"></div>
-                    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-[2px] bg-gradient-to-r from-transparent via-[#00F0FF]/80 to-transparent blur-[2px]"></div>
-
-                    <div className="flex items-center gap-3 sm:gap-4 md:gap-5 shrink-0 z-10">
-                      {[
-                        { key: 'hours', label: t('library.countdownHours'), value: timeLeft.hours },
-                        { key: 'mins', label: t('library.countdownMins'), value: timeLeft.minutes },
-                        { key: 'secs', label: t('library.countdownSecs'), value: timeLeft.seconds, isAccent: true }
-                      ].map((time, index) => (
-                        <Fragment key={time.label}>
-                          <div className="flex flex-col items-center group/timer-item">
-                            <div className={`relative w-14 h-14 sm:w-16 sm:h-16 flex items-center justify-center text-xl sm:text-2xl font-bold rounded-2xl shadow-inner transition-all duration-350 hover:-translate-y-1 ${time.isAccent
-                              ? "bg-gradient-to-b from-[#00F0FF]/10 to-transparent border border-[#00F0FF]/40 text-[#00F0FF] shadow-[0_0_20px_rgba(0,240,255,0.15)]"
-                              : "bg-[#14141A] border border-gray-800 text-white"
-                              }`}>
-                              <div className="absolute inset-0 rounded-2xl bg-gradient-to-b from-white/5 to-transparent pointer-events-none"></div>
-                              {time.value.toString().padStart(2, "0")}
-                            </div>
-                            <span className={`text-[9px] sm:text-[10px] mt-2 sm:mt-3 uppercase tracking-widest font-semibold ${time.isAccent ? "text-[#00F0FF]" : "text-gray-500"}`}>
-                              {time.key === 'hours' ? t('library.countdownHours') : time.key === 'mins' ? t('library.countdownMins') : t('library.countdownSecs')}
-                            </span>
-                          </div>
-                          {index < 2 && (
-                            <span className="text-xl sm:text-2xl text-gray-700 font-bold -mt-5 animate-pulse">:</span>
-                          )}
-                        </Fragment>
-                      ))}
-                    </div>
-                  </div>
-                </motion.div>
-              </div>
-            )}
-
-            {/* Value Matrix Section */}
-            {isPurchased && (
-              <div className="mt-10   max-w-7xl mx-auto text-left" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-                <h2 className="text-[28px] sm:text-[36px] font-semibold text-white mb-8 sm:mb-12 leading-[1.3] text-center">
-                  {t('library.libraryAcceleratesTitle')}
-                </h2>
-
-                <div className="overflow-x-auto rounded-2xl border border-[#1F222F] bg-[#12131A] shadow-2xl">
-                  <table className="w-full text-left border-collapse min-w-[800px]">
-                    <thead>
-                      <tr className="border-b border-[#1F222F] bg-[#090A0F]">
-                        <th className="p-6 text-white font-medium text-[20px] sm:text-[22px] w-1/3">{t('library.tableOldWay')}</th>
-                        <th className="p-6 text-[#00E5FF] font-medium text-[20px] sm:text-[22px] w-1/3 border-l border-[#1F222F]">{t('library.tableNewWay')}</th>
-                        <th className="p-6 text-white font-medium text-[20px] sm:text-[22px] w-1/3 border-l border-[#1F222F]">{t('library.tableCareerValue')}</th>
-                      </tr>
-                    </thead>
-                    <tbody className="text-[14px] sm:text-[16px] text-[#94A3B8] leading-[1.6]">
-                      <tr className="border-b border-[#1F222F]">
-                        <td className="p-6 align-top">
-                          <strong className="text-white block mb-2">{t('library.tableRow1OldTitle')}</strong>
-                          {t('library.tableRow1OldDesc')}
-                        </td>
-                        <td className="p-6 align-top border-l border-[#1F222F] bg-[#00E5FF]/5">
-                          <strong className="text-[#00E5FF] block mb-2">{t('library.tableRow1NewTitle')}</strong>
-                          {t('library.tableRow1NewDesc')}
-                        </td>
-                        <td className="p-6 align-top border-l border-[#1F222F]">
-                          <strong className="text-white block mb-2">{t('library.tableRow1ValTitle')}</strong>
-                          {t('library.tableRow1ValDesc')}
-                        </td>
-                      </tr>
-                      <tr>
-                        <td className="p-6 align-top">
-                          <strong className="text-white block mb-2">{t('library.tableRow2OldTitle')}</strong>
-                          {t('library.tableRow2OldDesc')}
-                        </td>
-                        <td className="p-6 align-top border-l border-[#1F222F] bg-[#00E5FF]/5">
-                          <strong className="text-[#00E5FF] block mb-2">{t('library.tableRow2NewTitle')}</strong>
-                          {t('library.tableRow2NewDesc')}
-                        </td>
-                        <td className="p-6 align-top border-l border-[#1F222F]">
-                          <strong className="text-white block mb-2">{t('library.tableRow2ValTitle')}</strong>
-                          {t('library.tableRow2ValDesc')}
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            )}
-
-            {/* What you get details (Vertically stacked, centered typography) */}
-            {!isPurchased && (
-              <div className="mt-20 border-t border-white/5 pt-16 max-w-7xl mx-auto text-center">
-                <h4 className="text-xl sm:text-2xl font-black text-white font-space-grotesk uppercase tracking-wider mb-12">
-                  {t('library.forUsd30YouGet')}
-                </h4>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-12">
-                  {/* Benefit 1 */}
-                  <div className="space-y-3">
-                    <h5 className="text-base sm:text-lg font-bold text-[#00f0ff] font-space-grotesk tracking-wide uppercase">
-                      {t('library.benefit1Title')}
-                    </h5>
-                    <p className="text-gray-400 text-sm sm:text-base leading-relaxed font-light font-inter max-w-xl mx-auto">
-                      {t('library.benefit1Desc')}
-                    </p>
-                  </div>
-
-                  {/* Benefit 2 */}
-                  <div className="space-y-3">
-                    <h5 className="text-base sm:text-lg font-bold text-[#00f0ff] font-space-grotesk tracking-wide uppercase">
-                      {t('library.benefit2Title')}
-                    </h5>
-                    <p className="text-gray-400 text-sm sm:text-base leading-relaxed font-light font-inter max-w-xl mx-auto">
-                      {t('library.benefit2Desc')}
-                    </p>
-                  </div>
-
-                  {/* Benefit 3 */}
-                  <div className="space-y-3">
-                    <h5 className="text-base sm:text-lg font-bold text-[#00f0ff] font-space-grotesk tracking-wide uppercase">
-                      {t('library.benefit3Title')}
-                    </h5>
-                    <p className="text-gray-400 text-sm sm:text-base leading-relaxed font-light font-inter max-w-xl mx-auto">
-                      {t('library.benefit3Desc')}
-                    </p>
-                  </div>
-
-                  {/* Benefit 4 */}
-                  <div className="space-y-3">
-                    <h5 className="text-base sm:text-lg font-bold text-[#00f0ff] font-space-grotesk tracking-wide uppercase">
-                      {t('library.benefit4Title')}
-                    </h5>
-                    <p className="text-gray-400 text-sm sm:text-base leading-relaxed font-light font-inter max-w-xl mx-auto">
-                      {t('library.benefit4Desc')}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-      </section>
-
-      {/* ── High-Tech ISO Nexus (New Dynamic Grid) ─────────────────────────── */}
-      <ISOStandardsNexus searchTerm={searchTerm} />
-
-      {/* ── Final CTA Section ─────────────────────────── */}
-      <section className="py-20 sm:py-32 px-4 sm:px-6 bg-[#090A0F]" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-        <div className="max-w-5xl mx-auto">
+        <div className="ib-w relative z-[1] max-w-7xl!">
           <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            className="relative rounded-3xl md:rounded-[48px] bg-[#12131A] border border-[#1F222F] p-6 sm:p-12 md:p-20 text-center overflow-hidden"
+            initial={reduceMotion ? false : { opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, ease }}
+            className="mx-auto max-w-[720px] text-center"
           >
-            {/* Background Accents */}
-            <div className="absolute top-0 right-0 w-64 h-64 bg-[#00E5FF]/5 rounded-full blur-[100px]" />
-            <div className="absolute bottom-0 left-0 w-64 h-64 bg-[#00E5FF]/5 rounded-full blur-[100px]" />
+            <div className="ib-eye mx-auto inline-flex items-center gap-2">
+              <Library className="size-3.5" aria-hidden />
+              {t("library.heroBadge")}
+            </div>
 
-            <div className="relative z-10 flex flex-col items-center">
-              <h2 className="text-[28px] sm:text-[36px] font-semibold text-white leading-[1.3] mb-6">
-                {t('library.ctaTitle')}
+            <h1 className="mb-0! mt-3 text-[32px] font-bold leading-[1.12] tracking-[-0.035em] text-[var(--ib-ink)] sm:text-[40px] lg:text-[48px]">
+              {t("library.heading")}
+            </h1>
+
+            <p className="mx-auto mt-4 max-w-[560px] text-[15px] leading-relaxed text-[var(--ib-mute)] sm:text-[16.5px]">
+              {t("library.description")}
+            </p>
+          </motion.div>
+
+          {/* Search */}
+          <motion.div
+            initial={reduceMotion ? false : { opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.45, delay: reduceMotion ? 0 : 0.08, ease }}
+            className="mx-auto mt-8 w-full max-w-[640px]"
+          >
+            <label htmlFor="iso-library-search" className="sr-only">
+              {t("library.searchPlaceholder")}
+            </label>
+            <div
+              className={`flex h-12 items-center gap-3 rounded-[14px] border bg-[var(--ib-card)] px-4 shadow-[0_12px_40px_-28px_rgba(11,18,32,0.35)] transition-all duration-300 sm:h-14 sm:px-5 ${
+                isBarFocused
+                  ? "border-[var(--ib-acc)] ring-2 ring-[color-mix(in_srgb,var(--ib-acc)_18%,transparent)]"
+                  : "border-[var(--ib-line)] hover:border-[color-mix(in_srgb,var(--ib-acc)_28%,var(--ib-line))]"
+              }`}
+            >
+              <Search
+                className={`size-[18px] shrink-0 transition-colors ${
+                  isBarFocused ? "text-[var(--ib-acc)]" : "text-[var(--ib-mute)]"
+                }`}
+                aria-hidden
+              />
+              <input
+                id="iso-library-search"
+                ref={inputRef}
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
+                onFocus={() => setIsBarFocused(true)}
+                onBlur={() => setIsBarFocused(false)}
+                placeholder={t("library.searchPlaceholder")}
+                className="min-w-0 flex-1 border-none bg-transparent text-[15px] text-[var(--ib-ink)] outline-none placeholder:text-[var(--ib-mute)]"
+                autoComplete="off"
+              />
+              {inputValue ? (
+                <button
+                  type="button"
+                  onClick={clearSearch}
+                  className="inline-flex size-8 items-center justify-center rounded-lg text-[var(--ib-mute)] transition-colors hover:bg-[var(--ib-accbg)] hover:text-[var(--ib-ink)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ib-acc)]"
+                  aria-label={t("library.showAll")}
+                >
+                  <X className="size-4" />
+                </button>
+              ) : (
+                <div className="hidden items-center gap-1 rounded-md border border-[var(--ib-line)] bg-[var(--ib-bg)] px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-[var(--ib-mute)] md:inline-flex">
+                  <Command className="size-2.5" aria-hidden />
+                  <span>K</span>
+                </div>
+              )}
+            </div>
+            <p className="mt-2.5 text-center text-[12px] text-[var(--ib-mute)]">
+              {t("library.hint")}
+            </p>
+          </motion.div>
+
+          {/* Category chips */}
+          {categories.length > 0 ? (
+            <motion.div
+              initial={reduceMotion ? false : { opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: reduceMotion ? 0 : 0.14, ease }}
+              className="mx-auto mt-6 flex max-w-4xl flex-wrap items-center justify-center gap-2"
+              role="group"
+              aria-label={t("library.head")}
+            >
+              <button
+                type="button"
+                onClick={() => setCategoryFilter("all")}
+                className={`rounded-full border px-3.5 py-1.5 text-[12.5px] font-semibold transition-all duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ib-acc)] ${
+                  categoryInUrl === "all" || !searchParams.get("category")
+                    ? "border-[var(--ib-acc)] bg-[var(--ib-acc)] text-white shadow-[0_8px_20px_-12px_var(--ib-acc)]"
+                    : "border-[var(--ib-line)] bg-[var(--ib-card)] text-[var(--ib-mute)] hover:border-[color-mix(in_srgb,var(--ib-acc)_30%,var(--ib-line))] hover:text-[var(--ib-ink)]"
+                }`}
+              >
+                {t("library.showAll")}
+              </button>
+              {categories.slice(0, 8).map((cat: { id: string; name: string }) => {
+                const selected =
+                  categoryInUrl.toLowerCase() === cat.name.toLowerCase();
+                return (
+                  <button
+                    key={cat.id}
+                    type="button"
+                    onClick={() => setCategoryFilter(cat.name)}
+                    className={`max-w-[200px] truncate rounded-full border px-3.5 py-1.5 text-[12.5px] font-semibold transition-all duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ib-acc)] ${
+                      selected
+                        ? "border-[var(--ib-acc)] bg-[var(--ib-acc)] text-white shadow-[0_8px_20px_-12px_var(--ib-acc)]"
+                        : "border-[var(--ib-line)] bg-[var(--ib-card)] text-[var(--ib-mute)] hover:border-[color-mix(in_srgb,var(--ib-acc)_30%,var(--ib-line))] hover:text-[var(--ib-ink)]"
+                    }`}
+                  >
+                    {cat.name}
+                  </button>
+                );
+              })}
+            </motion.div>
+          ) : null}
+        </div>
+      </header>
+
+      {/* ── Plus upsell (non-purchased) ───────────────────── */}
+      {!isPurchased && (
+        <section className="relative overflow-x-clip border-y border-[var(--ib-line)] bg-[color-mix(in_srgb,var(--ib-card)_70%,var(--ib-accbg))] px-4 py-12 sm:px-6 sm:py-16">
+          <div className="ib-w max-w-7xl!">
+            <div className="mx-auto flex max-w-3xl flex-col items-center text-center">
+              <div className="ib-eye mb-3 inline-flex items-center gap-2">
+                <BookOpen className="size-3.5" aria-hidden />
+                {t("library.plusSecureSpot")}
+              </div>
+
+              <h2 className="mb-0! text-[24px] font-bold tracking-[-0.03em] text-[var(--ib-ink)] sm:text-[30px]">
+                ISOBrain Plus –{" "}
+                <span className="text-[var(--ib-acc)]">{t("library.plusPlanPrice")}</span>
               </h2>
-              <p className="text-[16px] sm:text-[18px] font-medium text-[#94A3B8] leading-[1.4] max-w-3xl mb-12">
-                {t('library.ctaDesc')}
+
+              <p className="mt-3 max-w-xl text-[14.5px] leading-relaxed text-[var(--ib-mute)] sm:text-[15.5px]">
+                {t("library.plusEssentialToolkit")}
+              </p>
+              <p className="mt-2 max-w-lg text-[13px] italic leading-relaxed text-[var(--ib-mute)] sm:text-[14px]">
+                {t("library.plusPerfectFor")}
               </p>
 
-              <Link
-                href="#"
-                className="inline-flex items-center gap-3 bg-[#00E5FF] text-[#090A0F] px-8 py-4 sm:px-10 sm:py-5 rounded-xl font-bold text-[12px] sm:text-[14px] tracking-[1px] uppercase hover:scale-105 hover:shadow-[0_0_30px_rgba(0,229,255,0.3)] transition-all"
+              <p className="mt-5 text-[16px] font-semibold text-[var(--ib-ink)] sm:text-[18px]">
+                {t("library.plusTakeSkills")}
+              </p>
+
+              <button
+                type="button"
+                onClick={() => router.push(`/${lang}/pricing`)}
+                className="group mt-5 inline-flex items-center justify-center gap-2.5 rounded-[12px] bg-[var(--ib-acc)] px-7 py-3.5 text-[13px] font-bold uppercase tracking-wider text-white shadow-[0_14px_32px_-14px_rgba(27,77,219,0.55)] transition-all duration-300 hover:-translate-y-0.5 hover:opacity-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ib-acc)] sm:text-[14px]"
               >
-                {t('library.ctaBtn')} <ArrowRight className="w-5 h-5" />
+                <span>{t("library.plusCta")}</span>
+                <ArrowRight className="size-5 transition-transform group-hover:translate-x-1" aria-hidden />
+              </button>
+
+              {/* Countdown */}
+              <div className="mt-8 inline-flex items-center gap-3 rounded-2xl border border-[var(--ib-line)] bg-[var(--ib-card)] px-5 py-4 shadow-sm sm:gap-4 sm:px-8 sm:py-5">
+                {[
+                  { key: "hours", label: t("library.countdownHours"), value: timeLeft.hours },
+                  { key: "mins", label: t("library.countdownMins"), value: timeLeft.minutes },
+                  {
+                    key: "secs",
+                    label: t("library.countdownSecs"),
+                    value: timeLeft.seconds,
+                    isAccent: true,
+                  },
+                ].map((time, index) => (
+                  <Fragment key={time.key}>
+                    <div className="flex flex-col items-center">
+                      <div
+                        className={`flex size-12 items-center justify-center rounded-xl text-lg font-bold sm:size-14 sm:text-xl ${
+                          time.isAccent
+                            ? "border border-[color-mix(in_srgb,var(--ib-acc)_35%,transparent)] bg-[var(--ib-accbg)] text-[var(--ib-acc)]"
+                            : "border border-[var(--ib-line)] bg-[var(--ib-bg)] text-[var(--ib-ink)]"
+                        }`}
+                      >
+                        {time.value.toString().padStart(2, "0")}
+                      </div>
+                      <span
+                        className={`mt-1.5 text-[9px] font-semibold uppercase tracking-widest sm:text-[10px] ${
+                          time.isAccent ? "text-[var(--ib-acc)]" : "text-[var(--ib-mute)]"
+                        }`}
+                      >
+                        {time.label}
+                      </span>
+                    </div>
+                    {index < 2 && (
+                      <span className="mb-5 text-xl font-bold text-[var(--ib-mute)] sm:text-2xl">
+                        :
+                      </span>
+                    )}
+                  </Fragment>
+                ))}
+              </div>
+            </div>
+
+            {/* Benefits */}
+            <div className="mx-auto mt-14 max-w-5xl border-t border-[var(--ib-line)] pt-12 text-center">
+              <h3 className="mb-0! text-[18px] font-semibold uppercase tracking-wider text-[var(--ib-ink)] sm:text-[20px]">
+                {t("library.forUsd30YouGet")}
+              </h3>
+              <div className="mt-10 grid grid-cols-1 gap-8 md:grid-cols-2 md:gap-x-10 md:gap-y-10">
+                {[
+                  { title: t("library.benefit1Title"), desc: t("library.benefit1Desc") },
+                  { title: t("library.benefit2Title"), desc: t("library.benefit2Desc") },
+                  { title: t("library.benefit3Title"), desc: t("library.benefit3Desc") },
+                  { title: t("library.benefit4Title"), desc: t("library.benefit4Desc") },
+                ].map((b) => (
+                  <div key={b.title} className="space-y-2">
+                    <h4 className="mb-0! text-[14px] font-bold uppercase tracking-wide text-[var(--ib-acc)] sm:text-[15px]">
+                      {b.title}
+                    </h4>
+                    <p className="mx-auto max-w-md text-[14px] leading-relaxed text-[var(--ib-mute)] sm:text-[15px]">
+                      {b.desc}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* ── Purchased value matrix ───────────────────────── */}
+      {isPurchased && (
+        <section className="px-4 py-12 sm:px-6 sm:py-16">
+          <div className="ib-w max-w-7xl!">
+            <h2 className="mb-8 text-center text-[26px] font-semibold leading-[1.25] text-[var(--ib-ink)] sm:mb-12 sm:text-[34px]">
+              {t("library.libraryAcceleratesTitle")}
+            </h2>
+            <div className="overflow-x-auto rounded-2xl border border-[var(--ib-line)] bg-[var(--ib-card)] shadow-[0_18px_40px_-28px_rgba(11,18,32,0.25)]">
+              <table className="w-full min-w-[800px] border-collapse text-left">
+                <thead>
+                  <tr className="border-b border-[var(--ib-line)] bg-[var(--ib-bg)]">
+                    <th className="w-1/3 p-5 text-[18px] font-medium text-[var(--ib-ink)] sm:p-6 sm:text-[20px]">
+                      {t("library.tableOldWay")}
+                    </th>
+                    <th className="w-1/3 border-l border-[var(--ib-line)] p-5 text-[18px] font-medium text-[var(--ib-acc)] sm:p-6 sm:text-[20px]">
+                      {t("library.tableNewWay")}
+                    </th>
+                    <th className="w-1/3 border-l border-[var(--ib-line)] p-5 text-[18px] font-medium text-[var(--ib-ink)] sm:p-6 sm:text-[20px]">
+                      {t("library.tableCareerValue")}
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="text-[14px] leading-[1.6] text-[var(--ib-mute)] sm:text-[16px]">
+                  <tr className="border-b border-[var(--ib-line)]">
+                    <td className="p-5 align-top sm:p-6">
+                      <strong className="mb-2 block text-[var(--ib-ink)]">
+                        {t("library.tableRow1OldTitle")}
+                      </strong>
+                      {t("library.tableRow1OldDesc")}
+                    </td>
+                    <td className="border-l border-[var(--ib-line)] bg-[var(--ib-accbg)] p-5 align-top sm:p-6">
+                      <strong className="mb-2 block text-[var(--ib-acc)]">
+                        {t("library.tableRow1NewTitle")}
+                      </strong>
+                      {t("library.tableRow1NewDesc")}
+                    </td>
+                    <td className="border-l border-[var(--ib-line)] p-5 align-top sm:p-6">
+                      <strong className="mb-2 block text-[var(--ib-ink)]">
+                        {t("library.tableRow1ValTitle")}
+                      </strong>
+                      {t("library.tableRow1ValDesc")}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="p-5 align-top sm:p-6">
+                      <strong className="mb-2 block text-[var(--ib-ink)]">
+                        {t("library.tableRow2OldTitle")}
+                      </strong>
+                      {t("library.tableRow2OldDesc")}
+                    </td>
+                    <td className="border-l border-[var(--ib-line)] bg-[var(--ib-accbg)] p-5 align-top sm:p-6">
+                      <strong className="mb-2 block text-[var(--ib-acc)]">
+                        {t("library.tableRow2NewTitle")}
+                      </strong>
+                      {t("library.tableRow2NewDesc")}
+                    </td>
+                    <td className="border-l border-[var(--ib-line)] p-5 align-top sm:p-6">
+                      <strong className="mb-2 block text-[var(--ib-ink)]">
+                        {t("library.tableRow2ValTitle")}
+                      </strong>
+                      {t("library.tableRow2ValDesc")}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* ── Standards grid ───────────────────────────────── */}
+      <ISOStandardsNexus searchTerm={searchTerm} />
+
+      {/* ── Final CTA ────────────────────────────────────── */}
+      <section className="px-4 pb-20 pt-6 sm:px-6 sm:pb-28 sm:pt-10">
+        <div className="ib-w max-w-5xl!">
+          <motion.div
+            initial={reduceMotion ? false : { opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.35 }}
+            transition={{ duration: 0.45, ease }}
+            className="relative overflow-hidden rounded-[24px] bg-[var(--ib-acc)] px-6 py-12 text-center sm:rounded-[32px] sm:px-12 sm:py-16 md:px-16 md:py-20"
+          >
+            <div
+              aria-hidden
+              className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_20%_0%,rgba(255,255,255,0.18),transparent_55%)]"
+            />
+            <div className="relative z-[1] flex flex-col items-center">
+              <h2 className="mb-0! text-[26px] font-semibold leading-[1.25] text-white sm:text-[34px]">
+                {t("library.ctaTitle")}
+              </h2>
+              <p className="mt-4 max-w-2xl text-[15px] font-medium leading-relaxed text-white/85 sm:text-[17px]">
+                {t("library.ctaDesc")}
+              </p>
+              <Link
+                href={`/${lang}/library/iso-standards/explorer`}
+                className="mt-8 inline-flex items-center gap-2.5 rounded-[10px] bg-white px-8 py-4 text-[12px] font-bold uppercase tracking-[1px] text-[var(--ib-ink)] transition-opacity hover:opacity-92 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white sm:px-10 sm:py-5 sm:text-[14px]"
+              >
+                {t("library.ctaBtn")}
+                <ArrowRight className="size-5" aria-hidden />
               </Link>
             </div>
           </motion.div>

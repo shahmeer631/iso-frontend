@@ -8,15 +8,15 @@ const TopStandards = () => {
 
   if (isLoading) {
     return (
-      <section className="py-16 md:py-24 bg-gray-50/40 min-h-[400px] flex items-center justify-center">
-        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-indigo-600"></div>
+      <section className="py-16 md:py-24 bg-[var(--ib-bg)]/40 min-h-[400px] flex items-center justify-center">
+        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-[var(--ib-acc)]"></div>
       </section>
     );
   }
 
   if (isError || !data?.data) {
     return (
-      <section className="py-16 md:py-24 bg-gray-50/40 min-h-[400px] flex items-center justify-center">
+      <section className="py-16 md:py-24 bg-[var(--ib-bg)]/40 min-h-[400px] flex items-center justify-center">
         <div className="text-center">
           <p className="text-red-500">Failed to load standards.</p>
         </div>
@@ -27,11 +27,11 @@ const TopStandards = () => {
   const standards = data.data;
 
   return (
-    <section className="py-16 md:py-24 bg-gray-50/40">
+    <section className="py-16 md:py-24 bg-[var(--ib-bg)]/40">
       <div className="max-w-7xl mx-auto px-6 lg:px-10">
         {/* Header */}
         <div className="mb-10">
-          <h2 className="space-grotesk text-4xl lg:text-[42px] font-semibold text-[#1E293B] mb-2 leading-[1.2] tracking-tight">
+          <h2 className="text-4xl lg:text-[42px] font-semibold text-[var(--ib-ink)] mb-2 leading-[1.2] tracking-tight">
             Top Standards
           </h2>
           <p className="text-[#64748B] text-base">
@@ -50,13 +50,13 @@ const TopStandards = () => {
                 <span className="text-[#4A61E4] font-bold text-sm uppercase tracking-wide">
                   {std.isoCode}
                 </span>
-                <h3 className="text-[#1E293B] font-bold text-lg mt-4 leading-snug line-clamp-2">
+                <h3 className="text-[var(--ib-ink)] font-bold text-lg mt-4 leading-snug line-clamp-2">
                   {std.title}
                 </h3>
               </div>
 
               <div className="flex items-center justify-between pt-6 border-t border-[#F8FAFC]">
-                <span className="text-[#94A3B8] text-xs font-medium">
+                <span className="text-[var(--ib-mute)] text-xs font-medium">
                   {std.version ? `Published in ${std.version}` : "Recently Published"}
                 </span>
                 <span className="text-[#334155] text-xs font-bold">

@@ -5,8 +5,8 @@ interface ProgressBarProps {
 
 export default function ProgressBar({ label, value }: ProgressBarProps) {
   const getTextColor = (v: number) => {
-    if (v >= 80) return "#D4AF37";
-    if (v >= 50) return "#B026FF";
+    if (v >= 80) return "var(--ib-acc)";
+    if (v >= 50) return "var(--ib-acc)";
     return "#FFB800";
   };
 
@@ -18,12 +18,12 @@ export default function ProgressBar({ label, value }: ProgressBarProps) {
       boxShadow: "0 4px 20px rgba(0, 0, 0, 0.2)"
     }}>
       {/* Label - Left Side */}
-      <span className="font-inter w-24 sm:w-36 text-[10px] sm:text-xs font-bold text-[#A0AAB2] uppercase tracking-wider truncate shrink-0">
+      <span className="font-inter w-24 sm:w-36 text-[10px] sm:text-xs font-bold text-[var(--ib-mute)] uppercase tracking-wider truncate shrink-0">
         {label}
       </span>
 
       {/* Progress Track - Center (Recessed Style) */}
-      <div className="flex-1 h-5 sm:h-6 bg-black/20 rounded-full p-1 shadow-inner" style={{
+      <div className="flex-1 h-5 sm:h-6 bg-[var(--ib-bg)] rounded-full p-1 shadow-inner" style={{
         boxShadow: "inset 0 2px 4px rgba(0,0,0,0.4)"
       }}>
         {/* Progress Fill - Gradient Style */}

@@ -1,20 +1,45 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import {
-  LayoutGrid, ArrowRight, Loader2,
-  ShieldCheck, Leaf, Lock, Cpu, Utensils, Stethoscope, Zap, Scale, Layers,
-  Building2, Beaker, AlertTriangle, Activity, Gavel, Server, Smile,
-  Microscope, GraduationCap, Briefcase, Calendar, Info,
-  ClipboardList, HardHat, Shield, TrendingUp, Users, Landmark, Banknote
+  LayoutGrid,
+  ArrowRight,
+  Loader2,
+  Leaf,
+  Cpu,
+  Utensils,
+  Stethoscope,
+  Zap,
+  Scale,
+  Layers,
+  Building2,
+  AlertTriangle,
+  Activity,
+  Gavel,
+  Server,
+  Smile,
+  Microscope,
+  GraduationCap,
+  Briefcase,
+  Calendar,
+  Info,
+  ClipboardList,
+  HardHat,
+  Shield,
+  TrendingUp,
+  Users,
+  Landmark,
+  Banknote,
 } from "lucide-react";
 import React, { useMemo } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { useParams, useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import { useGetCategoriesQuery } from "@/lib/redux/api/isoStandardsApi";
 import "@/lib/i18n/client";
 
-// ── Icon Mapping Helper ──────────────────────────────────────────────────
+const ease = [0.22, 1, 0.36, 1] as const;
+
 const getCategoryIcon = (slug: string, name: string = "") => {
   const textToMatch = (slug + " " + name).toLowerCase();
 
@@ -49,51 +74,74 @@ const getCategoryIcon = (slug: string, name: string = "") => {
 const AcademyCategoryCard = ({
   item,
   onNavigate,
+  index,
+  reduceMotion,
 }: {
   item: any;
   onNavigate: (slug: string) => void;
+  index: number;
+  reduceMotion: boolean | null;
 }) => {
   const { t } = useTranslation();
   const Icon = getCategoryIcon(item.slug || "", item.name || "");
 
   return (
-    <motion.div
+    <motion.article
       layout
-      initial={{ opacity: 0, y: 20 }}
+      initial={reduceMotion ? false : { opacity: 0, y: 18 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      whileHover={{ y: -5, boxShadow: "0 0 40px rgba(0, 240, 255, 0.1)" }}
-      transition={{ duration: 0.3 }}
-      className="group relative bg-[#18181B]/40 backdrop-blur-md border border-white/10 rounded-2xl p-8 flex flex-col gap-6 overflow-hidden"
+      viewport={{ once: true, amount: 0.2 }}
+      transition={{
+        duration: 0.4,
+        delay: reduceMotion ? 0 : Math.min(index * 0.05, 0.35),
+        ease,
+      }}
+      className="ib-card group relative flex h-full flex-col gap-5 overflow-hidden p-6 transition-all duration-300 hover:-translate-y-1 hover:border-[color-mix(in_srgb,var(--ib-acc)_35%,var(--ib-line))] hover:shadow-[0_18px_40px_-24px_rgba(27,77,219,0.35)] sm:p-7"
     >
-      <div className="absolute top-4 right-4 text-brand-cyan opacity-20 group-hover:opacity-40 group-hover:scale-110 transition-all duration-500">
-        <Icon size={80} strokeWidth={0.5} className="blur-[1px] opacity-10 group-hover:opacity-30" />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_100%_0%,color-mix(in_srgb,var(--ib-acc)_12%,transparent),transparent_55%)] opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+      />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -right-2 -top-2 text-[var(--ib-acc)] opacity-[0.08] transition-opacity duration-300 group-hover:opacity-[0.16]"
+      >
+        <Icon size={96} strokeWidth={0.75} />
       </div>
-      <div className="absolute -inset-px bg-gradient-to-r from-[#6366F1] to-[#00f0ff] rounded-2xl opacity-0 group-hover:opacity-10 transition-opacity duration-500" />
-      <div className="flex flex-col gap-4 relative z-10">
-        <div className="p-3 bg-[#00f0ff]/10 rounded-xl w-fit">
-          <Icon className="w-8 h-8 text-[#00f0ff]" />
+
+      <div className="relative z-[1] flex flex-col gap-4">
+        <div className="flex size-12 items-center justify-center rounded-xl border border-[color-mix(in_srgb,var(--ib-acc)_18%,var(--ib-line))] bg-[var(--ib-accbg)] text-[var(--ib-acc)] transition-transform duration-300 group-hover:scale-105">
+          <Icon className="size-6" aria-hidden />
         </div>
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-[#0F111A]/10 border border-brand-cyan/20 w-fit">
-          <span className="flex h-1.5 w-1.5 rounded-full bg-[#00f0ff]" />
-          <span className="text-[#00f0ff]   text-[10px] font-bold tracking-[0.1em] uppercase">
-            {t('academy.cpdCertified', 'CPD Certified')}
+        <div className="inline-flex w-fit items-center gap-2 rounded-full border border-[color-mix(in_srgb,var(--ib-acc)_20%,var(--ib-line))] bg-[var(--ib-accbg)] px-3 py-1">
+          <span className="size-1.5 rounded-full bg-[var(--ib-acc)]" aria-hidden />
+          <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-[var(--ib-acc)]">
+            {t("academy.cpdCertified", "CPD Certified")}
           </span>
         </div>
-        <h3 className="text-lg font-bold text-white leading-tight font-space-grotesk group-hover:text-[#FFFFFF] transition-colors">
-          {item.name} {" "} {t('academy.courses', 'Courses')}
+        <h3 className="mb-0! text-[18px] font-bold leading-snug tracking-[-0.02em] text-[var(--ib-ink)] transition-colors group-hover:text-[var(--ib-acc)] sm:text-[20px]">
+          {item.name} {t("academy.courses", "Courses")}
         </h3>
       </div>
-      <p className="text-[#A1A1AA] text-sm leading-relaxed line-clamp-3 relative z-10">
-        {item.courseDesc || ""}
-      </p>
+
+      {item.courseDesc ? (
+        <p className="relative z-[1] line-clamp-3 text-left text-[14px] leading-relaxed text-[var(--ib-mute)]">
+          {item.courseDesc}
+        </p>
+      ) : null}
+
       <button
-        onClick={() => onNavigate(item.slug)}
-        className="mt-auto w-full flex justify-center  items-center gap-2 bg-[#00f0ff] text-[#0F111A]  px-6 py-3 rounded-[8px] font-inter font-semibold text-[15px]   transition-all duration-300 relative z-10 cursor-pointer"
+        type="button"
+        onClick={(e) => {
+          e.stopPropagation();
+          onNavigate(item.slug);
+        }}
+        className="relative z-[1] mt-auto inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-[10px] border border-[var(--ib-acc)] bg-[var(--ib-acc)] px-4 py-3 text-[13px] font-semibold text-white shadow-[0_10px_24px_-12px_color-mix(in_srgb,var(--ib-acc)_55%,transparent)] transition-[transform,box-shadow,opacity] duration-200 hover:-translate-y-0.5 hover:opacity-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ib-acc)] sm:text-[14.5px]"
       >
-        {t('academy.enrollInCourse', 'Enroll in Course')} <ArrowRight size={16} />
+        {t("academy.enrollInCourse", "Enroll in Course")}
+        <ArrowRight size={16} aria-hidden />
       </button>
-    </motion.div>
+    </motion.article>
   );
 };
 
@@ -105,17 +153,21 @@ const AcademyCategoriesNexus = ({ searchTerm = "" }: AcademyCategoriesNexusProps
   const params = useParams();
   const router = useRouter();
   const { t } = useTranslation();
+  const reduceMotion = useReducedMotion();
   const lang = (params?.lang as string) || "en";
 
   const { data: categoriesData, isLoading, isError } = useGetCategoriesQuery();
   const categories = categoriesData?.data || [];
 
   const filteredCategories = useMemo(() => {
-    return categories.filter((cat: any) =>
-      cat.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (cat.standardSub && cat.standardSub.toLowerCase().includes(searchTerm.toLowerCase())) ||
-      (cat.courseDesc && cat.courseDesc.toLowerCase().includes(searchTerm.toLowerCase())) ||
-      (cat.standardDesc && cat.standardDesc.toLowerCase().includes(searchTerm.toLowerCase()))
+    if (!searchTerm) return categories;
+    const q = searchTerm.toLowerCase();
+    return categories.filter(
+      (cat: any) =>
+        cat.name.toLowerCase().includes(q) ||
+        (cat.standardSub && cat.standardSub.toLowerCase().includes(q)) ||
+        (cat.courseDesc && cat.courseDesc.toLowerCase().includes(q)) ||
+        (cat.standardDesc && cat.standardDesc.toLowerCase().includes(q))
     );
   }, [categories, searchTerm]);
 
@@ -124,35 +176,66 @@ const AcademyCategoriesNexus = ({ searchTerm = "" }: AcademyCategoriesNexusProps
   };
 
   return (
-    <section className="bg-[#0B0F19] py-24 px-6 relative">
-      <div className="max-w-7xl mx-auto">
-        <div className="text-center mb-20">
-          <h2 className="space-grotesk text-4xl lg:text-[42px] font-semibold text-white mb-6 leading-[1.2] tracking-tight">
-            {t('academy.exploreCategories', 'Explore Certification Categories')}
+    <section className="relative overflow-x-clip bg-[var(--ib-bg)] px-4 py-14 sm:px-6 sm:py-20">
+      <div className="ib-w relative z-[1] max-w-7xl!">
+        <motion.div
+          initial={reduceMotion ? false : { opacity: 0, y: 14 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.4 }}
+          transition={{ duration: 0.45, ease }}
+          className="mx-auto mb-10 max-w-[680px] text-center md:mb-12"
+        >
+          <div className="ib-eye inline-flex items-center justify-center gap-2">
+            <LayoutGrid className="size-3.5" aria-hidden />
+            {t("academy.popularCourses")}
+          </div>
+          <h2 className="mb-0! mt-2 text-[28px] font-bold leading-[1.15] tracking-[-0.03em] text-[var(--ib-ink)] sm:text-[34px] lg:text-[38px]">
+            {t("academy.exploreCategories", "Explore Certification Categories")}
           </h2>
-          <div className="w-24 h-1 bg-gradient-to-r from-[#00f0ff]  mx-auto rounded-full" />
-        </div>
+          <div className="mx-auto mt-4 h-1 w-16 rounded-full bg-[var(--ib-acc)]" />
+        </motion.div>
 
         {isLoading ? (
-          <div className="flex flex-col items-center justify-center py-20 gap-4">
-            <Loader2 className="w-10 h-10 text-brand-cyan animate-spin" />
-            <p className="text-[#A1A1AA] font-medium">{t('academy.loadingCategories', 'Loading certification categories...')}</p>
+          <div className="flex flex-col items-center justify-center gap-4 py-20">
+            <Loader2 className="size-10 animate-spin text-[var(--ib-acc)]" />
+            <p className="font-medium text-[var(--ib-mute)]">
+              {t("academy.loadingCategories", "Loading certification categories...")}
+            </p>
+            <div className="mt-4 grid w-full grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+              {[0, 1, 2].map((i) => (
+                <div
+                  key={i}
+                  className="ib-card h-[280px] animate-pulse bg-[color-mix(in_srgb,var(--ib-card)_80%,var(--ib-accbg))]"
+                  aria-hidden
+                />
+              ))}
+            </div>
           </div>
         ) : isError ? (
-          <div className="text-center py-20">
-            <p className="text-red-400 font-medium">{t('academy.failedToLoadCategories', 'Failed to load categories. Please try again later.')}</p>
+          <div className="ib-card mx-auto max-w-lg py-16 text-center">
+            <p className="font-medium text-red-500">
+              {t(
+                "academy.failedToLoadCategories",
+                "Failed to load categories. Please try again later."
+              )}
+            </p>
           </div>
         ) : filteredCategories.length === 0 ? (
-          <div className="text-center py-20">
-            <p className="text-[#A1A1AA] text-lg font-medium">{t('academy.noResultsFound', 'No results found for')} "{searchTerm}"</p>
+          <div className="ib-card mx-auto max-w-lg px-6 py-16 text-center">
+            <GraduationCap className="mx-auto mb-4 size-10 text-[var(--ib-mute)] opacity-50" />
+            <p className="text-lg font-semibold text-[var(--ib-ink)]">
+              {t("academy.noResultsFound", "No results found for")} &ldquo;{searchTerm}&rdquo;
+            </p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 gap-5 md:grid-cols-2 md:gap-6 lg:grid-cols-3">
             <AnimatePresence mode="popLayout">
-              {filteredCategories.map((cat: any) => (
+              {filteredCategories.map((cat: any, index: number) => (
                 <AcademyCategoryCard
                   key={cat.id}
                   item={cat}
+                  index={index}
+                  reduceMotion={reduceMotion}
                   onNavigate={handleNavigate}
                 />
               ))}

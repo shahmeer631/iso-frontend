@@ -26,7 +26,7 @@ export default function RelatedStandards() {
             />
             </div>
             <h3 className="font-bold">{std.code}</h3>
-            <p className="mt-1 text-sm text-gray-600">{std.title}</p>
+            <p className="mt-1 text-sm text-[var(--ib-mute)]">{std.title}</p>
             <button className="mt-4 text-sm text-blue-600 hover:underline">
               {std.desc}
             </button>

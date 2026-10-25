@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@100;200;300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
 @import "tailwindcss";
 @import "tw-animate-css";
@@ -10,6 +10,95 @@
 
   .animate-marquee-right {
     animation: marquee-right var(--duration, 40s) linear infinite;
+  }
+
+  /* Footer brain logo — continuous circular spin (original brand mark) */
+  .animate-brain-spin {
+    animation: brain-spin 8s linear infinite;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .animate-marquee-left,
+    .animate-marquee-right,
+    .animate-brain-spin {
+      animation: none !important;
+    }
+  }
+}
+
+@keyframes brand-heading-shine {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 100% 50%;
+  }
+}
+
+/* Floating chat greeting — shimmer travels across the TEXT (not a flash) */
+@keyframes chat-greeting-text-shimmer {
+  0% {
+    background-position: 140% 50%;
+  }
+  100% {
+    background-position: -40% 50%;
+  }
+}
+
+.chat-greeting-bubble {
+  position: relative;
+  overflow: hidden;
+}
+
+.chat-greeting-text {
+  background-image: linear-gradient(
+    105deg,
+    var(--ib-ink) 0%,
+    var(--ib-ink) 38%,
+    color-mix(in srgb, var(--ib-acc) 75%, #ffffff) 48%,
+    #ffffff 50%,
+    color-mix(in srgb, var(--ib-acc) 70%, #ffffff) 52%,
+    var(--ib-ink) 62%,
+    var(--ib-ink) 100%
+  );
+  background-size: 220% 100%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  animation: chat-greeting-text-shimmer 2.8s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chat-greeting-text {
+    animation: none !important;
+    background: none !important;
+    background-clip: unset !important;
+    -webkit-background-clip: unset !important;
+    color: var(--ib-ink) !important;
+    -webkit-text-fill-color: var(--ib-ink) !important;
+  }
+}
+
+/* Homepage hero AI preview — restrained motion (paired with motion-safe:) */
+@keyframes hero-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+@keyframes hero-glow {
+  0% {
+    opacity: 0.75;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1.03);
   }
 }
 
@@ -33,16 +122,29 @@
   }
 }
 
+@keyframes brain-spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 @import "shadcn/tailwind.css";
 
 @custom-variant dark (&:is(.dark *));
 
+/* ── ISOBrain.AI Redesign Concept v4 design tokens ── */
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: "Inter", sans-serif;
-  --font-mono: "JetBrains Mono", monospace;
-  --font-heading: "Space Grotesk", sans-serif;
+  --font-sans: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  --font-heading: "Inter", system-ui, sans-serif;
+
+  /* Brand aliases (keep legacy class names working) */
   --color-bg-primary: var(--bg-primary);
   --color-bg-secondary: var(--bg-secondary);
   --color-text-heading: var(--text-heading);
@@ -50,22 +152,34 @@
   --color-accent-gold: var(--accent-gold);
   --color-accent-gold-hover: var(--accent-gold-hover);
 
-  /* Map standard tailwind cyan classes directly to premium gold accents */
-  --color-cyan-400: var(--accent-gold);
-  --color-cyan-500: var(--accent-gold);
+  /* v4 named tokens */
+  --color-ib-bg: var(--ib-bg);
+  --color-ib-card: var(--ib-card);
+  --color-ib-ink: var(--ib-ink);
+  --color-ib-mute: var(--ib-mute);
+  --color-ib-line: var(--ib-line);
+  --color-ib-acc: var(--ib-acc);
+  --color-ib-accbg: var(--ib-accbg);
+  --color-ib-ok: var(--ib-ok);
+  --color-ib-okbg: var(--ib-okbg);
+  --color-ib-dk: var(--ib-dk);
+  --color-ib-dktx: var(--ib-dktx);
+
+  /* Map cyan utilities → approved accent */
+  --color-cyan-400: var(--ib-acc);
+  --color-cyan-500: var(--ib-acc);
   --color-cyan-600: var(--accent-gold-hover);
 
-  /* Override standard Tailwind v4 font-size classes with brand responsive tokens */
   --text-xs: 12px;
-  --text-sm: var(--font-size-small);
-  --text-base: var(--font-size-body);
-  --text-lg: var(--font-size-body);
-  --text-xl: var(--font-size-h3);
-  --text-2xl: var(--font-size-h3);
-  --text-3xl: var(--font-size-h2);
-  --text-4xl: var(--font-size-h2);
-  --text-5xl: var(--font-size-h1);
-  --text-6xl: var(--font-size-h1);
+  --text-sm: 14px;
+  --text-base: 16px;
+  --text-lg: 17px;
+  --text-xl: 19px;
+  --text-2xl: 24px;
+  --text-3xl: 30px;
+  --text-4xl: 38px;
+  --text-5xl: 48px;
+  --text-6xl: 54px;
 
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
@@ -106,241 +220,370 @@
 }
 
 :root {
-  /* Core Backgrounds */
-  --bg-primary: #FFFFFF;
-  /* Pure white for main content areas */
-  --bg-secondary: #F8F9FA;
-  /* Off-white for alternating layout sections */
+  /* Approved v4 palette */
+  --ib-bg: #F5F7FB;
+  --ib-card: #ffffff;
+  --ib-ink: #0B1220;
+  --ib-mute: #59657A;
+  --ib-line: #E1E7F0;
+  --ib-acc: #1B4DDB;
+  --ib-accbg: #EAF0FF;
+  --ib-ok: #0F8A5F;
+  --ib-okbg: #E3F5EC;
+  --ib-dk: #0B1530;
+  --ib-dktx: #EAF0FF;
 
-  /* Typography */
-  --text-heading: #0B1B3D;
-  /* Deep corporate blue for all H1, H2, H3 */
-  --text-body: #334155;
-  /* Slate gray for high-contrast, readable paragraphs */
+  /* Legacy aliases → v4 */
+  --bg-primary: var(--ib-card);
+  --bg-secondary: var(--ib-bg);
+  --text-heading: var(--ib-ink);
+  --text-body: var(--ib-mute);
+  --accent-gold: var(--ib-acc);
+  --accent-gold-hover: #163db0;
 
-  /* Accents & Interactions */
-  --accent-gold: #3F3EED;
-  /* Primary CTA buttons, active states, and badges */
-  --accent-gold-hover: #2e2db8;
-
-  /* Typography Size tokens per specification */
-  --font-size-h1: 34px;
-  /* Mobile size: 32px – 36px */
+  --font-size-h1: 38px;
   --font-size-h2: 30px;
-  /* Mobile size: 28px – 32px */
-  --font-size-h3: 21px;
-  /* Mobile size: 20px – 22px */
+  --font-size-h3: 19px;
   --font-size-body: 16px;
-  /* Mobile body text minimum */
   --font-size-small: 14px;
-  /* Mobile/Desktop small caption */
 
   --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+
+  /* shadcn semantic tokens mapped to v4 */
+  --background: #F5F7FB;
+  --foreground: #0B1220;
+  --card: #ffffff;
+  --card-foreground: #0B1220;
+  --popover: #ffffff;
+  --popover-foreground: #0B1220;
+  --primary: #1B4DDB;
+  --primary-foreground: #ffffff;
+  --secondary: #EAF0FF;
+  --secondary-foreground: #0B1220;
+  --muted: #F5F7FB;
+  --muted-foreground: #59657A;
+  --accent: #EAF0FF;
+  --accent-foreground: #1B4DDB;
+  --destructive: #dc2626;
+  --border: #E1E7F0;
+  --input: #E1E7F0;
+  --ring: #1B4DDB;
+  --chart-1: #1B4DDB;
+  --chart-2: #0F8A5F;
+  --chart-3: #59657A;
+  --chart-4: #7AA2FF;
+  --chart-5: #0B1530;
+  --sidebar: #ffffff;
+  --sidebar-foreground: #0B1220;
+  --sidebar-primary: #1B4DDB;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #EAF0FF;
+  --sidebar-accent-foreground: #0B1220;
+  --sidebar-border: #E1E7F0;
+  --sidebar-ring: #1B4DDB;
 }
 
 @media (min-width: 1024px) {
   :root {
-    --font-size-h1: 52px;
-    /* Desktop midpoint: 48px – 56px */
+    --font-size-h1: 54px;
     --font-size-h2: 38px;
-    /* Desktop midpoint: 36px – 40px */
-    --font-size-h3: 26px;
-    /* Desktop midpoint: 24px – 28px */
-    --font-size-body: 17px;
-    /* Desktop body midpoint: 16px – 18px */
+    --font-size-h3: 19px;
+    --font-size-body: 16px;
   }
 }
 
-.dark {
-  /* Core Backgrounds adapted for dark mode premium feel */
-  --bg-primary: #0F111A;
-  --bg-secondary: #1E212B;
+/* Match approved HTML: auto dark via prefers-color-scheme unless forced light */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --ib-bg: #080D1A;
+    --ib-card: #101830;
+    --ib-ink: #EEF2FB;
+    --ib-mute: #9AA6BF;
+    --ib-line: #1F2A45;
+    --ib-acc: #7AA2FF;
+    --ib-accbg: #16244A;
+    --ib-ok: #4FD1A0;
+    --ib-okbg: #10302A;
+    --ib-dk: #101830;
+    --ib-dktx: #EAF0FF;
 
-  /* Typography adapted for dark mode premium legibility */
-  --text-heading: #FFFFFF;
-  --text-body: #A1A1A6;
+    --bg-primary: var(--ib-card);
+    --bg-secondary: var(--ib-bg);
+    --text-heading: var(--ib-ink);
+    --text-body: var(--ib-mute);
+    --accent-gold: var(--ib-acc);
+    --accent-gold-hover: #9bb8ff;
 
-  /* Accents & Interactions stay premium gold */
-  --accent-gold: #3F3EED;
-  --accent-gold-hover: #2e2db8;
+    --background: #080D1A;
+    --foreground: #EEF2FB;
+    --card: #101830;
+    --card-foreground: #EEF2FB;
+    --popover: #101830;
+    --popover-foreground: #EEF2FB;
+    --primary: #7AA2FF;
+    --primary-foreground: #0B1220;
+    --secondary: #16244A;
+    --secondary-foreground: #EEF2FB;
+    --muted: #101830;
+    --muted-foreground: #9AA6BF;
+    --accent: #16244A;
+    --accent-foreground: #7AA2FF;
+    --destructive: #f87171;
+    --border: #1F2A45;
+    --input: #1F2A45;
+    --ring: #7AA2FF;
+    --sidebar: #101830;
+    --sidebar-foreground: #EEF2FB;
+    --sidebar-primary: #7AA2FF;
+    --sidebar-primary-foreground: #0B1220;
+    --sidebar-accent: #16244A;
+    --sidebar-accent-foreground: #EEF2FB;
+    --sidebar-border: #1F2A45;
+    --sidebar-ring: #7AA2FF;
+    color-scheme: dark;
+  }
+}
 
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+.dark,
+:root[data-theme="dark"] {
+  --ib-bg: #080D1A;
+  --ib-card: #101830;
+  --ib-ink: #EEF2FB;
+  --ib-mute: #9AA6BF;
+  --ib-line: #1F2A45;
+  --ib-acc: #7AA2FF;
+  --ib-accbg: #16244A;
+  --ib-ok: #4FD1A0;
+  --ib-okbg: #10302A;
+  --ib-dk: #101830;
+  --ib-dktx: #EAF0FF;
+
+  --bg-primary: var(--ib-card);
+  --bg-secondary: var(--ib-bg);
+  --text-heading: var(--ib-ink);
+  --text-body: var(--ib-mute);
+  --accent-gold: var(--ib-acc);
+  --accent-gold-hover: #9bb8ff;
+
+  --background: #080D1A;
+  --foreground: #EEF2FB;
+  --card: #101830;
+  --card-foreground: #EEF2FB;
+  --popover: #101830;
+  --popover-foreground: #EEF2FB;
+  --primary: #7AA2FF;
+  --primary-foreground: #0B1220;
+  --secondary: #16244A;
+  --secondary-foreground: #EEF2FB;
+  --muted: #101830;
+  --muted-foreground: #9AA6BF;
+  --accent: #16244A;
+  --accent-foreground: #7AA2FF;
+  --destructive: #f87171;
+  --border: #1F2A45;
+  --input: #1F2A45;
+  --ring: #7AA2FF;
+  --chart-1: #7AA2FF;
+  --chart-2: #4FD1A0;
+  --chart-3: #9AA6BF;
+  --chart-4: #1B4DDB;
+  --chart-5: #EAF0FF;
+  --sidebar: #101830;
+  --sidebar-foreground: #EEF2FB;
+  --sidebar-primary: #7AA2FF;
+  --sidebar-primary-foreground: #0B1220;
+  --sidebar-accent: #16244A;
+  --sidebar-accent-foreground: #EEF2FB;
+  --sidebar-border: #1F2A45;
+  --sidebar-ring: #7AA2FF;
+  color-scheme: dark;
 }
 
 @layer base {
   * {
     @apply border-border outline-ring/50;
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: env(safe-area-inset-top, 0px);
   }
 
   body {
-    @apply bg-background text-foreground;
-    font-family: "Inter", sans-serif !important;
+    background: var(--ib-bg);
+    color: var(--ib-ink);
+    font-family: Inter, system-ui, -apple-system, "Segoe UI", sans-serif !important;
     font-size: 16px;
-    /* Mobile Body Text minimum to prevent iOS zoom */
     font-weight: 400;
     line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
   }
 
-  /* Responsive Typography System per UX Specification */
   h1,
   .text-h1 {
-    font-family: "Space Grotesk", sans-serif !important;
+    font-family: Inter, system-ui, sans-serif !important;
     font-weight: 700;
-    line-height: 1.2 !important;
-    letter-spacing: -0.02em !important;
-    font-size: 34px !important;
-    /* Mobile size: 32px – 36px */
+    line-height: 1.06 !important;
+    letter-spacing: -0.035em !important;
+    font-size: 38px !important;
+    color: var(--ib-ink);
   }
 
   h2,
   .text-h2 {
-    font-family: "Space Grotesk", sans-serif !important;
-    font-weight: 600;
-    line-height: 1.25 !important;
-    letter-spacing: -0.02em !important;
+    font-family: Inter, system-ui, sans-serif !important;
+    font-weight: 700;
+    line-height: 1.12 !important;
+    letter-spacing: -0.03em !important;
     font-size: 30px !important;
-    /* Mobile size: 28px – 32px */
+    color: var(--ib-ink);
   }
 
   h3,
   .text-h3 {
-    font-family: "Space Grotesk", sans-serif !important;
-    font-weight: 500;
-    line-height: 1.3 !important;
-    letter-spacing: -0.02em !important;
-    font-size: 21px !important;
-    /* Mobile size: 20px – 22px */
+    font-family: Inter, system-ui, sans-serif !important;
+    font-weight: 700;
+    line-height: 1.25 !important;
+    letter-spacing: -0.01em !important;
+    font-size: 19px !important;
+    color: var(--ib-ink);
   }
 
   p,
   .text-body {
-    font-family: "Inter", sans-serif !important;
+    font-family: Inter, system-ui, sans-serif !important;
     font-weight: 400 !important;
     line-height: 1.6 !important;
     font-size: 16px;
-    /* Mobile size: 16px minimum — no !important so Tailwind utilities can override */
   }
 
   small,
   .text-caption,
   .text-small {
-    font-family: "Inter", sans-serif !important;
+    font-family: Inter, system-ui, sans-serif !important;
     font-weight: 400 !important;
     line-height: 1.5 !important;
     font-size: 14px !important;
-    /* Small/Caption: 14px */
   }
 
-  /* Desktop Type Scale (min-width: 1024px) */
-  @media (min-width: 1024px) {
-    body {
-      font-size: 17px;
-      /* Desktop body midpoint: 16px – 18px */
-    }
-
+  @media (min-width: 901px) {
     h1,
     .text-h1 {
-      font-size: 52px !important;
-      /* Desktop H1 midpoint: 48px – 56px */
+      font-size: 54px !important;
     }
 
     h2,
     .text-h2 {
       font-size: 38px !important;
-      /* Desktop H2 midpoint: 36px – 40px */
-    }
-
-    h3,
-    .text-h3 {
-      font-size: 26px !important;
-      /* Desktop H3 midpoint: 24px – 28px */
-    }
-
-    p,
-    .text-body {
-      font-size: 17px;
-      /* Desktop body midpoint: 16px – 18px */
-    }
-
-    small,
-    .text-caption,
-    .text-small {
-      font-size: 14px !important;
-      /* Small/Caption: 14px */
     }
   }
 
   h4,
   h5,
   h6 {
-    font-family: "Space Grotesk", sans-serif !important;
-    font-weight: 500;
+    font-family: Inter, system-ui, sans-serif !important;
+    font-weight: 600;
     letter-spacing: -0.02em !important;
+    color: var(--ib-ink);
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
   }
 }
 
-/* Hide Google Translate completely - logic handled by custom component */
+/* Shared layout / component utilities matching v4 HTML */
+@layer components {
+  .ib-w {
+    max-width: 1180px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 28px;
+    padding-right: 28px;
+  }
+
+  .ib-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 22px;
+    font-size: 14.5px;
+    font-weight: 600;
+    border-radius: 10px;
+    background: var(--ib-acc);
+    color: #fff;
+    border: 1px solid var(--ib-acc);
+    transition: opacity 0.15s ease, background 0.15s ease;
+  }
+
+  .ib-btn:hover {
+    opacity: 0.92;
+  }
+
+  .ib-btn-o {
+    background: var(--ib-card);
+    color: var(--ib-ink);
+    border-color: var(--ib-line);
+  }
+
+  .ib-btn-s {
+    padding: 9px 16px;
+    font-size: 14px;
+  }
+
+  .ib-pill {
+    display: inline-flex;
+    gap: 8px;
+    align-items: center;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--ib-acc);
+    background: var(--ib-accbg);
+    padding: 5px 12px;
+    border-radius: 99px;
+  }
+
+  .ib-eye {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ib-acc);
+    margin-bottom: 10px;
+  }
+
+  .ib-card {
+    background: var(--ib-card);
+    border: 1px solid var(--ib-line);
+    border-radius: 16px;
+  }
+
+  .ib-chip {
+    font-size: 12px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 99px;
+    background: var(--ib-okbg);
+    color: var(--ib-ok);
+  }
+
+  .ib-chip-acc {
+    background: var(--ib-accbg);
+    color: var(--ib-acc);
+  }
+
+  .ib-section {
+    padding: 92px 0;
+  }
+
+  .ib-section-alt {
+    background: var(--ib-card);
+    border-top: 1px solid var(--ib-line);
+    border-bottom: 1px solid var(--ib-line);
+  }
+}
+
+/* Hide Google Translate chrome */
 .goog-te-banner-frame,
 iframe.goog-te-banner-frame,
 .goog-te-menu-frame,
@@ -363,7 +606,6 @@ iframe[id*="googtrans"],
   pointer-events: none !important;
 }
 
-/* Remove highlight/hover artifacts from Google Translate */
 .goog-text-highlight {
   background: none !important;
   background-color: transparent !important;
@@ -371,29 +613,19 @@ iframe[id*="googtrans"],
   color: inherit !important;
 }
 
-/* Prevent Google from wrapping text in fonts with background colors */
 font[style*="background-color"] {
   background-color: transparent !important;
 }
 
-/* Fix body shift and positioning */
 body {
   top: 0 !important;
   position: static !important;
 }
 
-/* Prevent Google from adding styles to body */
 body[style*="top:"] {
   top: 0 !important;
 }
 
-/* Remove Google Translate's auto-generated highlight */
-.goog-text-highlight {
-  background: none !important;
-  box-shadow: none !important;
-}
-
-/* Custom Thin Scrollbar Utility */
 @layer utilities {
   .custom-thin-scrollbar::-webkit-scrollbar {
     width: 5px;
@@ -405,15 +637,14 @@ body[style*="top:"] {
   }
 
   .custom-thin-scrollbar::-webkit-scrollbar-thumb {
-    background: rgba(99, 102, 241, 0.2);
+    background: color-mix(in srgb, var(--ib-acc) 25%, transparent);
     border-radius: 10px;
   }
 
   .custom-thin-scrollbar::-webkit-scrollbar-thumb:hover {
-    background: rgba(99, 102, 241, 0.4);
+    background: color-mix(in srgb, var(--ib-acc) 45%, transparent);
   }
 
-  /* Always-visible horizontal scrollbar for tables on mobile */
   .scrollable-table {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
@@ -424,32 +655,23 @@ body[style*="top:"] {
   }
 
   .scrollable-table::-webkit-scrollbar-track {
-    background: rgba(255, 255, 255, 0.05);
+    background: var(--ib-line);
     border-radius: 4px;
   }
 
   .scrollable-table::-webkit-scrollbar-thumb {
-    background: rgba(0, 240, 255, 0.4);
+    background: color-mix(in srgb, var(--ib-acc) 45%, transparent);
     border-radius: 4px;
   }
-
-  .scrollable-table::-webkit-scrollbar-thumb:hover {
-    background: rgba(0, 240, 255, 0.6);
-  }
 }
 
-.space-grotesk {
-  font-family: "Space Grotesk", sans-serif;
-  font-optical-sizing: auto;
-  font-style: normal;
-}
-
+.space-grotesk,
+.font-space-grotesk,
+.font-sans,
 .font-inter {
-  font-family: "Inter", sans-serif;
+  font-family: Inter, system-ui, -apple-system, "Segoe UI", sans-serif !important;
 }
-
-/* .font-inter correctly maps to Inter above — duplicate removed */
 
 .font-jetbrains-mono {
-  font-family: "JetBrains Mono", monospace;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 }

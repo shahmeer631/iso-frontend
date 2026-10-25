@@ -1,12 +1,15 @@
+"use client";
+
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
+import type { ElementType } from "react";
 
 interface FeatureCardProps {
   title: string;
   description: string;
   cta: string;
   href: string;
-  icon: React.ElementType;
+  icon: ElementType;
   iconBgColor?: string;
   iconColor?: string;
 }
@@ -17,60 +20,37 @@ export default function FeatureCard({
   cta,
   href,
   icon: Icon,
-  iconBgColor = "#FFFFFF",
-  iconColor = "#00F0FF",
+  iconBgColor = "var(--ib-accbg)",
+  iconColor = "var(--ib-acc)",
 }: FeatureCardProps) {
   return (
-    <div style={{
-      background: "rgba(255,255,255,0.02)",
-      borderRadius: 24,
-      border: "1px solid rgba(255,255,255,0.05)",
-      padding: 24,
-      transition: "all 0.2s ease-in-out",
-      cursor: "pointer",
-      display: "flex",
-      flexDirection: "column"
-    }}
-    onMouseEnter={(e) => {
-      e.currentTarget.style.transform = "scale(1.02)";
-      e.currentTarget.style.borderColor = "rgba(0,240,255,0.3)";
-      e.currentTarget.style.boxShadow = "0 10px 30px rgba(0,240,255,0.05)";
-    }}
-    onMouseLeave={(e) => {
-      e.currentTarget.style.transform = "scale(1)";
-      e.currentTarget.style.borderColor = "rgba(255,255,255,0.05)";
-      e.currentTarget.style.boxShadow = "none";
-    }}
-    >
-      {/* Icon */}
-      <div style={{
-        width: 48, height: 48, borderRadius: 12, background: iconBgColor,
-        display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 20,
-      }}>
-        <Icon size={24} color={iconColor} />
+    <article className="ib-card group flex h-full flex-col p-6 transition-all duration-300 hover:-translate-y-1 hover:border-[color-mix(in_srgb,var(--ib-acc)_35%,var(--ib-line))] hover:shadow-[0_18px_40px_-24px_rgba(27,77,219,0.35)] sm:p-7">
+      <div
+        className="mb-5 flex size-12 items-center justify-center rounded-xl"
+        style={{ background: iconBgColor }}
+      >
+        <Icon size={24} color={iconColor} aria-hidden />
       </div>
 
-      {/* Title */}
-      <h3 className="font-inter" style={{ fontSize: 20, fontWeight: 600, color: "#FFFFFF", marginBottom: 12 }}>
+      <h3 className="mb-0! text-[18px] font-semibold tracking-[-0.02em] text-[var(--ib-ink)] sm:text-[20px]">
         {title}
       </h3>
 
-      {/* Description */}
-      <p style={{ color: "#A0AAB2", fontSize: 15, lineHeight: 1.6, marginBottom: 24, flex: 1 }}>
+      <p className="mt-3 flex-1 text-[14.5px] leading-relaxed text-[var(--ib-mute)]">
         {description}
       </p>
 
-      {/* CTA */}
       <Link
         href={href}
-        style={{
-          display: "inline-flex", alignItems: "center", gap: 8, color: "#00F0FF",
-          fontWeight: 600, fontSize: 15, textDecoration: "none"
-        }}
+        className="mt-5 inline-flex items-center gap-2 text-[14px] font-semibold text-[var(--ib-acc)] transition-opacity hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ib-acc)]"
       >
         {cta}
-        <ArrowRight size={16} />
+        <ArrowRight
+          size={16}
+          className="transition-transform group-hover:translate-x-1"
+          aria-hidden
+        />
       </Link>
-    </div>
+    </article>
   );
 }

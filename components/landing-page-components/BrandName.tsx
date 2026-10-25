@@ -1,73 +1,127 @@
-"use client";
-import * as React from "react";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-} from "@/components/ui/carousel";
-import Image from "next/image";
-import Autoplay from "embla-carousel-autoplay";
+﻿"use client";
 
-import brand1 from "@/public/Samsung-icon.png";
-import brand2 from "@/public/ABB-icon.png";
-import brand3 from "@/public/Canon-icon.png";
-import brand4 from "@/public/CAT-icon.png";
-import brand5 from "@/public/DHL-icon.png";
-import brand6 from "@/public/Nestle-icon.png";
-import brand7 from "@/public/PepsiCo-icon.png";
-import brand8 from "@/public/Schneider-icon.png";
-import brand9 from "@/public/3M-icon.png";
-// import brand10 from "@/public/Uniliver-icon.png";
+import Image, { type StaticImageData } from "next/image";
+import { motion, useReducedMotion } from "framer-motion";
 
-const BrandName = () => {
-  const brands = [brand1, brand2, brand3, brand4, brand5, brand6, brand7, brand8, brand9];
+import brandSamsung from "@/public/Samsung-icon.png";
+import brandAbb from "@/public/ABB-icon.png";
+import brandCanon from "@/public/Canon-icon.png";
+import brandCat from "@/public/CAT-icon.png";
+import brandDhl from "@/public/DHL-icon.png";
+import brandNestle from "@/public/Nestle-icon.png";
+import brandPepsico from "@/public/PepsiCo-icon.png";
+import brandSchneider from "@/public/Schneider-icon.png";
+import brand3m from "@/public/3M-icon.png";
+
+type Brand = {
+  src: StaticImageData;
+  alt: string;
+};
+
+const BRANDS: Brand[] = [
+  { src: brandSamsung, alt: "Samsung" },
+  { src: brandAbb, alt: "ABB" },
+  { src: brandCanon, alt: "Canon" },
+  { src: brandCat, alt: "Caterpillar" },
+  { src: brandDhl, alt: "DHL" },
+  { src: brandNestle, alt: "Nestlé" },
+  { src: brandPepsico, alt: "PepsiCo" },
+  { src: brandSchneider, alt: "Schneider Electric" },
+  { src: brand3m, alt: "3M" },
+];
+
+function LogoRow({
+  brands,
+  ariaHidden,
+}: {
+  brands: Brand[];
+  ariaHidden?: boolean;
+}) {
+  return (
+    <ul
+      className="flex shrink-0 items-center gap-6 sm:gap-8 md:gap-10 px-3 sm:px-4"
+      aria-hidden={ariaHidden || undefined}
+    >
+      {brands.map((brand, index) => (
+        <li
+          key={`${brand.alt}-${index}-${ariaHidden ? "dup" : "main"}`}
+          className="flex shrink-0 items-center justify-center"
+        >
+          <Image
+            src={brand.src}
+            alt={ariaHidden ? "" : brand.alt}
+            width={112}
+            height={112}
+            className="h-16 w-16 sm:h-20 sm:w-20 md:h-[104px] md:w-[104px] object-contain"
+            sizes="(max-width: 640px) 64px, (max-width: 768px) 80px, 104px"
+            priority={index < 4 && !ariaHidden}
+          />
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+type BrandNameProps = {
+  className?: string;
+  showTrustedLabel?: boolean;
+};
+
+const BrandName = ({
+  className = "",
+  showTrustedLabel = false,
+}: BrandNameProps) => {
+  const reduceMotion = useReducedMotion();
 
   return (
-    <section dir="ltr" className="bg-[#0F111A] py-12 border-b border-white/5 overflow-hidden [direction:ltr]">
-      <div className="container mx-auto px-4" dir="ltr">
-        <div
-          className="relative"
-          dir="ltr"
-          data-aos="fade-up"
-          data-aos-duration="1000"
-        >
-          <Carousel
-            plugins={[
-              Autoplay({
-                delay: 2000,
-                stopOnInteraction: false,
-              }),
-            ]}
-            opts={{
-              align: "start",
-              loop: true,
-              direction: "ltr",
-            }}
-            className="w-full"
-            dir="ltr"
+    <section
+      dir="ltr"
+      className={`border-y border-[var(--ib-line)] bg-[var(--ib-card)] py-7 overflow-hidden [direction:ltr] ${className}`}
+      aria-label="Trusted by leading organizations"
+    >
+      <div
+        className={`ib-w flex items-center gap-6 md:gap-10 ${
+          showTrustedLabel ? "flex-col sm:flex-row" : ""
+        }`}
+      >
+        {showTrustedLabel && (
+          <motion.p
+            initial={reduceMotion ? false : { opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.6 }}
+            transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+            className="relative shrink-0 max-w-[168px] text-center text-[13.5px] font-semibold leading-[1.35] tracking-[-0.015em] text-[var(--ib-ink)] sm:text-left"
           >
-            <CarouselContent className="-ml-4 flex items-center" dir="ltr">
-              {brands.map((brand, index) => (
-                <CarouselItem
-                  key={index}
-                  className="pl-4 basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/7"
-                >
-                  <div className="flex items-center justify-center px-8 transition-all duration-500 cursor-pointer">
-                    <Image
-                      src={brand}
-                      alt={`brand-${index}`}
-                      width={120}
-                      height={120}
-                      className="object-contain"
-                    />
-                  </div>
-                </CarouselItem>
-              ))}
-            </CarouselContent>
-          </Carousel>
+            <span
+              className="bg-[linear-gradient(105deg,var(--ib-acc)_0%,var(--ib-ink)_55%,var(--ib-acc)_100%)] bg-clip-text text-transparent"
+              style={{
+                backgroundSize: "200% 100%",
+                animation: reduceMotion
+                  ? undefined
+                  : "brand-heading-shine 7s ease-in-out infinite alternate",
+              }}
+            >
+              Trusted
+            </span>{" "}
+            by teams at{" "}
+            <span className="bg-[linear-gradient(105deg,var(--ib-ink)_10%,var(--ib-acc)_100%)] bg-clip-text font-bold text-transparent">
+              leading organizations
+            </span>
+            <span
+              aria-hidden
+              className="mx-auto mt-2 block h-[2px] w-10 rounded-full bg-[linear-gradient(90deg,var(--ib-acc),transparent)] sm:mx-0"
+            />
+          </motion.p>
+        )}
 
-          <div className="absolute top-0 left-0 w-24 h-full bg-gradient-to-r from-[#0F111A] to-transparent z-10 pointer-events-none" />
-          <div className="absolute top-0 right-0 w-24 h-full bg-gradient-to-l from-[#0F111A] to-transparent z-10 pointer-events-none" />
+        <div className="relative min-w-0 flex-1 overflow-hidden">
+          <div className="flex w-max animate-marquee-left motion-reduce:animate-none [--duration:35s] hover:[animation-play-state:paused]">
+            <LogoRow brands={BRANDS} />
+            <LogoRow brands={BRANDS} ariaHidden />
+          </div>
+
+          <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-10 sm:w-16 bg-gradient-to-r from-[var(--ib-card)] to-transparent" />
+          <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-10 sm:w-16 bg-gradient-to-l from-[var(--ib-card)] to-transparent" />
         </div>
       </div>
     </section>

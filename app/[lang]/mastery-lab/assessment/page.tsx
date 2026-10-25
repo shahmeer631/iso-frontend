@@ -387,8 +387,8 @@ const AssessmentQuizPage = () => {
 
   if (!currentQ) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#0F111A]">
-        <div className="animate-spin w-8 h-8 border-4 border-brand-cyan border-t-transparent rounded-full"></div>
+      <div className="min-h-screen flex items-center justify-center bg-[var(--ib-bg)]">
+        <div className="animate-spin w-8 h-8 border-4 border-[var(--ib-acc)] border-t-transparent rounded-full"></div>
       </div>
     );
   }
@@ -398,16 +398,16 @@ const AssessmentQuizPage = () => {
     const overallPercent = total > 0 ? (rightAns / total) * 100 : 0;
 
     return (
-      <div className="min-h-screen pt-24 pb-12 px-4" style={{ background: "#0F111A", fontFamily: "'Space Grotesk', sans-serif" }}>
+      <div className="min-h-screen pt-12 pb-12 px-4" style={{ background: "var(--ib-bg)", fontFamily: "'Inter', sans-serif" }}>
         <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10">
           <div className="lg:col-span-8 xl:col-span-9 space-y-8">
 
             {/* Header Section */}
             <div className="text-center space-y-4 mb-12">
-              <h1 className="space-grotesk text-5xl lg:text-[52px] font-semibold text-white leading-[1.1] tracking-tight text-center mb-8">
+              <h1 className="text-5xl lg:text-[52px] font-semibold text-[var(--ib-ink)] leading-[1.1] tracking-tight text-center mb-8">
                 ISO Competency Assessment
               </h1>
-              <div className="flex flex-wrap justify-center gap-3 text-gray-400 text-sm font-bold uppercase tracking-widest">
+              <div className="flex flex-wrap justify-center gap-3 text-[var(--ib-mute)] text-sm font-bold uppercase tracking-widest">
                 <span>{assessmentData?.industry || "Industry"}</span>
                 <span className="opacity-30">|</span>
                 <span>{assessmentData?.department || "Department"}</span>
@@ -418,76 +418,76 @@ const AssessmentQuizPage = () => {
 
             {/* Quick Stats Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              <div className="bg-[#1E212B] border border-white/5 p-8 rounded-3xl text-center flex flex-col justify-center min-h-[160px]">
-                <div className="text-3xl font-medium text-white mb-2">{assessmentData?.overallScore || Math.round(overallPercent)}%</div>
-                <div className="text-[10px] font-medium text-gray-500 uppercase tracking-widest">Overall Score</div>
+              <div className="bg-[var(--ib-card)] border border-[var(--ib-line)] p-8 rounded-3xl text-center flex flex-col justify-center min-h-[160px]">
+                <div className="text-3xl font-medium text-[var(--ib-ink)] mb-2">{assessmentData?.overallScore || Math.round(overallPercent)}%</div>
+                <div className="text-[10px] font-medium text-[var(--ib-mute)] uppercase tracking-widest">Overall Score</div>
               </div>
-              <div className="bg-[#1E212B] border border-white/5 p-8 rounded-3xl text-center flex flex-col justify-center min-h-[160px]">
-                <div className="text-3xl font-medium text-white mb-2">{assessmentData?.benchmark?.industryAverage || "78"}%</div>
-                <div className="text-[10px] font-medium text-gray-500 uppercase tracking-widest">Industry Avg.</div>
+              <div className="bg-[var(--ib-card)] border border-[var(--ib-line)] p-8 rounded-3xl text-center flex flex-col justify-center min-h-[160px]">
+                <div className="text-3xl font-medium text-[var(--ib-ink)] mb-2">{assessmentData?.benchmark?.industryAverage || "78"}%</div>
+                <div className="text-[10px] font-medium text-[var(--ib-mute)] uppercase tracking-widest">Industry Avg.</div>
               </div>
-              <div className="bg-[#1E212B] border border-white/5 p-8 rounded-3xl text-center flex flex-col justify-center min-h-[160px]">
+              <div className="bg-[var(--ib-card)] border border-[var(--ib-line)] p-8 rounded-3xl text-center flex flex-col justify-center min-h-[160px]">
                 <div className="text-3xl font-medium text-red-500 mb-2">{assessmentData?.benchmark?.comparison || "Below Average"}</div>
-                <div className="text-[10px] font-medium text-gray-500 uppercase tracking-widest">Benchmark</div>
+                <div className="text-[10px] font-medium text-[var(--ib-mute)] uppercase tracking-widest">Benchmark</div>
               </div>
-              <div className="bg-[#1E212B] border border-white/5 p-8 rounded-3xl text-center flex flex-col justify-center min-h-[160px]">
-                <div className="text-xl font-medium text-white mb-2">{assessmentData?.aiFeedback?.competency_level?.title || "Foundational"}</div>
-                <div className="text-[10px] font-medium text-gray-500 uppercase tracking-widest">Competency: {assessmentData?.aiFeedback?.competency_level?.code || "ISO-C1"}</div>
+              <div className="bg-[var(--ib-card)] border border-[var(--ib-line)] p-8 rounded-3xl text-center flex flex-col justify-center min-h-[160px]">
+                <div className="text-xl font-medium text-[var(--ib-ink)] mb-2">{assessmentData?.aiFeedback?.competency_level?.title || "Foundational"}</div>
+                <div className="text-[10px] font-medium text-[var(--ib-mute)] uppercase tracking-widest">Competency: {assessmentData?.aiFeedback?.competency_level?.code || "ISO-C1"}</div>
               </div>
             </div>
 
             {/* Competency Summary */}
-            <div className="bg-[#1E212B] border border-white/5 p-10 rounded-[40px]">
-              <h3 className="text-xs font-medium text-cyan-500 uppercase tracking-[0.2em] mb-6 flex items-center gap-2">
-                <div className="w-1.5 h-6 bg-cyan-500 rounded-full" /> Competency Summary
+            <div className="bg-[var(--ib-card)] border border-[var(--ib-line)] p-10 rounded-[40px]">
+              <h3 className="text-xs font-medium text-[var(--ib-acc)] uppercase tracking-[0.2em] mb-6 flex items-center gap-2">
+                <div className="w-1.5 h-6 bg-[var(--ib-acc)] rounded-full" /> Competency Summary
               </h3>
-              <p className="text-lg text-gray-300 leading-relaxed font-medium">
+              <p className="text-lg text-[var(--ib-mute)] leading-relaxed font-medium">
                 {assessmentData?.aiFeedback?.competency_level?.summary || "Analyzing your overall competency..."}
               </p>
             </div>
 
             {/* Strengths and Weaknesses side-by-side */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="bg-[#1E212B] border border-white/5 p-10 rounded-[40px] border-l-4 border-l-emerald-500/50">
+              <div className="bg-[var(--ib-card)] border border-[var(--ib-line)] p-10 rounded-[40px] border-l-4 border-l-emerald-500/50">
                 <h3 className="text-xs font-medium text-emerald-500 uppercase tracking-[0.2em] mb-8">Key Strengths</h3>
                 <ul className="space-y-4">
                   {assessmentData?.aiFeedback?.analytical_feedback?.strengths.map((s: string, i: number) => (
-                    <li key={i} className="text-sm text-gray-400 flex items-start gap-3">
+                    <li key={i} className="text-sm text-[var(--ib-mute)] flex items-start gap-3">
                       <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 mt-1.5 shrink-0" /> {s}
                     </li>
-                  )) || <li className="text-gray-500 italic">No specific strengths identified yet.</li>}
+                  )) || <li className="text-[var(--ib-mute)] italic">No specific strengths identified yet.</li>}
                 </ul>
               </div>
-              <div className="bg-[#1E212B] border border-white/5 p-10 rounded-[40px] border-l-4 border-l-red-500/50">
+              <div className="bg-[var(--ib-card)] border border-[var(--ib-line)] p-10 rounded-[40px] border-l-4 border-l-red-500/50">
                 <h3 className="text-xs font-medium text-red-500 uppercase tracking-[0.2em] mb-8">Primary Weaknesses</h3>
                 <ul className="space-y-4">
                   {assessmentData?.aiFeedback?.analytical_feedback?.weaknesses.map((w: string, i: number) => (
-                    <li key={i} className="text-sm text-gray-400 flex items-start gap-3">
+                    <li key={i} className="text-sm text-[var(--ib-mute)] flex items-start gap-3">
                       <div className="w-1.5 h-1.5 rounded-full bg-red-500 mt-1.5 shrink-0" /> {w}
                     </li>
-                  )) || <li className="text-gray-500 italic">No specific weaknesses identified.</li>}
+                  )) || <li className="text-[var(--ib-mute)] italic">No specific weaknesses identified.</li>}
                 </ul>
               </div>
             </div>
 
             {/* Risk Assessment */}
             {assessmentData?.aiFeedback?.risk_assessment && (
-              <div className="bg-[#1E212B] border border-white/5 p-10 rounded-[40px] border-l-4 border-l-red-500">
+              <div className="bg-[var(--ib-card)] border border-[var(--ib-line)] p-10 rounded-[40px] border-l-4 border-l-red-500">
                 <div className="flex items-center gap-4 mb-8">
-                  <h3 className="text-xs font-medium text-white uppercase tracking-[0.2em]">Risk Assessment</h3>
+                  <h3 className="text-xs font-medium text-[var(--ib-ink)] uppercase tracking-[0.2em]">Risk Assessment</h3>
                   <span className="px-2 py-0.5 bg-red-500/20 text-red-500 text-[8px] font-medium uppercase rounded border border-red-500/30">
                     {assessmentData.aiFeedback.risk_assessment.risk_level} {t('dynamic.dyn_rISK_620')}</span>
                 </div>
                 <div className="space-y-6">
                   <div>
-                    <span className="text-sm font-medium text-white uppercase block mb-2">Impact:</span>
-                    <p className="text-gray-400 leading-relaxed italic">
+                    <span className="text-sm font-medium text-[var(--ib-ink)] uppercase block mb-2">Impact:</span>
+                    <p className="text-[var(--ib-mute)] leading-relaxed italic">
                       {assessmentData.aiFeedback.risk_assessment.impact_description}
                     </p>
                   </div>
                   <div>
-                    <span className="text-sm font-medium text-white uppercase block mb-2">Mitigation:</span>
-                    <p className="text-gray-400 leading-relaxed">
+                    <span className="text-sm font-medium text-[var(--ib-ink)] uppercase block mb-2">Mitigation:</span>
+                    <p className="text-[var(--ib-mute)] leading-relaxed">
                       {assessmentData.aiFeedback.risk_assessment.mitigation_recommendation}
                     </p>
                   </div>
@@ -497,12 +497,12 @@ const AssessmentQuizPage = () => {
 
             {/* Critical Focus Clauses */}
             {assessmentData?.aiFeedback?.analytical_feedback?.critical_focus_clauses && (
-              <div className="bg-[#1E212B] border border-white/5 p-10 rounded-[40px]">
-                <h3 className="text-xs font-medium text-cyan-500 uppercase tracking-[0.2em] mb-8">Critical Focus Clauses</h3>
+              <div className="bg-[var(--ib-card)] border border-[var(--ib-line)] p-10 rounded-[40px]">
+                <h3 className="text-xs font-medium text-[var(--ib-acc)] uppercase tracking-[0.2em] mb-8">Critical Focus Clauses</h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {assessmentData.aiFeedback.analytical_feedback.critical_focus_clauses.map((clause: string, i: number) => (
-                    <div key={i} className="text-sm text-gray-400 flex items-start gap-3">
-                      <div className="w-1.5 h-1.5 rounded-full bg-cyan-500 mt-1.5 shrink-0" /> {clause}
+                    <div key={i} className="text-sm text-[var(--ib-mute)] flex items-start gap-3">
+                      <div className="w-1.5 h-1.5 rounded-full bg-[var(--ib-acc)] mt-1.5 shrink-0" /> {clause}
                     </div>
                   ))}
                 </div>
@@ -511,13 +511,13 @@ const AssessmentQuizPage = () => {
 
             {/* Strategic Learning Roadmap */}
             {assessmentData?.aiFeedback?.learning_roadmap && (
-              <div className="bg-[#1E212B] border border-white/5 p-10 rounded-[40px]">
-                <h3 className="text-xs font-medium text-cyan-500 uppercase tracking-[0.2em] mb-10">Strategic Learning Roadmap</h3>
+              <div className="bg-[var(--ib-card)] border border-[var(--ib-line)] p-10 rounded-[40px]">
+                <h3 className="text-xs font-medium text-[var(--ib-acc)] uppercase tracking-[0.2em] mb-10">Strategic Learning Roadmap</h3>
                 <div className="space-y-12">
                   {assessmentData.aiFeedback.learning_roadmap.map((item: any, i: number) => (
-                    <div key={i} className="space-y-4 pb-8 border-b border-white/5 last:border-0 last:pb-0">
+                    <div key={i} className="space-y-4 pb-8 border-b border-[var(--ib-line)] last:border-0 last:pb-0">
                       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                        <h4 className="text-lg font-bold text-white">{item.area}</h4>
+                        <h4 className="text-lg font-bold text-[var(--ib-ink)]">{item.area}</h4>
                         <span className={`px-2 py-0.5 text-[8px] font-medium uppercase rounded border ${item.priority === 'High' ? 'bg-red-500/20 text-red-500 border-red-500/30' :
                           item.priority === 'Medium' ? 'bg-amber-500/20 text-amber-500 border-amber-500/30' :
                             'bg-emerald-500/20 text-emerald-500 border-emerald-500/30'
@@ -525,15 +525,15 @@ const AssessmentQuizPage = () => {
                           Priority {item.priority}
                         </span>
                       </div>
-                      <div className="text-[10px] text-gray-500 font-bold uppercase tracking-widest flex flex-wrap gap-x-4 gap-y-2">
-                        <span className="text-gray-400">Resources:</span>
+                      <div className="text-[10px] text-[var(--ib-mute)] font-bold uppercase tracking-widest flex flex-wrap gap-x-4 gap-y-2">
+                        <span className="text-[var(--ib-mute)]">Resources:</span>
                         {item.resources.map((res: string, idx: number) => (
-                          <span key={idx} className="normal-case font-normal text-gray-500">{res}{idx < item.resources.length - 1 ? ',' : ''}</span>
+                          <span key={idx} className="normal-case font-normal text-[var(--ib-mute)]">{res}{idx < item.resources.length - 1 ? ',' : ''}</span>
                         ))}
                       </div>
-                      <div className="bg-white/5 p-6 rounded-2xl">
-                        <span className="text-[10px] font-medium text-white uppercase block mb-2 tracking-widest">Action Item:</span>
-                        <p className="text-sm text-gray-400 leading-relaxed">
+                      <div className="bg-[var(--ib-card)] p-6 rounded-2xl">
+                        <span className="text-[10px] font-medium text-[var(--ib-ink)] uppercase block mb-2 tracking-widest">Action Item:</span>
+                        <p className="text-sm text-[var(--ib-mute)] leading-relaxed">
                           {item.action_item}
                         </p>
                       </div>
@@ -545,9 +545,9 @@ const AssessmentQuizPage = () => {
 
             {/* Mentor's Note */}
             {assessmentData?.aiFeedback?.mentor_closing_note && (
-              <div className="bg-cyan-500/5 border border-cyan-500/10 p-10 rounded-[40px]">
-                <h3 className="text-xs font-medium text-cyan-500 uppercase tracking-[0.2em] mb-6">Mentor's Note</h3>
-                <p className="text-lg text-gray-300 font-medium italic leading-relaxed">
+              <div className="bg-[var(--ib-acc)]/5 border border-[var(--ib-acc)]/10 p-10 rounded-[40px]">
+                <h3 className="text-xs font-medium text-[var(--ib-acc)] uppercase tracking-[0.2em] mb-6">Mentor's Note</h3>
+                <p className="text-lg text-[var(--ib-mute)] font-medium italic leading-relaxed">
                   "{assessmentData.aiFeedback.mentor_closing_note}"
                 </p>
               </div>
@@ -555,7 +555,7 @@ const AssessmentQuizPage = () => {
 
             {/* Question Review (Original ResultCard style) */}
             <div className="pt-20 pb-12">
-              <h3 className="text-xs font-medium text-gray-500 uppercase tracking-[0.2em] mb-10 text-center">Question Review Breakdown</h3>
+              <h3 className="text-xs font-medium text-[var(--ib-mute)] uppercase tracking-[0.2em] mb-10 text-center">Question Review Breakdown</h3>
               <ResultCard
                 questionNumber={currentQuestion + 1}
                 question={currentQ.question}
@@ -566,20 +566,20 @@ const AssessmentQuizPage = () => {
               />
 
               <div className="flex flex-col items-center gap-4 mt-10 w-full">
-                <div className="text-gray-500 font-black text-[10px] sm:text-[12px] uppercase tracking-widest text-center">
+                <div className="text-[var(--ib-mute)] font-black text-[10px] sm:text-[12px] uppercase tracking-widest text-center">
                   Question {currentQuestion + 1} {t('dynamic.dyn_of_479')}{quizQuestions.length}
                 </div>
                 <div className="flex justify-between items-center w-full gap-3 sm:gap-4">
                   <button
                     onClick={handlePrevious}
                     disabled={currentQuestion === 0}
-                    className="flex-1 inline-flex justify-center items-center gap-2 px-3 py-3 sm:px-8 sm:py-4 rounded-xl bg-white/5 border border-white/10 text-white text-xs sm:text-base font-bold hover:bg-white/10 transition-all disabled:opacity-30 active:scale-95"
+                    className="flex-1 inline-flex justify-center items-center gap-2 px-3 py-3 sm:px-8 sm:py-4 rounded-xl bg-[var(--ib-card)] border border-[var(--ib-line)] text-[var(--ib-ink)] text-xs sm:text-base font-bold hover:bg-[var(--ib-accbg)] transition-all disabled:opacity-30 active:scale-95"
                   >
                     <ArrowLeft size={16} className="shrink-0" /> Previous
                   </button>
                   <button
                     onClick={handleNext}
-                    className="flex-1 inline-flex justify-center items-center gap-2 px-3 py-3 sm:px-10 sm:py-4 rounded-xl bg-[#00f0ff] text-[#0F111A]  text-xs sm:text-base font-bold transition-all active:scale-95"
+                    className="flex-1 inline-flex justify-center items-center gap-2 px-3 py-3 sm:px-10 sm:py-4 rounded-xl bg-[var(--ib-acc)] text-white  text-xs sm:text-base font-bold transition-all active:scale-95"
                   >
                     {currentQuestion === quizQuestions.length - 1 ? "Finish Report" : "Next Result"}
                     <ArrowRight size={16} className="shrink-0" />
@@ -598,7 +598,7 @@ const AssessmentQuizPage = () => {
   }
 
   return (
-    <div style={{ background: "#0F111A", minHeight: "100vh", padding: "100px 16px 64px" }}>
+    <div style={{ background: "var(--ib-bg)", minHeight: "100vh", padding: "100px 16px 64px" }}>
       <FullPageLoader
         isLoading={isSubmitting}
         title={t('mastery.submittingTitle', 'Analyzing Your Performance')}

@@ -1,4 +1,4 @@
-// app/courses/[courseId]/lessons/[lessonSlug]/page.tsx
+﻿// app/courses/[courseId]/lessons/[lessonSlug]/page.tsx
 
 import AiToolsSection from "@/components/LessonSideBar/AiToolsSection";
 import ChatSection from "@/components/LessonSideBar/ChatSection";
@@ -26,7 +26,7 @@ export default function LessonPage({  }: Props) {
         </div>
         <div className="mt-4 flex items-center justify-between">
           <h1 className="text-2xl font-bold">{title}</h1>
-          <Link href={'/lessons/assessment'} className="rounded-lg bg-green-600 px-6 py-2.5 text-white hover:bg-green-700">
+          <Link href={'/lessons/assessment'} className="rounded-lg bg-green-600 px-6 py-2.5 text-[var(--ib-ink)] hover:bg-green-700">
             Complete Lesson
           </Link>
         </div>

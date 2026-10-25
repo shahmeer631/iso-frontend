@@ -120,23 +120,23 @@ const OTPContent = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50/50 p-4">
+    <div className="min-h-screen flex items-center justify-center bg-[var(--ib-bg)] p-4">
       <div className="w-full max-w-md space-y-8">
         {/* Logo Section */}
         <div className="flex justify-center items-center gap-2 mb-8">
-          <div className="bg-linear-to-r from-[#7C3AED] to-[#4F46E5] text-primary-foreground h-10 w-10 rounded-lg flex items-center justify-center">
+          <div className="bg-[var(--ib-acc)] h-10 w-10 rounded-[10px] flex items-center justify-center">
             <span className="font-bold text-xl text-white">{t('dynamic.dyn_iB_547')}</span>
           </div>
-          <span className="font-bold text-[#101828] text-2xl">ISOBrain.ai</span>
+          <span className="font-bold text-[var(--ib-ink)] text-2xl">ISOBrain.ai</span>
         </div>
 
-        <Card className="border-none shadow-lg shadow-gray-300">
+        <Card className="border border-[var(--ib-line)] bg-[var(--ib-card)] shadow-sm rounded-2xl">
           <CardHeader className="space-y-1 pb-6">
-            <CardTitle className="text-3xl font-bold text-[#101828]">
+            <CardTitle className="text-3xl font-bold text-[var(--ib-ink)]">
               {t('auth.checkEmail')}
             </CardTitle>
-            <CardDescription className="text-[#4A5565]">
-              {t('auth.sentCodeTo')} <span className="font-semibold text-gray-800">{email || "your email"}</span>
+            <CardDescription className="text-[var(--ib-mute)]">
+              {t('auth.sentCodeTo')} <span className="font-semibold text-[var(--ib-ink)]">{email || "your email"}</span>
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -151,7 +151,7 @@ const OTPContent = () => {
                     value={digit}
                     onChange={(e) => handleChange(index, e.target.value.replace(/[^0-9]/g, ''))}
                     onKeyDown={(e) => handleKeyDown(index, e)}
-                    className="w-12 h-14 sm:w-14 sm:h-16 text-center text-xl sm:text-2xl font-bold border-2 rounded-xl border-[#5046E5] focus:border-[#5046E5] focus:ring-2 focus:ring-[#5046E5]/20 focus:outline-none transition-all bg-muted/30 text-gray-900"
+                    className="w-12 h-14 sm:w-14 sm:h-16 text-center text-xl sm:text-2xl font-bold border-2 rounded-[10px] border-[var(--ib-line)] focus:border-[var(--ib-acc)] focus:ring-2 focus:ring-[var(--ib-acc)]/20 focus:outline-none transition-all bg-[var(--ib-bg)] text-[var(--ib-ink)]"
                   />
                 ))}
               </div>
@@ -166,14 +166,14 @@ const OTPContent = () => {
                 <Button
                   type="submit"
                   disabled={otp.join("").length !== 6 || isLoading || !email}
-                  className="w-full h-11 text-md bg-[#5046E5] hover:bg-[#4338ca] disabled:opacity-75"
+                  className="w-full h-11 text-md rounded-[10px] bg-[var(--ib-acc)] hover:bg-[var(--ib-acc)]/90 text-white disabled:opacity-75"
                 >
                   {isLoading ? t('auth.verifying') : t('auth.verifyEmail')} <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
 
-                <div className="text-center text-sm font-medium text-gray-600">
+                <div className="text-center text-sm font-medium text-[var(--ib-mute)]">
                   {t('auth.didntReceiveCode')}{" "}
-                  <button type="button" className="text-[#5046E5] hover:underline font-semibold">
+                  <button type="button" className="text-[var(--ib-acc)] hover:underline font-semibold">
                     {t('auth.clickToResend')}
                   </button>
                 </div>
@@ -183,14 +183,14 @@ const OTPContent = () => {
         </Card>
 
         {/* Footer Text */}
-        <div className="text-center text-xs text-muted-foreground mt-6">
+        <div className="text-center text-xs text-[var(--ib-mute)] mt-6">
           <p>
             {t('auth.byContinuing')}{" "}
-            <Link href="#" className="text-[#5046E5] hover:underline">
+            <Link href="#" className="text-[var(--ib-acc)] hover:underline">
               {t('auth.termsOfService')}
             </Link>{" "}
             {t('auth.and')}{" "}
-            <Link href="#" className="text-[#5046E5] hover:underline">
+            <Link href="#" className="text-[var(--ib-acc)] hover:underline">
               {t('auth.privacyPolicy')}
             </Link>
           </p>
@@ -204,8 +204,8 @@ const OTPPage = () => {
   const { t } = useTranslation();
   return (
     <Suspense fallback={
-      <div className="min-h-screen bg-gray-50/50 flex justify-center items-center">
-        <div className="text-gray-500 font-medium tracking-wide">{t('auth.loadingVerification')}</div>
+      <div className="min-h-screen bg-[var(--ib-bg)] flex justify-center items-center">
+        <div className="text-[var(--ib-mute)] font-medium tracking-wide">{t('auth.loadingVerification')}</div>
       </div>
     }>
       <OTPContent />

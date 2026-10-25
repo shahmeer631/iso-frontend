@@ -64,7 +64,7 @@ const StarterPackage = () => {
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-4">
           <div>
-            <h2 className="space-grotesk text-4xl lg:text-[42px] font-semibold text-[#1E293B] mb-2 leading-[1.2] tracking-tight">
+            <h2 className="text-4xl lg:text-[42px] font-semibold text-[var(--ib-ink)] mb-2 leading-[1.2] tracking-tight">
               Starter packages
             </h2>
             <p className="text-[#64748B] text-lg">
@@ -73,7 +73,7 @@ const StarterPackage = () => {
           </div>
           <Link
             href="/library/store/starter-packages"
-            className="text-[#1E293B] font-semibold hover:text-blue-600 transition-colors whitespace-nowrap"
+            className="text-[var(--ib-ink)] font-semibold hover:text-blue-600 transition-colors whitespace-nowrap"
           >
             See More
           </Link>
@@ -105,12 +105,12 @@ const StarterPackage = () => {
                 />
               </div>
 
-              <h3 className="text-brand-cyan text-xl font-bold mb-2 leading-tight">
+              <h3 className="text-[var(--ib-acc)] text-xl font-bold mb-2 leading-tight">
                 {pkg.title}
               </h3>
 
               <div className="mb-3">
-                <span className="text-[#1E293B] font-extrabold text-sm tracking-wide">
+                <span className="text-[var(--ib-ink)] font-extrabold text-sm tracking-wide">
                   {pkg.category}
                 </span>
               </div>
@@ -121,7 +121,7 @@ const StarterPackage = () => {
 
               <Link
                 href={pkg.link}
-                className="text-brand-cyan font-bold flex items-center gap-0 group hover:gap-1 transition-all"
+                className="text-[var(--ib-acc)] font-bold flex items-center gap-0 group hover:gap-1 transition-all"
               >
                 Explore Standards
                 <ArrowRight size={18} className="transition-transform" />

@@ -34,13 +34,13 @@ export const HintModal: React.FC<HintModalProps> = ({
       zIndex: 1000
     }}>
       <div style={{
-        background: "#1E212B",
+        background: "var(--ib-card)",
         borderRadius: 24,
         maxWidth: 448,
         width: "100%",
         padding: 32,
         position: "relative",
-        border: "1px solid #333333",
+        border: "1px solid var(--ib-line)",
         boxShadow: "0 20px 40px rgba(0, 0, 0, 0.5)"
       }}>
         <button
@@ -49,14 +49,14 @@ export const HintModal: React.FC<HintModalProps> = ({
             position: "absolute",
             top: 20,
             right: 20,
-            color: "#A0AAB2",
+            color: "var(--ib-mute)",
             background: "transparent",
             border: "none",
             cursor: "pointer",
             transition: "color 0.2s"
           }}
           onMouseEnter={(e) => e.currentTarget.style.color = "#FFFFFF"}
-          onMouseLeave={(e) => e.currentTarget.style.color = "#A0AAB2"}
+          onMouseLeave={(e) => e.currentTarget.style.color = "var(--ib-mute)"}
         >
           <X size={20} />
         </button>
@@ -69,10 +69,10 @@ export const HintModal: React.FC<HintModalProps> = ({
           }}>
             <Lightbulb size={20} color="#FFB800" />
           </div>
-          <h3 className="space-grotesk" style={{ fontSize: 24, fontWeight: 700, color: "#FFFFFF", margin: 0 }}>{t('mastery.aiHint')}</h3>
+          <h3 className="font-sans" style={{ fontSize: 24, fontWeight: 700, color: "var(--ib-ink)", margin: 0 }}>{t('mastery.aiHint')}</h3>
         </div>
 
-        <p style={{ color: "#A0AAB2", fontSize: 16, lineHeight: 1.6, marginBottom: 24 }}>{hint}</p>
+        <p style={{ color: "var(--ib-mute)", fontSize: 16, lineHeight: 1.6, marginBottom: 24 }}>{hint}</p>
 
 
 
@@ -81,7 +81,7 @@ export const HintModal: React.FC<HintModalProps> = ({
           style={{
             width: "100%",
             background: "#FFB800",
-            color: "#0F111A",
+            color: "var(--ib-bg)",
             padding: "14px 0",
             borderRadius: 12,
             fontWeight: 700,

@@ -40,10 +40,10 @@ export default function GoogleCallbackPage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#09090B] flex items-center justify-center font-sans text-white">
+    <div className="min-h-screen bg-[var(--ib-bg)] flex items-center justify-center font-sans text-[var(--ib-ink)]">
       <div className="text-center space-y-4">
-        <div className="w-8 h-8 border-4 border-t-[#00f0ff] border-[#27272A] rounded-full animate-spin mx-auto" />
-        <p className="text-sm text-[#A1A1AA] tracking-wider uppercase font-semibold">Completing Google authentication...</p>
+        <div className="w-8 h-8 border-4 border-t-[var(--ib-acc)] border-[var(--ib-line)] rounded-full animate-spin mx-auto" />
+        <p className="text-sm text-[var(--ib-mute)] tracking-wider uppercase font-semibold">Completing Google authentication...</p>
       </div>
     </div>
   );

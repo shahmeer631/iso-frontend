@@ -11,24 +11,24 @@ export default function QualityManagementPage() {
   const { lang } = useParams();
 
   return (
-    <div className="bg-[#0F111A] text-white min-h-screen pt-32 pb-20">
+    <div className="bg-[var(--ib-bg)] text-[var(--ib-ink)] min-h-screen pt-12 pb-20">
       <div className="container mx-auto px-6">
         <div className="max-w-4xl mx-auto">
-          <div className="flex items-center gap-4 mb-8 text-brand-cyan">
+          <div className="flex items-center gap-4 mb-8 text-[var(--ib-acc)]">
             <GraduationCap size={32} />
-            <h1 className="space-grotesk text-4xl md:text-6xl font-bold">
+            <h1 className="text-4xl md:text-6xl font-bold">
               {t("academy.qualityManagement.title")}
             </h1>
           </div>
-          <h2 className="space-grotesk text-2xl md:text-3xl font-bold mb-8 text-white/90">
+          <h2 className="text-2xl md:text-3xl font-bold mb-8 text-[var(--ib-ink)]/90">
             {t("academy.qualityManagement.subtitle")}
           </h2>
-          <p className="text-[#A1A1A6] text-xl leading-relaxed mb-12 font-inter">
+          <p className="text-[var(--ib-mute)] text-xl leading-relaxed mb-12 font-inter">
             {t("academy.qualityManagement.description")}
           </p>
           <Link
             href={`/${lang}/signup`}
-            className="inline-flex items-center gap-3 bg-[#00f0ff] text-[#0F111A] text-[#0F111A] font-bold px-10 py-5 rounded-2xl hover:scale-105 transition-transform"
+            className="inline-flex items-center gap-3 bg-[var(--ib-acc)] text-white font-bold px-10 py-5 rounded-[10px] hover:opacity-90 transition-transform"
           >{t('academy.startForFree')}<ArrowRight size={20} />
           </Link>
         </div>

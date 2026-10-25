@@ -17,10 +17,10 @@ const CATEGORY_COLORS: { dot: string; badge: string; badgeText: string }[] = [
   { dot: "#F97316", badge: "rgba(249,115,22,0.12)", badgeText: "#FB923C" },
   { dot: "#8B5CF6", badge: "rgba(139,92,246,0.12)", badgeText: "#A78BFA" },
   { dot: "#EF4444", badge: "rgba(239,68,68,0.12)", badgeText: "#F87171" },
-  { dot: "#14B8A6", badge: "rgba(20,184,166,0.12)", badgeText: "#2DD4BF" },
+  { dot: "var(--ib-ok)", badge: "rgba(15, 138, 95,0.12)", badgeText: "var(--ib-ok)" },
   { dot: "#FBBF24", badge: "rgba(251,191,36,0.12)", badgeText: "#FCD34D" },
-  { dot: "#06B6D4", badge: "rgba(6,182,212,0.12)", badgeText: "#22D3EE" },
-  { dot: "#D4AF37", badge: "rgba(0,240,255,0.12)", badgeText: "#D4AF37" },
+  { dot: "var(--ib-acc)", badge: "rgba(27, 77, 219,0.12)", badgeText: "var(--ib-acc)" },
+  { dot: "var(--ib-acc)", badge: "var(--ib-accbg)", badgeText: "var(--ib-acc)" },
 ];
 
 // ── Standard Card ─────────────────────────────────────────────────────────
@@ -48,7 +48,7 @@ const StandardCard = ({
       whileHover={{ y: -4 }}
       transition={{ duration: 0.3, ease: "easeOut" }}
       style={{
-        background: "#161A22",
+        background: "var(--ib-card)",
         border: "1px solid rgba(255,255,255,0.07)",
         borderRadius: 16,
         padding: "24px",
@@ -80,7 +80,7 @@ const StandardCard = ({
         </span>
 
         {(item.isoCode || item.code) && (
-          <span style={{ fontSize: 11, color: "#475569", fontWeight: 500, fontFamily: "'Space Grotesk', sans-serif" }}>
+          <span style={{ fontSize: 11, color: "#475569", fontWeight: 500, fontFamily: "'Inter', sans-serif" }}>
             {item.isoCode || item.code}
           </span>
         )}
@@ -114,8 +114,8 @@ const StandardCard = ({
           style={{
             display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
             width: "100%", padding: "11px 16px",
-            background: "rgba(63,62,237,0.15)",
-            border: "1px solid rgba(63,62,237,0.3)",
+            background: "rgba(27, 77, 219,0.15)",
+            border: "1px solid rgba(27, 77, 219,0.3)",
             borderRadius: 10, color: "#818CF8",
             fontSize: 13, fontWeight: 500, cursor: "pointer",
             fontFamily: "inherit", transition: "all 0.2s ease",
@@ -123,14 +123,14 @@ const StandardCard = ({
           }}
           onMouseEnter={(e) => {
             const btn = e.currentTarget as HTMLButtonElement;
-            btn.style.background = "#00F0FF";
-            btn.style.borderColor = "#00F0FF";
+            btn.style.background = "var(--ib-acc)";
+            btn.style.borderColor = "var(--ib-acc)";
             btn.style.color = "#fff";
           }}
           onMouseLeave={(e) => {
             const btn = e.currentTarget as HTMLButtonElement;
-            btn.style.background = "rgba(63,62,237,0.15)";
-            btn.style.borderColor = "rgba(63,62,237,0.3)";
+            btn.style.background = "rgba(27, 77, 219,0.15)";
+            btn.style.borderColor = "rgba(27, 77, 219,0.3)";
             btn.style.color = "#818CF8";
           }}
         >
@@ -147,8 +147,8 @@ const StandardCard = ({
           style={{
             display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
             width: "100%", padding: "11px 16px",
-            background: "rgba(63,62,237,0.15)",
-            border: "1px solid rgba(63,62,237,0.3)",
+            background: "rgba(27, 77, 219,0.15)",
+            border: "1px solid rgba(27, 77, 219,0.3)",
             borderRadius: 10, color: "#818CF8",
             fontSize: 13, fontWeight: 500, cursor: "pointer",
             fontFamily: "inherit", transition: "all 0.2s ease",
@@ -156,14 +156,14 @@ const StandardCard = ({
           }}
           onMouseEnter={(e) => {
             const btn = e.currentTarget as HTMLButtonElement;
-            btn.style.background = "#00F0FF";
-            btn.style.borderColor = "#00F0FF";
+            btn.style.background = "var(--ib-acc)";
+            btn.style.borderColor = "var(--ib-acc)";
             btn.style.color = "#fff";
           }}
           onMouseLeave={(e) => {
             const btn = e.currentTarget as HTMLButtonElement;
-            btn.style.background = "rgba(63,62,237,0.15)";
-            btn.style.borderColor = "rgba(63,62,237,0.3)";
+            btn.style.background = "rgba(27, 77, 219,0.15)";
+            btn.style.borderColor = "rgba(27, 77, 219,0.3)";
             btn.style.color = "#818CF8";
           }}
         >
@@ -294,15 +294,15 @@ const Standards = ({ searchTerm = "", selectedCategoryId }: StandardsProps) => {
   const isPreviewMode = activeCategory === "all" && !debouncedSearch;
 
   return (
-    <section id="standards-explorer" style={{ background: "#0E1116", padding: "80px 16px 80px" }}>
+    <section id="standards-explorer" style={{ background: "var(--ib-bg)", padding: "80px 16px 80px" }}>
       <div style={{ maxWidth: 1280, margin: "0 auto" }}>
 
         {/* ── Section Header ── */}
         <div style={{ textAlign: "center", marginBottom: 40 }}>
-          <h2 className="space-grotesk" style={{ fontSize: "clamp(24px, 5vw, 40px)", fontWeight: 500, color: "#FFFFFF", marginBottom: 16 }}>
+          <h2 className="font-sans" style={{ fontSize: "clamp(24px, 5vw, 40px)", fontWeight: 500, color: "var(--ib-ink)", marginBottom: 16 }}>
             {t('library.head')}
           </h2>
-          <div style={{ width: 80, height: 3, background: "linear-gradient(90deg, #00F0FF, #D4AF37)", margin: "0 auto", borderRadius: 99 }} />
+          <div style={{ width: 80, height: 3, background: "var(--ib-acc)", margin: "0 auto", borderRadius: 99 }} />
         </div>
 
         {/* ── Category Filter Tabs ── */}
@@ -311,7 +311,7 @@ const Standards = ({ searchTerm = "", selectedCategoryId }: StandardsProps) => {
         {/* ── Loading ── */}
         {isStdLoading && (
           <div style={{ display: "flex", justifyContent: "center", padding: "80px 0" }}>
-            <Loader2 size={36} color="#00F0FF" style={{ animation: "spin 1s linear infinite" }} />
+            <Loader2 size={36} color="var(--ib-acc)" style={{ animation: "spin 1s linear infinite" }} />
             <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
           </div>
         )}
@@ -321,18 +321,18 @@ const Standards = ({ searchTerm = "", selectedCategoryId }: StandardsProps) => {
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: "80px 0", gap: 16 }}>
             <div style={{
               width: 60, height: 60, borderRadius: 16,
-              background: "rgba(63,62,237,0.1)", border: "1px solid rgba(63,62,237,0.2)",
+              background: "rgba(27, 77, 219,0.1)", border: "1px solid rgba(27, 77, 219,0.2)",
               display: "flex", alignItems: "center", justifyContent: "center",
             }}>
-              <LayoutGrid size={28} color="#00F0FF" />
+              <LayoutGrid size={28} color="var(--ib-acc)" />
             </div>
-            <p style={{ color: "#E2E8F0", fontSize: 16, fontWeight: 500, margin: 0 }}>{t('library.noStandards')}</p>
+            <p style={{ color: "var(--ib-mute)", fontSize: 16, fontWeight: 500, margin: 0 }}>{t('library.noStandards')}</p>
             <p style={{ color: "#475569", fontSize: 14, margin: 0 }}>{t('library.tryDifferent')}</p>
             <button
               onClick={() => handleCategorySelect("all", "all")}
               style={{
                 marginTop: 8, padding: "9px 20px", borderRadius: 99,
-                background: "#00F0FF", border: "none", color: "#fff",
+                background: "var(--ib-acc)", border: "none", color: "#fff",
                 fontSize: 13, fontWeight: 500, cursor: "pointer", fontFamily: "inherit",
               }}
             >
@@ -440,11 +440,11 @@ const Standards = ({ searchTerm = "", selectedCategoryId }: StandardsProps) => {
                       onClick={() => setActivePage(page)}
                       style={{
                         width: 36, height: 36, borderRadius: 8, fontSize: 13, fontWeight: 500,
-                        background: isActive ? "#00F0FF" : "rgba(255,255,255,0.04)",
-                        border: `1px solid ${isActive ? "#00F0FF" : "rgba(255,255,255,0.08)"}`,
+                        background: isActive ? "var(--ib-acc)" : "rgba(255,255,255,0.04)",
+                        border: `1px solid ${isActive ? "var(--ib-acc)" : "rgba(255,255,255,0.08)"}`,
                         color: isActive ? "#fff" : "#64748B",
                         cursor: "pointer", fontFamily: "inherit",
-                        boxShadow: isActive ? "0 4px 16px rgba(63,62,237,0.3)" : "none",
+                        boxShadow: isActive ? "0 4px 16px rgba(27, 77, 219,0.3)" : "none",
                       }}
                     >
                       {page}

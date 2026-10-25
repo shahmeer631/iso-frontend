@@ -33,14 +33,14 @@ const FAQ = ({
         {/* Header */}
         <div className="text-center mb-16">
           <span
-            className="inline-block px-4 py-1.5 text-xs font-bold tracking-widest uppercase text-indigo-600 bg-indigo-50 border border-indigo-100 rounded-full mb-5"
+            className="inline-block px-4 py-1.5 text-xs font-bold tracking-widest uppercase text-[var(--ib-acc)] bg-[var(--ib-accbg)] border border-[var(--ib-line)] rounded-full mb-5"
             data-aos="fade-down"
             data-aos-duration="600"
           >
             {t('faq.badge')}
           </span>
           <h2
-            className="space-grotesk text-4xl lg:text-[42px] font-semibold text-[#0F172A] mb-5 leading-[1.2] tracking-tight"
+            className="text-4xl lg:text-[42px] font-semibold text-[var(--ib-ink)] mb-5 leading-[1.2] tracking-tight"
             data-aos="fade-up"
             data-aos-duration="700"
             data-aos-delay="100"
@@ -48,7 +48,7 @@ const FAQ = ({
             {title || (
               <>
                 {t('aiAssistantHome.faqTitle')}{" "}
-                <span className="bg-gradient-to-r from-brand-cyan to-[#7C3AED] bg-clip-text text-transparent">
+                <span className="bg-gradient-to-r from-[var(--ib-acc)] to-[var(--ib-acc)] bg-clip-text text-transparent">
                   {t('aiAssistantHome.faqHighlight')}
                 </span>
               </>
@@ -65,7 +65,7 @@ const FAQ = ({
                 {t('aiAssistantHome.faqSubtitle')}{" "}
                 <a
                   href="#"
-                  className="text-indigo-600 font-medium underline underline-offset-2 hover:text-indigo-800 transition-colors"
+                  className="text-[var(--ib-acc)] font-medium underline underline-offset-2 hover:text-[var(--ib-dk)] transition-colors"
                 >
                   {t('aiAssistantHome.faqLink')}
                 </a>
@@ -87,8 +87,8 @@ const FAQ = ({
                 className={cn(
                   "rounded-2xl border transition-all duration-300",
                   isOpen
-                    ? "border-indigo-200 bg-white shadow-md shadow-indigo-50"
-                    : "border-slate-200 bg-white hover:border-indigo-200 hover:shadow-sm",
+                    ? "border-[var(--ib-line)] bg-white shadow-md shadow-[0_4px_20px_rgba(27,77,219,0.08)]"
+                    : "border-slate-200 bg-white hover:border-[var(--ib-line)] hover:shadow-sm",
                 )}
               >
                 <button
@@ -101,7 +101,7 @@ const FAQ = ({
                       className={cn(
                         "shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold transition-all duration-300",
                         isOpen
-                          ? "bg-indigo-600 text-white scale-110"
+                          ? "bg-[var(--ib-acc)] text-white scale-110"
                           : "bg-slate-100 text-slate-500",
                       )}
                     >
@@ -110,7 +110,7 @@ const FAQ = ({
                     <span
                       className={cn(
                         "text-base md:text-lg font-semibold transition-colors leading-snug",
-                        isOpen ? "text-[#0F172A]" : "text-slate-700",
+                        isOpen ? "text-[var(--ib-ink)]" : "text-slate-700",
                       )}
                     >
                       {item.question}
@@ -121,7 +121,7 @@ const FAQ = ({
                   <ChevronDown
                     className={cn(
                       "shrink-0 w-5 h-5 text-slate-400 transition-all duration-300",
-                      isOpen && "rotate-180 text-indigo-600",
+                      isOpen && "rotate-180 text-[var(--ib-acc)]",
                     )}
                   />
                 </button>
@@ -135,7 +135,7 @@ const FAQ = ({
                 >
                   <div className="px-7 pb-6 pl-[4.75rem]">
                     {/* Left accent bar */}
-                    <div className="border-l-2 border-indigo-200 pl-4">
+                    <div className="border-l-2 border-[var(--ib-line)] pl-4">
                       <p className="text-slate-500 leading-relaxed text-sm md:text-base">
                         {item.answer}
                       </p>
@@ -147,7 +147,7 @@ const FAQ = ({
                               key={i}
                               className="flex items-start gap-3 text-slate-500 text-sm md:text-base"
                             >
-                              <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-indigo-500" />
+                              <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--ib-accbg)]0" />
                               <span className="leading-relaxed">{bullet}</span>
                             </li>
                           ))}

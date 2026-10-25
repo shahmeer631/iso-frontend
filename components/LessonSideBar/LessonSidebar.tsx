@@ -42,7 +42,7 @@ export default function LessonSidebar({ lessons, courseId }: Props) {
                 "group flex items-center justify-between rounded-lg px-4 py-3 text-sm transition-colors",
                 isActive
                   ? "bg-blue-600 text-white"
-                  : " text-gray-800"
+                  : " text-[var(--ib-mute)]"
               )}
             >
               <div className="flex items-center gap-3">
@@ -59,7 +59,7 @@ export default function LessonSidebar({ lessons, courseId }: Props) {
                 <span className="font-medium">{lesson.title}</span>
               </div>
               {lesson.duration && (
-                <span className={cn("text-xs", isActive ? "text-blue-100" : "text-gray-500")}>
+                <span className={cn("text-xs", isActive ? "text-blue-100" : "text-[var(--ib-mute)]")}>
                   {lesson.duration}
                 </span>
               )}

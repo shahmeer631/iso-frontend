@@ -29,8 +29,8 @@ const categoryIconConfig: Record<
 > = {
   "Quality Management": {
     icon: Shield,
-    iconColor: "text-indigo-600",
-    bgColor: "bg-indigo-50",
+    iconColor: "text-[var(--ib-acc)]",
+    bgColor: "bg-[var(--ib-accbg)]",
     description: "Ensure quality management systems that meet customer and regulatory requirements.",
   },
   "Information Security": {
@@ -127,8 +127,8 @@ const categoryIconConfig: Record<
 
 const defaultIconConfig = {
   icon: Tag,
-  iconColor: "text-indigo-600",
-  bgColor: "bg-indigo-50",
+  iconColor: "text-[var(--ib-acc)]",
+  bgColor: "bg-[var(--ib-accbg)]",
   description: "Explore our comprehensive range of courses and standards in this category.",
 };
 
@@ -159,15 +159,15 @@ const LibraryUseCases = () => {
 
   if (isLoading) {
     return (
-      <section className="pt-24 bg-white overflow-hidden min-h-[600px] flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+      <section className="pt-12 bg-white overflow-hidden min-h-[600px] flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[var(--ib-acc)]"></div>
       </section>
     );
   }
 
   if (isError || !data?.data) {
     return (
-      <section className="pt-24 bg-white overflow-hidden min-h-[600px] flex items-center justify-center">
+      <section className="pt-12 bg-white overflow-hidden min-h-[600px] flex items-center justify-center">
         <div className="text-center">
           <p className="text-red-500 text-lg">Failed to load categories.</p>
         </div>
@@ -178,7 +178,7 @@ const LibraryUseCases = () => {
   const categories = data.data;
 
   return (
-    <section className="pt-24 bg-white overflow-hidden">
+    <section className="pt-12 bg-white overflow-hidden">
       <div className="container mx-auto px-6">
         <motion.div
           initial={{ opacity: 0, y: -20 }}
@@ -187,10 +187,10 @@ const LibraryUseCases = () => {
           transition={{ duration: 0.6 }}
           className="text-center mb-16 space-y-4"
         >
-          <span className="text-indigo-600 text-sm font-bold uppercase tracking-wider">
+          <span className="text-[var(--ib-acc)] text-sm font-bold uppercase tracking-wider">
             OpenUp Use Cases
           </span>
-          <h2 className="space-grotesk text-4xl lg:text-[42px] font-semibold text-[#0B1220] max-w-3xl mx-auto leading-[1.2] tracking-tight">
+          <h2 className="text-4xl lg:text-[42px] font-semibold text-[#0B1220] max-w-3xl mx-auto leading-[1.2] tracking-tight">
             Generate AI Copy writing
             <br />
             Favorite Tools
@@ -217,7 +217,7 @@ const LibraryUseCases = () => {
                   scale: 1.02,
                   transition: { duration: 0.3 },
                 }}
-                className="bg-white border border-[#E2E8F0] rounded-2xl p-10 flex flex-col items-center text-center group hover:border-indigo-100 hover:shadow-2xl hover:shadow-indigo-50/50 transition-all duration-300"
+                className="bg-white border border-[#E2E8F0] rounded-2xl p-10 flex flex-col items-center text-center group hover:border-[var(--ib-accbg)] hover:shadow-2xl hover:shadow-[var(--ib-accbg)]/50 transition-all duration-300"
               >
                 <motion.div
                   whileHover={{ rotate: 5, scale: 1.1 }}
@@ -239,7 +239,7 @@ const LibraryUseCases = () => {
 
                 <Link
                   href={`/library/iso-standards?category=${category.slug}`}
-                  className="text-[#64748B] text-base font-semibold flex items-center gap-2 group-hover:text-indigo-600 transition-colors"
+                  className="text-[#64748B] text-base font-semibold flex items-center gap-2 group-hover:text-[var(--ib-acc)] transition-colors"
                 >
                   Explore Courses{" "}
                   <span className="text-lg">

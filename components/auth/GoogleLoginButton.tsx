@@ -139,10 +139,10 @@ export default function GoogleLoginButton({ shortText }: { shortText?: boolean }
       onClick={handleButtonClick}
       disabled={isLoading}
       type="button"
-      className="flex items-center justify-center gap-3 w-full py-3 px-4 bg-[#18181B] border border-[#27272A] rounded-xl hover:bg-[#27272A] transition-all group disabled:opacity-50 cursor-pointer"
+      className="flex items-center justify-center gap-3 w-full py-3 px-4 bg-[var(--ib-card)] border border-[var(--ib-line)] rounded-[10px] hover:bg-[var(--ib-bg)] transition-all group disabled:opacity-50 cursor-pointer"
     >
       {isLoading ? (
-        <div className="w-5 h-5 border-2 border-t-white border-r-transparent border-b-transparent border-l-transparent rounded-full animate-spin" />
+        <div className="w-5 h-5 border-2 border-t-[var(--ib-acc)] border-r-transparent border-b-transparent border-l-transparent rounded-full animate-spin" />
       ) : (
         <svg className="w-5 h-5 transition-transform group-hover:scale-105" viewBox="0 0 24 24">
           <path
@@ -163,7 +163,7 @@ export default function GoogleLoginButton({ shortText }: { shortText?: boolean }
           />
         </svg>
       )}
-      <span className="text-white font-medium text-xs sm:text-sm whitespace-nowrap">
+      <span className="text-[var(--ib-ink)] font-medium text-xs sm:text-sm whitespace-nowrap">
         {isLoading
           ? t("auth.signingIn", "Signing in...")
           : shortText

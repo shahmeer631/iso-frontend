@@ -9,26 +9,26 @@ interface CTCBannerProps {
 
 const CTCBanner = ({ title, buttonText, imageSrc }: CTCBannerProps) => {
   return (
-    <section className="flex justify-center py-12 px-6 bg-[#111827]">
+    <section className="flex justify-center py-12 px-6 bg-[var(--ib-bg)]">
       <div
-        className="w-full max-w-7xl overflow-hidden rounded-[32px] bg-gradient-to-br from-[#312E81] via-[#111827] to-[#312E81]"
+        className="w-full max-w-[1180px] overflow-hidden rounded-3xl bg-[var(--ib-dk)] text-[var(--ib-dktx)]"
         data-aos="zoom-in"
         data-aos-duration="800"
       >
-        <div className="flex flex-col lg:flex-row items-center justify-between p-8 pl-12  gap-12">
+        <div className="flex flex-col lg:flex-row items-center justify-between p-8 sm:p-12 gap-12">
           {/* Left Content Side */}
           <div className="flex-1 text-left space-y-8">
-            <h1
-              className="text-white text-3xl sm:text-4xl md:text-5xl font-bold leading-[1.2] tracking-tight max-w-xl"
+            <h2
+              className="text-[var(--ib-dktx)] text-3xl sm:text-4xl font-bold leading-[1.12] tracking-tight max-w-xl"
               data-aos="fade-up"
               data-aos-duration="700"
               data-aos-delay="200"
             >
               {title}
-            </h1>
+            </h2>
 
             <button
-              className="px-10 py-3 lg:px-10 lg:py-3bg-[#00f0ff] text-[#0F111A]  text-white text-lg font-medium rounded-full  cursor-pointer"
+              className="ib-btn px-8 py-3 text-[15px] font-semibold rounded-[10px] bg-white text-[#0B1530] border-white cursor-pointer"
               data-aos="fade-up"
               data-aos-duration="700"
               data-aos-delay="400"

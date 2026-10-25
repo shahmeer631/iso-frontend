@@ -657,10 +657,10 @@ function LibraryQuizPlayer({
   return (
     <div className="space-y-5 mt-2">
       <div className="flex items-center justify-between gap-3">
-        <h3 className="text-[15px] md:text-[16px] font-black text-white tracking-tight">
+        <h3 className="text-[15px] md:text-[16px] font-black text-[var(--ib-ink)] tracking-tight">
           Knowledge Assessment
         </h3>
-        <span className="text-[10px] font-bold uppercase tracking-widest text-gray-500">
+        <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--ib-mute)]">
           {attemptItems.length} questions
         </span>
         {submitted && (
@@ -674,10 +674,10 @@ function LibraryQuizPlayer({
         return (
           <div
             key={`${libraryQuestionFingerprint(item.question)}-${idx}`}
-            className="rounded-2xl border border-white/10 bg-white/[0.02] p-4 md:p-5 space-y-3"
+            className="rounded-2xl border border-[var(--ib-line)] bg-[var(--ib-card)] p-4 md:p-5 space-y-3"
           >
-            <p className="text-[14px] md:text-[15px] font-semibold text-[#EDEDED] leading-relaxed">
-              <span className="text-[#00f0ff] mr-2">Q{idx + 1}.</span>
+            <p className="text-[14px] md:text-[15px] font-semibold text-[var(--ib-ink)] leading-relaxed">
+              <span className="text-[var(--ib-acc)] mr-2">Q{idx + 1}.</span>
               {item.question}
             </p>
             <div className="space-y-2">
@@ -699,18 +699,18 @@ function LibraryQuizPlayer({
                         : isWrong
                           ? "border-rose-400/50 bg-rose-400/10 text-rose-200"
                           : isSelected
-                            ? "border-brand-cyan/40 bg-brand-cyan/10 text-white"
-                            : "border-white/10 bg-black/20 text-gray-300 hover:border-white/20"
+                            ? "border-[var(--ib-acc)]/40 bg-[var(--ib-acc)]/10 text-white"
+                            : "border-[var(--ib-line)] bg-[var(--ib-bg)] text-[var(--ib-mute)] hover:border-[var(--ib-line)]"
                     }`}
                   >
-                    <span className="font-black text-[#00f0ff] mr-2">{opt.key})</span>
+                    <span className="font-black text-[var(--ib-acc)] mr-2">{opt.key})</span>
                     {opt.text}
                   </button>
                 );
               })}
             </div>
             {submitted && item.explanation && (
-              <p className="text-[12px] md:text-[13px] text-gray-400 leading-relaxed border-t border-white/5 pt-3">
+              <p className="text-[12px] md:text-[13px] text-[var(--ib-mute)] leading-relaxed border-t border-[var(--ib-line)] pt-3">
                 {item.explanation}
               </p>
             )}
@@ -724,7 +724,7 @@ function LibraryQuizPlayer({
             Object.keys(answers).length < attemptItems.length || isRetrying
           }
           onClick={() => setSubmitted(true)}
-          className="w-full py-3 rounded-xl bg-[#00f0ff] text-[#0F111A] font-black text-xs uppercase tracking-widest disabled:opacity-40 disabled:cursor-not-allowed"
+          className="w-full py-3 rounded-xl bg-[var(--ib-acc)] text-white font-black text-xs uppercase tracking-widest disabled:opacity-40 disabled:cursor-not-allowed"
         >
           Check answers
         </button>
@@ -742,7 +742,7 @@ function LibraryQuizPlayer({
             setAnswers({});
             setSubmitted(false);
           }}
-          className="w-full py-3 rounded-xl border border-white/15 text-gray-300 font-black text-xs uppercase tracking-widest hover:border-white/30 disabled:opacity-40 flex items-center justify-center gap-2"
+          className="w-full py-3 rounded-xl border border-[var(--ib-line)] text-[var(--ib-mute)] font-black text-xs uppercase tracking-widest hover:border-[var(--ib-line)] disabled:opacity-40 flex items-center justify-center gap-2"
         >
           {isRetrying ? (
             <>
@@ -804,7 +804,7 @@ function LibraryExamRetryBar({
   return (
     <div className="mt-4 space-y-2">
       {count > 0 && (
-        <p className="text-[10px] font-bold uppercase tracking-widest text-gray-500">
+        <p className="text-[10px] font-bold uppercase tracking-widest text-[var(--ib-mute)]">
           {count} exam questions
         </p>
       )}
@@ -812,7 +812,7 @@ function LibraryExamRetryBar({
         type="button"
         disabled={isRetrying}
         onClick={() => onRetry(extractExamQuestionTexts(content))}
-        className="w-full py-3 rounded-xl border border-white/15 text-gray-300 font-black text-xs uppercase tracking-widest hover:border-white/30 disabled:opacity-40 flex items-center justify-center gap-2"
+        className="w-full py-3 rounded-xl border border-[var(--ib-line)] text-[var(--ib-mute)] font-black text-xs uppercase tracking-widest hover:border-[var(--ib-line)] disabled:opacity-40 flex items-center justify-center gap-2"
       >
         {isRetrying ? (
           <>
@@ -892,11 +892,11 @@ const ChatHeader = ({
 }) => {
   const { t } = useTranslation();
   return (
-    <div className="flex items-center absolute top-0 left-0 z-50 right-0 justify-between p-4 bg-[#050505]/80 backdrop-blur-2xl border-b border-white/5 shrink-0">
+    <div className="flex items-center absolute top-0 left-0 z-50 right-0 justify-between p-4 bg-[var(--ib-bg)]/80 backdrop-blur-2xl border-b border-[var(--ib-line)] shrink-0">
       <div className="flex-1 flex items-center gap-4">
         <button
           onClick={onToggleLeftSidebar}
-          className="p-2.5 bg-white/5 border border-white/10 rounded-xl text-gray-400 hover:text-[#FFFFFF] transition-all shadow-sm block lg:hidden "
+          className="p-2.5 bg-[var(--ib-card)] border border-[var(--ib-line)] rounded-xl text-[var(--ib-mute)] hover:text-[var(--ib-acc)] transition-all shadow-sm block lg:hidden "
           title={t('common.openNavigation')}
         >
           <MessageSquare size={18} />
@@ -905,9 +905,9 @@ const ChatHeader = ({
 
       <div className="flex items-center gap-3 mt-2">
         {standardTitle && (
-          <div className="flex items-center gap-2 px-3 py-1.5 bg-white/5 border border-white/10 rounded-full">
-            <FileText size={14} className="text-[#818CF8]" />
-            <span className="text-[11px] font-bold text-gray-300 uppercase tracking-wider text-center">
+          <div className="flex items-center gap-2 px-3 py-1.5 bg-[var(--ib-card)] border border-[var(--ib-line)] rounded-full">
+            <FileText size={14} className="text-[var(--ib-acc)]" />
+            <span className="text-[11px] font-bold text-[var(--ib-mute)] uppercase tracking-wider text-center">
               {standardTitle}
             </span>
           </div>
@@ -917,7 +917,7 @@ const ChatHeader = ({
       <div className="flex-1 flex items-center justify-end gap-3 px-2">
         <button
           onClick={onToggleRightSidebar}
-          className="xl:hidden p-2.5 bg-white/5 border border-white/10 rounded-xl text-gray-400 hover:text-[#FFFFFF] transition-all shadow-sm"
+          className="xl:hidden p-2.5 bg-[var(--ib-card)] border border-[var(--ib-line)] rounded-xl text-[var(--ib-mute)] hover:text-[var(--ib-acc)] transition-all shadow-sm"
           title={t('common.openStudio')}
         >
           <LayoutPanelLeft size={18} />
@@ -955,18 +955,18 @@ const HistorySidebar = ({
   });
 
   return (
-    <div className={` flex flex-col h-full ${isMobile ? "w-full p-8 bg-[#050505]" : "w-64 p-6 bg-[#08080A] border-r border-white/5"}`}>
+    <div className={` flex flex-col h-full ${isMobile ? "w-full p-8 bg-[var(--ib-bg)]" : "w-64 p-6 bg-[var(--ib-card)] border-r border-[var(--ib-line)]"}`}>
       <div className="flex items-center justify-between mb-10">
         <button
           onClick={() => router.back()}
-          className="flex items-center gap-2 text-[10px] font-black text-gray-500 hover:text-[#FFFFFF] transition-all uppercase tracking-[0.2em] group cursor-pointer"
+          className="flex items-center gap-2 text-[10px] font-black text-[var(--ib-mute)] hover:text-[var(--ib-acc)] transition-all uppercase tracking-[0.2em] group cursor-pointer"
         >
           <ArrowLeft size={14} className="group-hover:-translate-x-1 transition-transform" />
           {t('library.backToPlatform')}
         </button>
         {isMobile && (
-          <button onClick={onClose} className="p-2 hover:bg-white/5 rounded-full transition-colors">
-            <X size={20} className="text-gray-400" />
+          <button onClick={onClose} className="p-2 hover:bg-[var(--ib-card)] rounded-full transition-colors">
+            <X size={20} className="text-[var(--ib-mute)]" />
           </button>
         )}
       </div>
@@ -977,7 +977,7 @@ const HistorySidebar = ({
             onNewChat();
             if (isMobile && onClose) onClose();
           }}
-          className="w-full py-3 px-4 rounded-xl bg-[#00f0ff]  text-[#0F111A] font-black text-xs uppercase tracking-widest transition-all shadow-lg hover:shadow-brand-cyan/20 hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2 mb-6"
+          className="w-full py-3 px-4 rounded-xl bg-[var(--ib-acc)] text-white font-black text-xs uppercase tracking-widest transition-all shadow-lg hover:shadow-[0_4px_20px_rgba(27,77,219,0.2)] hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2 mb-6"
         >
           <Plus size={16} strokeWidth={2.5} />
           {t('library.newChat') || "New Chat"}
@@ -985,14 +985,14 @@ const HistorySidebar = ({
 
         <div>
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-[10px] font-black text-gray-600 uppercase tracking-[0.2em]">{t('library.history')}</h3>
-            <div className="w-8 h-px bg-white/5" />
+            <h3 className="text-[10px] font-black text-[var(--ib-mute)] uppercase tracking-[0.2em]">{t('library.history')}</h3>
+            <div className="w-8 h-px bg-[var(--ib-card)]" />
           </div>
           <div className="space-y-2">
             {isLoading ? (
               <div className="space-y-2">
                 {[1, 2, 3].map((i) => (
-                  <div key={i} className="h-12 bg-white/5 rounded-xl animate-pulse" />
+                  <div key={i} className="h-12 bg-[var(--ib-card)] rounded-xl animate-pulse" />
                 ))}
               </div>
             ) : sessionsData?.data && sessionsData.data.length > 0 ? (
@@ -1004,17 +1004,17 @@ const HistorySidebar = ({
                     if (isMobile && onClose) onClose();
                   }}
                   className={`w-full p-3 rounded-xl border transition-all text-left group ${currentSessionId === session.id
-                    ? "bg-brand-cyan text-[#0F111A]/10 border-brand-cyan/20 shadow-[0_0_20px_rgba(63,62,237,0.05)]"
-                    : "bg-white/2 border-transparent hover:bg-white/5 hover:border-white/10"
+                    ? "bg-[var(--ib-acc)]/10 border-[var(--ib-acc)]/20 shadow-[0_0_20px_rgba(27, 77, 219,0.05)]"
+                    : "bg-[var(--ib-card)] border-transparent hover:bg-[var(--ib-card)] hover:border-[var(--ib-line)]"
                     }`}
                 >
                   <div className="flex items-center gap-3">
-                    <div className={`w-1.5 h-1.5 rounded-full ${currentSessionId === session.id ? "bg-brand-cyan text-[#0F111A] shadow-[0_0_8px_#D4AF37]" : "bg-gray-700 group-hover:bg-gray-500"}`} />
+                    <div className={`w-1.5 h-1.5 rounded-full ${currentSessionId === session.id ? "bg-[var(--ib-acc)] text-white shadow-[0_0_8px_rgba(27,77,219,0.4)]" : "bg-[var(--ib-mute)] group-hover:bg-[var(--ib-mute)]"}`} />
                     <div className="min-w-0 flex-1">
-                      <p className={`text-[11.5px] font-black truncate font-jetbrains-mono ${currentSessionId === session.id ? "text-[#00f0ff]" : "text-gray-400 group-hover:text-gray-200"}`}>
+                      <p className={`text-[11.5px] font-black truncate font-jetbrains-mono ${currentSessionId === session.id ? "text-[var(--ib-acc)]" : "text-[var(--ib-mute)] group-hover:text-[var(--ib-ink)]"}`}>
                         {sanitizeVisibleChatLabel(session.title || t('library.newSession'))}
                       </p>
-                      <p className="text-[9px] font-black text-gray-600 mt-0.5 uppercase tracking-widest font-jetbrains-mono">
+                      <p className="text-[9px] font-black text-[var(--ib-mute)] mt-0.5 uppercase tracking-widest font-jetbrains-mono">
                         {new Date(session.updatedAt || session.createdAt).toLocaleDateString()}
                       </p>
                     </div>
@@ -1022,17 +1022,17 @@ const HistorySidebar = ({
                 </button>
               ))
             ) : (
-              <div className="p-4 rounded-xl border border-white/5 bg-white/2 text-center">
-                <p className="text-[10px] font-bold text-gray-600 uppercase tracking-widest">{t('library.noHistory')}</p>
+              <div className="p-4 rounded-xl border border-[var(--ib-line)] bg-[var(--ib-card)] text-center">
+                <p className="text-[10px] font-bold text-[var(--ib-mute)] uppercase tracking-widest">{t('library.noHistory')}</p>
               </div>
             )}
           </div>
         </div>
       </div>
 
-      {/* <div className="mt-6 p-4 rounded-2xl bg-gradient-to-br from-indigo-500/10 to-purple-500/10 border border-white/10">
-        <p className="text-[10px] font-black text-indigo-300 uppercase tracking-widest mb-1">{t('library.proTip')}</p>
-        <p className="text-[11px] text-gray-400 leading-snug font-medium">{t('library.tipSlash')}</p>
+      {/* <div className="mt-6 p-4 rounded-2xl bg-gradient-to-br from-[var(--ib-accbg)] to-[var(--ib-accbg)] border border-[var(--ib-line)]">
+        <p className="text-[10px] font-black text-[var(--ib-acc)] uppercase tracking-widest mb-1">{t('library.proTip')}</p>
+        <p className="text-[11px] text-[var(--ib-mute)] leading-snug font-medium">{t('library.tipSlash')}</p>
       </div> */}
     </div>
   );
@@ -1088,7 +1088,7 @@ const StandardOverviewInfo = () => {
             <h4 className={`text-xs font-black uppercase tracking-wider mb-1 ${card.color}`}>
               {card.title}
             </h4>
-            <p className="text-[11px] text-gray-500 leading-snug font-medium">
+            <p className="text-[11px] text-[var(--ib-mute)] leading-snug font-medium">
               {card.content}
             </p>
           </div>
@@ -1101,34 +1101,34 @@ const StandardOverviewInfo = () => {
 const DocumentSkeleton = () => {
   const { t } = useTranslation();
   return (
-    <div className="flex-1 flex flex-col items-center justify-center px-6 md:px-12 lg:px-24 py-12 w-full h-full relative overflow-hidden bg-[#050505]">
-      <div className="absolute top-[20%] left-[10%] w-[400px] h-[400px]bg-[#00f0ff] text-[#0F111A]/5 rounded-full blur-[100px] animate-pulse" />
-      <div className="absolute bottom-[20%] right-[10%] w-[300px] h-[300px] bg-[#8B5CF6]/5 rounded-full blur-[100px] animate-pulse" style={{ animationDelay: '1s' }} />
+    <div className="flex-1 flex flex-col items-center justify-center px-6 md:px-12 lg:px-24 py-12 w-full h-full relative overflow-hidden bg-[var(--ib-bg)]">
+      <div className="absolute top-[20%] left-[10%] w-[400px] h-[400px] bg-[var(--ib-acc)]/5 rounded-full blur-[100px] animate-pulse" />
+      <div className="absolute bottom-[20%] right-[10%] w-[300px] h-[300px] bg-[var(--ib-acc)]/5 rounded-full blur-[100px] animate-pulse" style={{ animationDelay: '1s' }} />
 
       <div className="max-w-4xl w-full flex flex-col gap-8 relative z-10">
         <div className="flex flex-col items-center gap-6 mb-8">
-          <div className="h-12 w-12 bg-white/5 rounded-2xl animate-pulse" />
-          <div className="h-4 w-48 bg-white/5 rounded-full animate-pulse" />
-          <div className="h-20 w-full max-w-2xl bg-white/5 rounded-3xl animate-pulse" />
+          <div className="h-12 w-12 bg-[var(--ib-card)] rounded-2xl animate-pulse" />
+          <div className="h-4 w-48 bg-[var(--ib-card)] rounded-full animate-pulse" />
+          <div className="h-20 w-full max-w-2xl bg-[var(--ib-card)] rounded-3xl animate-pulse" />
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-12">
           {[1, 2, 3, 4].map(i => (
-            <div key={i} className="h-32 bg-white/2 backdrop-blur-sm border border-white/5 rounded-[2rem] p-6 flex gap-4">
-              <div className="w-12 h-12 bg-white/5 rounded-xl shrink-0" />
+            <div key={i} className="h-32 bg-[var(--ib-card)] backdrop-blur-sm border border-[var(--ib-line)] rounded-[2rem] p-6 flex gap-4">
+              <div className="w-12 h-12 bg-[var(--ib-card)] rounded-xl shrink-0" />
               <div className="flex-1 space-y-3">
-                <div className="h-4 w-3/4 bg-white/5 rounded-full" />
-                <div className="h-3 w-full bg-white/2 rounded-full" />
+                <div className="h-4 w-3/4 bg-[var(--ib-card)] rounded-full" />
+                <div className="h-3 w-full bg-[var(--ib-card)] rounded-full" />
               </div>
             </div>
           ))}
         </div>
 
         <div className="flex items-center justify-center gap-3 mt-12">
-          <div className="w-1.5 h-1.5 rounded-fullbg-[#00f0ff] text-[#0F111A] animate-bounce shadow-[0_0_8px_#D4AF37]" style={{ animationDelay: '0ms' }} />
-          <div className="w-1.5 h-1.5 rounded-fullbg-[#00f0ff] text-[#0F111A]/60 animate-bounce" style={{ animationDelay: '150ms' }} />
-          <div className="w-1.5 h-1.5 rounded-fullbg-[#00f0ff] text-[#0F111A]/30 animate-bounce" style={{ animationDelay: '300ms' }} />
-          <span className="text-[10px] font-black text-gray-600 uppercase tracking-[0.3em] ml-2">{t('library.initializingEngine')}</span>
+          <div className="w-1.5 h-1.5 rounded-full bg-[var(--ib-acc)] text-white animate-bounce shadow-[0_0_8px_rgba(27,77,219,0.4)]" style={{ animationDelay: '0ms' }} />
+          <div className="w-1.5 h-1.5 rounded-full bg-[var(--ib-acc)]/60 animate-bounce" style={{ animationDelay: '150ms' }} />
+          <div className="w-1.5 h-1.5 rounded-full bg-[var(--ib-acc)]/30 animate-bounce" style={{ animationDelay: '300ms' }} />
+          <span className="text-[10px] font-black text-[var(--ib-mute)] uppercase tracking-[0.3em] ml-2">{t('library.initializingEngine')}</span>
         </div>
       </div>
     </div>
@@ -1222,9 +1222,9 @@ const InitialChatView = ({ title, summary, code, category, standardId, onActionC
       desc: t('library.quickSummarizeDesc'),
       action: t('library.quickSummarize'),
       icon: Sparkles,
-      color: "text-[#818CF8]",
-      bgColor: "bg-brand-cyan text-[#0F111A]/10",
-      borderColor: "border-white/5",
+      color: "text-[var(--ib-acc)]",
+      bgColor: "bg-[var(--ib-acc)]/10",
+      borderColor: "border-[var(--ib-line)]",
     },
     {
       title: t('library.quickRequirements'),
@@ -1233,7 +1233,7 @@ const InitialChatView = ({ title, summary, code, category, standardId, onActionC
       icon: ShieldCheck,
       color: "text-emerald-400",
       bgColor: "bg-emerald-400/10",
-      borderColor: "border-white/5",
+      borderColor: "border-[var(--ib-line)]",
     },
     {
       title: t('library.quickRisks'),
@@ -1242,16 +1242,16 @@ const InitialChatView = ({ title, summary, code, category, standardId, onActionC
       icon: AlertCircle,
       color: "text-rose-400",
       bgColor: "bg-rose-400/10",
-      borderColor: "border-white/5",
+      borderColor: "border-[var(--ib-line)]",
     },
     {
       title: t('library.quickChecklist'),
       desc: t('library.quickChecklistDesc'),
       action: t('library.quickChecklist'),
       icon: CheckSquare,
-      color: "text-indigo-400",
-      bgColor: "bg-indigo-400/10",
-      borderColor: "border-white/5",
+      color: "text-[var(--ib-acc)]",
+      bgColor: "bg-[var(--ib-accbg)]",
+      borderColor: "border-[var(--ib-line)]",
     },
   ];
 
@@ -1260,8 +1260,8 @@ const InitialChatView = ({ title, summary, code, category, standardId, onActionC
   return (
     <div className="flex-1 flex flex-col items-center justify-start px-4 md:px-8 lg:px-12 overflow-y-auto w-full h-full relative no-scrollbar mt-4 md:mt-6">
       {/* Decorative background elements */}
-      <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-[#00f0ff]/5 rounded-full blur-[120px] -z-10 pointer-events-none" />
-      <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-[#8B5CF6]/5 rounded-full blur-[120px] -z-10 pointer-events-none" />
+      <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-[var(--ib-accbg)] rounded-full blur-[120px] -z-10 pointer-events-none" />
+      <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-[var(--ib-acc)]/5 rounded-full blur-[120px] -z-10 pointer-events-none" />
 
       <div className="max-w-4xl w-full">
         <motion.div
@@ -1272,46 +1272,51 @@ const InitialChatView = ({ title, summary, code, category, standardId, onActionC
         >
           {/* Welcome Branding */}
           <div className="mb-14">
-            <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 bg-white/5 border border-white/10 rounded-full mb-6">
-              <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-[#00f0ff] animate-pulse" />
-              <div className="text-gray-400 text-[8px] sm:text-[10px] font-black uppercase tracking-[0.1em] sm:tracking-[0.4em] whitespace-nowrap">{t('library.neuralInterface')}</div>
+            <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 bg-[var(--ib-card)] border border-[var(--ib-line)] rounded-full mb-6">
+              <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-[var(--ib-acc)] animate-pulse" />
+              <div className="text-[var(--ib-mute)] text-[8px] sm:text-[10px] font-black uppercase tracking-[0.1em] sm:tracking-[0.4em] whitespace-nowrap">{t('library.neuralInterface')}</div>
             </div>
-            <div className="text-xl sm:text-3xl md:text-4xl lg:text-4xl font-black text-white mb-6 tracking-tight">ISO Brain <span className="text-[#00f0ff]">{t('academy.headingHighlight', 'AI')}</span></div>
-            <div className="flex flex-wrap justify-center gap-4 sm:gap-6 md:gap-8 text-gray-500 text-[8px] sm:text-[10px] font-black uppercase tracking-[0.1em] sm:tracking-[0.3em]">
+            <div className="text-xl sm:text-3xl md:text-4xl lg:text-4xl font-black text-[var(--ib-ink)] mb-6 tracking-tight">ISO Brain <span className="text-[var(--ib-acc)]">{t('academy.headingHighlight', 'AI')}</span></div>
+            <div className="flex flex-wrap justify-center gap-4 sm:gap-6 md:gap-8 text-[var(--ib-mute)] text-[8px] sm:text-[10px] font-black uppercase tracking-[0.1em] sm:tracking-[0.3em]">
               <span className="flex items-center gap-2">
-                <div className="w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full bg-[#00f0ff] shadow-[0_0_8px_#00f0ff]" /> {t('library.realtimeAnalysis')}
+                <div className="w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full bg-[var(--ib-acc)] shadow-[0_0_8px_rgba(27,77,219,0.4)]" /> {t('library.realtimeAnalysis')}
               </span>
               <span className="flex items-center gap-2">
                 <div className="w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full bg-emerald-500" /> {t('library.regulatoryGuardrails')}
               </span>
               <span className="flex items-center gap-2">
-                <div className="w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full bg-purple-500" /> {t('library.auditPreparedness')}
+                <div className="w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full bg-[var(--ib-acc)]" /> {t('library.auditPreparedness')}
               </span>
             </div>
           </div>
 
-          <div className="inline-flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-1.5 sm:py-2 bg-white/2 border border-white/5 rounded-2xl text-gray-400 mb-8">
-            <Share2 size={14} className="text-[#818CF8] sm:w-4 sm:h-4" />
+          <div className="inline-flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-1.5 sm:py-2 bg-[var(--ib-card)] border border-[var(--ib-line)] rounded-2xl text-[var(--ib-mute)] mb-8">
+            <Share2 size={14} className="text-[var(--ib-acc)] sm:w-4 sm:h-4" />
             <span className="text-[9px] sm:text-[11px] font-black uppercase tracking-widest">
               {category || "Standard"} • {code}
             </span>
           </div>
 
-          <div className="text-[12px] sm:text-base md:text-xl lg:text-xl font-black text-white mb-8 leading-tight mx-auto max-w-2xl">
-            {t('library.redefining')} <span className="text-[#00f0ff]">{title || t('library.standard')}</span> {t('library.complianceThrough')}
+          <div className="text-[12px] sm:text-base md:text-xl lg:text-xl font-black text-[var(--ib-ink)] mb-8 leading-tight mx-auto max-w-2xl">
+            {t('library.redefining')} <span className="text-[var(--ib-acc)]">{title || t('library.standard')}</span> {t('library.complianceThrough')}
           </div>
-          <div className="text-[11px] sm:text-base md:text-lg text-gray-400 leading-relaxed font-medium italic max-w-3xl mx-auto mb-8">
+          <div className="text-[11px] sm:text-base md:text-lg text-[var(--ib-mute)] leading-relaxed font-medium italic max-w-3xl mx-auto mb-8">
             "{summary}"
           </div>
 
           {isFetchingSuggestions && suggestions.length === 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-w-4xl mx-auto mt-8 w-full px-4">
-              {[1, 2, 3, 4, 5].map((i, index) => (
+              {[1, 2, 3, 4].map((i) => (
                 <div
                   key={i}
-                  className={`px-5 py-4 bg-[#14151A]/40 border border-white/5 rounded-2xl w-full h-[52px] sm:h-[56px] flex items-center ${index === 4 ? 'md:col-span-2 md:max-w-[calc(50%-6px)] md:mx-auto' : ''}`}
+                  className="flex min-h-[88px] w-full items-start gap-3 rounded-2xl border border-[var(--ib-line)] bg-[var(--ib-card)] px-4 py-4"
                 >
-                  <div className="h-3 bg-white/10 rounded-full w-2/3 animate-pulse" />
+                  <div className="mt-0.5 size-8 shrink-0 animate-pulse rounded-[10px] bg-[var(--ib-accbg)]" />
+                  <div className="flex flex-1 flex-col gap-2 pt-1">
+                    <div className="h-3 w-full animate-pulse rounded-full bg-[var(--ib-line)]" />
+                    <div className="h-3 w-4/5 animate-pulse rounded-full bg-[var(--ib-line)]" />
+                    <div className="h-3 w-2/3 animate-pulse rounded-full bg-[var(--ib-line)]" />
+                  </div>
                 </div>
               ))}
             </div>
@@ -1320,10 +1325,16 @@ const InitialChatView = ({ title, summary, code, category, standardId, onActionC
               {suggestions.map((quiz, index) => (
                 <button
                   key={index}
+                  type="button"
                   onClick={() => onActionClick(quiz)}
-                  className={`px-5 py-4 bg-[#14151A]/80 border border-white/5 rounded-2xl hover:bg-[#1E2028] hover:border-white/10 transition-all text-left text-[13px] sm:text-[14px] text-gray-300 hover:text-white font-medium w-full shadow-lg hover:shadow-brand-cyan/5 ${index === 4 ? 'md:col-span-2 md:max-w-[calc(50%-6px)] md:mx-auto' : ''}`}
+                  className="group flex min-h-[88px] w-full items-start gap-3 rounded-2xl border border-[var(--ib-line)] bg-[var(--ib-card)] px-4 py-4 text-left shadow-none transition-all hover:-translate-y-0.5 hover:border-[var(--ib-acc)] hover:bg-[var(--ib-accbg)] hover:shadow-[0_12px_32px_-20px_rgba(11,18,32,0.35)]"
                 >
-                  {quiz}
+                  <span className="mt-0.5 grid size-8 shrink-0 place-items-center rounded-[10px] bg-[var(--ib-accbg)] text-[13px] font-bold text-[var(--ib-acc)] transition-colors group-hover:bg-[var(--ib-acc)] group-hover:text-white">
+                    {index + 1}
+                  </span>
+                  <span className="text-[13px] sm:text-[14px] font-medium leading-[1.55] text-[var(--ib-ink)]">
+                    {quiz}
+                  </span>
                 </button>
               ))}
             </div>
@@ -1508,7 +1519,7 @@ const InlineCopyButton = ({
     <button
       type="button"
       onClick={handleCopy}
-      className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full border border-white/10 bg-white/5 text-[10px] font-bold uppercase tracking-wider text-gray-400 hover:text-[#00f0ff] hover:border-[#00f0ff]/40 transition-colors shrink-0"
+      className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full border border-[var(--ib-line)] bg-[var(--ib-card)] text-[10px] font-bold uppercase tracking-wider text-[var(--ib-mute)] hover:text-[var(--ib-acc)] hover:border-[var(--ib-acc)]/40 transition-colors shrink-0"
       aria-label={copied ? "Copied" : label}
     >
       {copied ? <Check size={11} className="text-emerald-400" /> : <Copy size={11} />}
@@ -1518,23 +1529,23 @@ const InlineCopyButton = ({
 };
 
 const LIBRARY_BOT_MARKDOWN_CLASS = `
-  max-w-none w-full text-[#EDEDED]
+  max-w-none w-full text-[var(--ib-ink)]
   [&_p]:mb-3 md:[&_p]:mb-4 [&_p]:last:mb-0
-  [&_h1]:text-[1.1rem] md:[&_h1]:text-[1.25rem] [&_h1]:font-black [&_h1]:text-white [&_h1]:mb-3 md:[&_h1]:mb-4 [&_h1]:mt-0 [&_h1]:tracking-tight
-  [&_h2]:text-[1rem] md:[&_h2]:text-[1.1rem] [&_h2]:font-bold [&_h2]:text-white [&_h2]:mb-2 md:[&_h2]:mb-3 [&_h2]:mt-0
-  [&_h3]:text-[0.95rem] md:[&_h3]:text-[1rem] [&_h3]:font-bold [&_h3]:text-white/90 [&_h3]:mb-1.5 md:[&_h3]:mb-2 [&_h3]:mt-0
+  [&_h1]:text-[1.1rem] md:[&_h1]:text-[1.25rem] [&_h1]:font-black [&_h1]:text-[var(--ib-ink)] [&_h1]:mb-3 md:[&_h1]:mb-4 [&_h1]:mt-0 [&_h1]:tracking-tight
+  [&_h2]:text-[1rem] md:[&_h2]:text-[1.1rem] [&_h2]:font-bold [&_h2]:text-[var(--ib-ink)] [&_h2]:mb-2 md:[&_h2]:mb-3 [&_h2]:mt-0
+  [&_h3]:text-[0.95rem] md:[&_h3]:text-[1rem] [&_h3]:font-bold [&_h3]:text-[var(--ib-ink)]/90 [&_h3]:mb-1.5 md:[&_h3]:mb-2 [&_h3]:mt-0
   [&_ul]:list-none [&_ul]:pl-0 [&_ul]:mb-3 md:[&_ul]:mb-4 [&_ul]:space-y-1.5 md:[&_ul]:space-y-2
   [&_ol]:list-decimal [&_ol]:pl-5 [&_ol]:mb-3 md:[&_ol]:mb-4 [&_ol]:space-y-1.5 md:[&_ol]:space-y-2
   [&_li]:relative [&_li]:pl-5
-  [&_ul>li]:before:content-[''] [&_ul>li]:before:absolute [&_ul>li]:before:left-0 [&_ul>li]:before:top-[0.6em] [&_ul>li]:before:w-2 [&_ul>li]:before:h-2 [&_ul>li]:before:bg-[#00f0ff] [&_ul>li]:before:rounded-full [&_ul>li]:before:shadow-[0_0_8px_#D4AF37]
-  [&_strong]:font-black [&_strong]:text-[#00f0ff]
-  [&_em]:italic [&_em]:text-gray-500
-  [&_code]:font-jetbrains-mono [&_code]:text-[0.9em] [&_code]:bg-white/10 [&_code]:text-[#818CF8] [&_code]:px-2 [&_code]:py-1 [&_code]:rounded-md
-  [&_pre]:bg-[#020202] [&_pre]:border [&_pre]:border-white/5 [&_pre]:rounded-xl md:[&_pre]:rounded-2xl [&_pre]:p-3 md:[&_pre]:p-6 [&_pre]:my-3 md:[&_pre]:my-6 [&_pre]:overflow-x-auto [&_pre_code]:bg-transparent [&_pre_code]:p-0 [&_pre_code]:text-[#D1D5DB] [&_pre_code]:font-jetbrains-mono
-  [&_blockquote]:border-l-4 [&_blockquote]:border-[#818CF8] [&_blockquote]:bg-brand-cyan text-[#0F111A]/5 [&_blockquote]:px-4 md:[&_blockquote]:px-6 [&_blockquote]:py-3 md:[&_blockquote]:py-4 [&_blockquote]:my-3 md:[&_blockquote]:my-6 [&_blockquote]:rounded-r-xl md:[&_blockquote]:rounded-r-2xl [&_blockquote]:italic [&_blockquote]:text-gray-300
-  [&_table]:block [&_table]:w-full [&_table]:overflow-x-auto [&_table]:no-scrollbar [&_table]:my-3 md:[&_table]:my-6 [&_table]:border-collapse [&_table]:rounded-xl [&_table]:border [&_table]:border-white/5
-  [&_th]:bg-white/5 [&_th]:text-white [&_th]:font-bold [&_th]:px-2.5 md:[&_th]:px-4 [&_th]:py-2 md:[&_th]:py-3 [&_th]:text-left [&_th]:border-b [&_th]:border-white/10 [&_th]:text-[12px] md:[&_th]:text-sm
-  [&_td]:px-2.5 md:[&_td]:px-4 [&_td]:py-2 md:[&_td]:py-3 [&_td]:border-b [&_td]:border-white/5 [&_td]:text-gray-300 [&_td]:text-[12px] md:[&_td]:text-sm
+  [&_ul>li]:before:content-[''] [&_ul>li]:before:absolute [&_ul>li]:before:left-0 [&_ul>li]:before:top-[0.6em] [&_ul>li]:before:w-2 [&_ul>li]:before:h-2 [&_ul>li]:before:bg-[var(--ib-acc)] [&_ul>li]:before:rounded-full [&_ul>li]:before:shadow-[0_0_8px_rgba(27,77,219,0.4)]
+  [&_strong]:font-black [&_strong]:text-[var(--ib-acc)]
+  [&_em]:italic [&_em]:text-[var(--ib-mute)]
+  [&_code]:font-jetbrains-mono [&_code]:text-[0.9em] [&_code]:bg-[var(--ib-accbg)] [&_code]:text-[var(--ib-acc)] [&_code]:px-2 [&_code]:py-1 [&_code]:rounded-md
+  [&_pre]:bg-[#020202] [&_pre]:border [&_pre]:border-[var(--ib-line)] [&_pre]:rounded-xl md:[&_pre]:rounded-2xl [&_pre]:p-3 md:[&_pre]:p-6 [&_pre]:my-3 md:[&_pre]:my-6 [&_pre]:overflow-x-auto [&_pre_code]:bg-transparent [&_pre_code]:p-0 [&_pre_code]:text-[var(--ib-mute)] [&_pre_code]:font-jetbrains-mono
+  [&_blockquote]:border-l-4 [&_blockquote]:border-[var(--ib-acc)] [&_blockquote]:bg-[var(--ib-acc)]/5 [&_blockquote]:px-4 md:[&_blockquote]:px-6 [&_blockquote]:py-3 md:[&_blockquote]:py-4 [&_blockquote]:my-3 md:[&_blockquote]:my-6 [&_blockquote]:rounded-r-xl md:[&_blockquote]:rounded-r-2xl [&_blockquote]:italic [&_blockquote]:text-[var(--ib-mute)]
+  [&_table]:block [&_table]:w-full [&_table]:overflow-x-auto [&_table]:no-scrollbar [&_table]:my-3 md:[&_table]:my-6 [&_table]:border-collapse [&_table]:rounded-xl [&_table]:border [&_table]:border-[var(--ib-line)]
+  [&_th]:bg-[var(--ib-card)] [&_th]:text-[var(--ib-ink)] [&_th]:font-bold [&_th]:px-2.5 md:[&_th]:px-4 [&_th]:py-2 md:[&_th]:py-3 [&_th]:text-left [&_th]:border-b [&_th]:border-[var(--ib-line)] [&_th]:text-[12px] md:[&_th]:text-sm
+  [&_td]:px-2.5 md:[&_td]:px-4 [&_td]:py-2 md:[&_td]:py-3 [&_td]:border-b [&_td]:border-[var(--ib-line)] [&_td]:text-[var(--ib-mute)] [&_td]:text-[12px] md:[&_td]:text-sm
 `;
 
 const LibraryBotMarkdown = ({
@@ -1574,15 +1585,15 @@ const LibraryBotMarkdown = ({
         return (
           <div
             key={section.id}
-            className="relative w-full min-w-0 rounded-xl border border-white/5 bg-white/[0.015] px-3 py-3 md:px-4 md:py-4"
+            className="relative w-full min-w-0 rounded-xl border border-[var(--ib-line)] bg-[var(--ib-bg)] px-3 py-3 md:px-4 md:py-4"
           >
             <div className="flex items-start justify-between gap-3 mb-2 md:mb-3">
               {section.heading ? (
-                <h3 className="min-w-0 text-[1rem] md:text-[1.1rem] font-bold text-white tracking-tight">
+                <h3 className="min-w-0 text-[1rem] md:text-[1.1rem] font-bold text-[var(--ib-ink)] tracking-tight">
                   {section.heading}
                 </h3>
               ) : (
-                <span className="min-w-0 text-[11px] font-black uppercase tracking-wider text-gray-500">
+                <span className="min-w-0 text-[11px] font-black uppercase tracking-wider text-[var(--ib-mute)]">
                   Section
                 </span>
               )}
@@ -1681,8 +1692,8 @@ const MessageList = ({
             className={`flex gap-3 md:gap-4 w-full min-w-0 ${msg.role === "user" ? "justify-end" : "justify-start"}`}
           >
             {msg.role === "bot" && (
-              <div className="hidden sm:flex w-8 h-8 rounded-full bg-white/5 border border-white/10 items-center justify-center shrink-0 mt-1 shadow-lg shadow-black/20">
-                <Brain size={16} className="text-[#818CF8]" />
+              <div className="hidden sm:flex w-8 h-8 rounded-full bg-[var(--ib-card)] border border-[var(--ib-line)] items-center justify-center shrink-0 mt-1 shadow-lg shadow-black/20">
+                <Brain size={16} className="text-[var(--ib-acc)]" />
               </div>
             )}
 
@@ -1690,14 +1701,14 @@ const MessageList = ({
             <div className={`flex flex-col gap-2 min-w-0 ${msg.role === "user" ? "w-full max-w-full md:max-w-[85%] md:w-auto items-end" : "w-full flex-1"}`}>
               <div
                 className={`w-full min-w-0 px-3.5 py-3 md:px-5 md:py-4 rounded-2xl md:rounded-3xl text-[14px] sm:text-[15px] md:text-[16px] leading-[1.7] ${msg.role === "bot"
-                  ? "bg-[#0A0A0B] border border-white/10 text-[#EDEDED] rounded-tl-sm shadow-2xl"
-                  : "bg-[#111827] border border-brand-cyan/20 text-white font-medium rounded-tr-sm shadow-lg shadow-black/40"
+                  ? "bg-[var(--ib-bg)] border border-[var(--ib-line)] text-[var(--ib-ink)] rounded-tl-sm shadow-2xl"
+                  : "bg-[var(--ib-bg)] border border-[var(--ib-acc)]/20 text-[var(--ib-ink)] font-medium rounded-tr-sm shadow-lg shadow-black/40"
                   }`}
               >
                 {msg.attachment && (
                   <div className="mb-4">
                     {msg.attachment.type.startsWith('image/') ? (
-                      <div className="relative rounded-2xl overflow-hidden border border-white/10 max-w-full sm:max-w-[300px] shadow-2xl group">
+                      <div className="relative rounded-2xl overflow-hidden border border-[var(--ib-line)] max-w-full sm:max-w-[300px] shadow-2xl group">
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img
                           src={msg.attachment.url}
@@ -1705,17 +1716,17 @@ const MessageList = ({
                           className="w-full h-auto object-cover transition-transform duration-500 group-hover:scale-105"
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-3">
-                          <span className="text-[10px] text-white font-black truncate">{msg.attachment.name}</span>
+                          <span className="text-[10px] text-[var(--ib-ink)] font-black truncate">{msg.attachment.name}</span>
                         </div>
                       </div>
                     ) : (
-                      <div className="flex items-center gap-3 p-3 md:p-4 bg-white/5 border border-white/10 rounded-2xl">
-                        <div className="w-10 h-10 rounded-xlbg-[#00f0ff] text-[#0F111A]/10 flex items-center justify-center text-[#818CF8]">
+                      <div className="flex items-center gap-3 p-3 md:p-4 bg-[var(--ib-card)] border border-[var(--ib-line)] rounded-2xl">
+                        <div className="w-10 h-10 rounded-xl bg-[var(--ib-acc)]/10 flex items-center justify-center text-[var(--ib-acc)]">
                           <FileText size={20} />
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="text-xs font-black text-white truncate">{msg.attachment.name}</p>
-                          <p className="text-[9px] font-bold text-gray-500 uppercase tracking-widest">{msg.attachment.type.split('/')[1] || 'FILE'}</p>
+                          <p className="text-xs font-black text-[var(--ib-ink)] truncate">{msg.attachment.name}</p>
+                          <p className="text-[9px] font-bold text-[var(--ib-mute)] uppercase tracking-widest">{msg.attachment.type.split('/')[1] || 'FILE'}</p>
                         </div>
                       </div>
                     )}
@@ -1723,7 +1734,7 @@ const MessageList = ({
                 )}
                 {msg.flashcardDeck && (
                   <div className="mb-3 md:mb-4 w-full md:max-w-sm">
-                    <div className="flex flex-col gap-3 md:gap-4 p-4 md:p-5 bg-gradient-to-br from-[#16A34A]/10 to-brand-cyan/10 border border-[#16A34A]/20 rounded-2xl md:rounded-3xl backdrop-blur-xl shadow-2xl relative overflow-hidden group">
+                    <div className="flex flex-col gap-3 md:gap-4 p-4 md:p-5 bg-gradient-to-br from-[#16A34A]/10 to-[var(--ib-acc)]/10 border border-[#16A34A]/20 rounded-2xl md:rounded-3xl backdrop-blur-xl shadow-2xl relative overflow-hidden group">
                       <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-500/10 rounded-full blur-2xl pointer-events-none" />
 
                       <div className="flex items-center gap-3">
@@ -1731,7 +1742,7 @@ const MessageList = ({
                           <Sparkles size={20} className="animate-pulse" />
                         </div>
                         <div className="min-w-0 flex-1">
-                          <h4 className="text-xs font-black text-white uppercase tracking-wider truncate">
+                          <h4 className="text-xs font-black text-[var(--ib-ink)] uppercase tracking-wider truncate">
                             {msg.flashcardDeck.deck_title}
                           </h4>
                           <p className="text-[9px] font-bold text-emerald-400 uppercase tracking-widest mt-0.5 font-jetbrains-mono">
@@ -1742,7 +1753,7 @@ const MessageList = ({
 
                       <button
                         onClick={() => onStudyFlashcards(msg.flashcardDeck!)}
-                        className="w-full py-2.5 px-4 bg-gradient-to-r from-emerald-500 to-brand-cyan hover:from-emerald-400 hover:to-[#4f4eed] text-white font-black text-xs uppercase tracking-widest rounded-xl transition-all shadow-[0_4px_20px_rgba(16,185,129,0.2)] hover:shadow-[0_4px_25px_rgba(16,185,129,0.4)] active:scale-[0.98] flex items-center justify-center gap-2"
+                        className="w-full py-2.5 px-4 bg-gradient-to-r from-emerald-500 to-[var(--ib-acc)] hover:from-emerald-400 hover:to-[var(--ib-acc)] text-[var(--ib-ink)] font-black text-xs uppercase tracking-widest rounded-xl transition-all shadow-[0_4px_20px_rgba(16,185,129,0.2)] hover:shadow-[0_4px_25px_rgba(16,185,129,0.4)] active:scale-[0.98] flex items-center justify-center gap-2"
                       >
                         <Sparkles size={14} className="text-emerald-300" />
                         {"Study Flashcards"}
@@ -1784,9 +1795,9 @@ const MessageList = ({
                   msg.content
                 )}
 
-                <div className={`mt-2 md:mt-3 pt-2 md:pt-3 border-t border-white/5 flex flex-wrap items-center justify-between gap-2 ${msg.role === "user" ? "flex-row-reverse" : ""}`}>
+                <div className={`mt-2 md:mt-3 pt-2 md:pt-3 border-t border-[var(--ib-line)] flex flex-wrap items-center justify-between gap-2 ${msg.role === "user" ? "flex-row-reverse" : ""}`}>
                   <div className="flex items-center gap-2 min-w-0">
-                    <span className="text-[9px] font-black text-gray-500 uppercase tracking-widest">{msg.timestamp}</span>
+                    <span className="text-[9px] font-black text-[var(--ib-mute)] uppercase tracking-widest">{msg.timestamp}</span>
                     {msg.role === "bot" && (
                       <div className="flex items-center gap-1.5 px-2 py-0.5 bg-green-500/10 border border-green-500/20 rounded-full">
                         <div className="w-1 h-1 rounded-full bg-green-500" />
@@ -1806,7 +1817,7 @@ const MessageList = ({
                       {msg.sources.slice(0, 4).map((source, sIdx) => (
                         <span
                           key={sIdx}
-                          className="inline-flex items-center max-w-[220px] truncate px-2 py-0.5 rounded-full border border-[#00f0ff]/20 bg-[#00f0ff]/5 text-[10px] font-bold text-[#7dd3fc]"
+                          className="inline-flex items-center max-w-[220px] truncate px-2 py-0.5 rounded-full border border-[var(--ib-line)] bg-[var(--ib-accbg)] text-[10px] font-bold text-[#7dd3fc]"
                           title={source}
                         >
                           {source}
@@ -1823,7 +1834,7 @@ const MessageList = ({
                     <button
                       key={idx}
                       onClick={() => onActionClick(action)}
-                      className="px-3 py-1.5 md:px-4 md:py-2 bg-white/5 hover:bg-brand-cyan hover:text-[#0F111A]/10 text-gray-300 hover:text-[#FFFFFF] border border-white/10 /30 rounded-full text-[11px] md:text-[12px] font-bold transition-all hover:scale-105 active:scale-95"
+                      className="px-3 py-1.5 md:px-4 md:py-2 bg-[var(--ib-card)] hover:bg-[var(--ib-acc)] hover:text-white text-[var(--ib-mute)] hover:text-[var(--ib-acc)] border border-[var(--ib-line)] /30 rounded-full text-[11px] md:text-[12px] font-bold transition-all hover:scale-105 active:scale-95"
                     >
                       {action}
                     </button>
@@ -1836,13 +1847,10 @@ const MessageList = ({
 
         {isLoading && (
           <div className="flex gap-4 items-start">
-            {/* <div className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center shrink-0 mt-1">
-              <div className="w-2 h-2 rounded-full text-[#0F111A] animate-pulse shadow-[0_0_8px_#D4AF37]" />
-            </div> */}
-            <div className="bg-[#000000] text-[#00f0ff] border border-white/5 rounded-2xl rounded-tl-sm px-5 py-4 shadow-xl flex gap-2 items-center">
-              <span className="h-1.5 w-1.5 rounded-full bg-[#00f0ff] animate-bounce" style={{ animationDelay: '0ms' }} />
-              <span className="h-1.5 w-1.5 rounded-full bg-[#00f0ff] animate-bounce" style={{ animationDelay: '150ms' }} />
-              <span className="h-1.5 w-1.5 rounded-full bg-[#00f0ff] animate-bounce" style={{ animationDelay: '300ms' }} />
+            <div className="flex items-center gap-2 rounded-2xl rounded-tl-sm border border-[var(--ib-line)] bg-[var(--ib-card)] px-5 py-4 shadow-[0_8px_24px_-16px_rgba(11,18,32,0.25)]">
+              <span className="h-1.5 w-1.5 rounded-full bg-[var(--ib-acc)] animate-bounce" style={{ animationDelay: '0ms' }} />
+              <span className="h-1.5 w-1.5 rounded-full bg-[var(--ib-acc)] animate-bounce" style={{ animationDelay: '150ms' }} />
+              <span className="h-1.5 w-1.5 rounded-full bg-[var(--ib-acc)] animate-bounce" style={{ animationDelay: '300ms' }} />
             </div>
           </div>
         )}
@@ -1872,14 +1880,14 @@ const ChatInput = ({
 
         <div className="relative group mb-12">
           {/* Tokens Remaining Micro-UI */}
-          {/* <div className="absolute -top-7 left-1/2 -translate-x-1/2 flex items-center gap-2 px-3 py-1 bg-white/5 border border-white/5 rounded-full">
-            <div className="w-16 h-1 bg-white/10 rounded-full overflow-hidden">
-              <div className="w-[30%] h-fullbg-[#00f0ff] text-[#0F111A] shadow-[0_0_8px_#D4AF37]" />
+          {/* <div className="absolute -top-7 left-1/2 -translate-x-1/2 flex items-center gap-2 px-3 py-1 bg-[var(--ib-card)] border border-[var(--ib-line)] rounded-full">
+            <div className="w-16 h-1 bg-[var(--ib-accbg)] rounded-full overflow-hidden">
+              <div className="w-[30%] h-full bg-[var(--ib-acc)] text-white shadow-[0_0_8px_rgba(27,77,219,0.4)]" />
             </div>
-            <span className="text-[8px] font-black text-gray-500 uppercase tracking-widest">{t('library.queriesLeft', { count: 7, total: 10 })}</span>
+            <span className="text-[8px] font-black text-[var(--ib-mute)] uppercase tracking-widest">{t('library.queriesLeft', { count: 7, total: 10 })}</span>
           </div> */}
 
-          <div className="relative flex items-center gap-2 sm:gap-3 p-1.5 sm:p-2 bg-[#141416]/90 backdrop-blur-2xl border border-white/10 rounded-[2.5rem] shadow-[0_30px_60px_-15px_rgba(0,0,0,0.5)] group-focus-within:border-brand-cyan/30 group-focus-within:shadow-[0_0_40px_rgba(63,62,237,0.1)] transition-all duration-500 ">
+          <div className="relative flex items-center gap-2 sm:gap-3 p-1.5 sm:p-2 bg-[var(--ib-card)] backdrop-blur-2xl border border-[var(--ib-line)] rounded-[2.5rem] shadow-[0_30px_60px_-15px_rgba(0,0,0,0.5)] group-focus-within:border-[var(--ib-acc)]/30 group-focus-within:shadow-[0_0_40px_rgba(27, 77, 219,0.1)] transition-all duration-500 ">
             <div className="relative pl-1 sm:pl-2">
               <input
                 type="file"
@@ -1892,14 +1900,14 @@ const ChatInput = ({
                 onClick={() => fileInputRef.current?.click()}
                 disabled={isLoading}
                 className={`flex items-center justify-center w-8 h-8 sm:w-11 sm:h-11 rounded-full border transition-all ${selectedFile
-                  ? "bg-brand-cyan text-[#0F111A]/20 border-brand-cyan/40 text-[#818CF8]"
-                  : "bg-white/5 border-white/5 text-gray-400 hover:text-[#FFFFFF] hover:bg-white/10"
+                  ? "bg-[var(--ib-acc)]/20 border-[var(--ib-acc)]/40 text-[var(--ib-acc)]"
+                  : "bg-[var(--ib-card)] border-[var(--ib-line)] text-[var(--ib-mute)] hover:text-[var(--ib-acc)] hover:bg-[var(--ib-accbg)]"
                   } shadow-sm`}
                 title={t('library.attachFile') || "Attach file or image"}
               >
                 <Plus size={16} className="sm:w-5 sm:h-5" strokeWidth={2.5} />
                 {selectedFile && (
-                  <div className="absolute -top-1 -right-1 w-3.5 h-3.5 sm:w-4 sm:h-4bg-[#00f0ff] text-[#0F111A] text-[#0A0A0C] text-[8px] sm:text-[9px] rounded-full flex items-center justify-center font-black shadow-[0_0_10px_#D4AF37]">
+                  <div className="absolute -top-1 -right-1 w-3.5 h-3.5 sm:w-4 sm:h-4 bg-[var(--ib-acc)] text-white text-[var(--ib-bg)] text-[8px] sm:text-[9px] rounded-full flex items-center justify-center font-black shadow-[0_0_10px_rgba(27,77,219,0.4)]">
                     1
                   </div>
                 )}
@@ -1914,20 +1922,20 @@ const ChatInput = ({
                 onKeyDown={(e) => e.key === "Enter" && !isLoading && onSend()}
                 placeholder={selectedFile ? `File: ${selectedFile.name}` : resolvedPlaceholder}
                 disabled={isLoading}
-                className="w-full h-10 sm:h-14 pl-1.5 sm:pl-2 pr-10 sm:pr-14 bg-transparent focus:outline-none placeholder:text-gray-600 font-bold text-[13px] sm:text-[16px] text-white disabled:opacity-50"
+                className="w-full h-10 sm:h-14 pl-1.5 sm:pl-2 pr-10 sm:pr-14 bg-transparent focus:outline-none placeholder:text-[var(--ib-mute)] font-bold text-[13px] sm:text-[16px] text-[var(--ib-ink)] disabled:opacity-50"
               />
               <button
                 onClick={() => onSend()}
                 disabled={(!value.trim() && !selectedFile) || isLoading}
-                className="absolute right-0 top-1/2 -translate-y-1/2 w-8 h-8 sm:w-11 sm:h-11 bg-gradient-to-br from-brand-cyan to-[#00f0ff] text-white rounded-full flex items-center justify-center hover:scale-105 transition-all shadow-[0_0_20px_rgba(63,62,237,0.3)] active:scale-95 disabled:opacity-30 disabled:cursor-not-allowed"
+                className="absolute right-0 top-1/2 -translate-y-1/2 w-8 h-8 sm:w-11 sm:h-11 bg-[var(--ib-acc)] text-white rounded-full flex items-center justify-center hover:scale-105 transition-all shadow-[0_0_20px_rgba(27, 77, 219,0.3)] active:scale-95 disabled:opacity-30 disabled:cursor-not-allowed"
               >
                 <Send size={14} className="sm:w-[18px] sm:h-[18px]" strokeWidth={2.5} />
               </button>
             </div>
           </div>
         </div>
-        <div className="text-center mt-4 sm:mt-6 flex items-center justify-center gap-2 text-gray-600 text-[8px] sm:text-[9px] font-black uppercase tracking-[0.2em]">
-          <ShieldCheck size={10} className="text-brand-cyan/40" />
+        <div className="text-center mt-4 sm:mt-6 flex items-center justify-center gap-2 text-[var(--ib-mute)] text-[8px] sm:text-[9px] font-black uppercase tracking-[0.2em]">
+          <ShieldCheck size={10} className="text-[var(--ib-acc)]/40" />
           {t('library.aiEngineBranding')}
         </div>
       </div>
@@ -1942,21 +1950,21 @@ const StudioSidebar = ({ studyTools, isMobile, onClose, onToolClick }: any) => {
   return (
     <div
       className={`
-    flex flex-col bg-[#0E1116] p-8 shrink-0 h-full
-    ${isMobile ? "w-full" : "hidden xl:flex w-[300px] border-l border-white/5"}
+    flex flex-col bg-[var(--ib-card)] p-8 shrink-0 h-full
+    ${isMobile ? "w-full" : "hidden xl:flex w-[300px] border-l border-[var(--ib-line)]"}
   `}
     >
       <div className="flex items-center justify-between mb-8 mt-20">
         <div className="flex flex-col">
-          <h2 className="text-base font-black text-white uppercase tracking-wider">{t('library.expertStudio')}</h2>
-          <p className="text-[8px] sm:text-[10px] font-bold text-[#818CF8] uppercase tracking-[0.15em] sm:tracking-[0.3em]">{t('library.complianceTools')}</p>
+          <h2 className="text-base font-black text-[var(--ib-ink)] uppercase tracking-wider">{t('library.expertStudio')}</h2>
+          <p className="text-[8px] sm:text-[10px] font-bold text-[var(--ib-acc)] uppercase tracking-[0.15em] sm:tracking-[0.3em]">{t('library.complianceTools')}</p>
         </div>
         {isMobile && onClose && (
           <button
             onClick={onClose}
-            className="p-2 hover:bg-white/5 rounded-full transition-colors"
+            className="p-2 hover:bg-[var(--ib-card)] rounded-full transition-colors"
           >
-            <X size={20} className="text-gray-400" />
+            <X size={20} className="text-[var(--ib-mute)]" />
           </button>
         )}
       </div>
@@ -1966,9 +1974,9 @@ const StudioSidebar = ({ studyTools, isMobile, onClose, onToolClick }: any) => {
           {studyTools.map((tool: any, idx: number) => (
             <motion.div
               key={idx}
-              whileHover={{ x: 5, backgroundColor: "rgba(255,255,255,0.03)" }}
+              whileHover={{ x: 5, backgroundColor: "var(--ib-card)" }}
               onClick={() => onToolClick(tool)}
-              className="flex items-center gap-4 p-4 rounded-2xl border border-white/5 bg-white/2 cursor-pointer transition-all group /30"
+              className="flex items-center gap-4 p-4 rounded-2xl border border-[var(--ib-line)] bg-[var(--ib-card)] cursor-pointer transition-all group /30"
             >
               <div
                 className={`p-3 rounded-xl shrink-0 transition-all group-hover:scale-110 shadow-lg ${tool.bgColor} ${tool.color.replace('text-', 'text-opacity-80 text-')}`}
@@ -1976,10 +1984,10 @@ const StudioSidebar = ({ studyTools, isMobile, onClose, onToolClick }: any) => {
                 <tool.icon size={20} strokeWidth={2.5} />
               </div>
               <div>
-                <h4 className="text-[13px] font-black text-gray-200 mb-0.5 group-hover:text-[#FFFFFF] transition-colors uppercase tracking-tight">
+                <h4 className="text-[13px] font-black text-[var(--ib-ink)] mb-0.5 group-hover:text-[var(--ib-acc)] transition-colors uppercase tracking-tight">
                   {tool.title}
                 </h4>
-                <p className="text-[10px] text-gray-500 font-bold leading-tight">
+                <p className="text-[10px] text-[var(--ib-mute)] font-bold leading-tight">
                   {tool.description}
                 </p>
               </div>
@@ -1988,7 +1996,7 @@ const StudioSidebar = ({ studyTools, isMobile, onClose, onToolClick }: any) => {
         </div>
       </div>
 
-      <Link href={`/${lang}/academy`} className="mt-8 bg-[#00f0ff] text-[#0F111A]  py-4 rounded-2xl font-black text-xs uppercase tracking-[0.2em] transition-all shadow-2xl shadow-brand-cyan/20 flex items-center justify-center gap-3 group">
+      <Link href={`/${lang}/academy`} className="mt-8 bg-[var(--ib-acc)] text-white  py-4 rounded-2xl font-black text-xs uppercase tracking-[0.2em] transition-all shadow-2xl shadow-[0_4px_20px_rgba(27,77,219,0.2)] flex items-center justify-center gap-3 group">
         <GraduationCap size={18} className="group-hover:rotate-12 transition-transform" />
         {t('library.getCertified')}
       </Link>
@@ -2156,8 +2164,8 @@ const ChatInterface = ({ id }: { id: string }) => {
       title: t('library.generateNotes'),
       description: t('library.generateNotesDesc'),
       icon: FileText,
-      color: "text-[#818CF8]",
-      bgColor: "bg-brand-cyan text-[#0F111A]/10",
+      color: "text-[var(--ib-acc)]",
+      bgColor: "bg-[var(--ib-acc)]/10",
     },
     {
       id: "create_summary",
@@ -2188,8 +2196,8 @@ const ChatInterface = ({ id }: { id: string }) => {
       title: t('library.generateQuiz'),
       description: t('library.generateQuizDesc'),
       icon: MessageSquare,
-      color: "text-indigo-500",
-      bgColor: "bg-indigo-50",
+      color: "text-[var(--ib-acc)]",
+      bgColor: "bg-[var(--ib-accbg)]",
     },
     {
       id: "explain_eli5",
@@ -2586,17 +2594,17 @@ const ChatInterface = ({ id }: { id: string }) => {
   };
 
   return (
-    <div className="flex h-screen bg-[#0A0A0C] text-[#EDEDED] overflow-hidden relative">
+    <div className="flex h-screen bg-[var(--ib-bg)] text-[var(--ib-ink)] overflow-hidden relative">
       {/* Premium background mesh */}
       <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
-        <div className="absolute -top-[10%] -left-[10%] w-[40%] h-[40%]bg-[#00f0ff] text-[#0F111A]/5 rounded-full blur-[120px]" />
-        <div className="absolute top-[20%] -right-[5%] w-[30%] h-[30%] bg-[#8B5CF6]/5 rounded-full blur-[100px]" />
-        <div className="absolute -bottom-[10%] left-[20%] w-[50%] h-[50%]bg-[#00f0ff] text-[#0F111A]/5 rounded-full blur-[150px]" />
+        <div className="absolute -top-[10%] -left-[10%] w-[40%] h-[40%] bg-[var(--ib-acc)]/5 rounded-full blur-[120px]" />
+        <div className="absolute top-[20%] -right-[5%] w-[30%] h-[30%] bg-[var(--ib-acc)]/5 rounded-full blur-[100px]" />
+        <div className="absolute -bottom-[10%] left-[20%] w-[50%] h-[50%] bg-[var(--ib-acc)]/5 rounded-full blur-[150px]" />
       </div>
 
       <button
         onClick={() => setIsDesktopLeftSidebarOpen(!isDesktopLeftSidebarOpen)}
-        className="hidden lg:flex absolute top-1/2 -translate-y-1/2 z-[100] w-6 h-12 bg-[#18181B] border border-white/10 border-l-0 rounded-r-lg items-center justify-center text-gray-400 hover:text-white transition-all duration-300 shadow-xl"
+        className="hidden lg:flex absolute top-1/2 -translate-y-1/2 z-[100] w-6 h-12 bg-[var(--ib-card)] border border-[var(--ib-line)] border-l-0 rounded-r-lg items-center justify-center text-[var(--ib-mute)] hover:text-[var(--ib-ink)] transition-all duration-300 shadow-xl"
         style={{ left: isDesktopLeftSidebarOpen ? '256px' : '0' }}
       >
         {isDesktopLeftSidebarOpen ? <ChevronLeft size={16} /> : <ChevronRight size={16} />}
@@ -2621,24 +2629,24 @@ const ChatInterface = ({ id }: { id: string }) => {
         />
         <div className="flex-1 overflow-hidden flex flex-row w-full h-full pt-[64px]">
           {/* Main Chat Area — min-w-0 so flex child can shrink/grow with viewport */}
-          <div className="flex-1 min-w-0 w-full flex flex-col h-full border-r border-white/5 transition-all duration-500 relative">
+          <div className="flex-1 min-w-0 w-full flex flex-col h-full border-r border-[var(--ib-line)] transition-all duration-500 relative">
 
             {/* Back to Chat button inside flashcards view removed from absolute position to avoid overlap */}
 
             {viewMode === "flashcards" ? (
-              <div className="flex-1 flex flex-col items-center justify-start md:justify-center p-4 sm:p-6 md:p-12 relative overflow-y-auto no-scrollbar bg-[#050505]">
+              <div className="flex-1 flex flex-col items-center justify-start md:justify-center p-4 sm:p-6 md:p-12 relative overflow-y-auto no-scrollbar bg-[var(--ib-bg)]">
                 {/* Visual Ambient Glows specific to flashcard deck */}
                 <div className="absolute top-[20%] left-[10%] w-[350px] h-[350px] bg-emerald-500/5 rounded-full blur-[100px] pointer-events-none" />
-                <div className="absolute bottom-[20%] right-[10%] w-[350px] h-[350px]bg-[#00f0ff] text-[#0F111A]/5 rounded-full blur-[100px] pointer-events-none" />
+                <div className="absolute bottom-[20%] right-[10%] w-[350px] h-[350px] bg-[var(--ib-acc)]/5 rounded-full blur-[100px] pointer-events-none" />
 
                 <div className="w-full max-w-xl flex flex-col min-h-full justify-between relative z-10 py-6">
                   {/* Deck Info Header */}
                   <div className="text-center space-y-4 mb-6 shrink-0">
                     <button
                       onClick={() => setViewMode("chat")}
-                      className="inline-flex mx-auto px-5 py-2.5 rounded-full bg-gradient-to-r from-gray-800 to-[#1F2937] hover:from-gray-700 hover:to-gray-800 text-white font-black text-xs uppercase tracking-widest hover:scale-105 active:scale-95 transition-all border border-white/10 items-center gap-2.5 backdrop-blur-md shadow-2xl shrink-0"
+                      className="inline-flex mx-auto px-5 py-2.5 rounded-full bg-gradient-to-r from-gray-800 to-[#1F2937] hover:from-gray-700 hover:to-gray-800 text-[var(--ib-ink)] font-black text-xs uppercase tracking-widest hover:scale-105 active:scale-95 transition-all border border-[var(--ib-line)] items-center gap-2.5 backdrop-blur-md shadow-2xl shrink-0"
                     >
-                      <ArrowLeft size={13} className="text-gray-400" />
+                      <ArrowLeft size={13} className="text-[var(--ib-mute)]" />
                       {"💬 Back to Chat Support"}
                     </button>
                     <div className="pt-2">
@@ -2646,10 +2654,10 @@ const ChatInterface = ({ id }: { id: string }) => {
                         Interactive Study Deck
                       </span>
                     </div>
-                    <h3 className="text-lg sm:text-2xl font-black text-white uppercase tracking-tight leading-snug mt-2">
+                    <h3 className="text-lg sm:text-2xl font-black text-[var(--ib-ink)] uppercase tracking-tight leading-snug mt-2">
                       {flashcardsData?.deck_title}
                     </h3>
-                    <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">
+                    <p className="text-[10px] text-[var(--ib-mute)] font-bold uppercase tracking-widest">
                       {flashcardsData?.iso_standard || getStandardCode(standard) || getStandardLabel(standard)} • {flashcardsData?.difficulty || "intermediate"} level
                     </p>
                   </div>
@@ -2659,13 +2667,13 @@ const ChatInterface = ({ id }: { id: string }) => {
                     {isGeneratingFlashcards ? (
                       <div className="flex flex-col items-center justify-center gap-6">
                         <div className="relative w-16 h-16 flex items-center justify-center">
-                          <div className="absolute inset-0 rounded-full border-2 border-white/5" />
-                          <div className="absolute inset-0 rounded-full border-2 border-t-[#00F0FF] border-r-[#00F0FF] animate-spin" />
-                          <Brain size={24} className="text-[#818CF8] animate-pulse" />
+                          <div className="absolute inset-0 rounded-full border-2 border-[var(--ib-line)]" />
+                          <div className="absolute inset-0 rounded-full border-2 border-t-[var(--ib-acc)] border-r-[var(--ib-acc)] animate-spin" />
+                          <Brain size={24} className="text-[var(--ib-acc)] animate-pulse" />
                         </div>
                         <div className="text-center space-y-2">
-                          <h4 className="text-xs font-black text-white uppercase tracking-[0.2em] animate-pulse">Generating Flashcards</h4>
-                          <p className="text-[10px] text-gray-500 font-bold max-w-[280px]">Our neural engine is analyzing the standard to formulate interactive study aids...</p>
+                          <h4 className="text-xs font-black text-[var(--ib-ink)] uppercase tracking-[0.2em] animate-pulse">Generating Flashcards</h4>
+                          <p className="text-[10px] text-[var(--ib-mute)] font-bold max-w-[280px]">Our neural engine is analyzing the standard to formulate interactive study aids...</p>
                         </div>
                       </div>
                     ) : flashcardsData && flashcardsData.cards && flashcardsData.cards.length > 0 ? (
@@ -2684,7 +2692,7 @@ const ChatInterface = ({ id }: { id: string }) => {
                               }
                             }}
                             disabled={currentCardIndex === 0}
-                            className="p-3 bg-white/5 border border-white/10 rounded-full text-gray-400 hover:text-white transition-all disabled:opacity-10 hover:bg-white/10 active:scale-95 disabled:cursor-not-allowed"
+                            className="p-3 bg-[var(--ib-card)] border border-[var(--ib-line)] rounded-full text-[var(--ib-mute)] hover:text-[var(--ib-ink)] transition-all disabled:opacity-10 hover:bg-[var(--ib-accbg)] active:scale-95 disabled:cursor-not-allowed"
                           >
                             <ChevronLeft size={20} strokeWidth={2.5} />
                           </button>
@@ -2730,25 +2738,25 @@ const ChatInterface = ({ id }: { id: string }) => {
                             >
                               <div className={`relative w-full h-full preserve-3d duration-700 ${isCardFlipped ? "rotate-y-180" : ""}`}>
                                 {/* Front Face */}
-                                <div className="absolute inset-0 w-full h-full backface-hidden rounded-[2rem] sm:rounded-[2.5rem] border border-white/10 bg-[#0E1116]/90 backdrop-blur-2xl p-5 sm:p-8 flex flex-col justify-between shadow-2xl hover:border-white/20 transition-colors">
+                                <div className="absolute inset-0 w-full h-full backface-hidden rounded-[2rem] sm:rounded-[2.5rem] border border-[var(--ib-line)] bg-[var(--ib-card)] backdrop-blur-2xl p-5 sm:p-8 flex flex-col justify-between shadow-2xl hover:border-[var(--ib-line)] transition-colors">
                                   <div className="flex items-center justify-between">
-                                    <span className="text-[9px] font-black text-[#818CF8] uppercase tracking-[0.2em]bg-[#00f0ff] text-[#0F111A]/10 px-3 py-1 rounded-full border border-brand-cyan/20">
+                                    <span className="text-[9px] font-black text-[var(--ib-acc)] uppercase tracking-[0.2em] bg-[var(--ib-acc)]/10 px-3 py-1 rounded-full border border-[var(--ib-acc)]/20">
                                       Question
                                     </span>
-                                    <Sparkles size={14} className="text-[#818CF8]" />
+                                    <Sparkles size={14} className="text-[var(--ib-acc)]" />
                                   </div>
                                   <div className="flex-1 flex flex-col justify-center py-4 text-left">
-                                    <h4 className="text-xs font-black text-white uppercase tracking-wider mb-2 font-jetbrains-mono leading-snug">
+                                    <h4 className="text-xs font-black text-[var(--ib-ink)] uppercase tracking-wider mb-2 font-jetbrains-mono leading-snug">
                                       {flashcardsData.cards[currentCardIndex]?.front?.title}
                                     </h4>
-                                    <p className="text-[13px] sm:text-base text-gray-300 font-medium leading-relaxed overflow-y-auto no-scrollbar max-h-[120px] sm:max-h-[160px]">
+                                    <p className="text-[13px] sm:text-base text-[var(--ib-mute)] font-medium leading-relaxed overflow-y-auto no-scrollbar max-h-[120px] sm:max-h-[160px]">
                                       {flashcardsData.cards[currentCardIndex]?.front?.body}
                                     </p>
                                   </div>
-                                  <div className="text-center text-[9px] font-black text-gray-500 uppercase tracking-widest flex items-center justify-center gap-2">
+                                  <div className="text-center text-[9px] font-black text-[var(--ib-mute)] uppercase tracking-widest flex items-center justify-center gap-2">
                                     <span>👈 Swipe to Navigate 👉</span>
                                     <span>•</span>
-                                    <span className="text-gray-400">Click to Flip</span>
+                                    <span className="text-[var(--ib-mute)]">Click to Flip</span>
                                   </div>
                                 </div>
 
@@ -2764,11 +2772,11 @@ const ChatInterface = ({ id }: { id: string }) => {
                                     <h4 className="text-xs font-black text-emerald-400 uppercase tracking-widest mb-2 font-jetbrains-mono">
                                       {flashcardsData.cards[currentCardIndex]?.back?.title || "Answer"}
                                     </h4>
-                                    <p className="text-[12px] sm:text-[14px] text-gray-200 font-bold leading-relaxed overflow-y-auto no-scrollbar max-h-[120px] sm:max-h-[140px]">
+                                    <p className="text-[12px] sm:text-[14px] text-[var(--ib-ink)] font-bold leading-relaxed overflow-y-auto no-scrollbar max-h-[120px] sm:max-h-[140px]">
                                       {flashcardsData.cards[currentCardIndex]?.back?.body}
                                     </p>
                                   </div>
-                                  <div className="text-center text-[9px] font-black text-gray-500 uppercase tracking-widest">
+                                  <div className="text-center text-[9px] font-black text-[var(--ib-mute)] uppercase tracking-widest">
                                     Click card to flip back
                                   </div>
                                 </div>
@@ -2789,7 +2797,7 @@ const ChatInterface = ({ id }: { id: string }) => {
                               }
                             }}
                             disabled={currentCardIndex === flashcardsData.cards.length - 1}
-                            className="p-3 bg-white/5 border border-white/10 rounded-full text-gray-400 hover:text-white transition-all disabled:opacity-10 hover:bg-white/10 active:scale-95 disabled:cursor-not-allowed"
+                            className="p-3 bg-[var(--ib-card)] border border-[var(--ib-line)] rounded-full text-[var(--ib-mute)] hover:text-[var(--ib-ink)] transition-all disabled:opacity-10 hover:bg-[var(--ib-accbg)] active:scale-95 disabled:cursor-not-allowed"
                           >
                             <ChevronRight size={20} strokeWidth={2.5} />
                           </button>
@@ -2797,12 +2805,12 @@ const ChatInterface = ({ id }: { id: string }) => {
 
                       </div>
                     ) : (
-                      <div className="text-center p-8 border border-white/5 rounded-3xl bg-white/2 max-w-sm">
-                        <p className="text-xs font-black text-gray-500 uppercase tracking-widest mb-2">No flashcards loaded</p>
-                        <p className="text-[10px] text-gray-600 font-bold mb-4">Click below to generate compliance cards for this standard.</p>
+                      <div className="text-center p-8 border border-[var(--ib-line)] rounded-3xl bg-[var(--ib-card)] max-w-sm">
+                        <p className="text-xs font-black text-[var(--ib-mute)] uppercase tracking-widest mb-2">No flashcards loaded</p>
+                        <p className="text-[10px] text-[var(--ib-mute)] font-bold mb-4">Click below to generate compliance cards for this standard.</p>
                         <button
                           onClick={() => handleBuildFlashcards()}
-                          className="px-5 py-2.5 bg-gradient-to-br from-brand-cyan to-[#8B5CF6] hover:from-[#4f4eed] hover:to-[#906cf7] text-white rounded-xl text-[11px] font-black uppercase tracking-wider shadow-lg shadow-brand-cyan/20"
+                          className="px-5 py-2.5 bg-[var(--ib-acc)] hover:from-[var(--ib-acc)] hover:to-[var(--ib-acc)] text-[var(--ib-ink)] rounded-xl text-[11px] font-black uppercase tracking-wider shadow-lg shadow-[0_4px_20px_rgba(27,77,219,0.2)]"
                         >
                           Generate Deck
                         </button>
@@ -2814,7 +2822,7 @@ const ChatInterface = ({ id }: { id: string }) => {
                   {flashcardsData && flashcardsData.cards && (
                     <div className="space-y-4 px-6 md:px-12 shrink-0">
                       <div className="flex items-center justify-between">
-                        <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest">
+                        <span className="text-[10px] font-black text-[var(--ib-mute)] uppercase tracking-widest">
                           Card {currentCardIndex + 1} of {flashcardsData.cards.length}
                         </span>
                         <span className="text-[10px] font-black text-emerald-400 font-jetbrains-mono">
@@ -2823,9 +2831,9 @@ const ChatInterface = ({ id }: { id: string }) => {
                       </div>
 
                       {/* Premium Progress Bar */}
-                      <div className="w-full h-1.5 bg-white/5 rounded-full overflow-hidden border border-white/5">
+                      <div className="w-full h-1.5 bg-[var(--ib-card)] rounded-full overflow-hidden border border-[var(--ib-line)]">
                         <motion.div
-                          className="h-full bg-gradient-to-r from-emerald-500 to-brand-cyan shadow-[0_0_8px_rgba(16,185,129,0.5)]"
+                          className="h-full bg-gradient-to-r from-emerald-500 to-[var(--ib-acc)] shadow-[0_0_8px_rgba(16,185,129,0.5)]"
                           initial={{ width: 0 }}
                           animate={{ width: `${((currentCardIndex + 1) / flashcardsData.cards.length) * 100}%` }}
                           transition={{ duration: 0.3 }}
@@ -2845,7 +2853,7 @@ const ChatInterface = ({ id }: { id: string }) => {
                             }
                           }}
                           disabled={currentCardIndex === 0}
-                          className="px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-xs font-black uppercase tracking-wider text-gray-400 hover:text-white disabled:opacity-20 transition-all"
+                          className="px-4 py-2 bg-[var(--ib-card)] border border-[var(--ib-line)] rounded-xl text-xs font-black uppercase tracking-wider text-[var(--ib-mute)] hover:text-[var(--ib-ink)] disabled:opacity-20 transition-all"
                         >
                           Prev Card
                         </button>
@@ -2860,7 +2868,7 @@ const ChatInterface = ({ id }: { id: string }) => {
                             }
                           }}
                           disabled={currentCardIndex === flashcardsData.cards.length - 1}
-                          className="px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-xs font-black uppercase tracking-wider text-gray-400 hover:text-white disabled:opacity-20 transition-all"
+                          className="px-4 py-2 bg-[var(--ib-card)] border border-[var(--ib-line)] rounded-xl text-xs font-black uppercase tracking-wider text-[var(--ib-mute)] hover:text-[var(--ib-ink)] disabled:opacity-20 transition-all"
                         >
                           Next Card
                         </button>
@@ -2953,40 +2961,40 @@ const ChatInterface = ({ id }: { id: string }) => {
             <motion.div
               initial={{ x: 50, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
-              className="hidden xl:flex flex-col w-[40%] bg-[#0E1116] border-l border-white/5 overflow-hidden"
+              className="hidden xl:flex flex-col w-[40%] bg-[var(--ib-card)] border-l border-[var(--ib-line)] overflow-hidden"
             >
-              <div className="p-6 border-b border-white/5 flex items-center justify-between bg-[#0A0A0C]/50 backdrop-blur-md">
+              <div className="p-6 border-b border-[var(--ib-line)] flex items-center justify-between bg-[var(--ib-bg)]/50 backdrop-blur-md">
                 <div className="flex flex-col">
-                  <h3 className="text-xs font-black text-[#818CF8] uppercase tracking-[0.2em] mb-1">{t('library.sourceMaterial')}</h3>
-                  <p className="text-[11px] font-bold text-white truncate max-w-[300px]">{standard.title}</p>
+                  <h3 className="text-xs font-black text-[var(--ib-acc)] uppercase tracking-[0.2em] mb-1">{t('library.sourceMaterial')}</h3>
+                  <p className="text-[11px] font-bold text-[var(--ib-ink)] truncate max-w-[300px]">{standard.title}</p>
                 </div>
-                <div className="p-2 bg-white/5 border border-white/10 rounded-xl text-gray-400">
+                <div className="p-2 bg-[var(--ib-card)] border border-[var(--ib-line)] rounded-xl text-[var(--ib-mute)]">
                   <FileText size={16} />
                 </div>
               </div>
               <div className="flex-1 overflow-y-auto p-8 no-scrollbar">
                 <div className="max-w-2xl mx-auto space-y-8">
                   <div className="space-y-4">
-                    <h4 className="text-2xl font-black text-white leading-tight">{standard.title}</h4>
-                    <div className="h-1 w-20bg-[#00f0ff] text-[#0F111A]" />
+                    <h4 className="text-2xl font-black text-[var(--ib-ink)] leading-tight">{standard.title}</h4>
+                    <div className="h-1 w-20 bg-[var(--ib-acc)] text-white" />
                   </div>
 
                   <div className="prose prose-invert prose-sm max-w-none">
-                    <p className="text-gray-400 leading-relaxed text-[15px] font-medium italic">
+                    <p className="text-[var(--ib-mute)] leading-relaxed text-[15px] font-medium italic">
                       {standard.summary}
                     </p>
                     <div className="mt-8 space-y-6">
-                      <div className="p-6 bg-white/2 border border-white/5 rounded-3xl">
-                        <h5 className="text-[10px] font-black text-[#818CF8] uppercase tracking-widest mb-3">{t('library.contextTitle')}</h5>
-                        <p className="text-gray-500 text-[13px] leading-relaxed font-medium">{t('library.contextDesc')}</p>
+                      <div className="p-6 bg-[var(--ib-card)] border border-[var(--ib-line)] rounded-3xl">
+                        <h5 className="text-[10px] font-black text-[var(--ib-acc)] uppercase tracking-widest mb-3">{t('library.contextTitle')}</h5>
+                        <p className="text-[var(--ib-mute)] text-[13px] leading-relaxed font-medium">{t('library.contextDesc')}</p>
                       </div>
-                      <div className="p-6 bg-white/2 border border-white/5 rounded-3xl">
-                        <h5 className="text-[10px] font-black text-indigo-400 uppercase tracking-widest mb-3">{t('library.leadershipTitle')}</h5>
-                        <p className="text-gray-500 text-[13px] leading-relaxed font-medium">{t('library.leadershipDesc')}</p>
+                      <div className="p-6 bg-[var(--ib-card)] border border-[var(--ib-line)] rounded-3xl">
+                        <h5 className="text-[10px] font-black text-[var(--ib-acc)] uppercase tracking-widest mb-3">{t('library.leadershipTitle')}</h5>
+                        <p className="text-[var(--ib-mute)] text-[13px] leading-relaxed font-medium">{t('library.leadershipDesc')}</p>
                       </div>
-                      <div className="p-6 bg-white/2 border border-white/5 rounded-3xl">
+                      <div className="p-6 bg-[var(--ib-card)] border border-[var(--ib-line)] rounded-3xl">
                         <h5 className="text-[10px] font-black text-emerald-400 uppercase tracking-widest mb-3">{t('library.planningTitle')}</h5>
-                        <p className="text-gray-500 text-[13px] leading-relaxed font-medium">{t('library.planningDesc')}</p>
+                        <p className="text-[var(--ib-mute)] text-[13px] leading-relaxed font-medium">{t('library.planningDesc')}</p>
                       </div>
                     </div>
                   </div>
@@ -3010,14 +3018,14 @@ const ChatInterface = ({ id }: { id: string }) => {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setIsLeftSidebarOpen(false)}
-              className="fixed inset-0 bg-black/60 backdrop-blur-md z-[140] lg:hidden"
+              className="fixed inset-0 bg-[var(--ib-dk)]/50 backdrop-blur-md z-[140] lg:hidden"
             />
             <motion.div
               initial={{ x: "-100%" }}
               animate={{ x: 0 }}
               exit={{ x: "-100%" }}
               transition={{ type: "spring", damping: 25, stiffness: 200 }}
-              className="fixed left-0 top-0 bottom-0 w-[300px] max-w-[85vw] bg-[#0A0A0C] z-[150] lg:hidden shadow-2xl border-r border-white/5"
+              className="fixed left-0 top-0 bottom-0 w-[300px] max-w-[85vw] bg-[var(--ib-bg)] z-[150] lg:hidden shadow-2xl border-r border-[var(--ib-line)]"
             >
               <HistorySidebar
                 isMobile
@@ -3038,14 +3046,14 @@ const ChatInterface = ({ id }: { id: string }) => {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setIsSidebarOpen(false)}
-              className="fixed inset-0 bg-black/60 backdrop-blur-md z-[140] xl:hidden"
+              className="fixed inset-0 bg-[var(--ib-dk)]/50 backdrop-blur-md z-[140] xl:hidden"
             />
             <motion.div
               initial={{ x: "100%" }}
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
               transition={{ type: "spring", damping: 25, stiffness: 200 }}
-              className="fixed right-0 top-0 bottom-0 w-[320px] max-w-[85vw] bg-[#0E1116] z-[150] xl:hidden shadow-2xl border-l border-white/5"
+              className="fixed right-0 top-0 bottom-0 w-[320px] max-w-[85vw] bg-[var(--ib-card)] z-[150] xl:hidden shadow-2xl border-l border-[var(--ib-line)]"
             >
               <StudioSidebar
                 studyTools={studyTools}
@@ -3095,10 +3103,10 @@ const ChatInterface = ({ id }: { id: string }) => {
         .custom-scrollbar::-webkit-scrollbar-thumb {
           background: rgba(255, 255, 255, 0.1);
           border-radius: 10px;
-          border: 1px solid rgba(255, 255, 255, 0.05);
+          border: 1px solid var(--ib-line);
         }
         .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-          background: rgba(63, 62, 237, 0.4);
+          background: rgba(27, 77, 219, 0.4);
         }
         .custom-scrollbar {
           scrollbar-width: thin;

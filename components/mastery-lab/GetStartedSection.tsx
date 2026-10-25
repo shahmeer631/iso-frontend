@@ -9,7 +9,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import "@/lib/i18n/client";
 
@@ -38,121 +37,105 @@ export default function GetStartedCard({
   onSubmit,
 }: GetStartedCardProps) {
   const { t } = useTranslation();
-  const router = useRouter();
   const [industry, setIndustry] = useState("");
   const [managementLevel, setManagementLevel] = useState("");
   const [department, setDepartment] = useState("");
 
-  const displayButtonText = buttonText || t('pricingPage.startAssessment');
+  const displayButtonText = buttonText || t("pricingPage.startAssessment");
   const isDisabled = !industry || !managementLevel || !department;
 
   const handleSubmit = () => {
     if (isDisabled) return;
-
-    onSubmit({
-      industry,
-      managementLevel,
-      department,
-    });
+    onSubmit({ industry, managementLevel, department });
   };
 
   return (
-    <div
-      className="p-4 sm:p-8 md:p-10"
-      style={{
-        background: "#1E212B",
-        borderRadius: 24,
-        border: "1px solid #333333",
-        position: "relative",
-        overflow: "hidden"
-      }}
-    >
-      {/* Light modern accent inside the card */}
-      <div style={{
-        position: "absolute", top: 0, right: 0, width: 250, height: 250,
-        background: "rgba(0,240,255,0.05)", borderRadius: "50%", filter: "blur(80px)",
-        pointerEvents: "none"
-      }} />
+    <div className="ib-card relative overflow-hidden p-5 sm:p-8 md:p-10">
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -right-16 -top-16 size-56 rounded-full bg-[var(--ib-accbg)] blur-[80px]"
+      />
 
-      <h3 className="space-grotesk text-sm sm:text-lg font-bold text-white mb-5 flex items-center gap-2.5 relative z-10">
-        <span style={{ width: 4, height: 16, background: "#00F0FF", borderRadius: 99 }}></span>
+      <h3 className="relative z-[1] mb-0! flex items-center gap-2.5 text-[15px] font-bold text-[var(--ib-ink)] sm:text-[17px]">
+        <span
+          className="h-4 w-1 rounded-full bg-[var(--ib-acc)]"
+          aria-hidden
+        />
         Set your context
       </h3>
 
-      <div style={{ position: "relative", zIndex: 10 }}>
-        {/* Step 1 */}
-        <div style={{ marginBottom: 16 }}>
-          <p className="font-inter text-[12px] lg:text-[14px] font-semibold tracking-[0.05em] text-[#00f0ff] pl-2 uppercase mb-1.5">
+      <div className="relative z-[1] mt-6 space-y-5">
+        <div>
+          <p className="mb-2 pl-0.5 text-[12px] font-semibold uppercase tracking-[0.05em] text-[var(--ib-acc)] sm:text-[13px]">
             Step 1 — Select Your Industry
           </p>
-          <div>
-            <Select onValueChange={setIndustry}>
-              <SelectTrigger style={{ background: "#0F111A", border: "1px solid rgba(255,255,255,0.1)", color: "#FFFFFF", height: 40, borderRadius: 8 }} className="text-xs sm:text-sm">
-                <SelectValue placeholder={t('dynamic.dyn_selectindustry_86')} />
-              </SelectTrigger>
-              <SelectContent style={{ background: "#1E212B", border: "1px solid rgba(255,255,255,0.1)", color: "#FFFFFF" }}>
-                {industries.map((item) => (
-                  <SelectItem key={item.value} value={item.value} style={{ cursor: "pointer", fontSize: 14 }} className="focus:bg-brand-cyan focus:text-[#0F111A]/10 focus:text-white">
-                    {item.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+          <Select onValueChange={setIndustry}>
+            <SelectTrigger className="h-11 rounded-[10px] border-[var(--ib-line)] bg-[var(--ib-bg)] text-xs text-[var(--ib-ink)] sm:text-sm">
+              <SelectValue placeholder={t("dynamic.dyn_selectindustry_86")} />
+            </SelectTrigger>
+            <SelectContent className="border-[var(--ib-line)] bg-[var(--ib-card)] text-[var(--ib-ink)]">
+              {industries.map((item) => (
+                <SelectItem
+                  key={item.value}
+                  value={item.value}
+                  className="cursor-pointer text-sm focus:bg-[var(--ib-acc)] focus:text-white"
+                >
+                  {item.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
 
-        {/* Step 2 */}
-        <div style={{ marginBottom: 16 }}>
-          <p className="font-inter text-[12px] lg:text-[14px] font-semibold tracking-[0.05em] text-[#00f0ff] pl-2 uppercase mb-1.5">
+        <div>
+          <p className="mb-2 pl-0.5 text-[12px] font-semibold uppercase tracking-[0.05em] text-[var(--ib-acc)] sm:text-[13px]">
             Step 2 — Define your management level
           </p>
-          <div>
-            <Select onValueChange={setManagementLevel}>
-              <SelectTrigger style={{ background: "#0F111A", border: "1px solid rgba(255,255,255,0.1)", color: "#FFFFFF", height: 40, borderRadius: 8 }} className="text-xs sm:text-sm">
-                <SelectValue placeholder={t('dynamic.dyn_selectlevel_87')} />
-              </SelectTrigger>
-              <SelectContent style={{ background: "#1E212B", border: "1px solid rgba(255,255,255,0.1)", color: "#FFFFFF" }}>
-                {managementLevels.map((item) => (
-                  <SelectItem key={item.value} value={item.value} style={{ cursor: "pointer", fontSize: 14 }} className="focus:bg-brand-cyan focus:text-[#0F111A]/10 focus:text-white">
-                    {item.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+          <Select onValueChange={setManagementLevel}>
+            <SelectTrigger className="h-11 rounded-[10px] border-[var(--ib-line)] bg-[var(--ib-bg)] text-xs text-[var(--ib-ink)] sm:text-sm">
+              <SelectValue placeholder={t("dynamic.dyn_selectlevel_87")} />
+            </SelectTrigger>
+            <SelectContent className="border-[var(--ib-line)] bg-[var(--ib-card)] text-[var(--ib-ink)]">
+              {managementLevels.map((item) => (
+                <SelectItem
+                  key={item.value}
+                  value={item.value}
+                  className="cursor-pointer text-sm focus:bg-[var(--ib-acc)] focus:text-white"
+                >
+                  {item.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
 
-        {/* Step 3 */}
-        <div style={{ marginBottom: 20 }}>
-          <p className="font-inter text-[12px] lg:text-[14px] font-semibold tracking-[0.05em] text-[#00f0ff] pl-2 uppercase mb-1.5">
+        <div>
+          <p className="mb-2 pl-0.5 text-[12px] font-semibold uppercase tracking-[0.05em] text-[var(--ib-acc)] sm:text-[13px]">
             Step 3 — Choose your department or function
           </p>
-          <div>
-            <Select onValueChange={setDepartment}>
-              <SelectTrigger style={{ background: "#0F111A", border: "1px solid rgba(255,255,255,0.1)", color: "#FFFFFF", height: 40, borderRadius: 8 }} className="text-xs sm:text-sm">
-                <SelectValue placeholder={t('dynamic.dyn_selectdepartment_88')} />
-              </SelectTrigger>
-              <SelectContent style={{ background: "#1E212B", border: "1px solid rgba(255,255,255,0.1)", color: "#FFFFFF" }}>
-                {departments.map((item) => (
-                  <SelectItem key={item.value} value={item.value} style={{ cursor: "pointer", fontSize: 14 }} className="focus:bg-brand-cyan focus:text-[#0F111A]/10 focus:text-white">
-                    {item.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+          <Select onValueChange={setDepartment}>
+            <SelectTrigger className="h-11 rounded-[10px] border-[var(--ib-line)] bg-[var(--ib-bg)] text-xs text-[var(--ib-ink)] sm:text-sm">
+              <SelectValue placeholder={t("dynamic.dyn_selectdepartment_88")} />
+            </SelectTrigger>
+            <SelectContent className="border-[var(--ib-line)] bg-[var(--ib-card)] text-[var(--ib-ink)]">
+              {departments.map((item) => (
+                <SelectItem
+                  key={item.value}
+                  value={item.value}
+                  className="cursor-pointer text-sm focus:bg-[var(--ib-acc)] focus:text-white"
+                >
+                  {item.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
 
         <Button
-          style={{
-            width: "100%", height: 42, borderRadius: 8, fontSize: 13, fontWeight: 700,
-            background: isDisabled ? "#00f0ff" : "#00F0FF",
-            color: isDisabled ? "#0F111A" : "black",
-            border: "none", cursor: isDisabled ? "not-allowed" : "pointer",
-            transition: "all 0.2s"
-          }}
+          type="button"
           disabled={isDisabled}
           onClick={handleSubmit}
+          className="h-12 w-full rounded-[10px] bg-[var(--ib-acc)] text-[13px] font-bold text-white shadow-[0_12px_28px_-14px_rgba(27,77,219,0.55)] transition-all duration-200 hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ib-acc)]"
         >
           {displayButtonText}
         </Button>

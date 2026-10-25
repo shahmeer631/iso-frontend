@@ -21,14 +21,14 @@ export const Timer: React.FC<TimerProps> = ({ timeRemaining }) => {
         color: isLowTime ? "#EF4444" : "#FFFFFF", 
         padding: "12px 32px", 
         borderRadius: 20, 
-        border: isLowTime ? "1px solid rgba(239, 68, 68, 0.3)" : "1px solid rgba(0, 240, 255, 0.2)",
+        border: isLowTime ? "1px solid rgba(239, 68, 68, 0.3)" : "1px solid rgba(27, 77, 219, 0.2)",
         display: "flex", 
         alignItems: "center", 
         gap: 12,
         boxShadow: isLowTime ? "0 0 15px rgba(239, 68, 68, 0.1)" : "none",
         backdropFilter: "blur(8px)"
       }}>
-        <Clock size={20} color={isLowTime ? "#EF4444" : "#D4AF37"} />
+        <Clock size={20} color={isLowTime ? "#EF4444" : "var(--ib-acc)"} />
         <span className="font-inter" style={{ fontSize: 24, fontWeight: 700, letterSpacing: "0.05em" }}>
           {formatTime(timeRemaining)}
         </span>

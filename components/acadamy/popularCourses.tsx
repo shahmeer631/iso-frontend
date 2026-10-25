@@ -72,13 +72,13 @@ const TopPopularCourses: FC = () => {
   };
 
   return (
-    <section style={{ background: "#0B0F19", padding: "80px 24px" }}>
+    <section style={{ background: "var(--ib-bg)", padding: "80px 24px" }}>
       <div style={{ maxWidth: 1280, margin: "0 auto" }}>
 
 
 
         {isLoading && (
-          <div style={{ color: "#00F0FF", textAlign: "center", padding: "40px 0" }}>{t('academy.loadingCourses')}</div>
+          <div style={{ color: "var(--ib-acc)", textAlign: "center", padding: "40px 0" }}>{t('academy.loadingCourses')}</div>
         )}
 
         {isError && (
@@ -105,7 +105,7 @@ const TopPopularCourses: FC = () => {
                       whileHover="hover"
                       onClick={(e) => handleCategoryClick(e, course.category?.slug || course._mappedCategory?.toLowerCase())}
                       style={{
-                        background: "#161A22", borderRadius: 20, border: "1px solid rgba(255,255,255,0.05)",
+                        background: "var(--ib-bg)", borderRadius: 20, border: "1px solid var(--ib-line)",
                         overflow: "hidden", position: "relative", display: "flex", flexDirection: "column",
                         cursor: "pointer"
                       }}
@@ -115,7 +115,7 @@ const TopPopularCourses: FC = () => {
                         variants={{ hover: { opacity: 1 } }}
                         initial={{ opacity: 0 }}
                         style={{
-                          position: "absolute", inset: 0, background: "radial-gradient(circle at 50% 0%, rgba(0,240,255,0.1), transparent 70%)",
+                          position: "absolute", inset: 0, background: "radial-gradient(circle at 50% 0%, rgba(27, 77, 219, 0.1), transparent 70%)",
                           pointerEvents: "none", zIndex: 0
                         }}
                       />
@@ -141,10 +141,10 @@ const TopPopularCourses: FC = () => {
                         ) : (
                           <div style={{
                             width: 80, height: 80, borderRadius: 24, background: "rgba(30,41,59,0.8)",
-                            border: "1px solid rgba(255,255,255,0.05)", display: "flex", alignItems: "center", justifyContent: "center",
+                            border: "1px solid var(--ib-line)", display: "flex", alignItems: "center", justifyContent: "center",
                             boxShadow: "0 20px 40px rgba(0,0,0,0.4)"
                           }}>
-                            <ShieldCheck size={40} color="#00F0FF" />
+                            <ShieldCheck size={40} color="var(--ib-acc)" />
                           </div>
                         )}
 
@@ -153,30 +153,30 @@ const TopPopularCourses: FC = () => {
                       {/* Content Section */}
                       <div style={{ padding: 24, display: "flex", flexDirection: "column", flex: 1, zIndex: 1, borderTop: "1px solid rgba(255,255,255,0.02)" }}>
                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
-                          <span style={{ color: "#00F0FF", fontSize: 14, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                          <span style={{ color: "var(--ib-acc)", fontSize: 14, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.05em" }}>
                             {CATEGORY_LABELS[course._mappedCategory] || course._mappedCategory}
                           </span>
                         </div>
-                        <h3 className="font-inter" style={{ color: "#FFFFFF", fontSize: 22, fontWeight: 600, marginBottom: 16, lineHeight: 1.3 }}>
+                        <h3 className="font-inter" style={{ color: "var(--ib-ink)", fontSize: 22, fontWeight: 600, marginBottom: 16, lineHeight: 1.3 }}>
                           {course.title}
                         </h3>
 
                         {/* Meta Tags */}
                         <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 24 }}>
-                          <span className="font-inter" style={{ background: "rgba(255,255,255,0.05)", color: "#A0AAB2", fontSize: 12, padding: "4px 10px", borderRadius: 6 }}>
+                          <span className="font-inter" style={{ background: "rgba(255,255,255,0.05)", color: "var(--ib-mute)", fontSize: 12, padding: "4px 10px", borderRadius: 6 }}>
                             {t('academy.proLevel')}
                           </span>
-                          <span className="font-inter" style={{ background: "rgba(255,255,255,0.05)", color: "#A0AAB2", fontSize: 12, padding: "4px 10px", borderRadius: 6, display: "flex", alignItems: "center", gap: 6 }}>
+                          <span className="font-inter" style={{ background: "rgba(255,255,255,0.05)", color: "var(--ib-mute)", fontSize: 12, padding: "4px 10px", borderRadius: 6, display: "flex", alignItems: "center", gap: 6 }}>
                             <Clock size={12} /> {course._count?.lessons || 12} {t('academy.modules')}
                           </span>
-                          <span className="font-inter" style={{ background: "rgba(0,240,255,0.1)", color: "#00F0FF", fontSize: 12, padding: "4px 10px", borderRadius: 6, display: "flex", alignItems: "center", gap: 6 }}>
+                          <span className="font-inter" style={{ background: "rgba(27, 77, 219, 0.1)", color: "var(--ib-acc)", fontSize: 12, padding: "4px 10px", borderRadius: 6, display: "flex", alignItems: "center", gap: 6 }}>
                             {t('academy.aiAssisted')}
                           </span>
                         </div>
 
                         {/* Description */}
                         <div style={{ marginBottom: 24 }}>
-                          <p style={{ color: "#A0AAB2", fontSize: 14, lineHeight: 1.5, margin: 0 }}>
+                          <p style={{ color: "var(--ib-mute)", fontSize: 14, lineHeight: 1.5, margin: 0 }}>
                             {course.description || "Master the requirements and implementation strategies for this ISO standard with our interactive AI tutor."}
                           </p>
                         </div>
@@ -191,7 +191,7 @@ const TopPopularCourses: FC = () => {
                             style={{
                               width: "100%", padding: "14px 20px", borderRadius: 12, fontSize: 15, fontWeight: 700,
                               display: "flex", alignItems: "center", justifyContent: "center", gap: 8, cursor: "pointer",
-                              background: "rgba(255,255,255,0.05)", color: "#FFFFFF", border: "1px solid rgba(255,255,255,0.1)",
+                              background: "rgba(255,255,255,0.05)", color: "var(--ib-ink)", border: "1px solid var(--ib-line)",
                               transition: "all 0.2s"
                             }}
                             onMouseOver={(e) => e.currentTarget.style.background = "rgba(255,255,255,0.1)"}
@@ -219,8 +219,8 @@ const TopPopularCourses: FC = () => {
                   disabled={currentPage === 1}
                   style={{
                     background: "rgba(255,255,255,0.05)",
-                    color: currentPage === 1 ? "rgba(255,255,255,0.2)" : "#D4AF37",
-                    border: "1px solid rgba(255,255,255,0.1)",
+                    color: currentPage === 1 ? "rgba(255,255,255,0.2)" : "var(--ib-acc)",
+                    border: "1px solid var(--ib-line)",
                     padding: "8px 16px", borderRadius: 8, cursor: currentPage === 1 ? "not-allowed" : "pointer",
                     fontSize: 14, fontWeight: 600, transition: "all 0.2s"
                   }}
@@ -234,9 +234,9 @@ const TopPopularCourses: FC = () => {
                     onClick={() => setCurrentPage(i + 1)}
                     style={{
                       width: 40, height: 40, borderRadius: 8,
-                      background: currentPage === i + 1 ? "#D4AF37" : "rgba(255,255,255,0.05)",
-                      color: currentPage === i + 1 ? "#0B0F19" : "#FFFFFF",
-                      border: `1px solid ${currentPage === i + 1 ? "#D4AF37" : "rgba(255,255,255,0.1)"}`,
+                      background: currentPage === i + 1 ? "var(--ib-acc)" : "rgba(255,255,255,0.05)",
+                      color: currentPage === i + 1 ? "var(--ib-bg)" : "#FFFFFF",
+                      border: `1px solid ${currentPage === i + 1 ? "var(--ib-acc)" : "rgba(255,255,255,0.1)"}`,
                       cursor: "pointer", fontSize: 14, fontWeight: 600, transition: "all 0.2s"
                     }}
                   >
@@ -249,8 +249,8 @@ const TopPopularCourses: FC = () => {
                   disabled={currentPage === totalPages}
                   style={{
                     background: "rgba(255,255,255,0.05)",
-                    color: currentPage === totalPages ? "rgba(255,255,255,0.2)" : "#D4AF37",
-                    border: "1px solid rgba(255,255,255,0.1)",
+                    color: currentPage === totalPages ? "rgba(255,255,255,0.2)" : "var(--ib-acc)",
+                    border: "1px solid var(--ib-line)",
                     padding: "8px 16px", borderRadius: 8, cursor: currentPage === totalPages ? "not-allowed" : "pointer",
                     fontSize: 14, fontWeight: 600, transition: "all 0.2s"
                   }}

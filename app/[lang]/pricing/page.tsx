@@ -1,16 +1,17 @@
 "use client";
 
-import DynamicHeroSectionWhiteButton from "@/components/landing-page-components/DynamicHeroSectionWhiteButton";
 import PricingSection from "@/components/landing-page-components/PricingSection";
 import PricingFAQ from "@/components/landing-page-components/PricingFAQ";
 import OfferTimer from "@/components/landing-page-components/OfferTimer";
-import ServerMaintenanceNotice from "@/components/landing-page-components/ServerMaintenanceNotice";
 import React, { useEffect, Suspense } from "react";
 import { useSearchParams, useRouter, usePathname, useParams } from "next/navigation";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 import i18n from "@/lib/i18n/client";
-import Link from "next/link";
+import { motion, useReducedMotion } from "framer-motion";
+import { CreditCard } from "lucide-react";
+
+const ease = [0.22, 1, 0.36, 1] as const;
 
 const PricingContent = () => {
   const searchParams = useSearchParams();
@@ -18,8 +19,8 @@ const PricingContent = () => {
   const pathname = usePathname();
   const { t } = useTranslation();
   const { lang } = useParams();
+  const reduceMotion = useReducedMotion();
 
-  // Sync i18n language with the URL [lang] param
   useEffect(() => {
     if (lang && i18n.language !== lang) {
       i18n.changeLanguage(lang as string);
@@ -30,8 +31,6 @@ const PricingContent = () => {
     const error = searchParams.get("error");
     if (error) {
       toast.error(decodeURIComponent(error));
-
-      // Clean up the URL by removing the error param
       const params = new URLSearchParams(searchParams.toString());
       params.delete("error");
       const newUrl = params.toString() ? `${pathname}?${params.toString()}` : pathname;
@@ -40,51 +39,45 @@ const PricingContent = () => {
   }, [searchParams, router, pathname]);
 
   return (
-    <div className="bg-[#0A0A0C] min-h-screen text-white selection:bg-cyan-500/30 selection:text-cyan-200">
-      {/* header section  */}
-      <section className="w-full pt-24 text-center text-white bg-[#0A0A0C]">
-        <div className="max-w-4xl mx-auto px-4">
-          <h1 className="space-grotesk text-5xl lg:text-[52px] font-semibold text-white leading-[1.1] tracking-tight mb-2">
-            {t('pricingPage.title')}
-          </h1>
-
-          <div className="mt-8 mb-4 text-base font-semibold text-gray-300">
-            {t('pricingPage.tagline')}
-          </div>
-
-          <div className="max-w-2xl mx-auto text-sm text-[#A1A1A6] font-inter mb-10 leading-relaxed space-y-3">
-            <p>
-              {t('pricingPage.desc1')}
-            </p>
-            <p>
-              {t('pricingPage.desc2')}
-            </p>
-          </div>
-
-          {/* <Link
-            href={`/${lang}/mastery-lab`}
-            style={{
-              background: "#00F0FF", color: "#FFFFFF", padding: "16px 32px",
-              borderRadius: 99, fontSize: 18, fontWeight: 700, cursor: "pointer",
-              border: "none", display: "inline-block", alignItems: "center", gap: 8,
-              transition: "all 0.2s"
-            }}
-          >{t('pricingPage.startAssessment')}</Link> */}
+    <div className="min-h-screen bg-[var(--ib-bg)] font-inter text-[var(--ib-ink)] selection:bg-[var(--ib-accbg)] selection:text-[var(--ib-acc)]">
+      <header className="relative overflow-x-clip px-4 pb-6 pt-12 sm:px-6 sm:pb-8 sm:pt-16">
+        <div aria-hidden className="pointer-events-none absolute inset-0">
+          <div className="absolute left-1/2 top-[-16%] h-[480px] w-[min(900px,100%)] -translate-x-1/2 rounded-full bg-[radial-gradient(ellipse_at_center,color-mix(in_srgb,var(--ib-acc)_14%,transparent),transparent_70%)]" />
         </div>
-      </section>
 
+        <div className="ib-w relative z-[1] max-w-3xl! text-center">
+          <motion.div
+            initial={reduceMotion ? false : { opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, ease }}
+          >
+            <div className="ib-eye mx-auto inline-flex items-center gap-2">
+              <CreditCard className="size-3.5" aria-hidden />
+              {t("pricingPage.simplePricing")}
+            </div>
 
+            <h1 className="mb-0! mt-3 text-[36px] font-bold leading-[1.1] tracking-[-0.035em] text-[var(--ib-ink)] sm:text-[44px] lg:text-[52px]">
+              {t("pricingPage.title")}
+            </h1>
 
-      {/* === TEMPORARY SERVER MAINTENANCE NOTICE (Delete this block when server work is completed) === */}
-      {/* <ServerMaintenanceNotice /> */}
-      {/* ============================================================================================== */}
+            <p className="mt-4 text-[16px] font-semibold text-[var(--ib-mute)] sm:text-[17px]">
+              {t("pricingPage.tagline")}
+            </p>
 
-      {/* offer timer section */}
+            <div className="mx-auto mt-4 max-w-2xl space-y-2 text-[14px] leading-relaxed text-[var(--ib-mute)] sm:text-[15px]">
+              <p>{t("pricingPage.desc1")}</p>
+              <p>{t("pricingPage.desc2")}</p>
+            </div>
+
+            <p className="mt-5 text-[12px] font-medium text-[var(--ib-mute)] sm:text-[13px]">
+              {t("pricingPage.priceNote")}
+            </p>
+          </motion.div>
+        </div>
+      </header>
+
       <OfferTimer />
-
-      {/* pricing section  */}
       <PricingSection />
-      {/* faq section */}
       <PricingFAQ />
     </div>
   );
@@ -92,7 +85,13 @@ const PricingContent = () => {
 
 const PricingPage = () => {
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <Suspense
+      fallback={
+        <div className="flex min-h-screen items-center justify-center bg-[var(--ib-bg)] text-[var(--ib-mute)]">
+          Loading...
+        </div>
+      }
+    >
       <PricingContent />
     </Suspense>
   );

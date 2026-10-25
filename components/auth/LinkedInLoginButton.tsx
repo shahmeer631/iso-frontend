@@ -139,16 +139,16 @@ export default function LinkedInLoginButton({ shortText }: { shortText?: boolean
       onClick={handleButtonClick}
       disabled={isLoading}
       type="button"
-      className="flex items-center justify-center gap-3 w-full py-3 px-4 bg-[#18181B] border border-[#27272A] rounded-xl hover:bg-[#27272A] transition-all group disabled:opacity-50 cursor-pointer"
+      className="flex items-center justify-center gap-3 w-full py-3 px-4 bg-[var(--ib-card)] border border-[var(--ib-line)] rounded-[10px] hover:bg-[var(--ib-bg)] transition-all group disabled:opacity-50 cursor-pointer"
     >
       {isLoading ? (
-        <div className="w-5 h-5 border-2 border-t-white border-r-transparent border-b-transparent border-l-transparent rounded-full animate-spin" />
+        <div className="w-5 h-5 border-2 border-t-[var(--ib-acc)] border-r-transparent border-b-transparent border-l-transparent rounded-full animate-spin" />
       ) : (
         <svg className="w-5 h-5 transition-transform group-hover:scale-105" viewBox="0 0 24 24" fill="#0A66C2">
           <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0z"/>
         </svg>
       )}
-      <span className="text-white font-medium text-xs sm:text-sm whitespace-nowrap">
+      <span className="text-[var(--ib-ink)] font-medium text-xs sm:text-sm whitespace-nowrap">
         {isLoading
           ? t("auth.signingIn", "Signing in...")
           : shortText

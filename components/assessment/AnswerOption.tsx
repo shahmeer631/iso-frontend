@@ -27,15 +27,15 @@ export const AnswerOption: React.FC<AnswerOptionProps> = ({
         width: "100%",
         textAlign: "left",
         borderRadius: 16,
-        border: isSelected ? "1px solid #D4AF37" : "1px solid #333333",
-        background: isSelected ? "rgba(0, 240, 255, 0.05)" : "rgba(255,255,255,0.02)",
+        border: isSelected ? "1px solid var(--ib-acc)" : "1px solid var(--ib-line)",
+        background: isSelected ? "rgba(27, 77, 219, 0.05)" : "rgba(255,255,255,0.02)",
         display: "flex",
         alignItems: "center",
         gap: 16,
         transition: "all 0.2s ease",
         cursor: disabled ? "not-allowed" : "pointer",
         opacity: disabled ? 0.6 : 1,
-        boxShadow: isSelected ? "0 0 20px rgba(0, 240, 255, 0.1)" : "none",
+        boxShadow: isSelected ? "0 0 20px rgba(27, 77, 219, 0.1)" : "none",
         outline: "none"
       }}
     >
@@ -43,7 +43,7 @@ export const AnswerOption: React.FC<AnswerOptionProps> = ({
         className="font-inter text-sm sm:text-[18px]"
         style={{
           fontWeight: 700,
-          color: isSelected ? "#D4AF37" : "#A0AAB2",
+          color: isSelected ? "var(--ib-acc)" : "var(--ib-mute)",
           flexShrink: 0
         }}
       >
@@ -54,7 +54,7 @@ export const AnswerOption: React.FC<AnswerOptionProps> = ({
         style={{
           fontWeight: 500,
           lineHeight: 1.4,
-          color: isSelected ? "#FFFFFF" : "#A0AAB2"
+          color: isSelected ? "#FFFFFF" : "var(--ib-mute)"
         }}
       >
         {text}

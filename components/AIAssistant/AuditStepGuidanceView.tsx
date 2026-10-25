@@ -406,13 +406,13 @@ function MdLi({ className, children, ...props }: any) {
 
   return (
     <li className={mergeClass("list-none", className)} {...props}>
-      <div className="flex items-start gap-3 rounded-xl border border-[#334155] bg-[#1E293B] px-3.5 py-3">
+      <div className="flex items-start gap-3 rounded-xl border border-[#334155] bg-[var(--ib-ink)] px-3.5 py-3">
         {checkbox ? (
           <span className="mt-0.5 shrink-0">{checkbox}</span>
         ) : (
           <span
             aria-hidden="true"
-            className="mt-0.5 shrink-0 h-4 w-4 rounded-[4px] border border-[#64748B] bg-[#0F172A]"
+            className="mt-0.5 shrink-0 h-4 w-4 rounded-[4px] border border-[#64748B] bg-[var(--ib-ink)]"
           />
         )}
         <div className="min-w-0 flex-1 space-y-1.5">
@@ -441,7 +441,7 @@ const mdComponents: any = {
   h1: ({ className, children, ...props }: any) => (
     <h1
       className={mergeClass(
-        "text-[20px] font-semibold leading-[1.3] tracking-[-0.01em] text-[#F1F5F9] mb-3",
+        "text-[20px] font-semibold leading-[1.3] tracking-[-0.01em] text-[var(--ib-dktx)] mb-3",
         className,
       )}
       {...props}
@@ -452,7 +452,7 @@ const mdComponents: any = {
   h2: ({ className, children, ...props }: any) => (
     <h2
       className={mergeClass(
-        "text-[16px] font-semibold leading-[1.4] text-[#F1F5F9] mt-5 mb-2",
+        "text-[16px] font-semibold leading-[1.4] text-[var(--ib-dktx)] mt-5 mb-2",
         className,
       )}
       {...props}
@@ -501,7 +501,7 @@ const mdComponents: any = {
   blockquote: ({ className, children, ...props }: any) => (
     <blockquote
       className={mergeClass(
-        "my-3 border-l-2 border-[#0D9488] bg-[#1E293B]/70 rounded-r-xl px-3.5 py-2.5 text-[14px] leading-[1.6] text-[#CBD5E1]",
+        "my-3 border-l-2 border-[#0D9488] bg-[var(--ib-ink)]/70 rounded-r-xl px-3.5 py-2.5 text-[14px] leading-[1.6] text-[#CBD5E1]",
         className,
       )}
       {...props}
@@ -524,7 +524,7 @@ const mdComponents: any = {
     return (
       <code
         className={mergeClass(
-          "font-jetbrains-mono text-[13px] font-medium tracking-[0.02em] text-[#5EEAD4] bg-[#1E293B] px-1.5 py-0.5 rounded-md",
+          "font-jetbrains-mono text-[13px] font-medium tracking-[0.02em] text-[#5EEAD4] bg-[var(--ib-ink)] px-1.5 py-0.5 rounded-md",
           className,
         )}
         {...props}
@@ -536,7 +536,7 @@ const mdComponents: any = {
   pre: ({ className, children, ...props }: any) => (
     <pre
       className={mergeClass(
-        "w-full overflow-x-auto my-3 rounded-xl border border-[#334155] bg-[#0F172A] p-3 text-[13px] leading-[1.5]",
+        "w-full overflow-x-auto my-3 rounded-xl border border-[#334155] bg-[var(--ib-ink)] p-3 text-[13px] leading-[1.5]",
         className,
       )}
       {...props}
@@ -545,7 +545,7 @@ const mdComponents: any = {
     </pre>
   ),
   table: ({ className, ...props }: any) => (
-    <div className="w-full max-w-none overflow-x-auto my-3 rounded-xl border border-[#334155] bg-[#1E293B]/40">
+    <div className="w-full max-w-none overflow-x-auto my-3 rounded-xl border border-[#334155] bg-[var(--ib-ink)]/40">
       <table
         className={mergeClass("w-full min-w-[480px] border-collapse text-left", className)}
         {...props}
@@ -553,7 +553,7 @@ const mdComponents: any = {
     </div>
   ),
   thead: ({ className, ...props }: any) => (
-    <thead className={mergeClass("bg-[#0F172A]", className)} {...props} />
+    <thead className={mergeClass("bg-[var(--ib-ink)]", className)} {...props} />
   ),
   th: ({ className, children, ...props }: any) => (
     <th
@@ -588,7 +588,7 @@ const mdComponents: any = {
           className={`inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-[4px] border ${
             checked
               ? "border-[#0D9488] bg-[#0D9488]/30 text-[#5EEAD4]"
-              : "border-[#64748B] bg-[#0F172A]"
+              : "border-[#64748B] bg-[var(--ib-ink)]"
           }`}
         >
           {checked ? (
@@ -648,15 +648,15 @@ function GuidanceBriefing({
   if (!cards.length && !blob) return null;
 
   return (
-    <div className="rounded-xl border border-[#334155] bg-[#1E293B]/50 overflow-hidden">
+    <div className="rounded-xl border border-[#334155] bg-[var(--ib-ink)]/50 overflow-hidden">
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="flex w-full items-center justify-between gap-3 px-4 py-3 text-left hover:bg-[#1E293B]/80 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0D9488]"
+        className="flex w-full items-center justify-between gap-3 px-4 py-3 text-left hover:bg-[var(--ib-ink)]/80 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0D9488]"
         aria-expanded={open}
       >
         <div>
-          <h2 className="text-[16px] font-semibold leading-[1.4] text-[#F1F5F9]">
+          <h2 className="text-[16px] font-semibold leading-[1.4] text-[var(--ib-dktx)]">
             Auditor Guidance
           </h2>
           <p className="text-[12px] leading-[1.3] text-[#64748B] mt-0.5">
@@ -683,7 +683,7 @@ function GuidanceBriefing({
                 return (
                   <div
                     key={card.title}
-                    className="rounded-xl border border-[#334155] bg-[#1E293B] px-3.5 py-3"
+                    className="rounded-xl border border-[#334155] bg-[var(--ib-ink)] px-3.5 py-3"
                   >
                     <div className="mb-2 flex items-start justify-between gap-2">
                       <h3 className="text-[12px] font-semibold uppercase tracking-[0.04em] text-[#94A3B8]">
@@ -697,7 +697,7 @@ function GuidanceBriefing({
               })}
             </div>
           ) : (
-            <div className={`${NARRATIVE} rounded-xl border-l-2 border-[#0D9488] bg-[#0F172A] px-3.5 py-3.5`}>
+            <div className={`${NARRATIVE} rounded-xl border-l-2 border-[#0D9488] bg-[var(--ib-ink)] px-3.5 py-3.5`}>
               <MarkdownBody text={blob} />
             </div>
           )}
@@ -776,7 +776,7 @@ function WorkingPaperView({ text, copyLabel }: { text: string; copyLabel: string
   return (
     <div className={`${FULL} space-y-4`}>
       <div className="flex items-start justify-between gap-3">
-        <h2 className="text-[20px] font-semibold leading-[1.3] tracking-[-0.01em] text-[#F1F5F9]">
+        <h2 className="text-[20px] font-semibold leading-[1.3] tracking-[-0.01em] text-[var(--ib-dktx)]">
           Audit Working Paper
         </h2>
         <CopyControl text={cleaned} label={copyLabel} />
@@ -799,14 +799,14 @@ function WorkingPaperView({ text, copyLabel }: { text: string; copyLabel: string
             const tint = isGuideline
               ? "bg-[#172554]/35"
               : kind === "application"
-                ? "bg-[#1E293B]"
-                : "bg-[#1E293B]";
+                ? "bg-[var(--ib-ink)]"
+                : "bg-[var(--ib-ink)]";
             return (
               <article
                 key={`${part.title}-${idx}`}
                 className={`rounded-xl border border-[#334155] overflow-hidden ${tint} ${FULL}`}
               >
-                <div className="border-b border-[#334155] bg-[#0F172A]/50 px-3.5 py-2">
+                <div className="border-b border-[#334155] bg-[var(--ib-ink)]/50 px-3.5 py-2">
                   {label ? (
                     <p className="text-[12px] uppercase tracking-[0.04em] text-[#64748B] mb-0.5">
                       {label}
@@ -826,7 +826,7 @@ function WorkingPaperView({ text, copyLabel }: { text: string; copyLabel: string
           })}
         </div>
       ) : (
-        <div className={`${NARRATIVE} rounded-xl border border-[#334155] bg-[#1E293B] border-l-2 border-l-[#0D9488] px-3.5 py-3.5`}>
+        <div className={`${NARRATIVE} rounded-xl border border-[#334155] bg-[var(--ib-ink)] border-l-2 border-l-[#0D9488] px-3.5 py-3.5`}>
           <MarkdownBody text={cleaned} />
         </div>
       )}
@@ -845,7 +845,7 @@ function DocumentedInfoView({ text, copyLabel }: { text: string; copyLabel: stri
   return (
     <div className={`${FULL} space-y-4`}>
       <div className="flex items-start justify-between gap-3">
-        <h2 className="text-[20px] font-semibold leading-[1.3] tracking-[-0.01em] text-[#F1F5F9]">
+        <h2 className="text-[20px] font-semibold leading-[1.3] tracking-[-0.01em] text-[var(--ib-dktx)]">
           Documented Information
         </h2>
         <CopyControl text={cleaned} label={copyLabel} />
@@ -856,14 +856,14 @@ function DocumentedInfoView({ text, copyLabel }: { text: string; copyLabel: stri
           {cards.map((card, idx) => (
             <article
               key={`${card.name}-${idx}`}
-              className="rounded-xl border border-[#334155] bg-[#1E293B] px-3.5 py-3.5"
+              className="rounded-xl border border-[#334155] bg-[var(--ib-ink)] px-3.5 py-3.5"
             >
               <div className="flex flex-wrap items-start justify-between gap-2 mb-2.5">
                 <div className="min-w-0 flex-1">
                   <p className="text-[12px] uppercase tracking-[0.04em] text-[#64748B] mb-1">
                     Evidence Name
                   </p>
-                  <h3 className="text-[14px] font-semibold leading-[1.4] text-[#F1F5F9]">
+                  <h3 className="text-[14px] font-semibold leading-[1.4] text-[var(--ib-dktx)]">
                     {card.name}
                   </h3>
                 </div>
@@ -887,7 +887,7 @@ function DocumentedInfoView({ text, copyLabel }: { text: string; copyLabel: stri
           ))}
         </div>
       ) : (
-        <div className={`${NARRATIVE} rounded-xl border border-[#334155] bg-[#1E293B] px-3.5 py-3.5`}>
+        <div className={`${NARRATIVE} rounded-xl border border-[#334155] bg-[var(--ib-ink)] px-3.5 py-3.5`}>
           <MarkdownBody text={evidenceText} />
         </div>
       )}
@@ -923,7 +923,7 @@ function TemplateView({ text, copyLabel }: { text: string; copyLabel: string }) 
   return (
     <div className={`${FULL} space-y-4`}>
       <div className="flex flex-wrap items-start justify-between gap-3">
-        <h2 className="text-[20px] font-semibold leading-[1.3] tracking-[-0.01em] text-[#F1F5F9]">
+        <h2 className="text-[20px] font-semibold leading-[1.3] tracking-[-0.01em] text-[var(--ib-dktx)]">
           Template
         </h2>
         <div className="flex flex-wrap items-center gap-2">
@@ -932,7 +932,7 @@ function TemplateView({ text, copyLabel }: { text: string; copyLabel: string }) 
             <button
               type="button"
               onClick={downloadCsv}
-              className="inline-flex items-center gap-1 rounded-lg border border-[#1E293B] bg-[#0F172A]/80 backdrop-blur-[8px] px-2 py-1 text-[12px] font-medium text-[#94A3B8] hover:text-[#F8FAFC] hover:border-[#0D9488]/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0D9488]"
+              className="inline-flex items-center gap-1 rounded-lg border border-[var(--ib-ink)] bg-[var(--ib-ink)]/80 backdrop-blur-[8px] px-2 py-1 text-[12px] font-medium text-[#94A3B8] hover:text-[#F8FAFC] hover:border-[#0D9488]/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0D9488]"
               aria-label="Export as CSV"
             >
               <Download className="w-3 h-3" />
@@ -942,7 +942,7 @@ function TemplateView({ text, copyLabel }: { text: string; copyLabel: string }) 
           {copyLabel ? <span className="sr-only">{copyLabel}</span> : null}
         </div>
       </div>
-      <div className="w-full rounded-xl border border-[#334155] bg-[#1E293B]/40 px-3 py-3 sm:px-3.5 sm:py-3.5">
+      <div className="w-full rounded-xl border border-[#334155] bg-[var(--ib-ink)]/40 px-3 py-3 sm:px-3.5 sm:py-3.5">
         <MarkdownBody text={cleaned} checklist={looksLikeChecklist} />
       </div>
     </div>
@@ -1042,7 +1042,7 @@ function CaseStudyView({ text, copyLabel }: { text: string; copyLabel: string })
           <p className="text-[12px] uppercase tracking-[0.04em] text-[#64748B] mb-1">
             Case Study
           </p>
-          <h2 className="text-[20px] font-semibold leading-[1.3] tracking-[-0.01em] text-[#F1F5F9]">
+          <h2 className="text-[20px] font-semibold leading-[1.3] tracking-[-0.01em] text-[var(--ib-dktx)]">
             {hasStructured ? scenarioTitle : "Case Study"}
           </h2>
         </div>
@@ -1072,14 +1072,14 @@ function CaseStudyView({ text, copyLabel }: { text: string; copyLabel: string })
                   : kind === "situation"
                     ? "border-l-sky-500/60 bg-sky-950/15"
                     : kind === "learning"
-                      ? "border-l-violet-400/50 bg-violet-950/10"
-                      : "border-l-[#334155] bg-[#1E293B]/60";
+                      ? "border-l-[var(--ib-acc)]/50 bg-[var(--ib-accbg)]"
+                      : "border-l-[#334155] bg-[var(--ib-ink)]/60";
             return (
               <article
                 key={`${part.title}-${idx}`}
                 className={`w-full rounded-r-xl border border-[#334155] border-l-2 px-3.5 py-3.5 sm:px-4 sm:py-4 ${accent}`}
               >
-                <h3 className="text-[14px] font-semibold leading-[1.4] text-[#F1F5F9] mb-2 inline-flex items-center gap-2">
+                <h3 className="text-[14px] font-semibold leading-[1.4] text-[var(--ib-dktx)] mb-2 inline-flex items-center gap-2">
                   {kind === "complication" ? (
                     <AlertTriangle className="h-4 w-4 shrink-0 text-amber-400" aria-hidden />
                   ) : null}
@@ -1093,7 +1093,7 @@ function CaseStudyView({ text, copyLabel }: { text: string; copyLabel: string })
           })}
         </div>
       ) : (
-        <article className="w-full rounded-xl border border-[#334155] bg-[#1E293B]/70 px-3.5 py-4 sm:px-4">
+        <article className="w-full rounded-xl border border-[#334155] bg-[var(--ib-ink)]/70 px-3.5 py-4 sm:px-4">
           <MarkdownBody text={cleaned} className={caseBodyClass} />
         </article>
       )}
@@ -1103,7 +1103,7 @@ function CaseStudyView({ text, copyLabel }: { text: string; copyLabel: string })
 
 function EmptyTab({ label }: { label: string }) {
   return (
-    <div className={`${FULL} rounded-xl border border-dashed border-[#334155] bg-[#1E293B]/30 px-4 py-6 text-center`}>
+    <div className={`${FULL} rounded-xl border border-dashed border-[#334155] bg-[var(--ib-ink)]/30 px-4 py-6 text-center`}>
       <p className="text-[14px] leading-[1.6] text-[#94A3B8]">
         No {label.toLowerCase()} content for this step.
       </p>
@@ -1649,11 +1649,11 @@ export default function AuditStepGuidanceView({ data, emptyMessage }: Props) {
       {hasGuidance ? <GuidanceBriefing data={data} copyLabel={copyLabel} /> : null}
 
       {(availableTabs.length > 0 || hasGuidance) && (
-        <div className="rounded-xl border border-[#334155] bg-[#0F172A] overflow-hidden">
+        <div className="rounded-xl border border-[#334155] bg-[var(--ib-ink)] overflow-hidden">
           <div
             role="tablist"
             aria-label="Audit Lens output sections"
-            className="flex gap-1 overflow-x-auto border-b border-[#334155] bg-[#0F172A] px-2 py-1.5 custom-thin-scrollbar"
+            className="flex gap-1 overflow-x-auto border-b border-[#334155] bg-[var(--ib-ink)] px-2 py-1.5 custom-thin-scrollbar"
           >
             {TAB_ORDER.map((id) => {
               const hasContent = !!contentByTab[id];
@@ -1672,7 +1672,7 @@ export default function AuditStepGuidanceView({ data, emptyMessage }: Props) {
                   className={`shrink-0 rounded-lg px-3 py-1.5 text-[12px] font-semibold tracking-[0.02em] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0D9488] disabled:opacity-35 disabled:cursor-not-allowed ${
                     selected
                       ? "bg-[#0D9488]/20 text-[#5EEAD4] border border-[#0D9488]/40"
-                      : "text-[#94A3B8] border border-transparent hover:text-[#E2E8F0] hover:bg-[#1E293B]/60"
+                      : "text-[#94A3B8] border border-transparent hover:text-[#E2E8F0] hover:bg-[var(--ib-ink)]/60"
                   }`}
                 >
                   {TAB_LABELS[id]}
@@ -1681,7 +1681,7 @@ export default function AuditStepGuidanceView({ data, emptyMessage }: Props) {
             })}
           </div>
 
-          <div role="tabpanel" className="p-3 sm:p-4 md:p-5 bg-[#0F172A]">
+          <div role="tabpanel" className="p-3 sm:p-4 md:p-5 bg-[var(--ib-ink)]">
             {activeTab === "working" &&
               (workingPaper ? (
                 <WorkingPaperView text={workingPaper} copyLabel={copyLabel} />
@@ -1711,7 +1711,7 @@ export default function AuditStepGuidanceView({ data, emptyMessage }: Props) {
       )}
 
       {showFallbackGuidance ? (
-        <div className={`${NARRATIVE} rounded-xl border border-[#334155] bg-[#1E293B]/50 px-3.5 py-3.5`}>
+        <div className={`${NARRATIVE} rounded-xl border border-[#334155] bg-[var(--ib-ink)]/50 px-3.5 py-3.5`}>
           <div className="mb-2.5 flex justify-end">
             <CopyControl text={guidance} label={copyLabel} />
           </div>

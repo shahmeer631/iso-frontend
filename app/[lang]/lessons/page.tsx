@@ -1,4 +1,4 @@
-import AiToolsSection from "@/components/LessonSideBar/AiToolsSection";
+﻿import AiToolsSection from "@/components/LessonSideBar/AiToolsSection";
 import ChatSection from "@/components/LessonSideBar/ChatSection";
 import RelatedStandards from "@/components/LessonSideBar/RelatedStandards";
 import VideoPlayerPlaceholder from "@/components/LessonSideBar/VideoPlayerPlaceholder";
@@ -17,7 +17,7 @@ const page = () => {
            </div>
            <div className="mt-4 flex items-center justify-between">
              <h1 className="text-2xl font-bold">{title}</h1>
-             <Link href={'/lessons/assessment'} className="rounded-lg bg-green-600 px-6 py-2.5 text-white hover:bg-green-700">
+             <Link href={'/lessons/assessment'} className="rounded-lg bg-green-600 px-6 py-2.5 text-[var(--ib-ink)] hover:bg-green-700">
                Complete Lesson
              </Link>
            </div>

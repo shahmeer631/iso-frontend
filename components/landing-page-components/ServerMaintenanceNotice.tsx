@@ -51,13 +51,13 @@ const ServerMaintenanceNotice = () => {
             </h2>
 
             {/* Description Paragraph */}
-            <p className="text-gray-300 text-base md:text-lg leading-relaxed max-w-3xl">
+            <p className="text-[var(--ib-mute)] text-base md:text-lg leading-relaxed max-w-3xl">
               We are currently performing an essential server and payment system upgrade to enhance performance and security. All subscription plans and checkout features will be fully operational within <strong className="text-amber-300 font-semibold">1 hour</strong>.
             </p>
 
             {/* Time Estimation & Status Footer Box */}
             <div className="pt-2 flex flex-wrap items-center justify-center md:justify-start gap-3 text-sm">
-              <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-gray-200">
+              <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-[var(--ib-mute)]">
                 <Clock className="w-4 h-4 text-amber-400" />
                 <span>Estimated Resolution Time: <strong className="text-white">~1 Hour</strong></span>
               </div>
@@ -65,7 +65,7 @@ const ServerMaintenanceNotice = () => {
                 <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
                 <span>Live Update in Progress</span>
               </div>
-              <div className="text-xs text-gray-400 italic">
+              <div className="text-xs text-[var(--ib-mute)] italic">
                 Thank you for your patience and understanding!
               </div>
             </div>

@@ -655,20 +655,20 @@ export default function UploadPage({ onAnalyze }: { onAnalyze: () => void }) {
 
   return (
 
-    <div className="min-h-screen bg-[#0A0F1C] space-y-6 md:space-y-12 animate-in fade-in duration-500 p-2 md:p-8">
+    <div className="min-h-screen bg-[var(--ib-bg)] space-y-6 md:space-y-12 animate-in fade-in duration-500 p-2 md:p-8">
 
       {/* Header */}
       <header className="space-y-3 md:space-y-4 px-2 sm:px-0 mb-6 md:mb-10 mt-8 md:mt-16 animate-in fade-in duration-700">
         <div className="flex justify-center mb-4 md:mb-6">
-          <div className="px-3 md:px-4 py-0.5 md:py-1bg-[#00f0ff]/10 border border-[#00f0ff] rounded-full">
-            <span className="border-[#00f0ff] text-[#00f0ff] text-[9px] md:text-[10px] font-black uppercase tracking-[0.3em]">{t('benchmarkAi.badge')}</span>
+          <div className="px-3 md:px-4 py-0.5 md:py-1 bg-[var(--ib-accbg)] border border-[var(--ib-acc)] rounded-full">
+            <span className="border-[var(--ib-acc)] text-[var(--ib-acc)] text-[9px] md:text-[10px] font-black uppercase tracking-[0.3em]">{t('benchmarkAi.badge')}</span>
           </div>
         </div>
-        <h1 className="space-grotesk text-4xl sm:text-5xl lg:text-[52px] font-semibold text-white leading-[1.1] tracking-tight text-center mb-8">
+        <h1 className="text-4xl sm:text-5xl lg:text-[52px] font-semibold text-[var(--ib-ink)] leading-[1.1] tracking-tight text-center mb-8">
           {t('benchmarkAi.title')}
         </h1>
-        <p className="text-[#A1A1A6] text-sm lg:text-lg max-w-4xl mx-auto leading-relaxed text-center font-inter mb-12">
-          <span className="font-semibold text-white/80 block mb-2">{t('benchmarkAi.subtitle')}</span>
+        <p className="text-[var(--ib-mute)] text-sm lg:text-lg max-w-4xl mx-auto leading-relaxed text-center font-inter mb-12">
+          <span className="font-semibold text-[var(--ib-ink)] block mb-2">{t('benchmarkAi.subtitle')}</span>
           {t('benchmarkAi.description')}
         </p>
       </header>
@@ -681,19 +681,19 @@ export default function UploadPage({ onAnalyze }: { onAnalyze: () => void }) {
 
         {/* Left – form */}
 
-        <div className="bg-[#131B2D] rounded-3xl border border-[#1E293B] shadow-2xl p-4 md:p-6 lg:p-8 h-full flex flex-col justify-between">
+        <div className="bg-[var(--ib-card)] rounded-3xl border border-[var(--ib-line)] shadow-2xl p-4 md:p-6 lg:p-8 h-full flex flex-col justify-between">
 
           <div>
 
             <div className="flex items-center gap-3 mb-6 md:mb-8">
-              <div className="p-1.5 md:p-2bg-[#00f0ff] text-[#0F111A]/10 rounded-xl">
-                <Upload className="w-4 md:w-5 h-4 md:h-5 text-brand-cyan" />
+              <div className="p-1.5 md:p-2 bg-[var(--ib-accbg)] text-[var(--ib-acc)] rounded-xl">
+                <Upload className="w-4 md:w-5 h-4 md:h-5 text-[var(--ib-acc)]" />
               </div>
-              <h2 className="text-sm md:text-lg lg:text-xl font-black text-[#F1F5F9] tracking-wider uppercase">{t('benchmarkAi.benchmarkPortal')}</h2>
+              <h2 className="text-sm md:text-lg lg:text-xl font-black text-[var(--ib-ink)] tracking-wider uppercase">{t('benchmarkAi.benchmarkPortal')}</h2>
             </div>
 
             {/* Drop zone */}
-            <p className="text-[9px] md:text-[11px] font-black text-[#94A3B8] uppercase tracking-[0.2em] mb-3 md:mb-4">
+            <p className="text-[9px] md:text-[11px] font-black text-[var(--ib-mute)] uppercase tracking-[0.2em] mb-3 md:mb-4">
               {t('benchmarkAi.uploadProtocol')}</p>
 
             {/* Upload Type Toggle */}
@@ -706,8 +706,8 @@ export default function UploadPage({ onAnalyze }: { onAnalyze: () => void }) {
                   setSelectedSuggestion(null);
                 }}
                 className={`flex-1 py-2.5 md:py-3 px-2 md:px-4 rounded-xl font-black text-[9px] sm:text-[10px] md:text-xs uppercase tracking-widest transition-all flex items-center justify-center gap-1.5 ${uploadType === "file"
-                  ? "bg-cyan-300 text-black hover:bg-cyan-200"
-                  : "bg-[#0A0F1C] border border-[#1E293B] text-[#94A3B8] hover:border-brand-cyan/50"
+                  ? "bg-[var(--ib-acc)] text-white hover:opacity-92"
+                  : "bg-[var(--ib-bg)] border border-[var(--ib-line)] text-[var(--ib-mute)] hover:border-[var(--ib-acc)]/50"
                   }`}
                 title={t('benchmarkAi.uploadFile')}
               >
@@ -724,8 +724,8 @@ export default function UploadPage({ onAnalyze }: { onAnalyze: () => void }) {
                   setSelectedSuggestion(null);
                 }}
                 className={`flex-1 py-2.5 md:py-3 px-2 md:px-4 rounded-xl font-black text-[9px] sm:text-[10px] md:text-xs uppercase tracking-widest transition-all flex items-center justify-center gap-1.5 ${uploadType === "text"
-                  ? "bg-cyan-300 text-black hover:bg-cyan-200"
-                  : "bg-[#0A0F1C] border border-[#1E293B] text-[#94A3B8] hover:border-brand-cyan/50"
+                  ? "bg-[var(--ib-acc)] text-white hover:opacity-92"
+                  : "bg-[var(--ib-bg)] border border-[var(--ib-line)] text-[var(--ib-mute)] hover:border-[var(--ib-acc)]/50"
                   }`}
                 title={t('benchmarkAi.pasteText')}
               >
@@ -758,26 +758,26 @@ export default function UploadPage({ onAnalyze }: { onAnalyze: () => void }) {
 
                   onDrop={handleDrop}
 
-                  className={`border-2 border-dashed rounded-2xl p-4 md:p-8 lg:p-12 text-center cursor-pointer transition-all ${dragging
+                  className={`border-2 border-dashed rounded-2xl p-4 md:p-8 lg:p-12 text-center cursor-pointer transition-all bg-[var(--ib-bg)] ${dragging
 
-                    ? "border-brand-cyanbg-[#00f0ff] text-[#0F111A]/10"
+                    ? "border-[var(--ib-acc)] bg-[var(--ib-accbg)] text-[var(--ib-acc)]"
 
-                    : "border-[#1E293B] hover:border-brand-cyan/50 hover:bg-[#1A243A]"
+                    : "border-[var(--ib-line)] hover:border-[var(--ib-acc)]/50 hover:bg-[var(--ib-accbg)]"
 
                     }`}
 
                 >
 
-                  <div className="w-8 md:w-10 lg:w-12 h-8 md:h-10 lg:h-12 rounded-fullbg-[#00f0ff] text-[#00f0ff] flex items-center justify-center mx-auto mb-3 md:mb-4 lg:mb-6 border border-brand-cyan/20">
+                  <div className="w-8 md:w-10 lg:w-12 h-8 md:h-10 lg:h-12 rounded-full bg-[var(--ib-acc)] flex items-center justify-center mx-auto mb-3 md:mb-4 lg:mb-6 border border-[var(--ib-acc)]/20">
 
-                    <Upload className="w-4 md:w-5 lg:w-6 h-4 md:h-5 lg:h-6 text-brand-cyan" />
+                    <Upload className="w-4 md:w-5 lg:w-6 h-4 md:h-5 lg:h-6 text-white" />
 
                   </div>
 
-                  <p className="text-[11px] sm:text-xs md:text-sm lg:text-base font-black text-[#F1F5F9] uppercase tracking-widest">
+                  <p className="text-[11px] sm:text-xs md:text-sm lg:text-base font-black text-[var(--ib-ink)] uppercase tracking-widest">
                     {t('benchmarkAi.dragDropPdf')}
                   </p>
-                  <p className="text-[7px] sm:text-[8px] md:text-[9px] lg:text-[10px] text-[#94A3B8] mt-1 md:mt-2 font-bold uppercase tracking-widest">
+                  <p className="text-[7px] sm:text-[8px] md:text-[9px] lg:text-[10px] text-[var(--ib-mute)] mt-1 md:mt-2 font-bold uppercase tracking-widest">
                     {t('benchmarkAi.advancedOcr')}
                   </p>
                   <input
@@ -795,7 +795,7 @@ export default function UploadPage({ onAnalyze }: { onAnalyze: () => void }) {
                       <FileCheck className="w-4 md:w-5 h-4 md:h-5 text-green-600" />
                     </div>
                     <div className="min-w-0">
-                      <p className="text-[11px] md:text-sm font-bold text-[#1E293B] truncate">{fileName}</p>
+                      <p className="text-[11px] md:text-sm font-bold text-[var(--ib-ink)] truncate">{fileName}</p>
                       <p className="text-[9px] md:text-xs text-green-600 font-bold uppercase tracking-wider flex items-center gap-1">
                         <CheckCircle2 className="w-3 h-3" /> {t('benchmarkAi.uploadComplete')}
                       </p>
@@ -815,7 +815,7 @@ export default function UploadPage({ onAnalyze }: { onAnalyze: () => void }) {
 
               <div className="space-y-2 md:space-y-3 mb-4 md:mb-6">
 
-                <label className="text-[10px] md:text-[11px] font-black text-[#94A3B8] uppercase tracking-[0.2em]">
+                <label className="text-[10px] md:text-[11px] font-black text-[var(--ib-mute)] uppercase tracking-[0.2em]">
 
                   Paste your document text
 
@@ -833,11 +833,11 @@ export default function UploadPage({ onAnalyze }: { onAnalyze: () => void }) {
 
                     placeholder="Paste document content here..."
 
-                    className={`w-full border bg-[#0A0F1C] rounded-2xl p-3 md:p-5 pr-12 md:pr-14 text-xs md:text-sm text-[#F1F5F9] placeholder:text-[#4B5563] resize-none focus:outline-none focus:ring-2 transition-all shadow-inner font-medium ${textContent.length > 0 && textContent.length < 50
+                    className={`w-full border bg-[var(--ib-bg)] rounded-2xl p-3 md:p-5 pr-12 md:pr-14 text-xs md:text-sm text-[var(--ib-ink)] placeholder:text-[var(--ib-mute)] resize-none focus:outline-none focus:ring-2 transition-all shadow-inner font-medium ${textContent.length > 0 && textContent.length < 50
 
                       ? "border-amber-500/50 focus:ring-amber-500/30"
 
-                      : "border-[#1E293B] focus:ring-brand-cyan/50"
+                      : "border-[var(--ib-line)] focus:ring-[var(--ib-acc)]/50"
 
                       }`}
 
@@ -861,7 +861,7 @@ export default function UploadPage({ onAnalyze }: { onAnalyze: () => void }) {
 
                     disabled={textContent.trim().length < 50 || suggestionsLoading}
 
-                    className="absolute bottom-2 md:bottom-3 right-2 md:right-3 p-1.5 md:p-2bg-[#00f0ff] text-[#0F111A] text-white hover:bg-[#3433D6] disabled:opacity-50 disabled:cursor-not-allowed rounded-xl transition-all active:scale-95 flex items-center justify-center"
+                    className="absolute bottom-2 md:bottom-3 right-2 md:right-3 p-1.5 md:p-2 bg-[var(--ib-acc)] text-white text-white hover:bg-[var(--ib-acc)]/90 disabled:opacity-50 disabled:cursor-not-allowed rounded-xl transition-all active:scale-95 flex items-center justify-center"
 
                   >
 
@@ -917,7 +917,7 @@ export default function UploadPage({ onAnalyze }: { onAnalyze: () => void }) {
 
               <div className="mt-4 md:mt-6 space-y-2 md:space-y-3">
 
-                <label className="text-[10px] md:text-[11px] font-black text-[#94A3B8] uppercase tracking-[0.2em]">
+                <label className="text-[10px] md:text-[11px] font-black text-[var(--ib-mute)] uppercase tracking-[0.2em]">
 
                   Selected Category
 
@@ -931,7 +931,7 @@ export default function UploadPage({ onAnalyze }: { onAnalyze: () => void }) {
 
                   readOnly
 
-                  className="w-full bg-[#0A0F1C] border border-brand-cyan rounded-xl p-3 md:p-4 text-xs md:text-sm font-bold text-white! cursor-not-allowed"
+                  className="w-full bg-[var(--ib-bg)] border border-[var(--ib-acc)] rounded-xl p-3 md:p-4 text-xs md:text-sm font-bold text-white! cursor-not-allowed"
 
                 />
 
@@ -959,7 +959,7 @@ export default function UploadPage({ onAnalyze }: { onAnalyze: () => void }) {
 
               <div className="mt-6 md:mt-8 space-y-3 md:space-y-4">
 
-                <label className="text-[10px] md:text-[11px] font-black text-[#94A3B8] uppercase tracking-[0.2em] flex items-center gap-2">
+                <label className="text-[10px] md:text-[11px] font-black text-[var(--ib-mute)] uppercase tracking-[0.2em] flex items-center gap-2">
 
                   <Target className="w-3.5 h-3.5" /> Recommended ISO Standards ({LOADING_MESSAGES[messageIndex]})
 
@@ -973,15 +973,15 @@ export default function UploadPage({ onAnalyze }: { onAnalyze: () => void }) {
 
                       key={idx}
 
-                      className="bg-[#0A0F1C] border border-[#1E293B] rounded-xl p-2 md:p-3 animate-pulse space-y-1.5 md:space-y-2"
+                      className="bg-[var(--ib-bg)] border border-[var(--ib-line)] rounded-xl p-2 md:p-3 animate-pulse space-y-1.5 md:space-y-2"
 
                     >
 
-                      <div className="h-4 bg-[#1E293B] rounded w-32"></div>
+                      <div className="h-4 bg-[var(--ib-ink)] rounded w-32"></div>
 
-                      <div className="h-3 bg-[#1E293B] rounded w-full"></div>
+                      <div className="h-3 bg-[var(--ib-ink)] rounded w-full"></div>
 
-                      <div className="h-3 bg-[#1E293B] rounded w-5/6"></div>
+                      <div className="h-3 bg-[var(--ib-ink)] rounded w-5/6"></div>
 
                     </div>
 
@@ -1005,7 +1005,7 @@ export default function UploadPage({ onAnalyze }: { onAnalyze: () => void }) {
 
                   <div className="flex items-center justify-between gap-2">
 
-                    <label className="text-[10px] md:text-[11px] font-black text-[#94A3B8] uppercase tracking-[0.2em] truncate flex items-center gap-2">
+                    <label className="text-[10px] md:text-[11px] font-black text-[var(--ib-mute)] uppercase tracking-[0.2em] truncate flex items-center gap-2">
 
                       <Target className="w-3.5 h-3.5" /> {isoSuggestions.length} ISO Standards Found
 
@@ -1013,7 +1013,7 @@ export default function UploadPage({ onAnalyze }: { onAnalyze: () => void }) {
 
                     {suggestionsLoading && (
 
-                      <Loader2 className="w-3.5 md:w-4 h-3.5 md:h-4 animate-spin text-brand-cyan shrink-0" />
+                      <Loader2 className="w-3.5 md:w-4 h-3.5 md:h-4 animate-spin text-[var(--ib-acc)] shrink-0" />
 
                     )}
 
@@ -1035,11 +1035,11 @@ export default function UploadPage({ onAnalyze }: { onAnalyze: () => void }) {
 
                         }}
 
-                        className={`bg-[#0A0F1C] border rounded-xl p-2 md:p-3 text-[10px] md:text-xs cursor-pointer transition-all flex gap-2 md:gap-3 items-start ${selectedSuggestion?.standard === suggestion.standard
+                        className={`bg-[var(--ib-bg)] border rounded-xl p-2 md:p-3 text-[10px] md:text-xs cursor-pointer transition-all flex gap-2 md:gap-3 items-start ${selectedSuggestion?.standard === suggestion.standard
 
-                          ? "border-[#00f0ff] bg-gray-800 text-white shadow-[0_0_20px_rgba(63,62,237,0.1)]"
+                          ? "border-[var(--ib-acc)] bg-[var(--ib-mute)] text-white shadow-[0_0_20px_rgba(27, 77, 219,0.1)]"
 
-                          : "border-[#1E293B] hover:border-[#4B5563] hover:bg-[#0F1318]"
+                          : "border-[var(--ib-line)] hover:border-[var(--ib-mute)] hover:bg-[var(--ib-accbg)]"
 
                           }`}
 
@@ -1055,9 +1055,9 @@ export default function UploadPage({ onAnalyze }: { onAnalyze: () => void }) {
 
                                 className={`font-black text-[11px] ${selectedSuggestion?.standard === suggestion.standard
 
-                                  ? "text-brand-cyan"
+                                  ? "text-[var(--ib-acc)]"
 
-                                  : "text-[#F1F5F9]"
+                                  : "text-[var(--ib-ink)]"
 
                                   }`}
 
@@ -1071,9 +1071,9 @@ export default function UploadPage({ onAnalyze }: { onAnalyze: () => void }) {
 
                                 className={`text-[10px] font-medium ${selectedSuggestion?.standard === suggestion.standard
 
-                                  ? "text-brand-cyan/80"
+                                  ? "text-[var(--ib-acc)]/80"
 
-                                  : "text-[#94A3B8]"
+                                  : "text-[var(--ib-mute)]"
 
                                   }`}
 
@@ -1091,9 +1091,9 @@ export default function UploadPage({ onAnalyze }: { onAnalyze: () => void }) {
 
                             className={`text-[9px] leading-relaxed line-clamp-2 mt-2 ${selectedSuggestion?.standard === suggestion.standard
 
-                              ? "text-brand-cyan/70"
+                              ? "text-[var(--ib-acc)]/70"
 
-                              : "text-[#4B5563]"
+                              : "text-[var(--ib-mute)]"
 
                               }`}
 
@@ -1115,7 +1115,7 @@ export default function UploadPage({ onAnalyze }: { onAnalyze: () => void }) {
 
                           }}
 
-                          className="shrink-0 p-1.5 hover:bg-brand-cyan hover:text-[#0F111A]/20 rounded-lg transition-colors"
+                          className="shrink-0 p-1.5 hover:bg-[var(--ib-acc)] hover:text-white/20 rounded-lg transition-colors"
 
                           title="View Details"
 
@@ -1125,9 +1125,9 @@ export default function UploadPage({ onAnalyze }: { onAnalyze: () => void }) {
 
                             className={`w-4 h-4 ${selectedSuggestion?.standard === suggestion.standard
 
-                              ? "text-brand-cyan"
+                              ? "text-[var(--ib-acc)]"
 
-                              : "text-[#4B5563] hover:text-[#94A3B8]"
+                              : "text-[var(--ib-mute)] hover:text-[var(--ib-mute)]"
 
                               }`}
 
@@ -1147,9 +1147,9 @@ export default function UploadPage({ onAnalyze }: { onAnalyze: () => void }) {
 
                 {/* Improvement Goal Section */}
 
-                <div className="space-y-3 border-t border-[#1E293B] pt-6">
+                <div className="space-y-3 border-t border-[var(--ib-line)] pt-6">
 
-                  <label className="text-[11px] font-black text-[#94A3B8] uppercase tracking-[0.2em] flex items-center gap-2">
+                  <label className="text-[11px] font-black text-[var(--ib-mute)] uppercase tracking-[0.2em] flex items-center gap-2">
 
                     <ClipboardList className="w-3.5 h-3.5" /> Improvement Goal
 
@@ -1158,14 +1158,14 @@ export default function UploadPage({ onAnalyze }: { onAnalyze: () => void }) {
                   {/* Improvement Goals List */}
                   {selectedSuggestion?.improvements && selectedSuggestion?.improvements?.length > 0 && (
                     <div className="space-y-2">
-                      <p className="text-[10px] text-[#64748B] font-medium">Select an improvement goal:</p>
+                      <p className="text-[10px] text-[var(--ib-mute)] font-medium">Select an improvement goal:</p>
                       <div className="grid grid-cols-1 gap-2 max-h-[200px] overflow-y-auto custom-thin-scrollbar">
                         {selectedSuggestion.improvements.map((goal, idx) => (
                           <button
                             key={idx}
                             type="button"
                             onClick={() => setImprovementGoal(goal)}
-                            className={`p-2 md:p-3 text-left text-xs md:text-sm rounded-xl border transition-all ${improvementGoal === goal ? "bg-[#00f0ff]/15 text-[#00f0ff] border-[#00f0ff] shadow-[0_0_12px_rgba(0,240,255,0.1)]" : "bg-[#0A0F1C] border-[#1E293B] text-[#94A3B8] hover:border-[#00f0ff]/40 hover:bg-[#0F1318]"}`}
+                            className={`p-2 md:p-3 text-left text-xs md:text-sm rounded-xl border transition-all ${improvementGoal === goal ? "bg-[var(--ib-acc)]/15 text-[var(--ib-acc)] border-[var(--ib-acc)] shadow-[0_0_12px_rgba(27, 77, 219,0.1)]" : "bg-[var(--ib-bg)] border-[var(--ib-line)] text-[var(--ib-mute)] hover:border-[var(--ib-acc)]/40 hover:bg-[var(--ib-accbg)]"}`}
                           >
                             {goal}
                           </button>
@@ -1180,7 +1180,7 @@ export default function UploadPage({ onAnalyze }: { onAnalyze: () => void }) {
                     onChange={(e) => setImprovementGoal(e.target.value)}
                     placeholder={selectedSuggestion?.improvements?.length ? "Select a goal above or type a custom one..." : "Enter your improvement goal..."}
                     rows={3}
-                    className="w-full bg-[#0A0F1C] border border-[#1E293B] rounded-2xl p-4 text-sm text-[#F1F5F9] placeholder:text-[#4B5563] resize-none focus:outline-none focus:ring-2 focus:ring-brand-cyan/50 transition-all shadow-inner font-medium"
+                    className="w-full bg-[var(--ib-bg)] border border-[var(--ib-line)] rounded-2xl p-4 text-sm text-[var(--ib-ink)] placeholder:text-[var(--ib-mute)] resize-none focus:outline-none focus:ring-2 focus:ring-[var(--ib-acc)]/50 transition-all shadow-inner font-medium"
                   />
 
                 </div>
@@ -1203,7 +1203,7 @@ export default function UploadPage({ onAnalyze }: { onAnalyze: () => void }) {
 
                   disabled={analyzeLoading || !selectedSuggestion || !improvementGoal.trim()}
 
-                  className="w-full mt-6 md:mt-8 px-4 md:px-6 py-3 md:py-4 bg-cyan-300/70 text-black hover:bg-cyan-300 cursor-pointer hover:bg-[#3433D6] disabled:bg-[#4B5563] disabled:opacity-50 rounded-2xl text-xs md:text-sm font-black uppercase tracking-wider transition-all shadow-lg active:scale-95 flex items-center justify-center gap-2 md:gap-3"
+                  className="w-full mt-6 md:mt-8 px-4 md:px-6 py-3 md:py-4 bg-[var(--ib-acc)] text-white hover:opacity-92 cursor-pointer hover:bg-[var(--ib-acc)]/90 disabled:bg-[var(--ib-mute)] disabled:opacity-50 rounded-2xl text-xs md:text-sm font-black uppercase tracking-wider transition-all shadow-lg active:scale-95 flex items-center justify-center gap-2 md:gap-3"
 
                 >
 
@@ -1240,31 +1240,31 @@ export default function UploadPage({ onAnalyze }: { onAnalyze: () => void }) {
 
 
           {/* Security Info */}
-          <div className="mt-8 grid grid-cols-1 gap-2 md:gap-4 border-t border-[#1E293B]/50 pt-6">
-            <div className="flex items-center gap-4 text-[10px] font-black text-[#94A3B8] uppercase tracking-widest">
-              <Lock className="w-4 h-4 text-[#14B8A6]" />
+          <div className="mt-8 grid grid-cols-1 gap-2 md:gap-4 border-t border-[var(--ib-line)]/50 pt-6">
+            <div className="flex items-center gap-4 text-[10px] font-black text-[var(--ib-mute)] uppercase tracking-widest">
+              <Lock className="w-4 h-4 text-[var(--ib-ok)]" />
               <span>{t('benchmarkAi.secureSandbox')}</span>
             </div>
-            <div className="flex items-center gap-4 text-[10px] font-black text-[#94A3B8] uppercase tracking-widest">
-              <Type className="w-4 h-4 text-[#14B8A6]" />
+            <div className="flex items-center gap-4 text-[10px] font-black text-[var(--ib-mute)] uppercase tracking-widest">
+              <Type className="w-4 h-4 text-[var(--ib-ok)]" />
               <span>{t('benchmarkAi.intelligentOcr')}</span>
             </div>
-            <div className="flex items-center gap-4 text-[10px] font-black text-[#94A3B8] uppercase tracking-widest">
-              <BarChart className="w-4 h-4 text-[#14B8A6]" />
+            <div className="flex items-center gap-4 text-[10px] font-black text-[var(--ib-mute)] uppercase tracking-widest">
+              <BarChart className="w-4 h-4 text-[var(--ib-ok)]" />
               <span>{t('benchmarkAi.instantGapAnalysis')}</span>
             </div>
           </div>
         </div>
 
         {/* Right – info panel (hidden on mobile and narrow desktops) */}
-        <div className="hidden xl:flex bg-[#131B2D] rounded-3xl border border-[#1E293B] shadow-2xl p-8 md:p-12 flex-col items-center justify-center text-center h-full">
-          <div className="w-24 h-24 rounded-3xl border-2 border-[#1E293B] flex items-center justify-center mb-8 bg-[#0A0F1C] group hover:border-brand-cyan/50 transition-all duration-500">
-            <FileText className="w-10 h-10 text-[#4B5563] group-hover:text-brand-cyan transition-colors" />
+        <div className="hidden xl:flex bg-[var(--ib-card)] rounded-3xl border border-[var(--ib-line)] shadow-2xl p-8 md:p-12 flex-col items-center justify-center text-center h-full">
+          <div className="w-24 h-24 rounded-3xl border-2 border-[var(--ib-line)] flex items-center justify-center mb-8 bg-[var(--ib-bg)] group hover:border-[var(--ib-acc)]/50 transition-all duration-500">
+            <FileText className="w-10 h-10 text-[var(--ib-mute)] group-hover:text-[var(--ib-acc)] transition-colors" />
           </div>
-          <h3 className="text-xl font-black text-[#F1F5F9] uppercase tracking-widest mb-4">
+          <h3 className="text-xl font-black text-[var(--ib-ink)] uppercase tracking-widest mb-4">
             {t('benchmarkAi.readyForBenchmark')}
           </h3>
-          <p className="text-sm text-[#94A3B8] max-w-sm leading-relaxed font-medium mb-12">
+          <p className="text-sm text-[var(--ib-mute)] max-w-sm leading-relaxed font-medium mb-12">
             {t('benchmarkAi.readyForBenchmarkDesc')}
           </p>
 
@@ -1281,13 +1281,13 @@ export default function UploadPage({ onAnalyze }: { onAnalyze: () => void }) {
             ].map((f) => (
               <div
                 key={f.label}
-                className="bg-[#0A0F1C] border border-[#1E293B] rounded-2xl p-5 text-left transition-all hover:border-brand-cyan/30"
+                className="bg-[var(--ib-bg)] border border-[var(--ib-line)] rounded-2xl p-5 text-left transition-all hover:border-[var(--ib-acc)]/30"
               >
                 <div className="flex items-center gap-2 mb-2">
-                  <f.icon className="w-4 h-4 text-[#14B8A6]" />
-                  <p className="text-[10px] font-black text-[#F1F5F9] uppercase tracking-widest">{f.label}</p>
+                  <f.icon className="w-4 h-4 text-[var(--ib-ok)]" />
+                  <p className="text-[10px] font-black text-[var(--ib-ink)] uppercase tracking-widest">{f.label}</p>
                 </div>
-                <p className="text-[10px] text-[#94A3B8] font-medium leading-tight">
+                <p className="text-[10px] text-[var(--ib-mute)] font-medium leading-tight">
                   {f.sub}
                 </p>
               </div>
@@ -1301,21 +1301,21 @@ export default function UploadPage({ onAnalyze }: { onAnalyze: () => void }) {
 
       {/* Ask AI Section */}
 
-      <div className="mt-8 md:mt-12 bg-[#131B2D] border border-[#1E293B] rounded-3xl shadow-2xl overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-500">
+      <div className="mt-8 md:mt-12 bg-[var(--ib-card)] border border-[var(--ib-line)] rounded-3xl shadow-2xl overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-500">
 
-        <div className="p-2 sm:p-3 md:p-6 flex items-center gap-2 md:gap-4 border-b border-[#1E293B] bg-[#0A0F1C]/50">
+        <div className="p-2 sm:p-3 md:p-6 flex items-center gap-2 md:gap-4 border-b border-[var(--ib-line)] bg-[var(--ib-bg)]/50">
 
-          <div className="p-2 bg-[#00f0ff] text-[#0F111A]/10 rounded-xl">
+          <div className="p-2 bg-[var(--ib-accbg)] text-[var(--ib-acc)] rounded-xl">
 
             <Sparkles className="w-4 md:w-5 h-4 md:h-5 text-black" />
 
           </div>
 
           <div>
-            <div className="text-[10px] sm:text-xs md:text-sm lg:text-base font-black text-[#F1F5F9] uppercase tracking-wider">
+            <div className="text-[10px] sm:text-xs md:text-sm lg:text-base font-black text-[var(--ib-ink)] uppercase tracking-wider">
               {t('benchmarkAi.chatTitle')}
             </div>
-            <p className="text-[8px] text-[#4B5563] font-black uppercase tracking-widest mt-0.5 md:mt-1">
+            <p className="text-[8px] text-[var(--ib-mute)] font-black uppercase tracking-widest mt-0.5 md:mt-1">
               {t('benchmarkAi.chatDesc')}
             </p>
           </div>
@@ -1334,7 +1334,7 @@ export default function UploadPage({ onAnalyze }: { onAnalyze: () => void }) {
 
               onScroll={handleChatScroll}
 
-              className="w-full min-w-0 bg-[#0A0F1C] border border-[#1E293B] rounded-2xl p-1.5 sm:p-2.5 md:p-6 overflow-y-auto max-h-[200px] md:max-h-[300px] lg:max-h-[400px] flex flex-col space-y-3 md:space-y-6 custom-thin-scrollbar animate-in slide-in-from-bottom-4 duration-300"
+              className="w-full min-w-0 bg-[var(--ib-bg)] border border-[var(--ib-line)] rounded-2xl p-1.5 sm:p-2.5 md:p-6 overflow-y-auto max-h-[200px] md:max-h-[300px] lg:max-h-[400px] flex flex-col space-y-3 md:space-y-6 custom-thin-scrollbar animate-in slide-in-from-bottom-4 duration-300"
 
             >
 
@@ -1352,15 +1352,15 @@ export default function UploadPage({ onAnalyze }: { onAnalyze: () => void }) {
 
                     className={`max-w-full md:max-w-[80%] p-1.5 sm:p-2.5 md:p-4 rounded-2xl text-xs md:text-sm font-medium leading-relaxed min-w-0 ${msg.role === "user"
 
-                      ? "bg-[#67E8F9] text-[#0F111A] rounded-tr-none shadow-[0_4px_15px_-3px_rgba(103,232,249,0.35)]"
+                      ? "bg-[var(--ib-acc)] text-white rounded-tr-none"
 
-                      : "bg-[#131B2D] border border-[#1E293B] text-[#F1F5F9] rounded-tl-none w-full"
+                      : "bg-[var(--ib-card)] border border-[var(--ib-line)] text-[var(--ib-ink)] rounded-tl-none w-full"
 
                       }`}
 
                   >
 
-                    <div className={`max-w-none prose prose-sm w-full min-w-0 ${msg.role === "user" ? "text-black" : "prose-invert text-[#F1F5F9]"}`}>
+                    <div className={`max-w-none prose prose-sm w-full min-w-0 ${msg.role === "user" ? "text-black" : "prose-invert text-[var(--ib-ink)]"}`}>
 
                       <ReactMarkdown
 
@@ -1374,17 +1374,17 @@ export default function UploadPage({ onAnalyze }: { onAnalyze: () => void }) {
 
                           h3: (props) => <span className={`block font-bold mt-3 mb-1.5 uppercase tracking-wide text-[8px] sm:text-[10px] md:text-[12px] ${msg.role === "user" ? "text-black" : "text-white"}`} {...props} />,
 
-                          p: (props) => <p className={`mb-2 text-[10px] sm:text-xs md:text-sm leading-relaxed ${msg.role === "user" ? "text-black font-semibold" : "text-gray-300"}`} {...props} />,
+                          p: (props) => <p className={`mb-2 text-[10px] sm:text-xs md:text-sm leading-relaxed ${msg.role === "user" ? "text-black font-semibold" : "text-[var(--ib-mute)]"}`} {...props} />,
 
-                          ul: (props) => <ul className={`list-disc pl-4 mb-3 space-y-1 ${msg.role === "user" ? "text-black" : "text-gray-100"}`} {...props} />,
+                          ul: (props) => <ul className={`list-disc pl-4 mb-3 space-y-1 ${msg.role === "user" ? "text-black" : "text-[var(--ib-mute)]"}`} {...props} />,
 
-                          ol: (props) => <ol className={`list-decimal pl-4 mb-3 space-y-1 ${msg.role === "user" ? "text-black" : "text-gray-100"}`} {...props} />,
+                          ol: (props) => <ol className={`list-decimal pl-4 mb-3 space-y-1 ${msg.role === "user" ? "text-black" : "text-[var(--ib-mute)]"}`} {...props} />,
 
-                          li: (props) => <li className={`text-[10px] sm:text-xs md:text-sm leading-relaxed ${msg.role === "user" ? "text-black" : "text-gray-100"}`} {...props} />,
+                          li: (props) => <li className={`text-[10px] sm:text-xs md:text-sm leading-relaxed ${msg.role === "user" ? "text-black" : "text-[var(--ib-mute)]"}`} {...props} />,
 
                           table: ({ ...props }) => (
 
-                            <div className="scrollable-table my-4 w-full overflow-x-auto rounded-xl border border-white/10 pb-2">
+                            <div className="scrollable-table my-4 w-full overflow-x-auto rounded-xl border border-[var(--ib-line)] pb-2">
 
                               <table className="w-full text-left border-collapse text-sm md:text-base min-w-[500px]" {...props} />
 
@@ -1394,7 +1394,7 @@ export default function UploadPage({ onAnalyze }: { onAnalyze: () => void }) {
 
                           th: ({ ...props }) => <th className="border-b border-white/20 px-3 py-2 md:px-4 md:py-3 bg-white/5 font-bold text-white break-normal" {...props} />,
 
-                          td: ({ ...props }) => <td className="border-b border-white/10 px-3 py-2 md:px-4 md:py-3 break-normal align-top text-gray-300" {...props} />,
+                          td: ({ ...props }) => <td className="border-b border-[var(--ib-line)] px-3 py-2 md:px-4 md:py-3 break-normal align-top text-[var(--ib-mute)]" {...props} />,
 
                         }}
 
@@ -1416,7 +1416,7 @@ export default function UploadPage({ onAnalyze }: { onAnalyze: () => void }) {
 
                 <div className="flex justify-start">
 
-                  <div className="flex items-center gap-3 p-3 bg-[#131B2D] border border-[#67E8F9]/20 rounded-2xl rounded-tl-none shadow-[0_0_15px_rgba(103,232,249,0.1)]">
+                  <div className="flex items-center gap-3 p-3 bg-[var(--ib-card)] border border-[var(--ib-acc)]/20 rounded-2xl rounded-tl-none shadow-[0_0_15px_rgba(27, 77, 219,0.1)]">
 
                     <span className="text-[10px] md:text-xs font-semibold text-white uppercase tracking-wider animate-pulse leading-none">
 
@@ -1442,7 +1442,7 @@ export default function UploadPage({ onAnalyze }: { onAnalyze: () => void }) {
 
             <textarea
 
-                className="w-full bg-[#0A0F1C] border border-[#1E293B] rounded-2xl p-3 md:p-6 pr-12 md:pr-16 text-xs md:text-sm focus:outline-none focus:ring-2 focus:ring-[#67E8F9]/30 focus:border-[#67E8F9] transition-all min-h-[70px] md:min-h-[100px] resize-none font-medium text-[#F1F5F9] placeholder-[#4B5563]"
+                className="w-full bg-[var(--ib-bg)] border border-[var(--ib-line)] rounded-2xl p-3 md:p-6 pr-12 md:pr-16 text-xs md:text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ib-acc)]/30 focus:border-[var(--ib-acc)] transition-all min-h-[70px] md:min-h-[100px] resize-none font-medium text-[var(--ib-ink)] placeholder-[var(--ib-mute)]"
 
               placeholder={t('benchmarkAi.chatPlaceholder')}
 
@@ -1470,7 +1470,7 @@ export default function UploadPage({ onAnalyze }: { onAnalyze: () => void }) {
 
               disabled={!aiQ.trim() || aiLoading}
 
-                className="absolute bottom-3 md:bottom-6 right-3 md:right-6 p-2 md:p-3 bg-[#67E8F9] text-[#0F111A] hover:bg-[#22D3EE] rounded-xl disabled:opacity-50 transition-all shadow-lg active:scale-95"
+                className="absolute bottom-3 md:bottom-6 right-3 md:right-6 p-2 md:p-3 bg-[var(--ib-acc)] text-white hover:opacity-92 rounded-xl disabled:opacity-50 transition-all shadow-lg active:scale-95"
 
             >
 
@@ -1524,21 +1524,21 @@ export default function UploadPage({ onAnalyze }: { onAnalyze: () => void }) {
 
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-3 md:p-4">
 
-          <div className="bg-[#0A0F1C] border border-[#1E293B] rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
+          <div className="bg-[var(--ib-bg)] border border-[var(--ib-line)] rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
 
             {/* Modal Header */}
 
-            <div className="sticky top-0 bg-[#0A0F1C] border-b border-[#1E293B] p-4 md:p-6 flex items-start justify-between gap-3">
+            <div className="sticky top-0 bg-[var(--ib-bg)] border-b border-[var(--ib-line)] p-4 md:p-6 flex items-start justify-between gap-3">
 
               <div className="flex-1 min-w-0">
 
-                <h2 className="text-lg md:text-2xl font-black text-[#F1F5F9] mb-1 md:mb-2 truncate">
+                <h2 className="text-lg md:text-2xl font-black text-[var(--ib-ink)] mb-1 md:mb-2 truncate">
 
                   {selectedISODetail.standard}
 
                 </h2>
 
-                <p className="text-base md:text-lg text-brand-cyan font-bold truncate">
+                <p className="text-base md:text-lg text-[var(--ib-acc)] font-bold truncate">
 
                   {selectedISODetail.title}
 
@@ -1550,11 +1550,11 @@ export default function UploadPage({ onAnalyze }: { onAnalyze: () => void }) {
 
                 onClick={() => setSelectedISODetail(null)}
 
-                className="p-1.5 md:p-2 hover:bg-[#1E293B] rounded-lg transition-colors shrink-0"
+                className="p-1.5 md:p-2 hover:bg-[var(--ib-ink)] rounded-lg transition-colors shrink-0"
 
               >
 
-                <X className="w-4 md:w-5 h-4 md:h-5 text-[#94A3B8]" />
+                <X className="w-4 md:w-5 h-4 md:h-5 text-[var(--ib-mute)]" />
 
               </button>
 
@@ -1570,7 +1570,7 @@ export default function UploadPage({ onAnalyze }: { onAnalyze: () => void }) {
 
               <div className="space-y-3">
 
-                <h3 className="text-[11px] font-black text-[#94A3B8] uppercase tracking-[0.2em] flex items-center gap-2">
+                <h3 className="text-[11px] font-black text-[var(--ib-mute)] uppercase tracking-[0.2em] flex items-center gap-2">
 
                   <Pin className="w-3.5 h-3.5" /> Relevance
 
@@ -1590,9 +1590,9 @@ export default function UploadPage({ onAnalyze }: { onAnalyze: () => void }) {
 
               {selectedISODetail.documents && selectedISODetail.documents.length > 0 && (
 
-                <div className="space-y-3 border-t border-[#1E293B] pt-6">
+                <div className="space-y-3 border-t border-[var(--ib-line)] pt-6">
 
-                  <h3 className="text-[11px] font-black text-[#94A3B8] uppercase tracking-[0.2em] flex items-center gap-2">
+                  <h3 className="text-[11px] font-black text-[var(--ib-mute)] uppercase tracking-[0.2em] flex items-center gap-2">
 
                     <FileIcon className="w-3.5 h-3.5" /> Required Documents
 
@@ -1606,13 +1606,13 @@ export default function UploadPage({ onAnalyze }: { onAnalyze: () => void }) {
 
                         key={idx}
 
-                        className="bg-[#0F1318] border border-[#1E293B] rounded-xl p-3 text-sm text-[#E0E7FF]"
+                        className="bg-[var(--ib-bg)] border border-[var(--ib-line)] rounded-xl p-3 text-sm text-[var(--ib-ink)]"
 
                       >
 
-                        <p className="font-bold text-brand-cyan mb-1">{doc.title}</p>
+                        <p className="font-bold text-[var(--ib-acc)] mb-1">{doc.title}</p>
 
-                        <p className="text-xs text-[#94A3B8]">Clause: {doc.clause}</p>
+                        <p className="text-xs text-[var(--ib-mute)]">Clause: {doc.clause}</p>
 
                       </div>
 
@@ -1630,9 +1630,9 @@ export default function UploadPage({ onAnalyze }: { onAnalyze: () => void }) {
 
               {selectedISODetail.records && selectedISODetail.records.length > 0 && (
 
-                <div className="space-y-3 border-t border-[#1E293B] pt-6">
+                <div className="space-y-3 border-t border-[var(--ib-line)] pt-6">
 
-                  <h3 className="text-[11px] font-black text-[#94A3B8] uppercase tracking-[0.2em] flex items-center gap-2">
+                  <h3 className="text-[11px] font-black text-[var(--ib-mute)] uppercase tracking-[0.2em] flex items-center gap-2">
 
                     <ClipboardList className="w-3.5 h-3.5" /> Required Records
 
@@ -1646,13 +1646,13 @@ export default function UploadPage({ onAnalyze }: { onAnalyze: () => void }) {
 
                         key={idx}
 
-                        className="bg-[#0F1318] border border-[#1E293B] rounded-xl p-3 text-sm text-[#E0E7FF]"
+                        className="bg-[var(--ib-bg)] border border-[var(--ib-line)] rounded-xl p-3 text-sm text-[var(--ib-ink)]"
 
                       >
 
-                        <p className="font-bold text-brand-cyan mb-1">{rec.title}</p>
+                        <p className="font-bold text-[var(--ib-acc)] mb-1">{rec.title}</p>
 
-                        <p className="text-xs text-[#94A3B8]">Clause: {rec.clause}</p>
+                        <p className="text-xs text-[var(--ib-mute)]">Clause: {rec.clause}</p>
 
                       </div>
 
@@ -1668,13 +1668,13 @@ export default function UploadPage({ onAnalyze }: { onAnalyze: () => void }) {
 
               {/* Action Buttons */}
 
-              <div className="border-t border-[#1E293B] pt-6 flex gap-3">
+              <div className="border-t border-[var(--ib-line)] pt-6 flex gap-3">
 
                 <button
 
                   onClick={() => setSelectedISODetail(null)}
 
-                  className="flex-1 px-6 py-3 bg-[#1E293B] hover:bg-[#2D3142] text-[#F1F5F9] rounded-xl text-sm font-bold uppercase tracking-wider transition-all"
+                  className="flex-1 px-6 py-3 bg-[var(--ib-acc)] hover:opacity-92 text-white rounded-xl text-sm font-bold uppercase tracking-wider transition-all"
 
                 >
 
@@ -1692,7 +1692,7 @@ export default function UploadPage({ onAnalyze }: { onAnalyze: () => void }) {
 
                   }}
 
-                  className="flex-1 px-6 py-3bg-[#00f0ff] text-[#0F111A] text-white hover:bg-[#3433D6] rounded-xl text-sm font-bold uppercase tracking-wider transition-all"
+                  className="flex-1 px-6 py-3 bg-[var(--ib-acc)] text-white text-white hover:bg-[var(--ib-acc)]/90 rounded-xl text-sm font-bold uppercase tracking-wider transition-all"
 
                 >
 

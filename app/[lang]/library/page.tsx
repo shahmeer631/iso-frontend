@@ -40,30 +40,30 @@ const page = () => {
   return (
     <>
       {/* header section  */}
-      <section className="w-full bg-[#111827] py-24 text-center text-white">
+      <section className="w-full bg-[var(--ib-bg)] py-24 text-center text-[var(--ib-ink)]">
         <div className="max-w-4xl mx-auto px-4 flex flex-col items-center">
-          <h1 className="space-grotesk text-5xl lg:text-[52px] font-semibold text-white mb-6 leading-[1.1] tracking-tight">
+          <h1 className="text-5xl lg:text-[52px] font-semibold text-[var(--ib-ink)] mb-6 leading-[1.1] tracking-tight">
             ISO Platform
           </h1>
 
-          <p className="text-[#A1A1A6] text-sm lg:text-lg max-w-4xl mx-auto leading-relaxed mb-10 font-inter">
+          <p className="text-[var(--ib-mute)] text-sm lg:text-lg max-w-4xl mx-auto leading-relaxed mb-10 font-inter">
             Access 250+ ISO standards organized by categories with AI-powered
             insights
           </p>
 
           {/* Search */}
           <div className="relative w-full max-w-xl">
-            <Search className="text-white absolute left-4 top-1/2 -translate-y-1/2 z-10 w-5 h-5" />
+            <Search className="text-[var(--ib-ink)] absolute left-4 top-1/2 -translate-y-1/2 z-10 w-5 h-5" />
 
             <Input
               placeholder="Search for ISO standards across all categories..."
               className="
           h-14 pl-12 pr-4
           rounded-lg
-          bg-white/10
+          bg-[var(--ib-accbg)]
           border border-white/20
-          text-white
-          placeholder:text-gray-400
+          text-[var(--ib-ink)]
+          placeholder:text-[var(--ib-mute)]
           backdrop-blur-md
           focus-visible:ring-2
           focus-visible:ring-white/40
@@ -91,19 +91,19 @@ const page = () => {
       <FAQ faqData={faqData} />
 
 
-      {/* <section className="w-full bg-[#111827] py-24 text-center text-white">
+      {/* <section className="w-full bg-[var(--ib-bg)] py-24 text-center text-[var(--ib-ink)]">
         <div className="max-w-4xl mx-auto px-4 flex flex-col items-center">
           <h1 className="text-3xl md:text-5xl font-semibold mb-6">
            Ready to Get Started?
           </h1>
 
-          <p className="text-lg md:text-2xl text-gray-300 mb-10">
+          <p className="text-lg md:text-2xl text-[var(--ib-mute)] mb-10">
            Start exploring ISO standards with AI-powered tools
           </p>
 
          <div className="flex gap-4">
            <button className="bg-white text-base font-bold text-[#4F46E5] px-6 py-3 rounded-lg ">Start Free Trial</button>
-           <button className="bg-[#5b5b5f7e] text-base font-bold text-white px-6 py-3 rounded-lg border border-[#6f6f728f]">View Pricing</button>
+           <button className="bg-[#5b5b5f7e] text-base font-bold text-[var(--ib-ink)] px-6 py-3 rounded-lg border border-[#6f6f728f]">View Pricing</button>
 
          </div>
         </div>

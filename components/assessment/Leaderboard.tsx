@@ -12,57 +12,69 @@ const Leaderboard = () => {
   const performers = data?.data ?? [];
 
   const getRankStyles = (rank: number) => {
-    if (rank === 1) return { card: "border-[#D4AF37] bg-[rgba(212,175,55,0.05)]", icon: "bg-[#D4AF37] text-[#FFFFFF]" };
-    if (rank === 2) return { card: "border-[#A0AAB2] bg-[rgba(212,175,55,0.05)]", icon: "bg-[#FFFFFF] text-[#0F111A]" };
-    if (rank === 3) return { card: "border-[#D97706] bg-[rgba(217,119,6,0.05)]", icon: "bg-[#D97706] text-[#FFFFFF]" };
-    return { card: "border-[rgba(255,255,255,0.05)] bg-[rgba(255,255,255,0.02)]", icon: "bg-[rgba(255,255,255,0.1)] text-[#FFFFFF]" };
+    if (rank === 1)
+      return {
+        card: "border-[var(--ib-acc)] bg-[color-mix(in_srgb,var(--ib-acc)_6%,var(--ib-card))]",
+        icon: "bg-[var(--ib-acc)] text-white",
+      };
+    if (rank === 2)
+      return {
+        card: "border-[var(--ib-mute)] bg-[color-mix(in_srgb,var(--ib-mute)_6%,var(--ib-card))]",
+        icon: "bg-[var(--ib-bg)] text-[var(--ib-ink)] border border-[var(--ib-line)]",
+      };
+    if (rank === 3)
+      return {
+        card: "border-[#D97706] bg-[rgba(217,119,6,0.06)]",
+        icon: "bg-[#D97706] text-white",
+      };
+    return {
+      card: "border-[var(--ib-line)] bg-[var(--ib-bg)]",
+      icon: "bg-[var(--ib-accbg)] text-[var(--ib-ink)]",
+    };
   };
 
   return (
-    <div style={{ height: "100%", display: "flex", flexDirection: "column" }}>
-      {/* Header */}
-      <div style={{
-        padding: "20px 16px",
-        background: "linear-gradient(135deg, rgba(0,240,255,0.1), rgba(176,38,255,0.1))",
-        borderBottom: "1px solid rgba(255,255,255,0.05)",
-        textAlign: "left"
-      }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
-          <Trophy size={18} color="#00F0FF" />
-          <h3 className="space-grotesk" style={{ fontSize: 12, fontWeight: 700, color: "#FFFFFF", margin: 0 }}>
-            {t('mastery.leaderboardTitle')}
+    <div className="flex h-full flex-col">
+      <div className="border-b border-[var(--ib-line)] bg-[linear-gradient(135deg,color-mix(in_srgb,var(--ib-acc)_10%,transparent),color-mix(in_srgb,var(--ib-acc)_6%,transparent))] px-4 py-5 text-left">
+        <div className="mb-1 flex items-center gap-2">
+          <Trophy size={18} className="text-[var(--ib-acc)]" aria-hidden />
+          <h3 className="mb-0! text-[13px] font-bold text-[var(--ib-ink)]">
+            {t("mastery.leaderboardTitle", "Leaderboard")}
           </h3>
         </div>
-        <p style={{ color: "#A0AAB2", fontSize: 11, margin: 0, fontWeight: 500, marginBottom: 2 }}>
-          {t('mastery.seeHowOthersPerform')}
+        <p className="m-0 text-[11px] font-medium text-[var(--ib-mute)]">
+          {t("mastery.seeHowOthersPerform", "See how others perform")}
         </p>
-        <p style={{ color: "#A0AAB2", fontSize: 10, margin: 0, fontWeight: 500 }}>
-          {t('mastery.compareResults')}
+        <p className="mt-0.5 text-[10px] font-medium text-[var(--ib-mute)]">
+          {t("mastery.compareResults", "Compare your assessment results")}
         </p>
       </div>
 
-      {/* Performers List */}
-      <div style={{ padding: "20px 16px", flex: 1, overflowY: "auto", display: "flex", flexDirection: "column", gap: 12 }}>
+      <div className="flex flex-1 flex-col gap-3 overflow-y-auto px-4 py-5">
         {isLoading && (
-          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 12, padding: "40px 0", color: "#00F0FF" }}>
+          <div className="flex flex-col items-center gap-3 py-10 text-[var(--ib-acc)]">
             <Loader2 size={24} className="animate-spin" />
-            <p className="font-inter" style={{ fontSize: 12, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.05em" }}>{t('mastery.loadingRankings')}</p>
+            <p className="text-[12px] font-semibold uppercase tracking-[0.05em]">
+              {t("mastery.loadingRankings", "Loading rankings...")}
+            </p>
           </div>
         )}
 
         {isError && (
-          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 12, padding: "40px 0", color: "#FFB800" }}>
+          <div className="flex flex-col items-center gap-3 py-10 text-[#D97706]">
             <AlertCircle size={24} />
-            <p className="font-inter" style={{ fontSize: 12, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.05em" }}>
-              {t('mastery.failedLoadLeaderboard')}
+            <p className="text-[12px] font-semibold uppercase tracking-[0.05em]">
+              {t("mastery.failedLoadLeaderboard", "Failed to load leaderboard")}
             </p>
           </div>
         )}
 
         {!isLoading && !isError && performers.length === 0 && (
-          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 12, padding: "40px 0", color: "#A0AAB2" }}>
+          <div className="flex flex-col items-center gap-3 py-10 text-[var(--ib-mute)]">
             <Trophy size={24} />
-            <p className="font-inter" style={{ fontSize: 12, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.05em" }}>{t('mastery.noRankingsYet')}</p>
+            <p className="text-[12px] font-semibold uppercase tracking-[0.05em]">
+              {t("mastery.noRankingsYet", "No rankings yet")}
+            </p>
           </div>
         )}
 
@@ -74,39 +86,28 @@ const Leaderboard = () => {
             return (
               <div
                 key={`${performer.userId}-${performer.rank}`}
-                className={card}
-                style={{
-                  display: "flex", alignItems: "center", justifyContent: "space-between", padding: 10,
-                  borderRadius: 10, borderStyle: "solid", borderWidth: 1,
-                  transition: "transform 0.2s ease"
-                }}
-                onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.02)"}
-                onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}
+                className={`${card} flex items-center justify-between rounded-[10px] border border-solid p-2.5 transition-transform duration-200 hover:scale-[1.02]`}
               >
-                <div style={{ display: "flex", alignItems: "center", gap: 10, minWidth: 0 }}>
+                <div className="flex min-w-0 items-center gap-2.5">
                   <div
-                    className={icon}
-                    style={{
-                      width: 28, height: 28, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center",
-                      fontWeight: 700, fontSize: 11, flexShrink: 0
-                    }}
+                    className={`${icon} flex size-7 shrink-0 items-center justify-center rounded-full text-[11px] font-bold`}
                   >
                     {performer.rank <= 3 ? (
-                      <Trophy size={14} />
+                      <Trophy size={14} aria-hidden />
                     ) : (
                       `#${performer.rank}`
                     )}
                   </div>
-                  <div style={{ minWidth: 0 }}>
-                    <h4 className="font-inter" style={{ fontWeight: 600, color: "#FFFFFF", fontSize: 18, margin: 0, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                  <div className="min-w-0">
+                    <h4 className="m-0 truncate text-[15px] font-semibold text-[var(--ib-ink)]">
                       {performer.name}
                     </h4>
-                    <p className="font-inter" style={{ color: "#A0AAB2", fontSize: 9, fontWeight: 600, margin: "2px 0 0", textTransform: "uppercase", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                    <p className="m-0 mt-0.5 truncate text-[9px] font-semibold uppercase text-[var(--ib-mute)]">
                       {performer.category}
                     </p>
                   </div>
                 </div>
-                <div className="font-inter" style={{ fontSize: 14, fontWeight: 700, color: "#FFFFFF", marginLeft: 8, flexShrink: 0 }}>
+                <div className="ml-2 shrink-0 text-[14px] font-bold text-[var(--ib-ink)]">
                   {performer.score}%
                 </div>
               </div>
@@ -114,10 +115,12 @@ const Leaderboard = () => {
           })}
       </div>
 
-      {/* Footer */}
-      <div style={{ background: "rgba(0,0,0,0.2)", padding: 24, textAlign: "center", borderTop: "1px solid rgba(255,255,255,0.05)" }}>
-        <p style={{ color: "#A0AAB2", fontSize: 12, fontWeight: 500, margin: 0, lineHeight: 1.5 }}>
-          {t('mastery.joinLeaderboard')}
+      <div className="border-t border-[var(--ib-line)] bg-[color-mix(in_srgb,var(--ib-bg)_80%,transparent)] px-5 py-5 text-center">
+        <p className="m-0 text-[12px] font-medium leading-relaxed text-[var(--ib-mute)]">
+          {t(
+            "mastery.joinLeaderboard",
+            "Complete an assessment to join the leaderboard."
+          )}
         </p>
       </div>
     </div>

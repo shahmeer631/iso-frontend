@@ -1,4 +1,4 @@
-
+﻿
 
 "use client";
 
@@ -57,15 +57,15 @@ export default function InstructToAi() {
   return (
     <div className="select-none">
       <div className="my-20">
-        <div className="bg-[#fff] container mx-auto">
+        <div className="bg-[var(--ib-card)] container mx-auto">
           <h1
-            className="text-center text-[#083a5e] text-[20px] md:text-[40px] lg:text-[50px] leading-tight font-bold"
+            className="text-center text-[var(--ib-ink)] text-[20px] md:text-[40px] lg:text-[50px] leading-tight font-bold"
             data-aos="fade-up"
           >
             Explore the ISOBrain
           </h1>
           <h1
-            className="text-center text-[#083a5e] text-[20px] md:text-[40px] lg:text-[50px] mb-6 leading-tight font-bold"
+            className="text-center text-[var(--ib-ink)] text-[20px] md:text-[40px] lg:text-[50px] mb-6 leading-tight font-bold"
             data-aos="fade-up"
             data-aos-delay="100"
           >
@@ -73,7 +73,7 @@ export default function InstructToAi() {
           </h1>
 
           <p
-            className="text-base my-8 text-center text-[#083a5e] max-w-2xl mx-auto"
+            className="text-base my-8 text-center text-[var(--ib-ink)] max-w-2xl mx-auto"
             data-aos="fade-up"
             data-aos-delay="200"
           >
@@ -125,7 +125,7 @@ export default function InstructToAi() {
                       </p>
 
                       <Link href="/ai-assistant/iso-navigator">
-                        <button className="flex sm:w-auto px-7 py-2 rounded-fullbg-[#00f0ff] text-[#0F111A]  text-white font-normal text-sm sm:text-base  cursor-pointer">
+                        <button className="flex sm:w-auto px-7 py-2 rounded-full bg-[var(--ib-acc)] text-[var(--ib-bg)]  text-white font-normal text-sm sm:text-base  cursor-pointer">
                           Explore ISO Navigator
                           <ArrowRight
                             strokeWidth={1}
@@ -170,7 +170,7 @@ export default function InstructToAi() {
                       </p>
 
                       <Link href="/ai-assistant/audit-lens">
-                        <button className="flex sm:w-auto px-7 py-2 rounded-fullbg-[#00f0ff] text-[#0F111A]  text-white font-normal text-sm sm:text-base  cursor-pointer">
+                        <button className="flex sm:w-auto px-7 py-2 rounded-full bg-[var(--ib-acc)] text-[var(--ib-bg)]  text-white font-normal text-sm sm:text-base  cursor-pointer">
                           Explore Audit Lens
                           <ArrowRight
                             strokeWidth={1}
@@ -247,7 +247,7 @@ export default function InstructToAi() {
                           </p>
 
                           <Link href="/ai-assistant/benchmark-ai">
-                            <button className="flex sm:w-auto px-7 py-2 rounded-fullbg-[#00f0ff] text-[#0F111A]  text-white font-normal text-sm sm:text-base  cursor-pointer">
+                            <button className="flex sm:w-auto px-7 py-2 rounded-full bg-[var(--ib-acc)] text-[var(--ib-bg)]  text-white font-normal text-sm sm:text-base  cursor-pointer">
                               Explore Benchmark AI
                               <ArrowRight
                                 strokeWidth={1}

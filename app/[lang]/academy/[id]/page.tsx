@@ -331,10 +331,10 @@ export default function AcademyCoursePage({
 
   if (isVerifying) {
     return (
-      <div className="min-h-screen bg-[#0B0F19] flex items-center justify-center font-inter">
+      <div className="min-h-screen bg-[var(--ib-bg)] flex items-center justify-center font-inter">
         <div className="flex flex-col items-center gap-4">
-          <div className="h-10 w-10 animate-spin rounded-full border-4 border-brand-cyan border-t-transparent" />
-          <p className="text-[#A0AAB2] font-medium">{t('academy.coursePlayer.verifyingAccess')}</p>
+          <div className="h-10 w-10 animate-spin rounded-full border-4 border-[var(--ib-acc)] border-t-transparent" />
+          <p className="text-[var(--ib-mute)] font-medium">{t('academy.coursePlayer.verifyingAccess')}</p>
         </div>
       </div>
     );
@@ -344,9 +344,9 @@ export default function AcademyCoursePage({
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-[#0B0F19] flex items-center justify-center font-inter">
+      <div className="min-h-screen bg-[var(--ib-bg)] flex items-center justify-center font-inter">
         <div className="flex flex-col items-center gap-4">
-          <p className="text-[#A0AAB2] font-medium">{t('academy.coursePlayer.loadingContent')}</p>
+          <p className="text-[var(--ib-mute)] font-medium">{t('academy.coursePlayer.loadingContent')}</p>
         </div>
       </div>
     );
@@ -354,11 +354,11 @@ export default function AcademyCoursePage({
 
   if (isError || !course) {
     return (
-      <div className="min-h-screen bg-[#0B0F19] flex items-center justify-center p-6 font-inter">
-        <div className="max-w-md bg-[#161B22] p-8 rounded-2xl shadow-sm border border-white/10 text-center">
-          <h2 className="text-xl font-bold text-white mb-2">{t('academy.coursePlayer.somethingWentWrong')}</h2>
-          <p className="text-[#A0AAB2] mb-6">{t('academy.coursePlayer.couldNotLoadCourse')}</p>
-          <Button onClick={() => window.location.reload()} className="bg-brand-cyan text-[#0F111A] px-8 py-2 rounded-lg font-bold">
+      <div className="min-h-screen bg-[var(--ib-bg)] flex items-center justify-center p-6 font-inter">
+        <div className="max-w-md bg-[var(--ib-card)] p-8 rounded-2xl shadow-sm border border-[var(--ib-line)] text-center">
+          <h2 className="text-xl font-bold text-[var(--ib-ink)] mb-2">{t('academy.coursePlayer.somethingWentWrong')}</h2>
+          <p className="text-[var(--ib-mute)] mb-6">{t('academy.coursePlayer.couldNotLoadCourse')}</p>
+          <Button onClick={() => window.location.reload()} className="bg-[var(--ib-acc)] text-[var(--ib-bg)] px-8 py-2 rounded-lg font-bold">
             {t('academy.coursePlayer.retry')}
           </Button>
         </div>
@@ -368,33 +368,33 @@ export default function AcademyCoursePage({
 
   // ─── Main Render ──────────────────────────────────────────────────────────
   return (
-    <div className="min-h-screen bg-[#0B0F19] font-inter text-white relative overflow-hidden">
+    <div className="min-h-screen bg-[var(--ib-bg)] font-inter text-[var(--ib-ink)] relative overflow-hidden">
       {/* Background Glows */}
-      <div className="absolute top-0 left-[-10%] w-[500px] h-[500px] bg-[#00f0ff]/5 rounded-full blur-[100px] pointer-events-none" />
-      <div className="absolute bottom-0 right-[-10%] w-[600px] h-[600px] bg-[#00f0ff]/5 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute top-0 left-[-10%] w-[500px] h-[500px] bg-[var(--ib-acc)]/5 rounded-full blur-[100px] pointer-events-none" />
+      <div className="absolute bottom-0 right-[-10%] w-[600px] h-[600px] bg-[var(--ib-acc)]/5 rounded-full blur-[120px] pointer-events-none" />
 
       <div className="mx-auto px-4 pt-24 pb-12 sm:px-6 lg:px-8 relative z-10 max-w-[1800px]">
         {/* ── Top Header Bar (Breadcrumb & Course Meta) ── */}
-        <div className="mb-6 bg-[#161B22]/90 backdrop-blur-md rounded-2xl border border-white/10 p-5 md:p-6 shadow-xl">
+        <div className="mb-6 bg-[var(--ib-card)] backdrop-blur-md rounded-2xl border border-[var(--ib-line)] p-5 md:p-6 shadow-xl">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div className="space-y-2">
               <Link
                 href={`${basePath}/academy`}
-                className="inline-flex items-center gap-2 text-xs md:text-sm text-brand-cyan font-bold hover:opacity-80 transition-all uppercase tracking-wider"
+                className="inline-flex items-center gap-2 text-xs md:text-sm text-[var(--ib-acc)] font-bold hover:opacity-80 transition-all uppercase tracking-wider"
               >
                 <ChevronLeft className="h-4 w-4" />
                 {t('academy.coursePlayer.courseCatalog')}
               </Link>
-              <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-white tracking-tight">{course.title}</h1>
-              <div className="flex items-center gap-3 text-xs text-[#A0AAB2] flex-wrap">
-                <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-white/5 border border-white/10">
-                  {t('academy.coursePlayer.instructor')}: <span className="text-white font-semibold">{course.instructor}</span>
+              <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-[var(--ib-ink)] tracking-tight">{course.title}</h1>
+              <div className="flex items-center gap-3 text-xs text-[var(--ib-mute)] flex-wrap">
+                <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-[var(--ib-accbg)] border border-[var(--ib-line)]">
+                  {t('academy.coursePlayer.instructor')}: <span className="text-[var(--ib-ink)] font-semibold">{course.instructor}</span>
                 </span>
-                <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-white/5 border border-white/10">
+                <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-[var(--ib-accbg)] border border-[var(--ib-line)]">
                   {course.cpdHours} {t('academy.coursePlayer.cpdHours')}
                 </span>
                 {course.category?.name && (
-                  <span className="px-2.5 py-1 rounded-md bg-brand-cyan/10 border border-brand-cyan/20 text-brand-cyan font-medium">
+                  <span className="px-2.5 py-1 rounded-md bg-[var(--ib-acc)]/10 border border-[var(--ib-acc)]/20 text-[var(--ib-acc)] font-medium">
                     {course.category.name}
                   </span>
                 )}
@@ -406,7 +406,7 @@ export default function AcademyCoursePage({
               <button
                 type="button"
                 onClick={() => setIsMobileCurriculumOpen(!isMobileCurriculumOpen)}
-                className="w-full flex items-center justify-between gap-3 px-4 py-2.5 rounded-xl bg-brand-cyan/10 border border-brand-cyan/30 text-brand-cyan font-bold text-xs uppercase tracking-wider hover:bg-brand-cyan/20 transition-all"
+                className="w-full flex items-center justify-between gap-3 px-4 py-2.5 rounded-xl bg-[var(--ib-acc)]/10 border border-[var(--ib-acc)]/30 text-[var(--ib-acc)] font-bold text-xs uppercase tracking-wider hover:bg-[var(--ib-acc)]/20 transition-all"
               >
                 <span className="flex items-center gap-2">
                   <PlayCircle className="h-4 w-4" />
@@ -419,11 +419,11 @@ export default function AcademyCoursePage({
 
           {/* Mobile Collapsible Curriculum Drawer */}
           {isMobileCurriculumOpen && (
-            <div className="xl:hidden mt-4 pt-4 border-t border-white/10">
-              <div className="bg-[#0B0F19] rounded-2xl border border-white/10 p-4 max-h-[60vh] overflow-y-auto space-y-3">
+            <div className="xl:hidden mt-4 pt-4 border-t border-[var(--ib-line)]">
+              <div className="bg-[var(--ib-bg)] rounded-2xl border border-[var(--ib-line)] p-4 max-h-[60vh] overflow-y-auto space-y-3">
                 <div className="flex items-center justify-between mb-2">
-                  <h3 className="text-sm font-black text-white uppercase tracking-wider">{t('academy.coursePlayer.curriculum')}</h3>
-                  <span className="text-xs text-brand-cyan font-bold">{completedCount}/{totalLessons} {t('academy.coursePlayer.modulesCompleted')}</span>
+                  <h3 className="text-sm font-black text-[var(--ib-ink)] uppercase tracking-wider">{t('academy.coursePlayer.curriculum')}</h3>
+                  <span className="text-xs text-[var(--ib-acc)] font-bold">{completedCount}/{totalLessons} {t('academy.coursePlayer.modulesCompleted')}</span>
                 </div>
                 <ul className="space-y-2">
                   {lessons.map((lesson, index) => {
@@ -443,27 +443,27 @@ export default function AcademyCoursePage({
                           disabled={!isUnlocked}
                           className={cn(
                             "w-full flex items-start gap-3 rounded-xl border p-3 text-left transition-all duration-300",
-                            !isUnlocked && "cursor-not-allowed border-white/5 bg-white/2 opacity-30",
-                            isUnlocked && "hover:border-white/20 hover:bg-white/5",
+                            !isUnlocked && "cursor-not-allowed border-[var(--ib-line)] bg-[var(--ib-card)] opacity-30",
+                            isUnlocked && "hover:border-[var(--ib-line)] hover:bg-[var(--ib-accbg)]",
                             isCompleted && !isActive && "border-emerald-500/20 bg-emerald-500/5 hover:bg-emerald-500/10",
-                            isActive && "border-brand-cyan bg-brand-cyan/10 shadow-[0_0_15px_rgba(0,240,255,0.1)]",
-                            !isCompleted && !isActive && isUnlocked && "border-white/10 bg-[#161B22]"
+                            isActive && "border-[var(--ib-acc)] bg-[var(--ib-acc)]/10 shadow-[0_0_15px_rgba(27, 77, 219, 0.1)]",
+                            !isCompleted && !isActive && isUnlocked && "border-[var(--ib-line)] bg-[var(--ib-card)]"
                           )}
                         >
-                          <span className="mt-0.5 shrink-0 text-base text-[#00F0FF]">
+                          <span className="mt-0.5 shrink-0 text-base text-[var(--ib-acc)]">
                             {!isUnlocked ? "🔒" : isCompleted && !isActive ? "✅" : isActive ? "▶️" : "⏯️"}
                           </span>
                           <div className="min-w-0 flex-1">
                             <p className={cn(
                               "text-xs md:text-sm font-bold tracking-tight",
-                              isActive && "text-[#00F0FF]",
+                              isActive && "text-[var(--ib-acc)]",
                               isCompleted && !isActive && "text-emerald-400",
-                              !isUnlocked && "text-[#4B5563]",
-                              isUnlocked && !isActive && !isCompleted && "text-white/90"
+                              !isUnlocked && "text-[var(--ib-mute)]",
+                              isUnlocked && !isActive && !isCompleted && "text-[var(--ib-ink)]/90"
                             )}>
                               {lesson.title}
                             </p>
-                            <p className="mt-0.5 text-[10px] font-black uppercase tracking-widest text-[#A0AAB2]/60">
+                            <p className="mt-0.5 text-[10px] font-black uppercase tracking-widest text-[var(--ib-mute)]/60">
                               {lesson.video?.duration || "Modular"}
                               {hasQuiz && " · 📝 Assessment"}
                             </p>
@@ -486,10 +486,10 @@ export default function AcademyCoursePage({
             "hidden xl:block shrink-0 sticky top-24 max-h-[calc(100vh-8rem)] transition-all duration-300 ease-in-out",
             isSidebarCollapsed ? "w-[60px]" : "w-[280px]"
           )}>
-            <div className="bg-[#161B22] rounded-2xl border border-white/10 p-3.5 shadow-2xl max-h-[calc(100vh-8rem)] overflow-y-auto no-scrollbar">
-              <div className={cn("flex items-center pb-3 border-b border-white/10", isSidebarCollapsed ? "justify-center" : "justify-between")}>
+            <div className="bg-[var(--ib-card)] rounded-2xl border border-[var(--ib-line)] p-3.5 shadow-2xl max-h-[calc(100vh-8rem)] overflow-y-auto no-scrollbar">
+              <div className={cn("flex items-center pb-3 border-b border-[var(--ib-line)]", isSidebarCollapsed ? "justify-center" : "justify-between")}>
                 {!isSidebarCollapsed && (
-                  <h3 className="text-sm font-black text-white uppercase tracking-wider">
+                  <h3 className="text-sm font-black text-[var(--ib-ink)] uppercase tracking-wider">
                     {t('academy.coursePlayer.curriculum')}
                   </h3>
                 )}
@@ -497,8 +497,8 @@ export default function AcademyCoursePage({
                   type="button"
                   onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
                   className={cn(
-                    "p-1.5 text-white/70 hover:text-white transition-all rounded-lg hover:bg-white/5",
-                    isSidebarCollapsed ? "w-full flex justify-center text-brand-cyan" : "ml-auto"
+                    "p-1.5 text-[var(--ib-ink)]/70 hover:text-white transition-all rounded-lg hover:bg-[var(--ib-accbg)]",
+                    isSidebarCollapsed ? "w-full flex justify-center text-[var(--ib-acc)]" : "ml-auto"
                   )}
                   title={isSidebarCollapsed ? "Expand Curriculum" : "Collapse Curriculum"}
                 >
@@ -511,12 +511,12 @@ export default function AcademyCoursePage({
                   <button
                     type="button"
                     onClick={() => setIsSidebarCollapsed(false)}
-                    className="p-2.5 rounded-xl bg-brand-cyan/10 hover:bg-brand-cyan/20 text-brand-cyan transition-all shadow-sm"
+                    className="p-2.5 rounded-xl bg-[var(--ib-acc)]/10 hover:bg-[var(--ib-acc)]/20 text-[var(--ib-acc)] transition-all shadow-sm"
                     title="Open Curriculum"
                   >
                     <PlayCircle className="h-5 w-5" />
                   </button>
-                  <span className="text-[10px] font-black text-brand-cyan [writing-mode:vertical-lr] tracking-[0.2em] uppercase">
+                  <span className="text-[10px] font-black text-[var(--ib-acc)] [writing-mode:vertical-lr] tracking-[0.2em] uppercase">
                     {t('academy.coursePlayer.curriculum')}
                   </span>
                 </div>
@@ -538,27 +538,27 @@ export default function AcademyCoursePage({
                           disabled={!isUnlocked}
                           className={cn(
                             "w-full flex items-start gap-3 rounded-xl border p-3.5 text-left transition-all duration-300",
-                            !isUnlocked && "cursor-not-allowed border-white/5 bg-white/2 opacity-30",
-                            isUnlocked && "hover:border-white/20 hover:bg-white/5",
+                            !isUnlocked && "cursor-not-allowed border-[var(--ib-line)] bg-[var(--ib-card)] opacity-30",
+                            isUnlocked && "hover:border-[var(--ib-line)] hover:bg-[var(--ib-accbg)]",
                             isCompleted && !isActive && "border-emerald-500/20 bg-emerald-500/5 hover:bg-emerald-500/10",
-                            isActive && "border-brand-cyan bg-brand-cyan/10 shadow-[0_0_15px_rgba(0,240,255,0.1)]",
-                            !isCompleted && !isActive && isUnlocked && "border-white/10 bg-[#1C222B]"
+                            isActive && "border-[var(--ib-acc)] bg-[var(--ib-acc)]/10 shadow-[0_0_15px_rgba(27, 77, 219, 0.1)]",
+                            !isCompleted && !isActive && isUnlocked && "border-[var(--ib-line)] bg-[var(--ib-card)]"
                           )}
                         >
-                          <span className="mt-0.5 shrink-0 text-base text-[#00F0FF]">
+                          <span className="mt-0.5 shrink-0 text-base text-[var(--ib-acc)]">
                             {!isUnlocked ? "🔒" : isCompleted && !isActive ? "✅" : isActive ? "▶️" : "⏯️"}
                           </span>
                           <div className="min-w-0 flex-1">
                             <p className={cn(
                               "text-xs font-bold tracking-tight line-clamp-2",
-                              isActive && "text-[#00F0FF]",
+                              isActive && "text-[var(--ib-acc)]",
                               isCompleted && !isActive && "text-emerald-400",
-                              !isUnlocked && "text-[#4B5563]",
-                              isUnlocked && !isActive && !isCompleted && "text-white/90"
+                              !isUnlocked && "text-[var(--ib-mute)]",
+                              isUnlocked && !isActive && !isCompleted && "text-[var(--ib-ink)]/90"
                             )}>
                               {lesson.title}
                             </p>
-                            <p className="mt-1 text-[10px] font-black uppercase tracking-widest text-[#A0AAB2]/60">
+                            <p className="mt-1 text-[10px] font-black uppercase tracking-widest text-[var(--ib-mute)]/60">
                               {lesson.video?.duration || "Modular"}
                               {hasQuiz && " · 📝 Assessment"}
                             </p>
@@ -575,7 +575,7 @@ export default function AcademyCoursePage({
             {allLessonsCompleted && !isSidebarCollapsed && (
               <Link
                 href="#"
-                className="mt-4 block w-full rounded-xl bg-emerald-500 px-4 py-3 text-center text-xs font-black text-[#0B0F19] uppercase tracking-widest shadow-[0_0_20px_rgba(16,185,129,0.2)] hover:opacity-90 transition-all"
+                className="mt-4 block w-full rounded-xl bg-emerald-500 px-4 py-3 text-center text-xs font-black text-[var(--ib-bg)] uppercase tracking-widest shadow-[0_0_20px_rgba(16,185,129,0.2)] hover:opacity-90 transition-all"
               >
                 🎓 {t('academy.coursePlayer.finalExam')}
               </Link>
@@ -589,7 +589,7 @@ export default function AcademyCoursePage({
             <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 items-stretch">
 
               {/* Left Card: Video Player */}
-              <div className="flex flex-col rounded-2xl bg-[#161B22] border border-white/10 overflow-hidden shadow-2xl">
+              <div className="flex flex-col rounded-2xl bg-[var(--ib-card)] border border-[var(--ib-line)] overflow-hidden shadow-2xl">
                 <div className="overflow-hidden bg-[#000000] aspect-video w-full flex items-center justify-center">
                   {videoSrc && !videoSrc.includes('youtube.com') && !videoSrc.includes('youtu.be') && !videoSrc.includes('vimeo.com') ? (
                     <video
@@ -610,12 +610,12 @@ export default function AcademyCoursePage({
                           allowFullScreen
                         />
                       ) : (
-                        <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-6 bg-[#0B0F19]">
-                          <div className="w-14 h-14 rounded-full bg-white/5 flex items-center justify-center mb-3 border border-white/10 shadow-xl">
-                            <XCircle className="w-7 h-7 text-white/30" />
+                        <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-6 bg-[var(--ib-bg)]">
+                          <div className="w-14 h-14 rounded-full bg-[var(--ib-accbg)] flex items-center justify-center mb-3 border border-[var(--ib-line)] shadow-xl">
+                            <XCircle className="w-7 h-7 text-[var(--ib-ink)]/30" />
                           </div>
-                          <h3 className="text-base md:text-lg font-bold text-white mb-1">{t('academy.coursePlayer.noVideoFound')}</h3>
-                          <p className="text-[#A0AAB2] text-xs max-w-xs mx-auto">
+                          <h3 className="text-base md:text-lg font-bold text-[var(--ib-ink)] mb-1">{t('academy.coursePlayer.noVideoFound')}</h3>
+                          <p className="text-[var(--ib-mute)] text-xs max-w-xs mx-auto">
                             {currentLesson
                               ? t('academy.coursePlayer.noVideoDesc')
                               : t('academy.coursePlayer.selectToStart')}
@@ -625,29 +625,29 @@ export default function AcademyCoursePage({
                     </div>
                   )}
                 </div>
-                <div className="px-5 py-3.5 bg-[#161B22] border-t border-white/5 flex items-center justify-between mt-auto">
+                <div className="px-5 py-3.5 bg-[var(--ib-card)] border-t border-[var(--ib-line)] flex items-center justify-between mt-auto">
                   <div className="min-w-0 pr-2">
-                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-brand-cyan mb-0.5">{t('academy.coursePlayer.nowStreaming')}</p>
-                    <p className="text-sm font-bold text-white/90 truncate">{currentVideo?.title || t('academy.coursePlayer.selectLesson')}</p>
+                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[var(--ib-acc)] mb-0.5">{t('academy.coursePlayer.nowStreaming')}</p>
+                    <p className="text-sm font-bold text-[var(--ib-ink)]/90 truncate">{currentVideo?.title || t('academy.coursePlayer.selectLesson')}</p>
                   </div>
-                  <PlayCircle className="w-5 h-5 text-brand-cyan opacity-60 shrink-0" />
+                  <PlayCircle className="w-5 h-5 text-[var(--ib-acc)] opacity-60 shrink-0" />
                 </div>
               </div>
 
               {/* Right Card: Ask AI About This Lesson (Equal Width & Height Match) */}
-              <div className="flex flex-col rounded-2xl bg-[#161B22] border border-white/10 overflow-hidden shadow-2xl">
+              <div className="flex flex-col rounded-2xl bg-[var(--ib-card)] border border-[var(--ib-line)] overflow-hidden shadow-2xl">
                 {/* Header */}
-                <div className="flex items-center gap-3 px-5 py-3.5 bg-gradient-to-r from-brand-cyan/10 to-transparent border-b border-white/10 shrink-0">
-                  <div className="p-2 bg-brand-cyan text-[#0F111A] rounded-xl font-bold">
+                <div className="flex items-center gap-3 px-5 py-3.5 bg-gradient-to-r from-[var(--ib-acc)]/10 to-transparent border-b border-[var(--ib-line)] shrink-0">
+                  <div className="p-2 bg-[var(--ib-acc)] text-[var(--ib-bg)] rounded-xl font-bold">
                     <MessageCircle className="h-4 w-4" />
                   </div>
                   <div>
-                    <h2 className="text-sm font-black text-white uppercase tracking-wider">{t('academy.coursePlayer.askAI')} ✨</h2>
-                    <p className="text-[10px] font-bold text-brand-cyan uppercase tracking-[0.2em]">{t('academy.coursePlayer.neuralEngine')}</p>
+                    <h2 className="text-sm font-black text-[var(--ib-ink)] uppercase tracking-wider">{t('academy.coursePlayer.askAI')} ✨</h2>
+                    <p className="text-[10px] font-bold text-[var(--ib-acc)] uppercase tracking-[0.2em]">{t('academy.coursePlayer.neuralEngine')}</p>
                   </div>
-                  <div className="ml-auto flex items-center gap-2 px-2.5 py-1 bg-white/5 border border-white/10 rounded-full">
-                    <div className="h-1.5 w-1.5 rounded-full bg-brand-cyan animate-pulse" />
-                    <span className="text-[10px] font-black text-[#A0AAB2] uppercase tracking-widest">{t('academy.coursePlayer.active')}</span>
+                  <div className="ml-auto flex items-center gap-2 px-2.5 py-1 bg-[var(--ib-accbg)] border border-[var(--ib-line)] rounded-full">
+                    <div className="h-1.5 w-1.5 rounded-full bg-[var(--ib-acc)] animate-pulse" />
+                    <span className="text-[10px] font-black text-[var(--ib-mute)] uppercase tracking-widest">{t('academy.coursePlayer.active')}</span>
                   </div>
                 </div>
 
@@ -655,16 +655,16 @@ export default function AcademyCoursePage({
                 <div
                   ref={chatContainerRef}
                   onScroll={handleChatScroll}
-                  className="flex-1 min-h-[300px] max-h-[380px] overflow-y-auto p-4 space-y-4 bg-[#0B0F19]/40 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
+                  className="flex-1 min-h-[300px] max-h-[380px] overflow-y-auto p-4 space-y-4 bg-[var(--ib-bg)]/40 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
                 >
                   {aiMessages.length === 0 ? (
                     <div className="flex flex-col items-center justify-center h-full text-center gap-3 py-6">
-                      <div className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center border border-white/10 text-brand-cyan shadow-lg">
+                      <div className="w-12 h-12 rounded-2xl bg-[var(--ib-accbg)] flex items-center justify-center border border-[var(--ib-line)] text-[var(--ib-acc)] shadow-lg">
                         <MessageCircle className="h-6 w-6" />
                       </div>
                       <div>
-                        <p className="text-sm md:text-base font-bold text-white mb-1">{t('academy.coursePlayer.knowledgeSynthesis')}</p>
-                        <p className="text-xs text-[#A0AAB2] max-w-xs mx-auto leading-relaxed">{t('academy.coursePlayer.askClarify')}</p>
+                        <p className="text-sm md:text-base font-bold text-[var(--ib-ink)] mb-1">{t('academy.coursePlayer.knowledgeSynthesis')}</p>
+                        <p className="text-xs text-[var(--ib-mute)] max-w-xs mx-auto leading-relaxed">{t('academy.coursePlayer.askClarify')}</p>
                       </div>
                       <div className="flex flex-wrap gap-2 mt-1 justify-center">
                         {[t('academy.coursePlayer.clarifyConcepts'), t('academy.coursePlayer.synthesizeSummary'), t('academy.coursePlayer.implementationPitfalls')].map((s) => (
@@ -672,7 +672,7 @@ export default function AcademyCoursePage({
                             key={s}
                             type="button"
                             onClick={() => setAiQuestion(s)}
-                            className="text-[10px] font-bold px-3 py-1 rounded-full border border-white/10 text-[#A0AAB2] hover:text-white hover:bg-brand-cyan/20 hover:border-brand-cyan/40 transition-all"
+                            className="text-[10px] font-bold px-3 py-1 rounded-full border border-[var(--ib-line)] text-[var(--ib-mute)] hover:text-white hover:bg-[var(--ib-acc)]/20 hover:border-[var(--ib-acc)]/40 transition-all"
                           >
                             {s}
                           </button>
@@ -686,8 +686,8 @@ export default function AcademyCoursePage({
                           <div className={cn(
                             "rounded-2xl p-3.5 text-xs md:text-sm leading-relaxed",
                             m.role === "user"
-                              ? "max-w-[85%] bg-brand-cyan/15 text-white border border-brand-cyan/30 rounded-tr-sm"
-                              : "w-full bg-[#1C222B] border border-white/5 text-[#EDEDED] rounded-tl-sm shadow-lg"
+                              ? "max-w-[85%] bg-[var(--ib-acc)]/15 text-[var(--ib-ink)] border border-[var(--ib-acc)]/30 rounded-tr-sm"
+                              : "w-full bg-[var(--ib-card)] border border-[var(--ib-line)] text-[var(--ib-ink)] rounded-tl-sm shadow-lg"
                           )}>
                             {m.role === "ai" && i === aiMessages.length - 1 ? (
                               <TypewriterMarkdown
@@ -703,11 +703,11 @@ export default function AcademyCoursePage({
                               m.text
                             )}
                             {m.role === "ai" && m.sources && m.sources.length > 0 && (
-                              <div className="mt-3 pt-2 border-t border-white/5">
+                              <div className="mt-3 pt-2 border-t border-[var(--ib-line)]">
                                 <p className="text-[10px] font-bold text-[#6B7280] uppercase tracking-widest mb-1.5">Sources</p>
                                 <ul className="space-y-1">
                                   {m.sources.map((s, si) => (
-                                    <li key={si} className="text-[10px] text-[#A0AAB2] leading-snug">• {s}</li>
+                                    <li key={si} className="text-[10px] text-[var(--ib-mute)] leading-snug">• {s}</li>
                                   ))}
                                 </ul>
                               </div>
@@ -719,7 +719,7 @@ export default function AcademyCoursePage({
                                     key={f}
                                     type="button"
                                     onClick={() => setAiQuestion(f)}
-                                    className="text-[10px] font-bold px-2.5 py-1 rounded-lg border border-white/10 text-[#A0AAB2] hover:text-white hover:border-brand-cyan/40 hover:bg-brand-cyan/10 transition-all text-left"
+                                    className="text-[10px] font-bold px-2.5 py-1 rounded-lg border border-[var(--ib-line)] text-[var(--ib-mute)] hover:text-white hover:border-[var(--ib-acc)]/40 hover:bg-[var(--ib-acc)]/10 transition-all text-left"
                                   >
                                     {f}
                                   </button>
@@ -731,10 +731,10 @@ export default function AcademyCoursePage({
                       ))}
                       {isChatLoading && (
                         <div className="flex gap-2 justify-start">
-                          <div className="bg-[#1C222B] border border-white/10 rounded-2xl rounded-tl-sm px-4 py-2.5 shadow-md flex items-center gap-1.5">
-                            <span className="h-2 w-2 rounded-full bg-brand-cyan animate-bounce" style={{ animationDelay: '0ms' }} />
-                            <span className="h-2 w-2 rounded-full bg-brand-cyan animate-bounce" style={{ animationDelay: '150ms' }} />
-                            <span className="h-2 w-2 rounded-full bg-brand-cyan animate-bounce" style={{ animationDelay: '300ms' }} />
+                          <div className="bg-[var(--ib-card)] border border-[var(--ib-line)] rounded-2xl rounded-tl-sm px-4 py-2.5 shadow-md flex items-center gap-1.5">
+                            <span className="h-2 w-2 rounded-full bg-[var(--ib-acc)] animate-bounce" style={{ animationDelay: '0ms' }} />
+                            <span className="h-2 w-2 rounded-full bg-[var(--ib-acc)] animate-bounce" style={{ animationDelay: '150ms' }} />
+                            <span className="h-2 w-2 rounded-full bg-[var(--ib-acc)] animate-bounce" style={{ animationDelay: '300ms' }} />
                           </div>
                         </div>
                       )}
@@ -744,7 +744,7 @@ export default function AcademyCoursePage({
                 </div>
 
                 {/* Chat Input */}
-                <div className="p-3.5 border-t border-white/5 bg-[#161B22] shrink-0">
+                <div className="p-3.5 border-t border-[var(--ib-line)] bg-[var(--ib-card)] shrink-0">
                   <div className="flex items-center gap-2">
                     <input
                       type="text"
@@ -753,7 +753,7 @@ export default function AcademyCoursePage({
                       onKeyDown={(e) => e.key === "Enter" && !isChatLoading && handleSendAi()}
                       disabled={isChatLoading}
                       placeholder={t('academy.coursePlayer.queryAIArchitect')}
-                      className="min-w-0 flex-1 rounded-xl border border-white/10 bg-[#0B0F19] px-4 py-2.5 text-xs md:text-sm text-white placeholder:text-[#4B5563] focus:border-[#00F0FF]/50 focus:outline-none transition-all disabled:opacity-60"
+                      className="min-w-0 flex-1 rounded-xl border border-[var(--ib-line)] bg-[var(--ib-bg)] px-4 py-2.5 text-xs md:text-sm text-[var(--ib-ink)] placeholder:text-[var(--ib-mute)] focus:border-[var(--ib-acc)]/50 focus:outline-none transition-all disabled:opacity-60"
                     />
                     <button
                       type="button"
@@ -761,7 +761,7 @@ export default function AcademyCoursePage({
                       disabled={!aiQuestion.trim() || isChatLoading}
                       aria-label="Send message"
                       title="Send"
-                      className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-[#00F0FF]/30 bg-[#00F0FF] text-[#0F111A] shadow-[0_0_12px_rgba(0,240,255,0.35)] hover:brightness-110 transition-all disabled:opacity-100 disabled:brightness-75 disabled:cursor-not-allowed"
+                      className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-[var(--ib-acc)]/30 bg-[var(--ib-acc)] text-[var(--ib-bg)] shadow-[0_0_12px_rgba(27, 77, 219,0.35)] hover:brightness-110 transition-all disabled:opacity-100 disabled:brightness-75 disabled:cursor-not-allowed"
                     >
                       <Send className="h-4 w-4 stroke-[2.5]" aria-hidden />
                     </button>
@@ -772,16 +772,16 @@ export default function AcademyCoursePage({
             </div>
 
             {/* Progress bar */}
-            <div className="bg-[#161B22] rounded-2xl border border-white/10 p-4 space-y-2">
+            <div className="bg-[var(--ib-card)] rounded-2xl border border-[var(--ib-line)] p-4 space-y-2">
               <div className="flex items-center justify-between text-xs">
-                <span className="text-[#A0AAB2] font-medium uppercase tracking-widest">
+                <span className="text-[var(--ib-mute)] font-medium uppercase tracking-widest">
                   {completedCount} {t('academy.coursePlayer.of')} {totalLessons} {t('academy.coursePlayer.modulesCompleted')}
                 </span>
-                <span className="text-brand-cyan font-black">{Math.round(totalLessons > 0 ? (completedCount / totalLessons) * 100 : 0)}%</span>
+                <span className="text-[var(--ib-acc)] font-black">{Math.round(totalLessons > 0 ? (completedCount / totalLessons) * 100 : 0)}%</span>
               </div>
-              <div className="h-2 w-full overflow-hidden rounded-full bg-white/5 border border-white/10">
+              <div className="h-2 w-full overflow-hidden rounded-full bg-[var(--ib-accbg)] border border-[var(--ib-line)]">
                 <div
-                  className="h-full rounded-full bg-brand-cyan transition-all duration-700 shadow-[0_0_10px_rgba(0,240,255,0.4)]"
+                  className="h-full rounded-full bg-[var(--ib-acc)] transition-all duration-700 shadow-[0_0_10px_rgba(27, 77, 219,0.4)]"
                   style={{ width: `${totalLessons > 0 ? (completedCount / totalLessons) * 100 : 0}%` }}
                 />
               </div>
@@ -789,14 +789,14 @@ export default function AcademyCoursePage({
 
             {/* Lesson Knowledge Check / Quiz */}
             {allQuestions.length > 0 && (
-              <div className="rounded-2xl bg-[#161B22] border border-white/10 p-6 shadow-2xl">
-                <div className="flex items-center gap-3 mb-6 pb-4 border-b border-white/10">
-                  <div className="p-2.5 rounded-xl bg-brand-cyan/10 border border-brand-cyan/20 text-brand-cyan">
+              <div className="rounded-2xl bg-[var(--ib-card)] border border-[var(--ib-line)] p-6 shadow-2xl">
+                <div className="flex items-center gap-3 mb-6 pb-4 border-b border-[var(--ib-line)]">
+                  <div className="p-2.5 rounded-xl bg-[var(--ib-acc)]/10 border border-[var(--ib-acc)]/20 text-[var(--ib-acc)]">
                     📝
                   </div>
                   <div>
-                    <h2 className="text-base font-black text-white uppercase tracking-wider">{t('academy.coursePlayer.lessonKnowledgeCheck')}</h2>
-                    <p className="text-xs text-[#A0AAB2] mt-0.5">{t('academy.coursePlayer.quizTrigger')}</p>
+                    <h2 className="text-base font-black text-[var(--ib-ink)] uppercase tracking-wider">{t('academy.coursePlayer.lessonKnowledgeCheck')}</h2>
+                    <p className="text-xs text-[var(--ib-mute)] mt-0.5">{t('academy.coursePlayer.quizTrigger')}</p>
                   </div>
                 </div>
 
@@ -818,10 +818,10 @@ export default function AcademyCoursePage({
                         )}>
                           {passed ? "🎓" : "⚠️"}
                         </div>
-                        <h3 className="text-lg font-bold text-white">
+                        <h3 className="text-lg font-bold text-[var(--ib-ink)]">
                           {passed ? t('academy.coursePlayer.strategicMastery') : `${t('academy.coursePlayer.performance')}: ${correctCount}/${allQuestions.length}`}
                         </h3>
-                        <p className="text-xs text-[#A0AAB2] max-w-sm mx-auto">
+                        <p className="text-xs text-[var(--ib-mute)] max-w-sm mx-auto">
                           {passed ? t('academy.coursePlayer.flawlessExecution') : t('academy.coursePlayer.knowledgeGapDetected')}
                         </p>
                         <div className="pt-2 flex justify-center gap-3">
@@ -833,7 +833,7 @@ export default function AcademyCoursePage({
                                 setQuizAnswers({});
                                 setCurrentQuestionIndex(0);
                               }}
-                              className="px-6 py-2.5 rounded-xl bg-white/10 text-white font-bold text-xs hover:bg-white/20 transition-all uppercase tracking-wider"
+                              className="px-6 py-2.5 rounded-xl bg-[var(--ib-accbg)] text-[var(--ib-ink)] font-bold text-xs hover:bg-[var(--ib-accbg)] transition-all uppercase tracking-wider"
                             >
                               {t('academy.coursePlayer.tryAgain')}
                             </button>
@@ -848,7 +848,7 @@ export default function AcademyCoursePage({
                                   handleLessonClick(currentLessonIndex + 1);
                                 }
                               }}
-                              className="px-6 py-2.5 rounded-xl bg-brand-cyan text-[#0F111A] font-black text-xs hover:opacity-90 transition-all uppercase tracking-wider"
+                              className="px-6 py-2.5 rounded-xl bg-[var(--ib-acc)] text-[var(--ib-bg)] font-black text-xs hover:opacity-90 transition-all uppercase tracking-wider"
                             >
                               {t('academy.coursePlayer.nextModule')} →
                             </button>
@@ -872,17 +872,17 @@ export default function AcademyCoursePage({
                             key={i}
                             className={cn(
                               "h-1.5 flex-1 rounded-full transition-all duration-300",
-                              i < currentQuestionIndex ? "bg-brand-cyan" : i === currentQuestionIndex ? "bg-brand-cyan/60" : "bg-white/10"
+                              i < currentQuestionIndex ? "bg-[var(--ib-acc)]" : i === currentQuestionIndex ? "bg-[var(--ib-acc)]/60" : "bg-[var(--ib-accbg)]"
                             )}
                           />
                         ))}
                       </div>
 
-                      <div className="flex items-center justify-between text-[11px] font-black text-brand-cyan uppercase tracking-wider">
+                      <div className="flex items-center justify-between text-[11px] font-black text-[var(--ib-acc)] uppercase tracking-wider">
                         <span>{t('academy.coursePlayer.protocolEvaluation')}: {currentQuestionIndex + 1} / {allQuestions.length}</span>
                       </div>
 
-                      <p className="text-sm md:text-base font-bold text-white leading-relaxed">{q.question}</p>
+                      <p className="text-sm md:text-base font-bold text-[var(--ib-ink)] leading-relaxed">{q.question}</p>
 
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                         {q.options.map((opt) => {
@@ -892,12 +892,12 @@ export default function AcademyCoursePage({
                               key={opt}
                               className={cn(
                                 "flex items-center gap-3 p-3.5 rounded-xl border cursor-pointer transition-all",
-                                isSelected ? "border-brand-cyan bg-brand-cyan/10 text-white" : "border-white/10 bg-[#0B0F19] text-[#A0AAB2] hover:border-white/20"
+                                isSelected ? "border-[var(--ib-acc)] bg-[var(--ib-acc)]/10 text-[var(--ib-ink)]" : "border-[var(--ib-line)] bg-[var(--ib-bg)] text-[var(--ib-mute)] hover:border-[var(--ib-line)]"
                               )}
                             >
                               <span className={cn(
                                 "w-4 h-4 rounded-full border flex items-center justify-center shrink-0 transition-all",
-                                isSelected ? "border-white" : "border-white/30 bg-transparent"
+                                isSelected ? "border-white" : "border-[var(--ib-line)] bg-transparent"
                               )}>
                                 {isSelected && <span className="w-2.5 h-2.5 rounded-full bg-white" />}
                               </span>
@@ -920,7 +920,7 @@ export default function AcademyCoursePage({
                           type="button"
                           onClick={() => setCurrentQuestionIndex((i) => Math.max(0, i - 1))}
                           disabled={currentQuestionIndex === 0}
-                          className="px-4 py-2 rounded-lg border border-white/10 text-xs font-bold text-white hover:bg-white/5 transition-all disabled:opacity-20 disabled:cursor-not-allowed"
+                          className="px-4 py-2 rounded-lg border border-[var(--ib-line)] text-xs font-bold text-[var(--ib-ink)] hover:bg-[var(--ib-accbg)] transition-all disabled:opacity-20 disabled:cursor-not-allowed"
                         >
                           ← {t('isoNavigator.back')}
                         </button>
@@ -930,7 +930,7 @@ export default function AcademyCoursePage({
                             type="button"
                             onClick={handleSubmitQuiz}
                             disabled={!allAnswered}
-                            className="px-6 py-2 rounded-lg bg-brand-cyan text-white text-xs font-black uppercase tracking-wider hover:opacity-90 transition-all disabled:bg-white/10 disabled:text-white/40 disabled:cursor-not-allowed"
+                            className="px-6 py-2 rounded-lg bg-[var(--ib-acc)] text-white text-xs font-black uppercase tracking-wider hover:opacity-90 transition-all disabled:bg-[var(--ib-accbg)] disabled:text-[var(--ib-ink)]/40 disabled:cursor-not-allowed"
                           >
                             {t('academy.coursePlayer.validateProtocol')} ✓
                           </button>
@@ -939,7 +939,7 @@ export default function AcademyCoursePage({
                             type="button"
                             onClick={() => setCurrentQuestionIndex((i) => Math.min(allQuestions.length - 1, i + 1))}
                             disabled={!isAnswered}
-                            className="px-6 py-2 rounded-lg bg-brand-cyan text-white text-xs font-black uppercase tracking-wider hover:opacity-90 transition-all disabled:bg-white/10 disabled:text-white/40 disabled:cursor-not-allowed"
+                            className="px-6 py-2 rounded-lg bg-[var(--ib-acc)] text-white text-xs font-black uppercase tracking-wider hover:opacity-90 transition-all disabled:bg-[var(--ib-accbg)] disabled:text-[var(--ib-ink)]/40 disabled:cursor-not-allowed"
                           >
                             {t('dynamic.dyn_next_497') || 'Next'}
                           </button>

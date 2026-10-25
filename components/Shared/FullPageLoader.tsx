@@ -26,7 +26,7 @@ const FullPageLoader: React.FC<FullPageLoaderProps> = ({
           transition={{ duration: 0.3 }}
           className="fixed inset-0 z-[999] h-screen flex items-center justify-center p-4"
           style={{
-            background: "rgba(15, 17, 26, 0.95)",
+            background: "rgba(245, 247, 251, 0.95)",
             backdropFilter: "blur(20px)",
           }}
         >
@@ -39,8 +39,8 @@ const FullPageLoader: React.FC<FullPageLoaderProps> = ({
                 transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
                 className="absolute w-24 h-24 md:w-32 md:h-32 rounded-full border-2 border-transparent"
                 style={{
-                  borderTopColor: "#00F0FF",
-                  borderRightColor: "rgba(0,240,255,0.3)",
+                  borderTopColor: "var(--ib-acc)",
+                  borderRightColor: "rgba(27,77,219,0.3)",
                 }}
               />
               {/* Middle ring */}
@@ -49,8 +49,8 @@ const FullPageLoader: React.FC<FullPageLoaderProps> = ({
                 transition={{ duration: 2.5, repeat: Infinity, ease: "linear" }}
                 className="absolute w-16 h-16 md:w-20 md:h-20 rounded-full border-2 border-transparent"
                 style={{
-                  borderTopColor: "#B026FF",
-                  borderLeftColor: "rgba(176,38,255,0.3)",
+                  borderTopColor: "var(--ib-acc)",
+                  borderLeftColor: "rgba(27,77,219,0.2)",
                 }}
               />
               {/* Center pulse */}
@@ -59,13 +59,13 @@ const FullPageLoader: React.FC<FullPageLoaderProps> = ({
                 transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
                 className="w-10 h-10 md:w-12 md:h-12 rounded-full border flex items-center justify-center"
                 style={{
-                  background: "rgba(0,240,255,0.1)",
-                  borderColor: "rgba(0,240,255,0.4)"
+                  background: "var(--ib-accbg)",
+                  borderColor: "rgba(27,77,219,0.4)"
                 }}
               >
                 <svg
                   className="w-5 h-5 md:w-6 md:h-6"
-                  style={{ color: "#00F0FF" }}
+                  style={{ color: "var(--ib-acc)" }}
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -86,7 +86,7 @@ const FullPageLoader: React.FC<FullPageLoaderProps> = ({
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 }}
-                className="space-grotesk text-xl md:text-3xl font-bold text-white tracking-tight"
+                className="text-xl md:text-3xl font-bold text-[var(--ib-ink)] tracking-tight"
               >
                 {title}
               </motion.h2>
@@ -94,7 +94,7 @@ const FullPageLoader: React.FC<FullPageLoaderProps> = ({
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.35 }}
-                className="text-sm md:text-base text-[#A0AAB2] max-w-sm mx-auto leading-relaxed"
+                className="text-sm md:text-base text-[var(--ib-mute)] max-w-sm mx-auto leading-relaxed"
               >
                 {description}
               </motion.p>
@@ -113,7 +113,7 @@ const FullPageLoader: React.FC<FullPageLoaderProps> = ({
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.6 + i * 0.4 }}
-                  className="flex items-center gap-4 bg-[#1E212B] border border-[#333333] rounded-xl px-5 py-3"
+                  className="flex items-center gap-4 bg-[var(--ib-card)] border border-[var(--ib-line)] rounded-xl px-5 py-3"
                 >
                   <motion.div
                     animate={{ scale: [1, 1.3, 1] }}
@@ -123,9 +123,9 @@ const FullPageLoader: React.FC<FullPageLoaderProps> = ({
                       delay: i * 0.4,
                     }}
                     className="w-2.5 h-2.5 rounded-full shrink-0"
-                    style={{ background: "#00F0FF" }}
+                    style={{ background: "var(--ib-acc)" }}
                   />
-                  <span className="font-inter text-xs md:text-sm text-[#A0AAB2] font-semibold whitespace-nowrap overflow-hidden text-ellipsis uppercase tracking-wider">
+                  <span className="text-xs md:text-sm text-[var(--ib-mute)] font-semibold whitespace-nowrap overflow-hidden text-ellipsis uppercase tracking-wider">
                     {step}
                   </span>
                 </motion.div>

@@ -11,7 +11,7 @@ export default function DashboardLayout({
     <div className="">
       <Navbar />
     </div>
-    <div className="flex min-h-screen bg-[#12141D]">
+    <div className="flex min-h-screen bg-[var(--ib-bg)]">
       {/* Sidebar */}
       {/* <aside className="w-64  bg-white border-r hidden md:block">
         <Sidebar />
@@ -19,7 +19,7 @@ export default function DashboardLayout({
 
       {/* Main Content */}
       <main className="flex-1 flex flex-col">
-        <div className="overflow-auto bg-[#12141D]">{children}</div>
+        <div className="overflow-auto bg-[var(--ib-bg)]">{children}</div>
       </main>
     </div>
     <div className="">

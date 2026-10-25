@@ -24,7 +24,7 @@ export default function LessonsLayout({ children, params }: any) {
     <div className="min-h-screen bg-[#fff]">
       <div className="flex">
         {/* Left Sidebar – Lessons List */}
-        <aside className="hidden w-80 shrink-0 border-r border-gray-200 lg:block">
+        <aside className="hidden w-80 shrink-0 border-r border-[var(--ib-line)] lg:block">
           <LessonSidebar
             lessons={courseLessons}
             courseId={params.courseId}

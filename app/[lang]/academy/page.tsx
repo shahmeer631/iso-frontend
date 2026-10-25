@@ -1,32 +1,35 @@
 "use client";
 
-import React, { useState, useEffect, Fragment } from 'react';
-import { ISOLearningSection } from '@/components/acadamy/ISOLearningSection';
-import AcademyCategoriesNexus from '@/components/acadamy/AcademyCategoriesNexus';
-import ComplianceBundles from '@/components/acadamy/ComplianceBundles';
-import WhatYouGet from '@/components/acadamy/WhatYouGet';
-import { Search, ChevronRight, PlayCircle, Brain, Award, GraduationCap, BookOpen, Cpu, ArrowRight, Loader2 } from "lucide-react";
-import Image from 'next/image';
-import { motion } from 'framer-motion';
-
-import user1 from "@/public/user1.png";
-import user2 from "@/public/user2.png";
-import user3 from "@/public/user3.png";
-import user4 from "@/public/user4.png";
-import { StaticImageData } from 'next/image';
-import Link from 'next/link';
-import { useParams, useRouter, useSearchParams } from 'next/navigation';
+import React, { useState, useEffect, useRef, useCallback, Fragment } from "react";
+import AcademyCategoriesNexus from "@/components/acadamy/AcademyCategoriesNexus";
+import {
+  Search,
+  ChevronRight,
+  PlayCircle,
+  Brain,
+  Award,
+  BookOpen,
+  Cpu,
+  ArrowRight,
+  GraduationCap,
+  X,
+  FileText,
+  Lightbulb,
+  PenLine,
+} from "lucide-react";
+import { motion, useReducedMotion } from "framer-motion";
+import Link from "next/link";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useSelector } from "react-redux";
 import { useGetPlansQuery, Plan } from "@/lib/redux/features/pricing/pricingApi";
 import { useCreatePaymentIntentMutation } from "@/lib/redux/features/payments/paymentApi";
 import { selectCurrentUser, selectCurrentToken } from "@/lib/redux/features/auth/authSlice";
 import { toast } from "sonner";
-import OfferTimer from "@/components/landing-page-components/OfferTimer";
 import { userHasFeature, userOwnsPlanId } from "@/lib/access/effectiveAccess";
-
 import { useTranslation } from "react-i18next";
 import i18n from "@/lib/i18n/client";
 
+const ease = [0.22, 1, 0.36, 1] as const;
 
 const decodeJwt = (token: string) => {
   try {
@@ -39,38 +42,23 @@ const decodeJwt = (token: string) => {
         .join("")
     );
     return JSON.parse(jsonPayload);
-  } catch (e) {
+  } catch {
     return null;
   }
 };
 
-type User = {
-  id: number;
-  image: StaticImageData;
-};
-
-export const users: User[] = [
-  { id: 2, image: user2 },
-  { id: 1, image: user1 },
-  { id: 3, image: user3 },
-  { id: 4, image: user4 },
-  { id: 5, image: user3 },
-];
-
 const AcademyPage = () => {
   const params = useParams();
-  const lang = params?.lang || "en";
+  const lang = (params?.lang as string) || "en";
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [searchQuery, setSearchQuery] = useState("");
   const { t } = useTranslation();
+  const reduceMotion = useReducedMotion();
+  const inputRef = useRef<HTMLInputElement>(null);
 
-  // Sync i18n language with the URL [lang] param
-  useEffect(() => {
-    if (lang && i18n.language !== lang) {
-      i18n.changeLanguage(lang as string);
-    }
-  }, [lang]);
+  const [inputValue, setInputValue] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isBarFocused, setIsBarFocused] = useState(false);
 
   const [timeLeft, setTimeLeft] = useState({
     days: 0,
@@ -78,6 +66,12 @@ const AcademyPage = () => {
     minutes: 59,
     seconds: 59,
   });
+
+  useEffect(() => {
+    if (lang && i18n.language !== lang) {
+      i18n.changeLanguage(lang);
+    }
+  }, [lang]);
 
   useEffect(() => {
     const storedEndTime = localStorage.getItem("offerEndTime");
@@ -106,11 +100,28 @@ const AcademyPage = () => {
 
     updateTimer();
     const interval = setInterval(updateTimer, 1000);
-
     return () => clearInterval(interval);
   }, []);
 
-  const { data: response, isLoading: isPlansLoading } = useGetPlansQuery();
+  useEffect(() => {
+    const timer = setTimeout(() => setSearchQuery(inputValue.trim()), 350);
+    return () => clearTimeout(timer);
+  }, [inputValue]);
+
+  const handleKeydown = useCallback((e: KeyboardEvent) => {
+    if ((e.ctrlKey || e.metaKey) && e.key === "k") {
+      e.preventDefault();
+      inputRef.current?.focus();
+    }
+    if (e.key === "Escape") inputRef.current?.blur();
+  }, []);
+
+  useEffect(() => {
+    window.addEventListener("keydown", handleKeydown);
+    return () => window.removeEventListener("keydown", handleKeydown);
+  }, [handleKeydown]);
+
+  const { data: response } = useGetPlansQuery();
   const [createPaymentIntent] = useCreatePaymentIntentMutation();
   const user = useSelector(selectCurrentUser);
   const token = useSelector(selectCurrentToken);
@@ -131,34 +142,47 @@ const AcademyPage = () => {
   };
 
   const currentUserId = getUserId();
-
   const plans = response?.data || [];
-  const plan = plans.find(p => p.name?.toLowerCase().includes("pro")) || plans.find(p => p.name?.toLowerCase().includes("plus")) || plans[1];
-  // Subscription purchase OR User Group grant (Pro+ via COURSES feature)
+  const plan =
+    plans.find((p) => p.name?.toLowerCase().includes("pro")) ||
+    plans.find((p) => p.name?.toLowerCase().includes("plus")) ||
+    plans[1];
   const isPurchased =
     userOwnsPlanId(user, plan?.id || plan?._id) || userHasFeature(user, "COURSES");
 
   const handlePlanSelect = async (selectedPlan: Plan) => {
     if (isPurchased) {
-      toast.success(t('academy.alreadyPurchased', 'You already have access to this plan.'));
+      toast.success(t("academy.alreadyPurchased", "You already have access to this plan."));
       return;
     }
     if (!currentUserId) {
       router.push(`/${lang}/auth/login`);
       return;
     }
-    const isFree = selectedPlan.discountedPrice === 0 || selectedPlan.name?.toLowerCase().includes("free");
+    const isFree =
+      selectedPlan.discountedPrice === 0 ||
+      selectedPlan.name?.toLowerCase().includes("free");
     if (isFree) {
       router.push(`/${lang}/academy`);
       return;
     }
-    const isAdmin = user?.role === "admin" || (token ? decodeJwt(token)?.role === "admin" : false);
+    const isAdmin =
+      user?.role === "admin" || (token ? decodeJwt(token)?.role === "admin" : false);
 
     if (isAdmin) {
-      toast.warning(t('pricingPage.adminWarning', 'Admin Account: Real payments are disabled for admin roles. Redirecting to Sandbox checkout...'), {
-        description: t('pricingPage.adminWarningDesc', 'Admins are not allowed to make live transactions. Test credentials have been prefilled for your convenience.'),
-        duration: 5000,
-      });
+      toast.warning(
+        t(
+          "pricingPage.adminWarning",
+          "Admin Account: Real payments are disabled for admin roles. Redirecting to Sandbox checkout..."
+        ),
+        {
+          description: t(
+            "pricingPage.adminWarningDesc",
+            "Admins are not allowed to make live transactions. Test credentials have been prefilled for your convenience."
+          ),
+          duration: 5000,
+        }
+      );
       setTimeout(() => {
         const mockQueryParams = new URLSearchParams({
           clientSecret: "pi_mock_123_secret_mock_456",
@@ -183,8 +207,17 @@ const AcademyPage = () => {
       }).unwrap();
 
       if (result.success) {
-        const hostedUrl = (result.data as any)?.checkoutUrl || (result.data as any)?.sessionUrl || (result.data as any)?.url;
-        if (hostedUrl && typeof hostedUrl === "string" && (hostedUrl.startsWith("http://") || hostedUrl.startsWith("https://"))) {
+        const hostedUrl =
+          (result.data as { checkoutUrl?: string; sessionUrl?: string; url?: string })
+            ?.checkoutUrl ||
+          (result.data as { checkoutUrl?: string; sessionUrl?: string; url?: string })
+            ?.sessionUrl ||
+          (result.data as { checkoutUrl?: string; sessionUrl?: string; url?: string })?.url;
+        if (
+          hostedUrl &&
+          typeof hostedUrl === "string" &&
+          (hostedUrl.startsWith("http://") || hostedUrl.startsWith("https://"))
+        ) {
           window.location.href = hostedUrl;
           return;
         }
@@ -203,11 +236,20 @@ const AcademyPage = () => {
         }
       }
     } catch (error) {
-      const err = error as { data?: { err?: { type?: string } }; status?: number; message?: string };
+      const err = error as {
+        data?: { err?: { type?: string } };
+        status?: number;
+        message?: string;
+      };
       console.error("Failed to create payment intent:", error);
 
       if (err?.status === 500) {
-        toast.error(t('pricingPage.serverError', 'Internal Server Error: Could not initiate payment. Please try again later.'));
+        toast.error(
+          t(
+            "pricingPage.serverError",
+            "Internal Server Error: Could not initiate payment. Please try again later."
+          )
+        );
         return;
       }
 
@@ -217,7 +259,12 @@ const AcademyPage = () => {
         JSON.stringify(error).includes("customer");
 
       if (isStripeError) {
-        const confirmMock = window.confirm(t('pricingPage.stripeError', 'Stripe payment initiation failed. Do you want to proceed with a mock checkout?'));
+        const confirmMock = window.confirm(
+          t(
+            "pricingPage.stripeError",
+            "Stripe payment initiation failed. Do you want to proceed with a mock checkout?"
+          )
+        );
         if (confirmMock) {
           const mockQueryParams = new URLSearchParams({
             clientSecret: "pi_mock_123_secret_mock_456",
@@ -229,322 +276,419 @@ const AcademyPage = () => {
           router.push(`/${lang}/payment?${mockQueryParams}`);
         }
       } else {
-        toast.error(t('pricingPage.paymentError', 'Failed to initiate payment. Please try again.'));
+        toast.error(
+          t("pricingPage.paymentError", "Failed to initiate payment. Please try again.")
+        );
       }
     } finally {
       setProcessingPlanId(null);
     }
   };
 
+  void processingPlanId;
+  void handlePlanSelect;
 
-
-  // const formatNumber = (num: number) => String(num).padStart(2, '0');
+  const clearSearch = () => {
+    setInputValue("");
+    setSearchQuery("");
+  };
 
   return (
-    <div style={{ background: "#09090B", minHeight: "100vh", paddingTop: "60px" }}>
-      {/* ── Pricing Hero Section ─────────────────────────── */}
-      <section className="relative pt-16 pb-24 px-4 sm:px-6 overflow-hidden bg-[#09090B] bg-[radial-gradient(#ffffff08_1px,transparent_1px)] [background-size:20px_20px]">
-        {/* Animated Background Gradients */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-[900px] pointer-events-none z-0">
-          <div className="absolute top-[-10%] left-1/4 w-[600px] h-[600px] bg-[#6366F1]/10 rounded-full blur-[160px] animate-pulse" />
-          <div className="absolute top-[20%] right-1/4 w-[500px] h-[500px] bg-[#00f0ff]/5 rounded-full blur-[140px] animate-pulse delay-700" />
+    <div className="min-h-screen bg-[var(--ib-bg)] font-inter text-[var(--ib-ink)] selection:bg-[var(--ib-acc)] selection:text-white">
+      {/* ── Academy Hero ─────────────────────────────────── */}
+      <header className="relative overflow-x-clip px-4 pb-10 pt-14 sm:px-6 sm:pb-14 sm:pt-16">
+        <div aria-hidden className="pointer-events-none absolute inset-0 -z-0">
+          <div className="absolute left-1/2 top-[-12%] h-[520px] w-[min(920px,100%)] -translate-x-1/2 rounded-full bg-[radial-gradient(ellipse_at_center,color-mix(in_srgb,var(--ib-acc)_14%,transparent),transparent_70%)]" />
+          <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[var(--ib-line)] to-transparent" />
         </div>
 
-        <div className="relative z-10 max-w-7xl mx-auto">
-          {/* H1 & Subtitle */}
+        <div className="ib-w relative z-[1] max-w-7xl!">
+          <motion.div
+            initial={reduceMotion ? false : { opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, ease }}
+            className="mx-auto max-w-[720px] text-center"
+          >
+            <div className="ib-eye mx-auto inline-flex items-center gap-2">
+              <GraduationCap className="size-3.5" aria-hidden />
+              {t("academy.learningExperience")}
+            </div>
 
+            <h1 className="mb-0! mt-3 text-[32px] font-bold leading-[1.12] tracking-[-0.035em] text-[var(--ib-ink)] sm:text-[40px] lg:text-[48px]">
+              {t("academy.heroHeading")}
+            </h1>
 
-          {/* Typography-Based Premium Pricing Layout */}
-          {!isPurchased && (
-            <div className="max-w-7xl mx-auto px-4 py-8 font-inter text-gray-300">
-              {/* Top Text & Pricing Summary */}
-              <div className="text-center space-y-6 mb-16 flex flex-col">
-                {/* 1. ISOBrain Pro (Most Popular) – USD $49/Month */}
-                {!isPurchased && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    className="text-2xl sm:text-3xl font-black font-space-grotesk tracking-tight text-white"
-                  >
-                    {t('academy.isobrainProTitle')} <span className="text-[#00f0ff] drop-shadow-[0_0_15px_rgba(0,240,255,0.2)]">{t('academy.isobrainProPrice')}</span>
-                  </motion.div>
-                )}
+            <p className="mx-auto mt-4 max-w-[560px] text-[15px] leading-relaxed text-[var(--ib-mute)] sm:text-[16.5px]">
+              {t("academy.description")}
+            </p>
+          </motion.div>
 
-                {/* 2. Tagline Description 1 */}
-                <motion.p
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: 0.1 }}
-                  className={
-                    isPurchased
-                      ? "text-2xl sm:text-3xl md:text-4xl font-black font-space-grotesk tracking-tight text-white max-w-4xl mx-auto leading-tight"
-                      : "text-gray-400 text-sm sm:text-base max-w-2xl mx-auto leading-relaxed"
-                  }
+          <motion.div
+            initial={reduceMotion ? false : { opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.45, delay: reduceMotion ? 0 : 0.08, ease }}
+            className="mx-auto mt-8 w-full max-w-[640px]"
+          >
+            <label htmlFor="academy-search" className="sr-only">
+              {t("academy.searchPlaceholder")}
+            </label>
+            <div
+              className={`flex h-12 items-center gap-3 rounded-[14px] border bg-[var(--ib-card)] px-4 shadow-[0_12px_40px_-28px_rgba(11,18,32,0.35)] transition-all duration-300 sm:h-14 sm:px-5 ${
+                isBarFocused
+                  ? "border-[var(--ib-acc)] ring-2 ring-[color-mix(in_srgb,var(--ib-acc)_18%,transparent)]"
+                  : "border-[var(--ib-line)] hover:border-[color-mix(in_srgb,var(--ib-acc)_28%,var(--ib-line))]"
+              }`}
+            >
+              <Search
+                className={`size-[18px] shrink-0 transition-colors ${
+                  isBarFocused ? "text-[var(--ib-acc)]" : "text-[var(--ib-mute)]"
+                }`}
+                aria-hidden
+              />
+              <input
+                id="academy-search"
+                ref={inputRef}
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
+                onFocus={() => setIsBarFocused(true)}
+                onBlur={() => setIsBarFocused(false)}
+                placeholder={t("academy.searchPlaceholder")}
+                className="min-w-0 flex-1 border-none bg-transparent text-[15px] text-[var(--ib-ink)] outline-none placeholder:text-[var(--ib-mute)]"
+                autoComplete="off"
+              />
+              {inputValue ? (
+                <button
+                  type="button"
+                  onClick={clearSearch}
+                  className="inline-flex size-8 items-center justify-center rounded-lg text-[var(--ib-mute)] transition-colors hover:bg-[var(--ib-accbg)] hover:text-[var(--ib-ink)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ib-acc)]"
+                  aria-label={t("academy.all")}
                 >
-                  {t('academy.popularTierDesc')}
-                </motion.p>
+                  <X className="size-4" />
+                </button>
+              ) : null}
+            </div>
+          </motion.div>
+        </div>
+      </header>
 
-                {/* 3. Designed for professionals... */}
-                <motion.p
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: 0.15 }}
-                  className="text-gray-500 text-xs sm:text-sm italic max-w-xl mx-auto"
-                >
-                  {t('academy.designedForPros')}
-                </motion.p>
-
-                {/* 4. Countdown ticking—secure your spot! */}
-                {!isPurchased && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: 0.2 }}
-                    className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#00f0ff]/5 border border-[#00f0ff]/10 text-[#00f0ff] text-xs font-black uppercase tracking-[0.2em] w-fit mx-auto"
-                  >
-                    {t('academy.countdownText')}
-                  </motion.div>
-                )}
-
-                {/* 5. Master new skills for USD$ 49 */}
-                {!isPurchased && (
-                  <motion.h3
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: 0.25 }}
-                    className="text-2xl sm:text-3xl font-black text-white tracking-tight font-space-grotesk"
-                  >
-                    {t('academy.masterSkills')}
-                  </motion.h3>
-                )}
-
-                {/* 6. Get ISOBrain Pro & Start Learning */}
-                {!isPurchased && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 15 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: 0.3 }}
-                    className="pt-4"
-                  >
-                    <button
-                      onClick={() => router.push(`/${lang}/pricing`)}
-                      className="group relative inline-flex items-center justify-center gap-3 bg-[#00f0ff] text-[#0F111A] font-bold text-sm sm:text-base px-8 py-5 rounded-[12px] hover:bg-[#00f0ff]/95 transition-all duration-300 shadow-[0_0_30px_rgba(0,240,255,0.25)] hover:shadow-[0_0_55px_rgba(0,240,255,0.45)] transform hover:-translate-y-0.5 active:translate-y-0 uppercase tracking-wider cursor-pointer"
-                    >
-                      <span>{t('academy.getStartedBtn')}</span>
-                      <ArrowRight className="w-5 h-5 group-hover:translate-x-1.5 transition-transform text-[#0F111A]" />
-                    </button>
-                  </motion.div>
-                )}
-
-                {/* 7. Countdown Timer */}
-                {!isPurchased && (
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    whileInView={{ opacity: 1, scale: 1 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: 0.35 }}
-                    className="max-w-xl mx-auto my-6 relative group cursor-default"
-                  >
-                    <div className="relative bg-[#0A0A0C]/90 backdrop-blur-2xl border border-white/10 hover:border-[#00F0FF]/40 rounded-3xl py-6 px-10 sm:px-14 flex items-center justify-center gap-8 shadow-2xl transition-all duration-500 overflow-hidden mx-auto w-fit">
-                      <div className="absolute top-0 inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-white/40 to-transparent"></div>
-                      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-[2px] bg-gradient-to-r from-transparent via-[#00F0FF]/80 to-transparent blur-[2px]"></div>
-
-                      <div className="flex items-center gap-3 sm:gap-4 md:gap-5 shrink-0 z-10">
-                        {[
-                          { label: t('academy.hours'), value: timeLeft.hours },
-                          { label: t('academy.mins'), value: timeLeft.minutes },
-                          { label: t('academy.secs'), value: timeLeft.seconds, isAccent: true }
-                        ].map((time, index) => (
-                          <Fragment key={index}>
-                            <div className="flex flex-col items-center group/timer-item">
-                              <div className={`relative w-14 h-14 sm:w-16 sm:h-16 flex items-center justify-center text-xl sm:text-2xl font-bold rounded-2xl shadow-inner transition-all duration-350 hover:-translate-y-1 ${time.isAccent
-                                ? "bg-gradient-to-b from-[#00F0FF]/10 to-transparent border border-[#00F0FF]/40 text-[#00F0FF] shadow-[0_0_20px_rgba(0,240,255,0.15)]"
-                                : "bg-[#14141A] border border-gray-800 text-white"
-                                }`}>
-                                <div className="absolute inset-0 rounded-2xl bg-gradient-to-b from-white/5 to-transparent pointer-events-none"></div>
-                                {time.value.toString().padStart(2, "0")}
-                              </div>
-                              <span className={`text-[9px] sm:text-[10px] mt-2 sm:mt-3 uppercase tracking-widest font-semibold ${time.isAccent ? "text-[#00F0FF]" : "text-gray-500"}`}>
-                                {time.label}
-                              </span>
-                            </div>
-                            {index < 2 && (
-                              <span className="text-xl sm:text-2xl text-gray-700 font-bold -mt-5 animate-pulse">:</span>
-                            )}
-                          </Fragment>
-                        ))}
-                      </div>
-                    </div>
-                  </motion.div>
-                )}
+      {/* ── Pro upsell (non-purchased) ───────────────────── */}
+      {!isPurchased && (
+        <section className="relative overflow-x-clip border-y border-[var(--ib-line)] bg-[color-mix(in_srgb,var(--ib-card)_70%,var(--ib-accbg))] px-4 py-12 sm:px-6 sm:py-16">
+          <div className="ib-w max-w-7xl!">
+            <div className="mx-auto flex max-w-3xl flex-col items-center text-center">
+              <div className="ib-eye mb-3 inline-flex items-center gap-2">
+                <BookOpen className="size-3.5" aria-hidden />
+                {t("academy.countdownText")}
               </div>
 
-              {/* What you get details (Vertically stacked, centered typography grid) */}
-              <div className="mt-20 border-t border-white/5 pt-16 max-w-7xl mx-auto text-center">
-                <h4 className="text-xl sm:text-2xl font-black text-white font-space-grotesk uppercase tracking-wider mb-2">
-                  {isPurchased ? t('academy.yourPlanBenefits') : t('academy.forUSDYouGet')}
-                </h4>
-                <p className="text-gray-400 text-sm sm:text-base max-w-2xl mx-auto mb-12 font-inter">
-                  {t('academy.everythingInPlus')}
-                </p>
+              <h2 className="mb-0! text-[24px] font-bold tracking-[-0.03em] text-[var(--ib-ink)] sm:text-[30px]">
+                {t("academy.isobrainProTitle")}{" "}
+                <span className="text-[var(--ib-acc)]">{t("academy.isobrainProPrice")}</span>
+              </h2>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-12">
-                  {/* Benefit 1 */}
-                  <div className="space-y-3">
-                    <h5 className="text-base sm:text-lg font-bold text-[#00f0ff] font-space-grotesk tracking-wide uppercase">
-                      {t('academy.unlimitedAccessTitle')}
-                    </h5>
-                    <p className="text-gray-400 text-sm sm:text-base leading-relaxed font-light font-inter max-w-xl mx-auto">
-                      {t('academy.unlimitedAccessDesc')}
-                    </p>
-                  </div>
+              <p className="mt-3 max-w-xl text-[14.5px] leading-relaxed text-[var(--ib-mute)] sm:text-[15.5px]">
+                {t("academy.popularTierDesc")}
+              </p>
+              <p className="mt-2 max-w-lg text-[13px] italic leading-relaxed text-[var(--ib-mute)] sm:text-[14px]">
+                {t("academy.designedForPros")}
+              </p>
 
-                  {/* Benefit 2 */}
-                  <div className="space-y-3">
-                    <h5 className="text-base sm:text-lg font-bold text-[#00f0ff] font-space-grotesk tracking-wide uppercase">
-                      {t('academy.highQualityTitle')}
-                    </h5>
-                    <p className="text-gray-400 text-sm sm:text-base leading-relaxed font-light font-inter max-w-xl mx-auto">
-                      {t('academy.highQualityDesc')}
-                    </p>
-                  </div>
+              <p className="mt-5 text-[16px] font-semibold text-[var(--ib-ink)] sm:text-[18px]">
+                {t("academy.masterSkills")}
+              </p>
 
-                  {/* Benefit 3 */}
-                  <div className="space-y-3">
-                    <h5 className="text-base sm:text-lg font-bold text-[#00f0ff] font-space-grotesk tracking-wide uppercase">
-                      {t('academy.advancedStudyTitle')}
-                    </h5>
-                    <p className="text-gray-400 text-sm sm:text-base leading-relaxed font-light font-inter max-w-xl mx-auto">
-                      {t('academy.advancedStudyDesc')}
-                    </p>
-                  </div>
+              <button
+                type="button"
+                onClick={() => router.push(`/${lang}/pricing`)}
+                className="group mt-5 inline-flex items-center justify-center gap-2.5 rounded-[12px] bg-[var(--ib-acc)] px-7 py-3.5 text-[13px] font-bold uppercase tracking-wider text-white shadow-[0_14px_32px_-14px_rgba(27,77,219,0.55)] transition-all duration-300 hover:-translate-y-0.5 hover:opacity-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ib-acc)] sm:text-[14px]"
+              >
+                <span>{t("academy.getStartedBtn")}</span>
+                <ArrowRight
+                  className="size-5 transition-transform group-hover:translate-x-1"
+                  aria-hidden
+                />
+              </button>
 
-                  {/* Benefit 4 */}
-                  <div className="space-y-3">
-                    <h5 className="text-base sm:text-lg font-bold text-[#00f0ff] font-space-grotesk tracking-wide uppercase">
-                      {t('academy.unlimitedCPDTitle')}
-                    </h5>
-                    <p className="text-gray-400 text-sm sm:text-base leading-relaxed font-light font-inter max-w-xl mx-auto">
-                      {t('academy.unlimitedCPDDesc')}
-                    </p>
-                  </div>
-                </div>
+              <div className="mt-8 inline-flex items-center gap-3 rounded-2xl border border-[var(--ib-line)] bg-[var(--ib-card)] px-5 py-4 shadow-sm sm:gap-4 sm:px-8 sm:py-5">
+                {[
+                  { key: "hours", label: t("academy.hours"), value: timeLeft.hours },
+                  { key: "mins", label: t("academy.mins"), value: timeLeft.minutes },
+                  {
+                    key: "secs",
+                    label: t("academy.secs"),
+                    value: timeLeft.seconds,
+                    isAccent: true,
+                  },
+                ].map((time, index) => (
+                  <Fragment key={time.key}>
+                    <div className="flex flex-col items-center">
+                      <div
+                        className={`flex size-12 items-center justify-center rounded-xl text-lg font-bold sm:size-14 sm:text-xl ${
+                          time.isAccent
+                            ? "border border-[color-mix(in_srgb,var(--ib-acc)_35%,transparent)] bg-[var(--ib-accbg)] text-[var(--ib-acc)]"
+                            : "border border-[var(--ib-line)] bg-[var(--ib-bg)] text-[var(--ib-ink)]"
+                        }`}
+                      >
+                        {time.value.toString().padStart(2, "0")}
+                      </div>
+                      <span
+                        className={`mt-1.5 text-[9px] font-semibold uppercase tracking-widest sm:text-[10px] ${
+                          time.isAccent ? "text-[var(--ib-acc)]" : "text-[var(--ib-mute)]"
+                        }`}
+                      >
+                        {time.label}
+                      </span>
+                    </div>
+                    {index < 2 && (
+                      <span className="mb-5 text-xl font-bold text-[var(--ib-mute)] sm:text-2xl">
+                        :
+                      </span>
+                    )}
+                  </Fragment>
+                ))}
               </div>
             </div>
-          )}
-        </div>
-      </section>
 
+            <div className="mx-auto mt-14 max-w-5xl border-t border-[var(--ib-line)] pt-12 text-center">
+              <h3 className="mb-0! text-[18px] font-semibold uppercase tracking-wider text-[var(--ib-ink)] sm:text-[20px]">
+                {t("academy.forUSDYouGet")}
+              </h3>
+              <p className="mx-auto mt-2 max-w-2xl text-[14px] text-[var(--ib-mute)] sm:text-[15px]">
+                {t("academy.everythingInPlus")}
+              </p>
+              <div className="mt-10 grid grid-cols-1 gap-8 md:grid-cols-2 md:gap-x-10 md:gap-y-10">
+                {[
+                  {
+                    title: t("academy.unlimitedAccessTitle"),
+                    desc: t("academy.unlimitedAccessDesc"),
+                  },
+                  {
+                    title: t("academy.highQualityTitle"),
+                    desc: t("academy.highQualityDesc"),
+                  },
+                  {
+                    title: t("academy.advancedStudyTitle"),
+                    desc: t("academy.advancedStudyDesc"),
+                  },
+                  {
+                    title: t("academy.unlimitedCPDTitle"),
+                    desc: t("academy.unlimitedCPDDesc"),
+                  },
+                ].map((b) => (
+                  <div key={b.title} className="space-y-2">
+                    <h4 className="mb-0! text-[14px] font-bold uppercase tracking-wide text-[var(--ib-acc)] sm:text-[15px]">
+                      {b.title}
+                    </h4>
+                    <p className="mx-auto max-w-md text-[14px] leading-relaxed text-[var(--ib-mute)] sm:text-[15px]">
+                      {b.desc}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* ── Purchased learning system ────────────────────── */}
       {isPurchased && (
         <>
-          {/* ── The Learning System ────────────────────────────── */}
-          <section className="py-20 px-4 sm:px-6 bg-[#0B0C10] font-inter border-t border-[#232733]">
-            <div className="max-w-7xl mx-auto text-center mb-16">
-              <h2 className="text-[34px] font-semibold text-white leading-[1.3] mb-4">{t('academy.systemBuiltTitle')}</h2>
-              <h3 className="text-[20px] sm:text-[24px] font-medium text-[#A0AEC0] leading-[1.4]">
-                {t('academy.systemBuiltDesc')}
-              </h3>
-            </div>
-            <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
-              {[
-                { title: t('academy.expertLedTitle'), desc: t('academy.expertLedDesc'), icon: <PlayCircle size={32} className="text-[#00f0ff] mb-6" /> },
-                { title: t('academy.aiSupportedTitle'), desc: t('academy.aiSupportedDesc'), icon: <Brain size={32} className="text-[#00f0ff] mb-6" /> },
-                { title: t('academy.certPathTitle'), desc: t('academy.certPathDesc'), icon: <Award size={32} className="text-[#00f0ff] mb-6" /> }
-              ].map((item, idx) => (
-                <div key={idx} className="bg-[#15171E] border border-[#232733] p-8 rounded-2xl flex flex-col text-left hover:border-[#00f0ff]/50 transition-colors">
-                  {item.icon}
-                  <h3 className="text-xl font-bold text-white mb-4">{item.title}</h3>
-                  <p className="text-[#A0AEC0] leading-relaxed">{item.desc}</p>
-                </div>
-              ))}
+          <section className="border-t border-[var(--ib-line)] px-4 py-14 sm:px-6 sm:py-20">
+            <div className="ib-w max-w-7xl!">
+              <motion.div
+                initial={reduceMotion ? false : { opacity: 0, y: 14 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.4 }}
+                transition={{ duration: 0.45, ease }}
+                className="mx-auto mb-10 max-w-[680px] text-center md:mb-12"
+              >
+                <h2 className="mb-0! text-[28px] font-bold leading-[1.2] tracking-[-0.03em] text-[var(--ib-ink)] sm:text-[34px]">
+                  {t("academy.systemBuiltTitle")}
+                </h2>
+                <p className="mt-3 text-[15px] leading-relaxed text-[var(--ib-mute)] sm:text-[17px]">
+                  {t("academy.systemBuiltDesc")}
+                </p>
+              </motion.div>
+              <div className="grid grid-cols-1 gap-5 md:grid-cols-3 md:gap-6">
+                {[
+                  {
+                    title: t("academy.expertLedTitle"),
+                    desc: t("academy.expertLedDesc"),
+                    icon: PlayCircle,
+                  },
+                  {
+                    title: t("academy.aiSupportedTitle"),
+                    desc: t("academy.aiSupportedDesc"),
+                    icon: Brain,
+                  },
+                  {
+                    title: t("academy.certPathTitle"),
+                    desc: t("academy.certPathDesc"),
+                    icon: Award,
+                  },
+                ].map((item, idx) => (
+                  <motion.div
+                    key={item.title}
+                    initial={reduceMotion ? false : { opacity: 0, y: 14 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, amount: 0.3 }}
+                    transition={{
+                      duration: 0.4,
+                      delay: reduceMotion ? 0 : idx * 0.06,
+                      ease,
+                    }}
+                    className="ib-card flex flex-col p-7 transition-all duration-300 hover:-translate-y-0.5 hover:border-[color-mix(in_srgb,var(--ib-acc)_30%,var(--ib-line))]"
+                  >
+                    <item.icon className="mb-5 size-8 text-[var(--ib-acc)]" aria-hidden />
+                    <h3 className="mb-0! text-xl font-bold text-[var(--ib-ink)]">{item.title}</h3>
+                    <p className="mt-3 text-[14.5px] leading-relaxed text-[var(--ib-mute)]">
+                      {item.desc}
+                    </p>
+                  </motion.div>
+                ))}
+              </div>
             </div>
           </section>
 
-          {/* ── Smart Learning Features ────────────────────────────── */}
-          <section className="py-20 px-4 sm:px-6 bg-[#0B0C10] font-inter border-t border-[#232733]">
-            <div className="max-w-7xl mx-auto text-center mb-16">
-              <h2 className="text-[34px] font-semibold text-white leading-[1.3] mb-4">{t('academy.aiPoweredTitle')}</h2>
-              <h3 className="text-[20px] sm:text-[24px] font-medium text-[#A0AEC0] leading-[1.4] max-w-3xl mx-auto">
-                {t('academy.aiPoweredDesc')}
-              </h3>
-            </div>
-            <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6">
-              {[
-                { title: t('academy.studyGuideTitle'), desc: t('academy.studyGuideDesc'), icon: "📝" },
-                { title: t('academy.briefingDocsTitle'), desc: t('academy.briefingDocsDesc'), icon: "📄" },
-                { title: t('academy.analogiesTitle'), desc: t('academy.analogiesDesc'), icon: "💡" },
-                { title: t('academy.smartNotesTitle'), desc: t('academy.smartNotesDesc'), icon: "✍️" }
-              ].map((item, idx) => (
-                <div key={idx} className="bg-[#15171E] border border-[#232733] p-8 rounded-2xl flex items-start gap-6 hover:shadow-[0_0_20px_rgba(0,240,255,0.1)] transition-shadow">
-                  <div className="text-4xl">{item.icon}</div>
-                  <div>
-                    <h4 className="text-lg font-bold text-white mb-2">{item.title}</h4>
-                    <p className="text-[#A0AEC0] leading-relaxed text-sm">{item.desc}</p>
-                  </div>
-                </div>
-              ))}
+          <section className="border-t border-[var(--ib-line)] px-4 py-14 sm:px-6 sm:py-20">
+            <div className="ib-w max-w-7xl!">
+              <motion.div
+                initial={reduceMotion ? false : { opacity: 0, y: 14 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.4 }}
+                transition={{ duration: 0.45, ease }}
+                className="mx-auto mb-10 max-w-[680px] text-center md:mb-12"
+              >
+                <h2 className="mb-0! text-[28px] font-bold leading-[1.2] tracking-[-0.03em] text-[var(--ib-ink)] sm:text-[34px]">
+                  {t("academy.aiPoweredTitle")}
+                </h2>
+                <p className="mt-3 text-[15px] leading-relaxed text-[var(--ib-mute)] sm:text-[17px]">
+                  {t("academy.aiPoweredDesc")}
+                </p>
+              </motion.div>
+              <div className="mx-auto grid max-w-5xl grid-cols-1 gap-5 md:grid-cols-2 md:gap-6">
+                {[
+                  {
+                    title: t("academy.studyGuideTitle"),
+                    desc: t("academy.studyGuideDesc"),
+                    icon: FileText,
+                  },
+                  {
+                    title: t("academy.briefingDocsTitle"),
+                    desc: t("academy.briefingDocsDesc"),
+                    icon: BookOpen,
+                  },
+                  {
+                    title: t("academy.analogiesTitle"),
+                    desc: t("academy.analogiesDesc"),
+                    icon: Lightbulb,
+                  },
+                  {
+                    title: t("academy.smartNotesTitle"),
+                    desc: t("academy.smartNotesDesc"),
+                    icon: PenLine,
+                  },
+                ].map((item, idx) => (
+                  <motion.div
+                    key={item.title}
+                    initial={reduceMotion ? false : { opacity: 0, y: 14 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, amount: 0.3 }}
+                    transition={{
+                      duration: 0.4,
+                      delay: reduceMotion ? 0 : idx * 0.05,
+                      ease,
+                    }}
+                    className="ib-card flex items-start gap-5 p-6 transition-shadow duration-300 hover:shadow-[0_14px_32px_-24px_rgba(27,77,219,0.3)] sm:p-7"
+                  >
+                    <div className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-[var(--ib-accbg)] text-[var(--ib-acc)]">
+                      <item.icon className="size-6" aria-hidden />
+                    </div>
+                    <div>
+                      <h3 className="mb-0! text-lg font-bold text-[var(--ib-ink)]">{item.title}</h3>
+                      <p className="mt-2 text-[14px] leading-relaxed text-[var(--ib-mute)]">
+                        {item.desc}
+                      </p>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
             </div>
           </section>
         </>
       )}
 
-      {/* ── Dynamic Category Explorer ── */}
+      {/* ── Category / course explorer ───────────────────── */}
       <AcademyCategoriesNexus searchTerm={searchQuery} />
 
-      {/* ── Tangible Career Outcomes ────────────────────────────── */}
-      <section className="py-20 sm:py-32 px-4 sm:px-6 bg-[#0B0C10] font-inter border-t border-[#232733]">
-        <div className="max-w-6xl mx-auto">
-          <div className="bg-[#15171E] border border-[#232733] rounded-[40px] p-8 sm:p-16 text-center relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-64 h-64 bg-[#00f0ff]/10 rounded-full blur-[100px]" />
-            <div className="absolute bottom-0 left-0 w-64 h-64 bg-[#00f0ff]/10 rounded-full blur-[100px]" />
+      {/* ── Career outcomes CTA ──────────────────────────── */}
+      <section className="border-t border-[var(--ib-line)] px-4 pb-20 pt-6 sm:px-6 sm:pb-28 sm:pt-10">
+        <div className="ib-w max-w-6xl!">
+          <motion.div
+            initial={reduceMotion ? false : { opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.3 }}
+            transition={{ duration: 0.45, ease }}
+            className="ib-card relative overflow-hidden px-6 py-12 text-center sm:px-12 sm:py-16 md:rounded-[32px] md:px-16 md:py-20"
+          >
+            <div
+              aria-hidden
+              className="pointer-events-none absolute -right-16 -top-16 size-64 rounded-full bg-[var(--ib-accbg)] blur-[100px]"
+            />
+            <div
+              aria-hidden
+              className="pointer-events-none absolute -bottom-16 -left-16 size-64 rounded-full bg-[var(--ib-accbg)] blur-[100px]"
+            />
 
-            <div className="relative z-10">
-              <h2 className="text-[34px] font-semibold text-white leading-[1.3] mb-4">{t('academy.careerTransformTitle')}</h2>
-              <h3 className="text-[20px] sm:text-[24px] font-medium text-[#A0AEC0] leading-[1.4] mb-12 max-w-3xl mx-auto">
-                {t('academy.careerTransformDesc')}
-              </h3>
+            <div className="relative z-[1]">
+              <h2 className="mb-0! text-[26px] font-semibold leading-[1.25] text-[var(--ib-ink)] sm:text-[34px]">
+                {t("academy.careerTransformTitle")}
+              </h2>
+              <p className="mx-auto mt-3 max-w-2xl text-[15px] leading-relaxed text-[var(--ib-mute)] sm:text-[17px]">
+                {t("academy.careerTransformDesc")}
+              </p>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16 text-left">
-                <div className="space-y-4">
-                  <div className="bg-[#00f0ff]/10 w-14 h-14 flex items-center justify-center rounded-xl">
-                    <Award className="text-[#00f0ff] w-7 h-7" />
+              <div className="mt-10 mb-12 grid grid-cols-1 gap-8 text-left md:grid-cols-3 md:gap-8">
+                {[
+                  {
+                    title: t("academy.resumeBoostingTitle"),
+                    desc: t("academy.resumeBoostingDesc"),
+                    icon: Award,
+                  },
+                  {
+                    title: t("academy.focusedTitle"),
+                    desc: t("academy.focusedDesc"),
+                    icon: BookOpen,
+                  },
+                  {
+                    title: t("academy.quizzesTitle"),
+                    desc: t("academy.quizzesDesc"),
+                    icon: Cpu,
+                  },
+                ].map((item) => (
+                  <div key={item.title} className="space-y-3">
+                    <div className="flex size-12 items-center justify-center rounded-xl bg-[var(--ib-accbg)]">
+                      <item.icon className="size-6 text-[var(--ib-acc)]" aria-hidden />
+                    </div>
+                    <h3 className="mb-0! text-[17px] font-bold text-[var(--ib-ink)]">
+                      {item.title}
+                    </h3>
+                    <p className="text-[14px] leading-relaxed text-[var(--ib-mute)]">{item.desc}</p>
                   </div>
-                  <h4 className="text-white font-bold text-[18px]">{t('academy.resumeBoostingTitle')}</h4>
-                  <p className="text-[#A0AEC0] text-sm leading-relaxed">{t('academy.resumeBoostingDesc')}</p>
-                </div>
-                <div className="space-y-4">
-                  <div className="bg-[#00f0ff]/10 w-14 h-14 flex items-center justify-center rounded-xl">
-                    <BookOpen className="text-[#00f0ff] w-7 h-7" />
-                  </div>
-                  <h4 className="text-white font-bold text-[18px]">{t('academy.focusedTitle')}</h4>
-                  <p className="text-[#A0AEC0] text-sm leading-relaxed">{t('academy.focusedDesc')}</p>
-                </div>
-                <div className="space-y-4">
-                  <div className="bg-[#00f0ff]/10 w-14 h-14 flex items-center justify-center rounded-xl">
-                    <Cpu className="text-[#00f0ff] w-7 h-7" />
-                  </div>
-                  <h4 className="text-white font-bold text-[18px]">{t('academy.quizzesTitle')}</h4>
-                  <p className="text-[#A0AEC0] text-sm leading-relaxed">{t('academy.quizzesDesc')}</p>
-                </div>
+                ))}
               </div>
 
               <Link
                 href={`/${lang}/mastery-lab`}
-                className="inline-flex items-center justify-center bg-[#00f0ff] text-[#0F111A] font-bold text-[14px] uppercase tracking-wide px-8 py-5 rounded-xl hover:scale-105 hover:shadow-[0_0_20px_rgba(0,240,255,0.3)] transition-all"
+                className="inline-flex items-center justify-center gap-2 rounded-xl bg-[var(--ib-acc)] px-8 py-4 text-[13px] font-bold uppercase tracking-wide text-white shadow-[0_14px_32px_-14px_rgba(27,77,219,0.55)] transition-all duration-300 hover:-translate-y-0.5 hover:opacity-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ib-acc)] sm:px-8 sm:py-5 sm:text-[14px]"
               >
-                {t('academy.beginPath')} <ChevronRight className="ml-2 w-5 h-5" />
+                {t("academy.beginPath")}
+                <ChevronRight className="size-5" aria-hidden />
               </Link>
             </div>
-          </div>
+          </motion.div>
         </div>
       </section>
-
     </div>
   );
 };

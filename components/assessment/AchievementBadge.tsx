@@ -39,7 +39,7 @@ export const AchievementBadge: React.FC<AchievementBadgeProps> = ({
 
       <div
         className={`w-14 h-14 rounded-xl flex items-center justify-center mb-4 transition-colors ${
-          isUnlocked ? "bg-indigo-600" : "bg-slate-200"
+          isUnlocked ? "bg-[var(--ib-acc)]" : "bg-slate-200"
         }`}
       >
         <Icon
@@ -54,7 +54,7 @@ export const AchievementBadge: React.FC<AchievementBadgeProps> = ({
 
       {/* Unlock Glow */}
       {isUnlocked && (
-        <div className="absolute -inset-1 bg-indigo-500 rounded-2xl -z-10 blur-sm opacity-20 animate-pulse" />
+        <div className="absolute -inset-1 bg-[var(--ib-acc)] rounded-2xl -z-10 blur-sm opacity-20 animate-pulse" />
       )}
 
       <style jsx>{`

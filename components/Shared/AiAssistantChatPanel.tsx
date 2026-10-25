@@ -3,7 +3,7 @@
 import React, { useRef, useState, useEffect } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { Loader2, Send, Sparkles } from "lucide-react";
+import { Send, Sparkles } from "lucide-react";
 
 export type AiAssistantChatMessage = {
   role: "user" | "ai";
@@ -37,7 +37,7 @@ const FancyChatLoader = () => {
     "Analyzing your context...",
     "Mapping compliance protocols...",
     "Formulating expert response...",
-    "Double checking standards..."
+    "Double checking standards...",
   ];
 
   useEffect(() => {
@@ -48,94 +48,73 @@ const FancyChatLoader = () => {
   }, []);
 
   return (
-    <div className="flex items-center gap-3 p-3 bg-[#131B2D] border border-[#67E8F9]/20 rounded-2xl rounded-tl-none shadow-[0_0_15px_rgba(103,232,249,0.1)]">
-      <span className="text-[10px] md:text-xs font-semibold text-white uppercase tracking-wider animate-pulse leading-none">
+    <div className="flex items-center gap-3 rounded-[12px_12px_12px_4px] border border-[var(--ib-line)] bg-[var(--ib-accbg)] p-3">
+      <span className="animate-pulse text-[10px] font-semibold uppercase tracking-wider leading-none text-[var(--ib-acc)] md:text-xs">
         {phrases[phraseIdx]}
       </span>
     </div>
   );
 };
 
-/**
- * Build markdown component renderers.
- *
- * Key table strategy (mirrors iso-navigator / audit-lens pattern):
- *   - Outer card has `overflow-hidden`  → hard clip at card boundary
- *   - Message bubble has `overflow-hidden` → hard clip at bubble boundary
- *   - Table wrapper has `overflow-x-auto` → creates its own horizontal scroll
- *   - <table> uses `min-w-full`          → fills wrapper; wrapper scrolls, NOT the page
- *
- * This is exactly how iso-navigator handles large tables inside its
- * `overflow-y-auto` content panel.
- */
 const buildMarkdownComponents = (role: "user" | "ai") => {
-  const bodyTextClass   = role === "user" ? "text-[#0A0F1C]"             : "text-[#D1D5DB]";
-  const strongTextClass = role === "user" ? "font-black text-[#0A0F1C]"  : "font-black text-[#F8F9FA]";
-  const headingClass    = role === "user" ? "text-[#0A0F1C]"             : "text-[#F8F9FA]";
-  const borderColor     = role === "user" ? "border-[#0A0F1C]/20"        : "border-[#1E293B]";
-  const tableHeadBg     = role === "user" ? "bg-[#67E8F9]/20"            : "bg-[#0A0F1C]";
-  const tableBg         = role === "user" ? "bg-[#67E8F9]/10"            : "bg-[#0A0F1C]/30";
+  const bodyTextClass =
+    role === "user" ? "text-white" : "text-[var(--ib-ink)]";
+  const strongTextClass =
+    role === "user" ? "font-semibold text-white" : "font-semibold text-[var(--ib-ink)]";
+  const headingClass =
+    role === "user" ? "text-white" : "text-[var(--ib-ink)]";
+  const borderColor =
+    role === "user" ? "border-white/25" : "border-[var(--ib-line)]";
+  const tableHeadBg =
+    role === "user" ? "bg-white/15" : "bg-[var(--ib-bg)]";
+  const tableBg =
+    role === "user" ? "bg-white/10" : "bg-[var(--ib-card)]";
 
   return {
-    // ── Headings ─────────────────────────────────────────────────────────────
     h1: (props: React.ComponentProps<"h1">) => (
       <h1
-        className={`!text-[12px] sm:!text-[14px] md:!text-[17px] font-black mb-4 border-b ${borderColor} pb-2 uppercase tracking-wide ${headingClass}`}
+        className={`!text-[12px] sm:!text-[14px] md:!text-[17px] mb-4 border-b pb-2 font-bold tracking-wide ${borderColor} ${headingClass}`}
         {...props}
       />
     ),
     h2: (props: React.ComponentProps<"h2">) => (
       <h2
-        className={`!text-[11px] sm:!text-[13px] md:!text-[15px] font-black mt-5 mb-3 uppercase tracking-wide ${headingClass}`}
+        className={`!text-[11px] sm:!text-[13px] md:!text-[15px] mt-5 mb-3 font-bold tracking-wide ${headingClass}`}
         {...props}
       />
     ),
     h3: (props: React.ComponentProps<"h3">) => (
       <h3
-        className={`!text-[10px] sm:!text-[11px] md:!text-[13px] font-bold mt-4 mb-2 uppercase tracking-wide ${headingClass}`}
+        className={`!text-[10px] sm:!text-[11px] md:!text-[13px] mt-4 mb-2 font-semibold tracking-wide ${headingClass}`}
         {...props}
       />
     ),
-
-    // ── Inline elements ───────────────────────────────────────────────────────
-    p:      (props: React.ComponentProps<"p">)      => <p      className={`${bodyTextClass} mb-3 leading-relaxed text-sm`}  {...props} />,
-    strong: (props: React.ComponentProps<"strong">) => <strong className={strongTextClass}                                  {...props} />,
-
-    // ── Lists ─────────────────────────────────────────────────────────────────
+    p: (props: React.ComponentProps<"p">) => (
+      <p className={`${bodyTextClass} mb-3 text-sm leading-relaxed`} {...props} />
+    ),
+    strong: (props: React.ComponentProps<"strong">) => (
+      <strong className={strongTextClass} {...props} />
+    ),
     ul: (props: React.ComponentProps<"ul">) => (
-      <ul className={`list-disc pl-5 mb-4 space-y-1.5 ${bodyTextClass}`} {...props} />
+      <ul className={`mb-4 list-disc space-y-1.5 pl-5 ${bodyTextClass}`} {...props} />
     ),
     ol: (props: React.ComponentProps<"ol">) => (
-      <ol className={`list-decimal pl-5 mb-4 space-y-1.5 ${bodyTextClass}`} {...props} />
+      <ol className={`mb-4 list-decimal space-y-1.5 pl-5 ${bodyTextClass}`} {...props} />
     ),
     li: (props: React.ComponentProps<"li">) => (
-      <li className={`leading-relaxed text-sm ${bodyTextClass}`} {...props} />
+      <li className={`text-sm leading-relaxed ${bodyTextClass}`} {...props} />
     ),
-
-    // ── Code ─────────────────────────────────────────────────────────────────
     code: (props: React.ComponentProps<"code">) => (
       <code
-        className="bg-[#0A0F1C] text-[#67E8F9] rounded px-1.5 py-0.5 text-[11px] font-mono"
+        className="rounded-[5px] bg-[var(--ib-accbg)] px-[7px] py-px font-mono text-[11px] font-semibold text-[var(--ib-acc)]"
         {...props}
       />
     ),
-
-    // ── TABLE — iso-navigator / audit-lens pattern ────────────────────────────
-    //
-    //  ┌─ bubble: overflow-hidden ─────────────────────────────────────────┐
-    //  │ ┌─ table wrapper: overflow-x-auto ───────────────────────────┐   │
-    //  │ │  <table min-w-full>  ← fills wrapper; wrapper scrolls      │   │
-    //  │ └────────────────────────────────────────────────────────────┘   │
-    //  └───────────────────────────────────────────────────────────────────┘
-    //
     table: (props: React.ComponentProps<"table">) => (
       <div
-        className={`overflow-x-auto my-4 rounded-xl border ${borderColor} ${tableBg} shadow-inner`}
+        className={`my-4 overflow-x-auto rounded-xl border shadow-none ${borderColor} ${tableBg}`}
       >
-        <table
-          className="min-w-full border-collapse"
-          {...props}
-        />
+        <table className="min-w-full border-collapse" {...props} />
       </div>
     ),
     thead: (props: React.ComponentProps<"thead">) => (
@@ -143,18 +122,21 @@ const buildMarkdownComponents = (role: "user" | "ai") => {
     ),
     th: (props: React.ComponentProps<"th">) => (
       <th
-        className={`border-b ${borderColor} px-3 py-2 md:px-4 md:py-3 text-left text-[9px] md:text-[10px] font-black uppercase tracking-[0.15em] whitespace-nowrap ${headingClass}`}
+        className={`whitespace-nowrap border-b px-3 py-2 text-left text-[9px] font-semibold uppercase tracking-[0.15em] md:px-4 md:py-3 md:text-[10px] ${borderColor} ${headingClass}`}
         {...props}
       />
     ),
     td: (props: React.ComponentProps<"td">) => (
       <td
-        className={`border-b ${borderColor}/60 px-3 py-2 md:px-4 md:py-3 text-[11px] md:text-sm align-top leading-relaxed ${bodyTextClass}`}
+        className={`border-b px-3 py-2 align-top text-[11px] leading-relaxed md:px-4 md:py-3 md:text-sm ${borderColor}/60 ${bodyTextClass}`}
         {...props}
       />
     ),
     tbody: (props: React.ComponentProps<"tbody">) => (
-      <tbody className="[&>tr:nth-child(even)]:bg-white/[0.03] [&>tr:hover]:bg-[#67E8F9]/[0.05] transition-colors" {...props} />
+      <tbody
+        className="transition-colors [&>tr:nth-child(even)]:bg-[var(--ib-bg)] [&>tr:hover]:bg-[var(--ib-accbg)]"
+        {...props}
+      />
     ),
   };
 };
@@ -180,58 +162,47 @@ export default function AiAssistantChatPanel({
   const containerRef = inputRef ?? fallbackRef;
 
   return (
-    // ① Outer card — `overflow-hidden` is the hard boundary for everything inside.
-    //   This is the same pattern as the right-column card in iso-navigator (line 710).
-    <div className="w-full bg-[#131B2D] border border-[#1E293B] rounded-3xl shadow-2xl overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-500">
-
-      {/* ── Header ── */}
-      <div className="p-2 sm:p-3 md:p-6 flex items-center gap-4 border-b border-[#1E293B] bg-[#0A0F1C]/50">
-        <div className="p-2 bg-[#67E8F9]/10 rounded-xl border border-[#67E8F9]/20 shrink-0">
-          <Sparkles className="w-5 h-5 text-brand-cyan" />
+    <div className="w-full overflow-hidden rounded-2xl border border-[var(--ib-line)] bg-[var(--ib-card)] shadow-[0_24px_60px_-24px_rgba(11,18,32,0.25)] animate-in fade-in slide-in-from-bottom-4 duration-500">
+      <div className="flex items-center gap-4 border-b border-[var(--ib-line)] bg-[var(--ib-bg)] p-3 md:p-6">
+        <div className="shrink-0 rounded-[10px] border border-[var(--ib-line)] bg-[var(--ib-accbg)] p-2">
+          <Sparkles className="h-5 w-5 text-[var(--ib-acc)]" />
         </div>
         <div className="min-w-0">
-          <h3 className={`text-[10px] sm:text-xs md:text-sm lg:text-base font-black text-[#F1F5F9] uppercase tracking-wider ${titleClassName ?? ""}`.trim()}>
+          <h3
+            className={`text-sm font-semibold tracking-tight text-[var(--ib-ink)] md:text-base ${titleClassName ?? ""}`.trim()}
+          >
             {title}
           </h3>
-          <p className="text-[10px] text-[#4B5563] font-black uppercase tracking-widest mt-1 truncate">
+          <p className="mt-1 truncate text-[12px] font-medium text-[var(--ib-mute)]">
             {description}
           </p>
         </div>
       </div>
 
-      {/* ── Body ── */}
-      <div className="p-2 sm:p-3 md:p-8 space-y-6">
-
-        {/* ② Messages scroll area — `overflow-y-auto` ONLY (no overflow-x-hidden!).
-              Mirrors iso-navigator's `div className="…flex-1 overflow-y-auto…"` (line 768).
-              overflow-x is handled by ① (the outer card's overflow-hidden). */}
+      <div className="space-y-6 p-3 md:p-8">
         {(messages.length > 0 || isSending) && (
           <div
             ref={containerRef}
             onScroll={onScroll}
-            className={`bg-[#0A0F1C] border border-[#67E8F9]/15 rounded-2xl p-2 sm:p-3 md:p-6 overflow-y-auto custom-thin-scrollbar flex flex-col space-y-4 md:space-y-6 animate-in slide-in-from-bottom-4 duration-300 ${maxHeightClassName}`.trim()}
+            className={`custom-thin-scrollbar flex flex-col space-y-4 overflow-y-auto rounded-2xl border border-[var(--ib-line)] bg-[var(--ib-bg)] p-3 md:space-y-6 md:p-6 ${maxHeightClassName}`.trim()}
           >
             {messages.map((msg, index) => (
               <div
                 key={index}
                 className={`flex w-full ${msg.role === "user" ? "justify-end" : "justify-start"}`}
               >
-                {/* ③ Message bubble — `overflow-hidden` clips table at bubble edge.
-                      User bubble: fixed max-width (chat-style).
-                      AI bubble:   full width so wide tables have maximum room. */}
                 <div
-                  className={`
-                    overflow-hidden rounded-2xl text-xs sm:text-sm font-medium leading-relaxed
-                    ${msg.role === "user"
-                      ? "max-w-[85%] bg-[#67E8F9] text-[#0A0F1C] rounded-tr-none p-1.5 sm:p-2.5 md:p-4 shadow-[0_4px_15px_-3px_rgba(103,232,249,0.35)] border border-[#67E8F9]/30"
-                      : "w-full bg-[#131B2D] border border-[#67E8F9]/15 text-[#9CA3AF] rounded-tl-none p-1.5 sm:p-2.5 md:p-4"
-                    }
-                  `}
+                  className={`overflow-hidden rounded-2xl text-xs font-medium leading-relaxed sm:text-sm ${
+                    msg.role === "user"
+                      ? "max-w-[85%] rounded-tr-none border border-[var(--ib-acc)] bg-[var(--ib-acc)] p-2.5 text-white md:p-4"
+                      : "w-full rounded-tl-none border border-[var(--ib-line)] bg-[var(--ib-card)] p-2.5 text-[var(--ib-ink)] md:p-4"
+                  }`}
                 >
-                  {/* ④ Prose wrapper — `max-w-none` lets content fill the bubble.
-                        The `overflow-x-auto` on the TABLE WRAPPER (inside buildMarkdownComponents)
-                        creates the actual horizontal scroll context for wide tables. */}
-                  <div className={`ai-chat-markdown prose prose-sm max-w-none ${msg.role === "user" ? "text-black" : "prose-invert text-[#9CA3AF]"}`}>
+                  <div
+                    className={`ai-chat-markdown prose prose-sm max-w-none ${
+                      msg.role === "user" ? "text-white" : "text-[var(--ib-ink)]"
+                    }`}
+                  >
                     <ReactMarkdown
                       remarkPlugins={[remarkGfm]}
                       components={buildMarkdownComponents(msg.role)}
@@ -243,7 +214,6 @@ export default function AiAssistantChatPanel({
               </div>
             ))}
 
-            {/* Loading indicator */}
             {isSending && (
               <div className="flex justify-start">
                 <FancyChatLoader />
@@ -254,25 +224,30 @@ export default function AiAssistantChatPanel({
           </div>
         )}
 
-        {/* ── Input form ── */}
         <form
-          onSubmit={(e) => { e.preventDefault(); onSubmit(); }}
+          onSubmit={(e) => {
+            e.preventDefault();
+            onSubmit();
+          }}
           className="relative"
         >
           {inputMode === "textarea" ? (
             <textarea
-              className={`w-full bg-[#0A0F1C] border border-[#1E293B] rounded-2xl p-3 md:p-6 pr-12 md:pr-16 text-xs md:text-sm focus:outline-none focus:ring-2 focus:ring-[#67E8F9]/30 focus:border-[#67E8F9] transition-all min-h-[70px] md:min-h-[100px] resize-none font-medium text-[#F1F5F9] placeholder-[#4B5563] ${inputClassName ?? ""}`.trim()}
+              className={`min-h-[70px] w-full resize-none rounded-[10px] border border-[var(--ib-line)] bg-[var(--ib-card)] p-3 pr-12 text-sm font-medium text-[var(--ib-ink)] placeholder:text-[var(--ib-mute)] transition-all focus:border-[var(--ib-acc)] focus:outline-none focus:ring-2 focus:ring-[var(--ib-acc)]/30 md:min-h-[100px] md:p-4 md:pr-16 ${inputClassName ?? ""}`.trim()}
               placeholder={placeholder}
               value={inputValue}
               onChange={(e) => onInputChange(e.target.value)}
               onKeyDown={(e) => {
-                if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); onSubmit(); }
+                if (e.key === "Enter" && !e.shiftKey) {
+                  e.preventDefault();
+                  onSubmit();
+                }
               }}
             />
           ) : (
             <input
               type="text"
-              className={`w-full bg-[#0A0F1C] border border-[#1E293B] rounded-2xl p-4 md:p-6 pr-14 md:pr-16 text-xs md:text-sm focus:outline-none focus:ring-2 focus:ring-[#67E8F9]/30 focus:border-[#67E8F9] transition-all font-medium text-[#F1F5F9] placeholder-[#4B5563] ${inputClassName ?? ""}`.trim()}
+              className={`w-full rounded-[10px] border border-[var(--ib-line)] bg-[var(--ib-card)] p-4 pr-14 text-sm font-medium text-[var(--ib-ink)] placeholder:text-[var(--ib-mute)] transition-all focus:border-[var(--ib-acc)] focus:outline-none focus:ring-2 focus:ring-[var(--ib-acc)]/30 md:pr-16 ${inputClassName ?? ""}`.trim()}
               placeholder={placeholder}
               value={inputValue}
               onChange={(e) => onInputChange(e.target.value)}
@@ -282,9 +257,13 @@ export default function AiAssistantChatPanel({
           <button
             type="submit"
             disabled={isSending || !inputValue.trim()}
-            className={`absolute right-3 ${inputMode === "textarea" ? "bottom-3 md:bottom-6" : "top-1/2 -translate-y-1/2"} p-2 md:p-3 bg-[#67E8F9] text-[#0A0F1C] rounded-xl hover:bg-[#22D3EE] disabled:opacity-30 transition-all shadow-[0_10px_20px_-8px_rgba(103,232,249,0.45)] active:scale-95`}
+            className={`absolute right-3 ${
+              inputMode === "textarea"
+                ? "bottom-3 md:bottom-4"
+                : "top-1/2 -translate-y-1/2"
+            } rounded-[10px] border border-[var(--ib-acc)] bg-[var(--ib-acc)] p-2 text-white transition-all hover:opacity-92 disabled:opacity-30 active:scale-95 md:p-3`}
           >
-            <Send className="w-4 h-4 md:w-5 md:h-5" />
+            <Send className="h-4 w-4 md:h-5 md:w-5" />
           </button>
         </form>
       </div>

@@ -34,18 +34,18 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
   const { t } = useTranslation();
   return (
     <div style={{
-      background: "#1E212B",
+      background: "var(--ib-card)",
       borderRadius: 32,
       padding: "clamp(24px, 5vw, 48px)",
-      border: "1px solid #333333",
+      border: "1px solid var(--ib-line)",
       marginBottom: 32,
       position: "relative"
     }}>
       {/* Question Text */}
       <h3
-        className="space-grotesk text-sm sm:text-[18px]" style={{
+        className="text-sm sm:text-[18px]" style={{
           fontWeight: 400,
-          color: "#FFFFFF",
+          color: "var(--ib-ink)",
           marginBottom: 32,
           lineHeight: 1.6
         }}>
@@ -91,7 +91,7 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
               display: "flex", alignItems: "center", justifyContent: "center", gap: 12,
               background: !onSwipePrev ? "rgba(255,255,255,0.02)" : "rgba(255,255,255,0.05)",
               color: !onSwipePrev ? "rgba(255,255,255,0.2)" : "#FFFFFF",
-              border: !onSwipePrev ? "1px solid rgba(255,255,255,0.05)" : "1px solid rgba(255,255,255,0.1)",
+              border: !onSwipePrev ? "1px solid var(--ib-line)" : "1px solid var(--ib-line)",
               cursor: !onSwipePrev ? "not-allowed" : "pointer"
             }}
           >

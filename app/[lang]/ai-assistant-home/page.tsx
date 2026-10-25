@@ -1,9 +1,9 @@
 "use client";
 
-import FAQ from "@/components/AIAssistant/FAQ";
+import ReviewSection from "@/components/AIAssistant/ReviewSection";
 import Footer from "@/sheard/Footer";
 import Navbar from "@/sheard/Navbar";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import {
   ArrowRight,
   FileText,
@@ -11,25 +11,31 @@ import {
   BarChart3,
   Globe,
   GraduationCap,
+  Sparkles,
+  Search,
+  Send,
+  BookOpen,
 } from "lucide-react";
 import Link from "next/link";
-import { useState, useEffect, useRef, Fragment } from "react";
+import {
+  useState,
+  useEffect,
+  useRef,
+  Fragment,
+  FormEvent,
+  type ComponentType,
+} from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
-import Image from "next/image";
-import AISimulation from "@/components/landing-page-components/AISimulation";
 import { useSelector } from "react-redux";
 import { useGetPlansQuery, Plan } from "@/lib/redux/features/pricing/pricingApi";
 import { useCreatePaymentIntentMutation } from "@/lib/redux/features/payments/paymentApi";
 import { selectCurrentUser, selectCurrentToken } from "@/lib/redux/features/auth/authSlice";
 import { toast } from "sonner";
-import OfferTimer from "@/components/landing-page-components/OfferTimer";
-import { Loader2 } from "lucide-react";
 import { userHasFeature, userOwnsPlanId } from "@/lib/access/effectiveAccess";
-
 import { useTranslation } from "react-i18next";
 import i18n from "@/lib/i18n/client";
-import ReviewSection from "@/components/AIAssistant/ReviewSection";
 
+const ease = [0.22, 1, 0.36, 1] as const;
 
 const decodeJwt = (token: string) => {
   try {
@@ -42,41 +48,49 @@ const decodeJwt = (token: string) => {
         .join("")
     );
     return JSON.parse(jsonPayload);
-  } catch (e) {
+  } catch {
     return null;
   }
 };
 
-// --- Types ---
-interface FAQItem {
-  question: string;
-  answer: string;
-  bullets?: string[];
-}
-
-// --- Sub-Components ---
-
-const PromptPills = ({ onClick }: { onClick: (p: string) => void }) => {
+const PromptPills = ({
+  onClick,
+  reduceMotion,
+}: {
+  onClick: (p: string) => void;
+  reduceMotion: boolean | null;
+}) => {
   const { t } = useTranslation();
 
   const prompts = [
-    { label: t('aiAssistantHome.promptQuality'), value: "Quality (9001) Courses" },
-    { label: t('aiAssistantHome.promptSecurity'), value: "Security (27001) Courses" },
-    { label: t('aiAssistantHome.promptEnvironmental'), value: "Environmental (14001) Courses" },
-    { label: t('aiAssistantHome.promptHealth'), value: "Health & Safety Courses" },
-    { label: t('aiAssistantHome.promptInfoSec'), value: "Information Security Policy" },
+    { label: t("aiAssistantHome.promptQuality"), value: "Quality (9001) Courses" },
+    { label: t("aiAssistantHome.promptSecurity"), value: "Security (27001) Courses" },
+    {
+      label: t("aiAssistantHome.promptEnvironmental"),
+      value: "Environmental (14001) Courses",
+    },
+    { label: t("aiAssistantHome.promptHealth"), value: "Health & Safety Courses" },
+    {
+      label: t("aiAssistantHome.promptInfoSec"),
+      value: "Information Security Policy",
+    },
   ];
 
   return (
-    <div className="flex flex-wrap justify-center gap-3 mt-8">
+    <div className="mt-6 flex flex-wrap justify-center gap-2.5 sm:gap-3">
       {prompts.map((prompt, i) => (
         <motion.button
-          key={i}
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.5 + i * 0.1 }}
+          key={prompt.value}
+          type="button"
+          initial={reduceMotion ? false : { opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{
+            duration: 0.35,
+            delay: reduceMotion ? 0 : 0.12 + i * 0.05,
+            ease,
+          }}
           onClick={() => onClick(prompt.value)}
-          className="px-4 py-2 bg-white/5 border border-white/10 rounded-full text-sm text-gray-400 hover:text-white hover:bg-white/10 hover:border-cyan-500/50 transition-all duration-300"
+          className="rounded-full border border-[var(--ib-line)] bg-[var(--ib-card)] px-3.5 py-2 text-[12.5px] font-medium text-[var(--ib-mute)] transition-all duration-200 hover:-translate-y-0.5 hover:border-[color-mix(in_srgb,var(--ib-acc)_35%,var(--ib-line))] hover:bg-[var(--ib-accbg)] hover:text-[var(--ib-ink)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ib-acc)] sm:text-[13.5px]"
         >
           {prompt.label}
         </motion.button>
@@ -85,18 +99,84 @@ const PromptPills = ({ onClick }: { onClick: (p: string) => void }) => {
   );
 };
 
-// --- Main Page Component ---
+const ModuleCard = ({
+  badge,
+  code,
+  title,
+  description,
+  href,
+  cta,
+  icon: Icon,
+  reduceMotion,
+  index,
+}: {
+  badge: string;
+  code: string;
+  title: string;
+  description: string;
+  href: string;
+  cta: string;
+  icon: ComponentType<{ className?: string; "aria-hidden"?: boolean }>;
+  reduceMotion: boolean | null;
+  index: number;
+}) => (
+  <motion.article
+    initial={reduceMotion ? false : { opacity: 0, y: 16 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    viewport={{ once: true, amount: 0.2 }}
+    transition={{
+      duration: 0.4,
+      delay: reduceMotion ? 0 : Math.min(index * 0.06, 0.3),
+      ease,
+    }}
+    className="ib-card group relative flex h-full flex-col overflow-hidden p-6 transition-all duration-300 hover:-translate-y-1 hover:border-[color-mix(in_srgb,var(--ib-acc)_35%,var(--ib-line))] hover:shadow-[0_18px_40px_-24px_rgba(27,77,219,0.35)] sm:p-8 md:p-10"
+  >
+    <div
+      aria-hidden
+      className="pointer-events-none absolute -right-4 -bottom-4 text-[var(--ib-acc)] opacity-[0.06] transition-opacity duration-300 group-hover:opacity-[0.12]"
+    >
+      <Icon className="size-36" aria-hidden />
+    </div>
+
+    <div className="relative z-[1] flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      <div className="w-fit rounded-full border border-[color-mix(in_srgb,var(--ib-acc)_20%,var(--ib-line))] bg-[var(--ib-accbg)] px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-[var(--ib-acc)] sm:text-[11px]">
+        {badge}
+      </div>
+      <div className="font-mono text-[10px] text-[var(--ib-mute)]">{code}</div>
+    </div>
+
+    <div className="relative z-[1] mt-5 flex size-11 items-center justify-center rounded-xl border border-[color-mix(in_srgb,var(--ib-acc)_18%,var(--ib-line))] bg-[var(--ib-accbg)] text-[var(--ib-acc)]">
+      <Icon className="size-5" aria-hidden />
+    </div>
+
+    <h3 className="relative z-[1] mb-0! mt-4 text-[22px] font-bold tracking-[-0.02em] text-[var(--ib-ink)] sm:text-[24px]">
+      {title}
+    </h3>
+    <p className="relative z-[1] mt-3 flex-1 text-[14px] leading-relaxed text-[var(--ib-mute)] sm:text-[15px]">
+      {description}
+    </p>
+    <Link
+      href={href}
+      className="group/btn relative z-[1] mt-6 inline-flex items-center gap-2 text-[12px] font-bold uppercase tracking-widest text-[var(--ib-acc)] transition-opacity hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ib-acc)]"
+    >
+      {cta}
+      <ArrowRight className="size-4 transition-transform group-hover/btn:translate-x-1" aria-hidden />
+    </Link>
+  </motion.article>
+);
 
 const AIAssistantHome = () => {
   const params = useParams();
   const lang = (params?.lang as string) || "en";
   const [searchQuery, setSearchQuery] = useState("");
+  const [isInputFocused, setIsInputFocused] = useState(false);
   const { t } = useTranslation();
+  const reduceMotion = useReducedMotion();
+  const inputRef = useRef<HTMLInputElement>(null);
 
-  // Sync i18n language with the URL [lang] param
   useEffect(() => {
     if (lang && i18n.language !== lang) {
-      i18n.changeLanguage(lang as string);
+      i18n.changeLanguage(lang);
     }
   }, [lang]);
 
@@ -134,13 +214,13 @@ const AIAssistantHome = () => {
 
     updateTimer();
     const interval = setInterval(updateTimer, 1000);
-
     return () => clearInterval(interval);
   }, []);
+
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const { data: response, isLoading: isPlansLoading } = useGetPlansQuery();
+  const { data: response } = useGetPlansQuery();
   const [createPaymentIntent] = useCreatePaymentIntentMutation();
   const user = useSelector(selectCurrentUser);
   const token = useSelector(selectCurrentToken);
@@ -161,34 +241,52 @@ const AIAssistantHome = () => {
   };
 
   const currentUserId = getUserId();
-
   const plans = response?.data || [];
-  const plan = plans.find(p => p.name?.toLowerCase().includes("ultra") || p.name?.toLowerCase().includes("enterprise")) || plans[2];
-  // Subscription purchase OR User Group grant (Ultra via AI_ASSISTANT feature)
+  const plan =
+    plans.find(
+      (p) =>
+        p.name?.toLowerCase().includes("ultra") ||
+        p.name?.toLowerCase().includes("enterprise")
+    ) || plans[2];
   const isPurchased =
-    userOwnsPlanId(user, plan?.id || plan?._id) || userHasFeature(user, "AI_ASSISTANT");
+    userOwnsPlanId(user, plan?.id || plan?._id) ||
+    userHasFeature(user, "AI_ASSISTANT");
 
   const handlePlanSelect = async (selectedPlan: Plan) => {
     if (isPurchased) {
-      toast.success(t('aiAssistantHome.alreadyPurchased', 'You already have access to this plan.'));
+      toast.success(
+        t("aiAssistantHome.alreadyPurchased", "You already have access to this plan.")
+      );
       return;
     }
     if (!currentUserId) {
       router.push(`/${lang}/auth/login`);
       return;
     }
-    const isFree = selectedPlan.discountedPrice === 0 || selectedPlan.name?.toLowerCase().includes("free");
+    const isFree =
+      selectedPlan.discountedPrice === 0 ||
+      selectedPlan.name?.toLowerCase().includes("free");
     if (isFree) {
       router.push(`/${lang}/academy`);
       return;
     }
-    const isAdmin = user?.role === "admin" || (token ? decodeJwt(token)?.role === "admin" : false);
+    const isAdmin =
+      user?.role === "admin" || (token ? decodeJwt(token)?.role === "admin" : false);
 
     if (isAdmin) {
-      toast.warning(t('pricingPage.adminWarning', 'Admin Account: Real payments are disabled for admin roles. Redirecting to Sandbox checkout...'), {
-        description: t('pricingPage.adminWarningDesc', 'Admins are not allowed to make live transactions. Test credentials have been prefilled for your convenience.'),
-        duration: 5000,
-      });
+      toast.warning(
+        t(
+          "pricingPage.adminWarning",
+          "Admin Account: Real payments are disabled for admin roles. Redirecting to Sandbox checkout..."
+        ),
+        {
+          description: t(
+            "pricingPage.adminWarningDesc",
+            "Admins are not allowed to make live transactions. Test credentials have been prefilled for your convenience."
+          ),
+          duration: 5000,
+        }
+      );
       setTimeout(() => {
         const mockQueryParams = new URLSearchParams({
           clientSecret: "pi_mock_123_secret_mock_456",
@@ -222,15 +320,24 @@ const AIAssistantHome = () => {
           courseId: courseId ?? "",
         }).toString();
         router.push(`/${lang}/payment?${queryParams}`);
-      } else if (result.success && (result.data as any)?.url) {
-        window.location.href = (result.data as any).url;
+      } else if (result.success && (result.data as { url?: string })?.url) {
+        window.location.href = (result.data as { url: string }).url;
       }
     } catch (error) {
-      const err = error as { data?: { err?: { type?: string } }; status?: number; message?: string };
+      const err = error as {
+        data?: { err?: { type?: string } };
+        status?: number;
+        message?: string;
+      };
       console.error("Failed to create payment intent:", error);
 
       if (err?.status === 500) {
-        toast.error(t('pricingPage.serverError', 'Internal Server Error: Could not initiate payment. Please try again later.'));
+        toast.error(
+          t(
+            "pricingPage.serverError",
+            "Internal Server Error: Could not initiate payment. Please try again later."
+          )
+        );
         return;
       }
 
@@ -240,7 +347,12 @@ const AIAssistantHome = () => {
         JSON.stringify(error).includes("customer");
 
       if (isStripeError) {
-        const confirmMock = window.confirm(t('pricingPage.stripeError', 'Stripe payment initiation failed. Do you want to proceed with a mock checkout?'));
+        const confirmMock = window.confirm(
+          t(
+            "pricingPage.stripeError",
+            "Stripe payment initiation failed. Do you want to proceed with a mock checkout?"
+          )
+        );
         if (confirmMock) {
           const mockQueryParams = new URLSearchParams({
             clientSecret: "pi_mock_123_secret_mock_456",
@@ -252,497 +364,377 @@ const AIAssistantHome = () => {
           router.push(`/${lang}/payment?${mockQueryParams}`);
         }
       } else {
-        toast.error(t('pricingPage.paymentError', 'Failed to initiate payment. Please try again.'));
+        toast.error(
+          t("pricingPage.paymentError", "Failed to initiate payment. Please try again.")
+        );
       }
     } finally {
       setProcessingPlanId(null);
     }
   };
 
-  const faqData: FAQItem[] = [
-    {
-      question: t('aiAssistantHome.faqs.q1'),
-      answer: t('aiAssistantHome.faqs.a1'),
-    },
-    {
-      question: t('aiAssistantHome.faqs.q2'),
-      answer: t('aiAssistantHome.faqs.a2'),
-    },
-    {
-      question: t('aiAssistantHome.faqs.q3'),
-      answer: t('aiAssistantHome.faqs.a3'),
-    },
-    {
-      question: t('aiAssistantHome.faqs.q4'),
-      answer: t('aiAssistantHome.faqs.a4'),
-    },
-    {
-      question: t('aiAssistantHome.faqs.q5'),
-      answer: t('aiAssistantHome.faqs.a5'),
-    },
-    {
-      question: t('aiAssistantHome.faqs.q6'),
-      answer: t('aiAssistantHome.faqs.a6'),
-    },
-  ];
+  void processingPlanId;
+  void handlePlanSelect;
 
-
-  const handleSearch = (e: React.FormEvent, customQuery?: string) => {
-    if (e) e.preventDefault();
+  const runSearch = (customQuery?: string) => {
     const query = (customQuery || searchQuery).trim();
-    if (query) {
-      const lowerQuery = query.toLowerCase();
+    if (!query) return;
 
-      // Smart Routing Logic
-      if (lowerQuery.includes("course") || lowerQuery.includes("academy")) {
-        if (lowerQuery.includes("quality")) router.push(`/${lang}/academy?category=Quality`);
-        else if (lowerQuery.includes("security")) router.push(`/${lang}/academy?category=Security`);
-        else if (lowerQuery.includes("environmental")) router.push(`/${lang}/academy?category=Environmental`);
-        else if (lowerQuery.includes("health")) router.push(`/${lang}/academy?category=Health`);
-        else router.push(`/${lang}/academy`);
-      }
-      else if (lowerQuery.includes("audit") || lowerQuery.includes("lens")) {
-        router.push(`/${lang}/ai-assistant/audit-lens`);
-      }
-      else if (lowerQuery.includes("navigator") || lowerQuery.includes("map")) {
-        router.push(`/${lang}/ai-assistant/iso-navigator`);
-      }
-      else if (lowerQuery.includes("benchmark") || lowerQuery.includes("analysis")) {
-        router.push(`/${lang}/ai-assistant/benchmark-ai`);
-      }
-      else if (lowerQuery.includes("price") || lowerQuery.includes("plan")) {
-        router.push(`/${lang}/pricing`);
-      }
-      else {
-        // Default to Library search
-        router.push(`/${lang}/library/iso-standards?search=${encodeURIComponent(query)}`);
-      }
+    const lowerQuery = query.toLowerCase();
+
+    if (lowerQuery.includes("course") || lowerQuery.includes("academy")) {
+      if (lowerQuery.includes("quality")) router.push(`/${lang}/academy?category=Quality`);
+      else if (lowerQuery.includes("security"))
+        router.push(`/${lang}/academy?category=Security`);
+      else if (lowerQuery.includes("environmental"))
+        router.push(`/${lang}/academy?category=Environmental`);
+      else if (lowerQuery.includes("health")) router.push(`/${lang}/academy?category=Health`);
+      else router.push(`/${lang}/academy`);
+    } else if (lowerQuery.includes("audit") || lowerQuery.includes("lens")) {
+      router.push(`/${lang}/ai-assistant/audit-lens`);
+    } else if (lowerQuery.includes("navigator") || lowerQuery.includes("map")) {
+      router.push(`/${lang}/ai-assistant/iso-navigator`);
+    } else if (lowerQuery.includes("benchmark") || lowerQuery.includes("analysis")) {
+      router.push(`/${lang}/ai-assistant/benchmark-ai`);
+    } else if (lowerQuery.includes("price") || lowerQuery.includes("plan")) {
+      router.push(`/${lang}/pricing`);
+    } else {
+      router.push(
+        `/${lang}/library/iso-standards?search=${encodeURIComponent(query)}`
+      );
     }
   };
 
+  const handleSearch = (e: FormEvent) => {
+    e.preventDefault();
+    runSearch();
+  };
+
+  const modules = [
+    {
+      badge: t("aiAssistantHome.protocolExecution"),
+      code: t("aiAssistantHome.codeNav"),
+      title: t("aiAssistantHome.isoNavigator"),
+      description: t("aiAssistantHome.navigatorDesc"),
+      href: `/${lang}/ai-assistant/iso-navigator`,
+      cta: t("aiAssistantHome.initializeSync"),
+      icon: Globe,
+    },
+    {
+      badge: t("aiAssistantHome.forensicCore"),
+      code: t("aiAssistantHome.codeAud"),
+      title: t("aiAssistantHome.auditLens"),
+      description: t("aiAssistantHome.auditDesc"),
+      href: `/${lang}/ai-assistant/audit-lens`,
+      cta: t("aiAssistantHome.auditBtn"),
+      icon: ShieldCheck,
+    },
+    {
+      badge: t("aiAssistantHome.evaluation"),
+      code: t("aiAssistantHome.codeBen"),
+      title: t("aiAssistantHome.benchmarkAi"),
+      description: t("aiAssistantHome.benchmarkDesc"),
+      href: `/${lang}/ai-assistant/benchmark-ai`,
+      cta: t("aiAssistantHome.benchmarkBtn"),
+      icon: BarChart3,
+    },
+    {
+      badge: t("aiAssistantHome.knowledgeBase"),
+      code: t("aiAssistantHome.codeLib"),
+      title: t("aiAssistantHome.isoLibrary"),
+      description: t("aiAssistantHome.libraryDesc"),
+      href: `/${lang}/library/iso-standards`,
+      cta: t("aiAssistantHome.libraryBtn"),
+      icon: FileText,
+    },
+  ];
+
   return (
-    <div className="min-h-screen bg-[#050505] text-white overflow-hidden selection:bg-cyan-500/30 selection:text-cyan-200 font-inter">
+    <div className="min-h-screen overflow-x-clip bg-[var(--ib-bg)] font-inter text-[var(--ib-ink)] selection:bg-[var(--ib-accbg)] selection:text-[var(--ib-acc)]">
       <Navbar />
 
-      {/* ── Pricing Hero Section ─────────────────────────── */}
-      <section className="relative pt-32 pb-24 px-4 sm:px-6 overflow-hidden bg-[#050505] bg-[radial-gradient(#ffffff08_1px,transparent_1px)] [background-size:20px_20px]">
-        {/* Animated Background Gradients */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-[900px] pointer-events-none z-0">
-          <div className="absolute top-[-10%] left-1/4 w-[600px] h-[600px] bg-[#6366F1]/10 rounded-full blur-[160px] animate-pulse" />
-          <div className="absolute top-[20%] right-1/4 w-[500px] h-[500px] bg-[#00f0ff]/5 rounded-full blur-[140px] animate-pulse delay-700" />
+      {/* ── Assistant Welcome ────────────────────────────── */}
+      <header className="relative overflow-x-clip px-4 pb-10 pt-14 sm:px-6 sm:pb-14 sm:pt-16">
+        <div aria-hidden className="pointer-events-none absolute inset-0">
+          <div className="absolute left-1/2 top-[-12%] h-[520px] w-[min(920px,100%)] -translate-x-1/2 rounded-full bg-[radial-gradient(ellipse_at_center,color-mix(in_srgb,var(--ib-acc)_14%,transparent),transparent_70%)]" />
+          <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[var(--ib-line)] to-transparent" />
         </div>
 
-        <div className="relative z-10 max-w-7xl mx-auto">
-          {/* H1 & Subtitle */}
-          {/* Typography-Based Premium Pricing Layout */}
-          {!isPurchased && (
-            <div className="max-w-7xl mx-auto px-4 py-8 font-inter text-gray-300">
-              {/* Top Text & Pricing Summary */}
-              <div className="text-center space-y-6 mb-16 flex flex-col">
-                {/* 1. ISOBrain Ultra – USD $65/Month */}
-                {!isPurchased && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    className="text-2xl sm:text-3xl font-black font-space-grotesk tracking-tight text-white"
-                  >
-                    {t('aiAssistantHome.isobrainUltraTitle')} <span className="text-[#00f0ff] drop-shadow-[0_0_15px_rgba(0,240,255,0.2)]">{t('aiAssistantHome.isobrainUltraPrice')}</span>
-                  </motion.div>
+        <div className="ib-w relative z-[1] max-w-7xl!">
+          <motion.div
+            initial={reduceMotion ? false : { opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, ease }}
+            className="mx-auto max-w-[720px] text-center"
+          >
+            <div className="ib-eye mx-auto inline-flex items-center gap-2">
+              <Sparkles className="size-3.5" aria-hidden />
+              {t("nav.aiAssistant")}
+            </div>
+
+            <h1 className="mb-0! mt-3 text-[30px] font-bold leading-[1.12] tracking-[-0.035em] text-[var(--ib-ink)] sm:text-[40px] lg:text-[46px]">
+              {t("nav.aiAssistantSub.home")}
+            </h1>
+
+            <p className="mx-auto mt-4 max-w-[580px] text-[15px] leading-relaxed text-[var(--ib-mute)] sm:text-[16.5px]">
+              {t("platform.aiAssistant.description")}
+            </p>
+          </motion.div>
+
+          {/* Prompt input */}
+          <motion.form
+            onSubmit={handleSearch}
+            initial={reduceMotion ? false : { opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.45, delay: reduceMotion ? 0 : 0.08, ease }}
+            className="mx-auto mt-8 w-full max-w-[680px]"
+          >
+            <label htmlFor="ai-assistant-prompt" className="sr-only">
+              {t(
+                "aiAssistantHome.searchPlaceholder",
+                "Ask about ISO standards, audits, or courses…"
+              )}
+            </label>
+            <div
+              className={`flex items-center gap-3 rounded-[16px] border bg-[var(--ib-card)] px-4 py-3 shadow-[0_14px_44px_-28px_rgba(11,18,32,0.4)] transition-all duration-300 sm:px-5 sm:py-3.5 ${
+                isInputFocused
+                  ? "border-[var(--ib-acc)] ring-2 ring-[color-mix(in_srgb,var(--ib-acc)_18%,transparent)] shadow-[0_16px_48px_-24px_rgba(27,77,219,0.35)]"
+                  : "border-[var(--ib-line)] hover:border-[color-mix(in_srgb,var(--ib-acc)_28%,var(--ib-line))]"
+              }`}
+            >
+              <Search
+                className={`size-[18px] shrink-0 transition-colors ${
+                  isInputFocused ? "text-[var(--ib-acc)]" : "text-[var(--ib-mute)]"
+                }`}
+                aria-hidden
+              />
+              <input
+                id="ai-assistant-prompt"
+                ref={inputRef}
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onFocus={() => setIsInputFocused(true)}
+                onBlur={() => setIsInputFocused(false)}
+                placeholder={t(
+                  "aiAssistantHome.searchPlaceholder",
+                  "Ask about ISO standards, audits, or courses…"
                 )}
+                className="min-w-0 flex-1 border-none bg-transparent text-[15px] text-[var(--ib-ink)] outline-none placeholder:text-[var(--ib-mute)]"
+                autoComplete="off"
+              />
+              <button
+                type="submit"
+                disabled={!searchQuery.trim()}
+                className="inline-flex size-10 shrink-0 items-center justify-center rounded-xl bg-[var(--ib-acc)] text-white transition-all duration-200 hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-40 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ib-acc)]"
+                aria-label={t("platform.aiAssistant.btn")}
+              >
+                <Send className="size-4" aria-hidden />
+              </button>
+            </div>
 
-                {/* 2. Tagline Description 1 */}
-                <motion.p
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: 0.1 }}
-                  className="text-gray-400 text-sm sm:text-base max-w-2xl mx-auto leading-relaxed"
-                >
-                  {t('aiAssistantHome.ultimateCompanionDesc')}
-                </motion.p>
+            <PromptPills
+              reduceMotion={reduceMotion}
+              onClick={(value) => {
+                setSearchQuery(value);
+                runSearch(value);
+              }}
+            />
+          </motion.form>
+        </div>
+      </header>
 
-                {/* 3. Description 2 */}
-                <motion.p
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: 0.15 }}
-                  className="text-gray-500 text-xs sm:text-sm italic max-w-xl mx-auto"
-                >
-                  {t('aiAssistantHome.builtForAuditTeamsDesc')}
-                </motion.p>
-
-                {/* 4. Claim your discount badge */}
-                {!isPurchased && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: 0.2 }}
-                    className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#00f0ff]/5 border border-[#00f0ff]/10 text-[#00f0ff] text-xs font-black uppercase tracking-[0.2em] w-fit mx-auto"
-                  >
-                    {t('aiAssistantHome.claimDiscountBadge')}
-                  </motion.div>
-                )}
-
-                {/* 5. Enhance your skills before time runs out! */}
-                {!isPurchased && (
-                  <motion.h3
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: 0.25 }}
-                    className="text-2xl sm:text-3xl font-black text-white tracking-tight font-space-grotesk"
-                  >
-                    {t('aiAssistantHome.enhanceSkillsHeading')}
-                  </motion.h3>
-                )}
-
-                {/* 6. Get ISOBrain Ultra — Enhance your career at a lower price */}
-                {!isPurchased && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 15 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: 0.3 }}
-                    className="pt-4"
-                  >
-                    <button
-                      onClick={() => router.push(`/${lang}/pricing`)}
-                      className="group relative inline-flex items-center justify-center gap-3 bg-[#00f0ff] text-[#0F111A] font-bold text-sm sm:text-base px-8 py-5 rounded-[12px] hover:bg-[#00f0ff]/95 transition-all duration-300 shadow-[0_0_30px_rgba(0,240,255,0.25)] hover:shadow-[0_0_55px_rgba(0,240,255,0.45)] transform hover:-translate-y-0.5 active:translate-y-0 uppercase tracking-wider cursor-pointer"
-                    >
-                      <span>{t('aiAssistantHome.getStartedBtn')}</span>
-                      <ArrowRight className="w-5 h-5 group-hover:translate-x-1.5 transition-transform text-[#0F111A]" />
-                    </button>
-                  </motion.div>
-                )}
-
-                {/* 7. Countdown Timer */}
-                {!isPurchased && (
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    whileInView={{ opacity: 1, scale: 1 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: 0.35 }}
-                    className="max-w-xl mx-auto my-6 relative group cursor-default"
-                  >
-                    <div className="relative bg-[#0A0A0C]/90 backdrop-blur-2xl border border-white/10 hover:border-[#00F0FF]/40 rounded-3xl py-6 px-10 sm:px-14 flex items-center justify-center gap-8 shadow-2xl transition-all duration-500 overflow-hidden mx-auto w-fit">
-                      <div className="absolute top-0 inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-white/40 to-transparent"></div>
-                      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-[2px] bg-gradient-to-r from-transparent via-[#00F0FF]/80 to-transparent blur-[2px]"></div>
-
-                      <div className="flex items-center gap-3 sm:gap-4 md:gap-5 shrink-0 z-10">
-                        {[
-                          { label: t('aiAssistantHome.hours'), value: timeLeft.hours },
-                          { label: t('aiAssistantHome.mins'), value: timeLeft.minutes },
-                          { label: t('aiAssistantHome.secs'), value: timeLeft.seconds, isAccent: true }
-                        ].map((time, index) => (
-                          <Fragment key={index}>
-                            <div className="flex flex-col items-center group/timer-item">
-                              <div className={`relative w-14 h-14 sm:w-16 sm:h-16 flex items-center justify-center text-xl sm:text-2xl font-bold rounded-2xl shadow-inner transition-all duration-350 hover:-translate-y-1 ${time.isAccent
-                                ? "bg-gradient-to-b from-[#00F0FF]/10 to-transparent border border-[#00F0FF]/40 text-[#00F0FF] shadow-[0_0_20px_rgba(0,240,255,0.15)]"
-                                : "bg-[#14141A] border border-gray-800 text-white"
-                                }`}>
-                                <div className="absolute inset-0 rounded-2xl bg-gradient-to-b from-white/5 to-transparent pointer-events-none"></div>
-                                {time.value.toString().padStart(2, "0")}
-                              </div>
-                              <span className={`text-[9px] sm:text-[10px] mt-2 sm:mt-3 uppercase tracking-widest font-semibold ${time.isAccent ? "text-[#00F0FF]" : "text-gray-500"}`}>
-                                {time.label}
-                              </span>
-                            </div>
-                            {index < 2 && (
-                              <span className="text-xl sm:text-2xl text-gray-700 font-bold -mt-5 animate-pulse">:</span>
-                            )}
-                          </Fragment>
-                        ))}
-                      </div>
-                    </div>
-                  </motion.div>
-                )}
+      {/* ── Ultra upsell (non-purchased) ──────────────────── */}
+      {!isPurchased && (
+        <section className="relative overflow-x-clip border-y border-[var(--ib-line)] bg-[color-mix(in_srgb,var(--ib-card)_70%,var(--ib-accbg))] px-4 py-12 sm:px-6 sm:py-16">
+          <div className="ib-w max-w-7xl!">
+            <div className="mx-auto flex max-w-3xl flex-col items-center text-center">
+              <div className="ib-eye mb-3 inline-flex items-center gap-2">
+                <BookOpen className="size-3.5" aria-hidden />
+                {t("aiAssistantHome.claimDiscountBadge")}
               </div>
 
-              {/* What you get details */}
-              <div className="mt-20 border-t border-white/5 pt-16 max-w-7xl mx-auto text-center">
-                <h4 className="text-xl sm:text-2xl font-black text-white font-space-grotesk uppercase tracking-wider mb-2">
-                  {isPurchased ? t('aiAssistantHome.yourPlanBenefits') : t('aiAssistantHome.forUSDYouGet')}
-                </h4>
-                <p className="text-gray-400 text-sm sm:text-base max-w-2xl mx-auto mb-12 font-inter">
-                  {t('aiAssistantHome.everythingInPro')}
-                </p>
+              <h2 className="mb-0! text-[24px] font-bold tracking-[-0.03em] text-[var(--ib-ink)] sm:text-[30px]">
+                {t("aiAssistantHome.isobrainUltraTitle")}{" "}
+                <span className="text-[var(--ib-acc)]">
+                  {t("aiAssistantHome.isobrainUltraPrice")}
+                </span>
+              </h2>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-12">
-                  {/* Benefit 1 */}
-                  <div className="space-y-3">
-                    <h5 className="text-base sm:text-lg font-bold text-[#00f0ff] font-space-grotesk tracking-wide uppercase">
-                      {t('aiAssistantHome.unlimitedAIAccessTitle')}
-                    </h5>
-                    <p className="text-gray-400 text-sm sm:text-base leading-relaxed font-light font-inter max-w-xl mx-auto">
-                      {t('aiAssistantHome.unlimitedAIAccessDesc')}
-                    </p>
-                  </div>
+              <p className="mt-3 max-w-xl text-[14.5px] leading-relaxed text-[var(--ib-mute)] sm:text-[15.5px]">
+                {t("aiAssistantHome.ultimateCompanionDesc")}
+              </p>
+              <p className="mt-2 max-w-lg text-[13px] italic leading-relaxed text-[var(--ib-mute)] sm:text-[14px]">
+                {t("aiAssistantHome.builtForAuditTeamsDesc")}
+              </p>
 
-                  {/* Benefit 2 */}
-                  <div className="space-y-3">
-                    <h5 className="text-base sm:text-lg font-bold text-[#00f0ff] font-space-grotesk tracking-wide uppercase">
-                      {t('aiAssistantHome.isoNavigatorTitle')}
-                    </h5>
-                    <p className="text-gray-400 text-sm sm:text-base leading-relaxed font-light font-inter max-w-xl mx-auto">
-                      {t('aiAssistantHome.isoNavigatorBenefitDesc')}
-                    </p>
-                  </div>
+              <p className="mt-5 text-[16px] font-semibold text-[var(--ib-ink)] sm:text-[18px]">
+                {t("aiAssistantHome.enhanceSkillsHeading")}
+              </p>
 
-                  {/* Benefit 3 */}
-                  <div className="space-y-3">
-                    <h5 className="text-base sm:text-lg font-bold text-[#00f0ff] font-space-grotesk tracking-wide uppercase">
-                      {t('aiAssistantHome.auditLensTitle')}
-                    </h5>
-                    <p className="text-gray-400 text-sm sm:text-base leading-relaxed font-light font-inter max-w-xl mx-auto">
-                      {t('aiAssistantHome.auditLensBenefitDesc')}
-                    </p>
-                  </div>
+              <button
+                type="button"
+                onClick={() => router.push(`/${lang}/pricing`)}
+                className="group mt-5 inline-flex items-center justify-center gap-2.5 rounded-[12px] bg-[var(--ib-acc)] px-7 py-3.5 text-[12px] font-bold uppercase tracking-wider text-white shadow-[0_14px_32px_-14px_rgba(27,77,219,0.55)] transition-all duration-300 hover:-translate-y-0.5 hover:opacity-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ib-acc)] sm:text-[13px]"
+              >
+                <span>{t("aiAssistantHome.getStartedBtn")}</span>
+                <ArrowRight
+                  className="size-5 transition-transform group-hover:translate-x-1"
+                  aria-hidden
+                />
+              </button>
 
-                  {/* Benefit 4 */}
-                  <div className="space-y-3">
-                    <h5 className="text-base sm:text-lg font-bold text-[#00f0ff] font-space-grotesk tracking-wide uppercase">
-                      {t('aiAssistantHome.benchmarkAITitle')}
-                    </h5>
-                    <p className="text-gray-400 text-sm sm:text-base leading-relaxed font-light font-inter max-w-xl mx-auto">
-                      {t('aiAssistantHome.benchmarkAIBenefitDesc')}
-                    </p>
-                  </div>
-                </div>
+              <div className="mt-8 inline-flex items-center gap-3 rounded-2xl border border-[var(--ib-line)] bg-[var(--ib-card)] px-5 py-4 shadow-sm sm:gap-4 sm:px-8 sm:py-5">
+                {[
+                  { key: "hours", label: t("aiAssistantHome.hours"), value: timeLeft.hours },
+                  { key: "mins", label: t("aiAssistantHome.mins"), value: timeLeft.minutes },
+                  {
+                    key: "secs",
+                    label: t("aiAssistantHome.secs"),
+                    value: timeLeft.seconds,
+                    isAccent: true,
+                  },
+                ].map((time, index) => (
+                  <Fragment key={time.key}>
+                    <div className="flex flex-col items-center">
+                      <div
+                        className={`flex size-12 items-center justify-center rounded-xl text-lg font-bold sm:size-14 sm:text-xl ${
+                          time.isAccent
+                            ? "border border-[color-mix(in_srgb,var(--ib-acc)_35%,transparent)] bg-[var(--ib-accbg)] text-[var(--ib-acc)]"
+                            : "border border-[var(--ib-line)] bg-[var(--ib-bg)] text-[var(--ib-ink)]"
+                        }`}
+                      >
+                        {time.value.toString().padStart(2, "0")}
+                      </div>
+                      <span
+                        className={`mt-1.5 text-[9px] font-semibold uppercase tracking-widest sm:text-[10px] ${
+                          time.isAccent ? "text-[var(--ib-acc)]" : "text-[var(--ib-mute)]"
+                        }`}
+                      >
+                        {time.label}
+                      </span>
+                    </div>
+                    {index < 2 && (
+                      <span className="mb-5 text-xl font-bold text-[var(--ib-mute)] sm:text-2xl">
+                        :
+                      </span>
+                    )}
+                  </Fragment>
+                ))}
               </div>
             </div>
-          )}
-        </div>
-      </section>
 
-      {/* Feature Showcase - Scrollytelling style (Simplified for web) */}
-      {/* <section className="py-16 md:py-32 bg-white/[0.02] border-y border-white/5">
-        <div className="container mx-auto px-6">
-          <div className="text-center mb-12 md:mb-24">
-            <h2 className="space-grotesk text-2xl sm:text-4xl lg:text-[42px] font-semibold text-white text-center leading-[1.2] tracking-tight mb-6 md:mb-8">{t('aiAssistantHome.protocolExecution')}</h2>
-            <p className="text-[#A1A1A6] text-sm lg:text-lg font-medium max-w-xl mx-auto text-center leading-relaxed font-inter">{t('aiAssistantHome.protocolSubheading')}</p>
+            <div className="mx-auto mt-14 max-w-5xl border-t border-[var(--ib-line)] pt-12 text-center">
+              <h3 className="mb-0! text-[18px] font-semibold uppercase tracking-wider text-[var(--ib-ink)] sm:text-[20px]">
+                {t("aiAssistantHome.forUSDYouGet")}
+              </h3>
+              <p className="mx-auto mt-2 max-w-2xl text-[14px] text-[var(--ib-mute)] sm:text-[15px]">
+                {t("aiAssistantHome.everythingInPro")}
+              </p>
+              <div className="mt-10 grid grid-cols-1 gap-8 md:grid-cols-2 md:gap-x-10 md:gap-y-10">
+                {[
+                  {
+                    title: t("aiAssistantHome.unlimitedAIAccessTitle"),
+                    desc: t("aiAssistantHome.unlimitedAIAccessDesc"),
+                  },
+                  {
+                    title: t("aiAssistantHome.isoNavigatorTitle"),
+                    desc: t("aiAssistantHome.isoNavigatorBenefitDesc"),
+                  },
+                  {
+                    title: t("aiAssistantHome.auditLensTitle"),
+                    desc: t("aiAssistantHome.auditLensBenefitDesc"),
+                  },
+                  {
+                    title: t("aiAssistantHome.benchmarkAITitle"),
+                    desc: t("aiAssistantHome.benchmarkAIBenefitDesc"),
+                  },
+                ].map((b) => (
+                  <div key={b.title} className="space-y-2">
+                    <h4 className="mb-0! text-[14px] font-bold uppercase tracking-wide text-[var(--ib-acc)] sm:text-[15px]">
+                      {b.title}
+                    </h4>
+                    <p className="mx-auto max-w-md text-[14px] leading-relaxed text-[var(--ib-mute)] sm:text-[15px]">
+                      {b.desc}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
+        </section>
+      )}
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {[
-              {
-                title: t('aiAssistantHome.ingestionTitle'),
-                desc: t('aiAssistantHome.ingestionDesc'),
-                icon: Database,
-                color: "text-[#00f0ff]",
-                bg: "bg-[#00f0ff]/10"
-              },
-              {
-                title: t('aiAssistantHome.analysisTitle'),
-                desc: t('aiAssistantHome.analysisDesc'),
-                icon: Search,
-                color: "text-[#00f0ff]",
-                bg: "bg-[#00f0ff]/10"
-              },
-              {
-                title: t('aiAssistantHome.generationTitle'),
-                desc: t('aiAssistantHome.generationDesc'),
-                icon: Zap,
-                color: "text-[#00f0ff]",
-                bg: "bg-[#00f0ff]/10"
-              }
-            ].map((feat, i) => (
-              <motion.div
-                key={i}
-                whileHover={{ y: -10 }}
-                className="p-6 sm:p-12 rounded-3xl sm:rounded-[40px] bg-[#0A0A0A] border border-white/5 group transition-all duration-700 hover:border-white/10 relative overflow-hidden"
-              >
-                <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 blur-[50px] rounded-full group-hover:bg-white/10 transition-colors" />
-                <div className={`w-12 h-12 sm:w-16 sm:h-16 rounded-2xl ${feat.bg} flex items-center justify-center mb-6 sm:mb-10 group-hover:scale-110 transition-transform relative z-10`}>
-                  <feat.icon className={`w-6 h-6 sm:w-8 sm:h-8 ${feat.color}`} />
-                </div>
-                <h3 className="text-xl sm:text-2xl font-bold font-space-grotesk mb-4 uppercase tracking-wider relative z-10">{feat.title}</h3>
-                <p className="text-gray-500 text-sm leading-relaxed font-medium relative z-10">
-                  {feat.desc}
-                </p>
-              </motion.div>
+      {/* ── AI Modules ───────────────────────────────────── */}
+      <section className="relative px-4 py-14 sm:px-6 sm:py-20">
+        <div className="ib-w max-w-7xl!">
+          <motion.div
+            initial={reduceMotion ? false : { opacity: 0, y: 14 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.4 }}
+            transition={{ duration: 0.45, ease }}
+            className="mx-auto mb-10 max-w-[720px] text-center md:mb-14"
+          >
+            <h2 className="mb-0! text-[28px] font-bold leading-[1.2] tracking-[-0.03em] text-[var(--ib-ink)] sm:text-[34px]">
+              {t("aiAssistantHome.neuralEcosystemTitle")}
+            </h2>
+            <p className="mt-3 text-[15px] leading-relaxed text-[var(--ib-mute)] sm:text-[17px]">
+              {t("aiAssistantHome.neuralEcosystemDesc")}
+            </p>
+          </motion.div>
+
+          <div className="grid grid-cols-1 gap-5 md:grid-cols-2 md:gap-6">
+            {modules.map((mod, index) => (
+              <ModuleCard key={mod.href} {...mod} index={index} reduceMotion={reduceMotion} />
             ))}
           </div>
-        </div>
-      </section> */}
 
-      {/* Product Modules - The Bento Grid */}
-      <section className="py-16 md:py-32 relative">
-        <div className="container mx-auto px-6">
-          <div className="flex flex-col md:flex-row justify-between items-end gap-6 mb-12 md:mb-20">
-            <div className="max-w-6xl text-center mx-auto">
-              <h2 className="space-grotesk text-2xl text-center  font-semibold text-white leading-[1.2] tracking-tight mb-6 sm:mb-8">{t('aiAssistantHome.neuralEcosystemTitle')}</h2>
-              <p className="text-[#A1A1A6] text-sm lg:text-lg font-medium leading-relaxed font-inter text-center">{t('aiAssistantHome.neuralEcosystemDesc')}</p>
+          {/* Academy card */}
+          <motion.article
+            initial={reduceMotion ? false : { opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.25 }}
+            transition={{ duration: 0.45, ease }}
+            className="ib-card group relative mt-5 overflow-hidden p-6 transition-all duration-300 hover:-translate-y-0.5 hover:border-[color-mix(in_srgb,var(--ib-acc)_35%,var(--ib-line))] hover:shadow-[0_18px_40px_-24px_rgba(27,77,219,0.35)] sm:mt-6 sm:p-8 md:mx-auto md:max-w-4xl md:p-10"
+          >
+            <div
+              aria-hidden
+              className="pointer-events-none absolute -right-4 -bottom-4 text-[var(--ib-acc)] opacity-[0.08] transition-opacity group-hover:opacity-[0.14]"
+            >
+              <GraduationCap className="size-40" aria-hidden />
             </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {/* ISO Navigator */}
-            <div className="group relative overflow-hidden rounded-3xl md:rounded-[56px] bg-[#0A0A0A] border border-white/5 p-6 md:p-16 transition-all duration-1000 shadow-2xl">
-              <div className="relative z-10 flex flex-col h-full">
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between items-start gap-3 sm:gap-4 mb-6">
-                  <div className="text-[9px] sm:text-[11px] font-bold text-[#00f0ff] uppercase tracking-widest bg-[#00f0ff]/5 px-3 py-1 rounded-full border border-[#00f0ff]/10 leading-tight">
-                    {t('aiAssistantHome.protocolExecution')}
-                  </div>
-                  <div className="text-[10px] text-gray-600 font-mono shrink-0">{t('aiAssistantHome.codeNav')}</div>
-                </div>
-                <h3 className="text-2xl font-bold font-space-grotesk mb-4">{t('aiAssistantHome.isoNavigator')}</h3>
-                <p className="text-gray-400 text-sm leading-relaxed mb-8 h-auto md:h-12 md:overflow-hidden">
-                  {t('aiAssistantHome.navigatorDesc')}
-                </p>
-                <Link
-                  href={`/${lang}/ai-assistant/iso-navigator`}
-                  className="group/btn inline-flex items-center gap-2 text-[#00f0ff] text-xs font-bold uppercase tracking-widest"
-                >
-                  {t('aiAssistantHome.initializeSync')}
-                  <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
-                </Link>
+            <div className="relative z-[1] flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <div className="w-fit rounded-full border border-[color-mix(in_srgb,var(--ib-acc)_20%,var(--ib-line))] bg-[var(--ib-accbg)] px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-[var(--ib-acc)] sm:text-[11px]">
+                {t("aiAssistantHome.isoAcademyBadge")}
               </div>
-              <div className="absolute right-[-10%] bottom-[-10%] w-[70%] h-[70%] opacity-[0.03] group-hover:opacity-10 transition-all duration-1000 pointer-events-none">
-                <Globe className="w-full h-full text-white" />
+              <div className="font-mono text-[10px] text-[var(--ib-mute)]">
+                {t("aiAssistantHome.codeAca")}
               </div>
             </div>
-
-            {/* Audit Lens */}
-            <div className="group relative overflow-hidden rounded-3xl md:rounded-[56px] bg-[#0A0A0A] border border-white/5 p-6 md:p-16 transition-all duration-1000 hover:border-[#8A2BE2]/40 shadow-2xl">
-              <div className="relative z-10 flex flex-col h-full">
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between items-start gap-3 sm:gap-4 mb-6">
-                  <div className="text-[9px] sm:text-[11px] font-bold text-[#00f0ff] uppercase tracking-widest bg-[#00f0ff]/5 px-3 py-1 rounded-full border border-[#00f0ff]/10 leading-tight">
-                    {t('aiAssistantHome.forensicCore')}
-                  </div>
-                  <div className="text-[10px] text-gray-600 font-mono shrink-0">{t('aiAssistantHome.codeAud')}</div>
-                </div>
-                <h3 className="text-2xl font-bold font-space-grotesk mb-4">{t('aiAssistantHome.auditLens')}</h3>
-                <p className="text-gray-400 text-sm leading-relaxed mb-8 h-auto md:h-12 md:overflow-hidden">
-                  {t('aiAssistantHome.auditDesc')}
-                </p>
-                <Link
-                  href={`/${lang}/ai-assistant/audit-lens`}
-                  className="group/btn inline-flex items-center gap-2 text-[#00f0ff] text-xs font-bold uppercase tracking-widest "
-                >
-                  {t('aiAssistantHome.auditBtn')}
-                  <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
-                </Link>
-              </div>
-              <div className="absolute right-[-10%] bottom-[-10%] w-[70%] h-[70%] opacity-[0.03] group-hover:opacity-10 transition-all duration-1000 pointer-events-none">
-                <ShieldCheck className="w-full h-full text-white" />
-              </div>
-            </div>
-
-            {/* Benchmark AI */}
-            <div className="group relative overflow-hidden rounded-3xl md:rounded-[48px] bg-[#121214] border border-white/5 p-6 md:p-12 transition-all duration-700 hover:border-emerald-500/30 shadow-2xl">
-              <div className="relative z-10 flex flex-col h-full">
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between items-start gap-3 sm:gap-4 mb-6">
-                  <div className="text-[9px] sm:text-[11px] font-bold text-[#00f0ff] uppercase tracking-widest bg-[#00f0ff]/5 px-3 py-1 rounded-full border border-[#00f0ff]/10 leading-tight">
-                    {t('aiAssistantHome.evaluation')}
-                  </div>
-                  <div className="text-[10px] text-gray-600 font-mono shrink-0">{t('aiAssistantHome.codeBen')}</div>
-                </div>
-                <h3 className="text-2xl font-bold font-space-grotesk mb-4">{t('aiAssistantHome.benchmarkAi')}</h3>
-                <p className="text-gray-400 text-sm leading-relaxed mb-8 h-auto md:h-12 md:overflow-hidden">
-                  {t('aiAssistantHome.benchmarkDesc')}
-                </p>
-                <Link
-                  href={`/${lang}/ai-assistant/benchmark-ai`}
-                  className="group/btn inline-flex items-center gap-2 text-[#00f0ff] text-xs font-bold uppercase tracking-widest"
-                >
-                  {t('aiAssistantHome.benchmarkBtn')}
-                  <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
-                </Link>
-              </div>
-              <div className="absolute right-2 top-1/2 -translate-y-1/2 w-[45%] h-[60%] bg-white/5 rounded-3xl border border-white/5 flex items-center justify-center overflow-hidden group-hover:bg-white/10 transition-all duration-700 pointer-events-none">
-                <BarChart3 className="w-32 h-32 text-emerald-500/20" />
-              </div>
-            </div>
-
-            {/* ISO Library */}
-            <div className="group relative overflow-hidden rounded-3xl md:rounded-[48px] bg-[#121214] border border-white/5 p-6 md:p-12 transition-all duration-700 hover:border-amber-500/30 shadow-2xl">
-              <div className="relative z-10 flex flex-col h-full">
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between items-start gap-3 sm:gap-4 mb-6">
-                  <div className="text-[9px] sm:text-[11px] font-bold text-[#00f0ff] uppercase tracking-widest bg-[#00f0ff]/5 px-3 py-1 rounded-full border border-[#00f0ff]/10 leading-tight">
-                    {t('aiAssistantHome.knowledgeBase')}
-                  </div>
-                  <div className="text-[10px] text-gray-600 font-mono shrink-0">{t('aiAssistantHome.codeLib')}</div>
-                </div>
-                <h3 className="text-2xl font-bold font-space-grotesk mb-4">{t('aiAssistantHome.isoLibrary')}</h3>
-                <p className="text-gray-400 text-sm leading-relaxed mb-8 h-auto md:h-12 md:overflow-hidden">
-                  {t('aiAssistantHome.libraryDesc')}
-                </p>
-                <Link
-                  href={`/${lang}/library/iso-standards`}
-                  className="group/btn inline-flex items-center gap-2 text-[#00f0ff] text-xs font-bold uppercase tracking-widest"
-                >
-                  {t('aiAssistantHome.libraryBtn')}
-                  <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
-                </Link>
-              </div>
-              <div className="absolute right-[-5%] bottom-[-5%] w-[50%] h-[50%] opacity-20 group-hover:opacity-40 transition-all duration-700 pointer-events-none">
-                <FileText className="w-full h-full text-amber-500/50" />
-              </div>
-            </div>
-          </div>
-
-          {/* ISO Academy Card */}
-          <div className="mt-8 flex justify-center">
-            <div className="group relative overflow-hidden rounded-3xl md:rounded-[48px] bg-[#121214] border border-white/5 p-6 md:p-12 transition-all duration-700 hover:border-cyan-500/30 shadow-2xl w-full max-w-4xl">
-              <div className="relative z-10 flex flex-col h-full">
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between items-start gap-3 sm:gap-4 mb-6">
-                  <div className="text-[9px] sm:text-[11px] font-bold text-[#00f0ff] uppercase tracking-widest bg-[#00f0ff]/5 px-3 py-1 rounded-full border border-[#00f0ff]/10 leading-tight">
-                    {t('aiAssistantHome.isoAcademyBadge')}</div>
-                  <div className="text-[10px] text-gray-600 font-mono shrink-0">{t('aiAssistantHome.codeAca')}</div>
-                </div>
-                <h3 className="text-2xl font-bold font-space-grotesk mb-4">{t('aiAssistantHome.isoAcademy')}</h3>
-                <p className="text-gray-400 text-sm leading-relaxed mb-8">
-                  {t('aiAssistantHome.academyCardDesc')}
-                </p>
-                <Link
-                  href={`/${lang}/academy`}
-                  className="group/btn inline-flex items-center gap-2 text-[#00f0ff] text-xs font-bold uppercase tracking-widest"
-                >
-                  {t('aiAssistantHome.startLearning')}
-                  <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
-                </Link>
-              </div>
-              <div className="absolute right-[-5%] bottom-[-5%] w-[50%] h-[50%] opacity-20 group-hover:opacity-40 transition-all duration-700 pointer-events-none">
-                <GraduationCap className="w-full h-full text-cyan-500/50" />
-              </div>
-            </div>
-          </div>
+            <h3 className="relative z-[1] mb-0! mt-5 text-[22px] font-bold text-[var(--ib-ink)] sm:text-[24px]">
+              {t("aiAssistantHome.isoAcademy")}
+            </h3>
+            <p className="relative z-[1] mt-3 max-w-2xl text-[14px] leading-relaxed text-[var(--ib-mute)] sm:text-[15px]">
+              {t("aiAssistantHome.academyCardDesc")}
+            </p>
+            <Link
+              href={`/${lang}/academy`}
+              className="group/btn relative z-[1] mt-6 inline-flex items-center gap-2 text-[12px] font-bold uppercase tracking-widest text-[var(--ib-acc)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ib-acc)]"
+            >
+              {t("aiAssistantHome.startLearning")}
+              <ArrowRight
+                className="size-4 transition-transform group-hover/btn:translate-x-1"
+                aria-hidden
+              />
+            </Link>
+          </motion.article>
         </div>
       </section>
 
-
-
-      {/* FAQ Wrapper */}
-      <div className="bg-[#09090B] pb-32">
-        {/* <FAQ faqData={faqData} /> */}
+      <div className="bg-[var(--ib-bg)] pb-24">
         <ReviewSection />
       </div>
 
       <Footer />
-
-      <style jsx global>{`
-        .font-space-grotesk {
-          font-family: 'Space Grotesk', sans-serif;
-        }
-        
-        .animate-gradient-x {
-          background-size: 200% 200%;
-          animation: gradient-x 15s ease infinite;
-        }
-
-        @keyframes gradient-x {
-          0% { background-position: 0% 50%; }
-          50% { background-position: 100% 50%; }
-          100% { background-position: 0% 50%; }
-        }
-
-        .rotate-x-2 {
-          transform: rotateX(2deg);
-        }
-      `}</style>
     </div>
   );
 };

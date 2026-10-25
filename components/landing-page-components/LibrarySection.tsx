@@ -47,7 +47,7 @@ const LibrarySection = () => {
       title: "Energy Management",
       subtitle:
         "Identify energy-saving opportunities through structured monitoring and control.",
-      color: "#8B5CF6",
+      color: "var(--ib-acc)",
     },
     {
       icon: Activity,
@@ -68,7 +68,7 @@ const LibrarySection = () => {
       title: "IT Service Management",
       subtitle:
         "Align IT operations with globally recognized best practices. Ensure consistent, measurable, and scalable service delivery.",
-      color: "#00F0FF",
+      color: "var(--ib-acc)",
     },
   ];
 
@@ -76,7 +76,7 @@ const LibrarySection = () => {
     <section className="section relative py-[80px] bg-[#111827]">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="text-center mb-16" data-aos="fade-up">
-          <h2 className="space-grotesk text-4xl lg:text-[42px] font-semibold text-white mb-6 leading-[1.2] tracking-tight">
+          <h2 className="text-4xl lg:text-[42px] font-semibold text-[var(--ib-ink)] mb-6 leading-[1.2] tracking-tight">
             ISO Platform
           </h2>
           <p className="text-slate-400 text-lg max-w-3xl mx-auto leading-relaxed">
@@ -102,14 +102,14 @@ const LibrarySection = () => {
                 />
               </div>
 
-              <h3 className="text-white text-center font-bold text-2xl mb-1">
+              <h3 className="text-[var(--ib-ink)] text-center font-bold text-2xl mb-1">
                 {category.title}
               </h3>
               <p className="text-slate-400 text-sm text-center">
                 {category.subtitle}
               </p>
               <Link href="/library" className="flex justify-center">
-                <button className="flex sm:w-autorounded-full  text-white font-normal text-sm   cursor-pointerfont-thin mt-3 cursor-pointer">
+                <button className="flex sm:w-autorounded-full  text-[var(--ib-ink)] font-normal text-sm   cursor-pointerfont-thin mt-3 cursor-pointer">
                   Get Started Free
                   <ArrowRight
                     strokeWidth={1}
@@ -123,7 +123,7 @@ const LibrarySection = () => {
 
         <div className="text-center" data-aos="fade-up" data-aos-delay="200">
           <Link href={"/library"}>
-            <button className="flex mx-auto  px-7 py-2 rounded-fullbg-[#00f0ff] text-[#0F111A]  text-white font-semibold text-sm sm:text-base  cursor-pointer ">
+            <button className="flex mx-auto  px-7 py-2 rounded-full bg-[var(--ib-acc)] text-[var(--ib-bg)]  text-white font-semibold text-sm sm:text-base  cursor-pointer ">
               View Full Library
               <ArrowRight strokeWidth={1} className="mt-0 lg:mt-0.5 ml-2" />
             </button>
