@@ -15,21 +15,23 @@ export const Timer: React.FC<TimerProps> = ({ timeRemaining }) => {
   const isLowTime = timeRemaining < 120; // Less than 2 minutes
 
   return (
-    <div style={{ display: "flex", justifyContent: "center" }}>
-      <div style={{ 
-        background: "rgba(255, 255, 255, 0.03)", 
-        color: isLowTime ? "#EF4444" : "#FFFFFF", 
-        padding: "12px 32px", 
-        borderRadius: 20, 
-        border: isLowTime ? "1px solid rgba(239, 68, 68, 0.3)" : "1px solid rgba(27, 77, 219, 0.2)",
-        display: "flex", 
-        alignItems: "center", 
-        gap: 12,
-        boxShadow: isLowTime ? "0 0 15px rgba(239, 68, 68, 0.1)" : "none",
-        backdropFilter: "blur(8px)"
-      }}>
-        <Clock size={20} color={isLowTime ? "#EF4444" : "var(--ib-acc)"} />
-        <span className="font-inter" style={{ fontSize: 24, fontWeight: 700, letterSpacing: "0.05em" }}>
+    <div className="flex justify-center">
+      <div
+        className={`inline-flex items-center gap-3 rounded-2xl border px-5 py-3 sm:px-8 sm:py-3.5 ${
+          isLowTime
+            ? "border-red-500/35 bg-red-500/10 text-red-600"
+            : "border-[color-mix(in_srgb,var(--ib-acc)_28%,var(--ib-line))] bg-[var(--ib-card)] text-[var(--ib-ink)]"
+        }`}
+        role="timer"
+        aria-live="polite"
+        aria-label={`Time remaining ${formatTime(timeRemaining)}`}
+      >
+        <Clock
+          size={20}
+          className={isLowTime ? "text-red-500" : "text-[var(--ib-acc)]"}
+          aria-hidden
+        />
+        <span className="font-inter text-[22px] font-bold tracking-[0.06em] tabular-nums sm:text-[24px]">
           {formatTime(timeRemaining)}
         </span>
       </div>

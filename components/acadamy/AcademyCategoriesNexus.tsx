@@ -138,7 +138,7 @@ const AcademyCategoryCard = ({
         }}
         className="relative z-[1] mt-auto inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-[10px] border border-[var(--ib-acc)] bg-[var(--ib-acc)] px-4 py-3 text-[13px] font-semibold text-white shadow-[0_10px_24px_-12px_color-mix(in_srgb,var(--ib-acc)_55%,transparent)] transition-[transform,box-shadow,opacity] duration-200 hover:-translate-y-0.5 hover:opacity-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ib-acc)] sm:text-[14.5px]"
       >
-        {t("academy.enrollInCourse", "Enroll in Course")}
+        Start Your Free Trial - Enroll Free
         <ArrowRight size={16} aria-hidden />
       </button>
     </motion.article>

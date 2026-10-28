@@ -40,6 +40,10 @@ import { useSelector } from "react-redux";
 import { selectCurrentToken, selectCurrentUser } from "@/lib/redux/features/auth/authSlice";
 import FullPageLoader from "@/components/Shared/FullPageLoader";
 import {
+  MASTERY_QUIZ_DIFFICULTY,
+  transformQuizQuestions,
+} from "@/lib/mastery/normalizeQuizOptions";
+import {
   Question,
   SelectedAnswers,
   ResultCard,
@@ -84,7 +88,7 @@ const AssessmentQuizPage = () => {
   const token = useSelector(selectCurrentToken);
   const user = useSelector(selectCurrentUser);
 
-  const [quizQuestions, setQuizQuestions] = useState<Question[]>(QUESTIONS);
+  const [quizQuestions, setQuizQuestions] = useState<Question[]>([]);
   const [quizTitle, setQuizTitle] = useState(t('mastery.assessmentTitle'));
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [selectedAnswers, setSelectedAnswers] = useState<SelectedAnswers>({});
@@ -94,11 +98,13 @@ const AssessmentQuizPage = () => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [categoryId, setCategoryId] = useState("");
   const [assessmentData, setAssessmentData] = useState<SubmitAssessmentResponse['data'] | null>(null);
+  const [isAdvancing, setIsAdvancing] = useState(false);
   const [guestId, setGuestId] = useState<string>("");
   const [hasTriggeredTen, setHasTriggeredTen] = useState(false);
   const [hasTriggeredTwenty, setHasTriggeredTwenty] = useState(false);
   const [generateQuiz] = useGenerateQuizMutation();
   const [quizMetadata, setQuizMetadata] = useState<any>(null);
+  const [examSessionIds, setExamSessionIds] = useState<string[]>([]);
 
   useEffect(() => {
     if (typeof window !== "undefined" && !token) {
@@ -113,21 +119,26 @@ const AssessmentQuizPage = () => {
 
   useEffect(() => {
     const activeQuiz = localStorage.getItem("active_iso_quiz");
-    let baseQuestions = QUESTIONS;
 
     if (activeQuiz) {
       try {
         const parsedQuiz = JSON.parse(activeQuiz);
         if (parsedQuiz.questions && parsedQuiz.questions.length > 0) {
-          baseQuestions = parsedQuiz.questions;
           setQuizQuestions(parsedQuiz.questions);
-          setQuizTitle(parsedQuiz.title || t('mastery.assessmentTitle'));
+          setQuizTitle(parsedQuiz.title || t("mastery.assessmentTitle"));
           setCategoryId(parsedQuiz.categoryId || "");
+          setExamSessionIds(
+            Array.isArray(parsedQuiz.examSessionIds)
+              ? parsedQuiz.examSessionIds.map(String)
+              : parsedQuiz.examSessionId
+                ? [String(parsedQuiz.examSessionId)]
+                : []
+          );
           setQuizMetadata({
             categoryId: parsedQuiz.categoryId,
             categoryName: parsedQuiz.categoryName,
             difficulty: parsedQuiz.difficulty,
-            jobFunction: parsedQuiz.jobFunction
+            jobFunction: parsedQuiz.jobFunction,
           });
 
           if (parsedQuiz.questions.length >= 20) setHasTriggeredTen(true);
@@ -141,17 +152,26 @@ const AssessmentQuizPage = () => {
     const savedProgress = localStorage.getItem(STORAGE_KEY);
     if (savedProgress) {
       try {
-        const { currentQuestion, selectedAnswers, timeRemaining, showResults } = JSON.parse(savedProgress);
-        setCurrentQuestion(currentQuestion || 0);
-        setSelectedAnswers(selectedAnswers || {});
-        setTimeRemaining(timeRemaining || INITIAL_TIME);
-        setShowResults(showResults || false);
+        const {
+          currentQuestion: savedQ,
+          selectedAnswers: savedAnswers,
+          timeRemaining: savedTime,
+          showResults: savedShowResults,
+        } = JSON.parse(savedProgress);
+        setCurrentQuestion(savedQ || 0);
+        setSelectedAnswers(savedAnswers || {});
+        setTimeRemaining(
+          typeof savedTime === "number" && savedTime > 0
+            ? savedTime
+            : INITIAL_TIME
+        );
+        setShowResults(savedShowResults || false);
       } catch (e) {
         console.error("Failed to parse progress", e);
       }
     }
     setIsLoaded(true);
-  }, []);
+  }, [t]);
 
   useEffect(() => {
     if (isLoaded) {
@@ -200,37 +220,175 @@ const AssessmentQuizPage = () => {
     }
   }, [isLoaded, quizMetadata, quizQuestions.length, hasTriggeredTen, hasTriggeredTwenty, showResults]);
 
-  const handleAnswerSelect = (label: string) => {
-    if (!showResults) {
-      setSelectedAnswers({ ...selectedAnswers, [currentQuestion]: label });
+  const calculateCounts = (answers: SelectedAnswers = selectedAnswers) => {
+    const rightAns = quizQuestions.filter((q, idx) => {
+      return answers[idx] === q.correctAnswer;
+    }).length;
+    const total = quizQuestions.length;
+    const wrongAns = total - rightAns;
+    return { rightAns, wrongAns, total };
+  };
 
-      // Save option select to localStorage
-      try {
-        const currentQ = quizQuestions[currentQuestion];
-        const selectedOptionText = currentQ?.options?.find(o => o.label === label)?.text || "";
-        const answerRecord = {
-          questionIndex: currentQuestion,
-          questionText: currentQ?.question || "",
-          selectedOption: label,
-          optionText: selectedOptionText,
-          timestamp: new Date().toISOString()
-        };
-        
-        localStorage.setItem("last_selected_option", JSON.stringify(answerRecord));
-        
-        const existingAnswers = JSON.parse(localStorage.getItem("all_selected_answers") || "[]");
-        const updatedAnswers = existingAnswers.filter((item: any) => item.questionIndex !== currentQuestion);
-        updatedAnswers.push(answerRecord);
-        updatedAnswers.sort((a: any, b: any) => a.questionIndex - b.questionIndex);
-        localStorage.setItem("all_selected_answers", JSON.stringify(updatedAnswers));
-      } catch (e) {
-        console.error("Failed to save answer to local storage", e);
+  const advanceAfterAnswer = async (answers: SelectedAnswers) => {
+    try {
+      if (currentQuestion < quizQuestions.length - 1) {
+        setCurrentQuestion((q) => q + 1);
+        setIsAdvancing(false);
+        return;
       }
 
-      setTimeout(() => {
-        handleNext();
-      }, 400);
+      if (quizQuestions.length < 30) {
+        toast.info(
+          t(
+            "mastery.loadingMore",
+            "Loading more questions, please wait a moment..."
+          )
+        );
+        setIsAdvancing(false);
+        return;
+      }
+
+      const { rightAns, wrongAns } = calculateCounts(answers);
+      const timeTaken = INITIAL_TIME - timeRemaining;
+      const answersPayload = quizQuestions.map((q, idx) => ({
+        questionId: (q as any).questionId,
+        question: q.question,
+        selected_answer: answers[idx] || "",
+        // correct_answer retained for backward compatibility only — server ignores it
+        correct_answer: q.correctAnswer,
+      }));
+
+      if (!examSessionIds.length) {
+        toast.error(
+          t(
+            "mastery.missingExamSession",
+            "Assessment session expired. Please restart the assessment."
+          )
+        );
+        setIsAdvancing(false);
+        return;
+      }
+
+      const response = await submitAssessment({
+        userId: user?.id || null,
+        guestId: !token ? guestId : undefined,
+        examSessionIds,
+        timeTaken,
+        metadata: {
+          industry: quizMetadata?.categoryName || "General",
+          management_level: quizMetadata?.difficulty || "Manager",
+          department: quizMetadata?.jobFunction || "Operation",
+          suggestedStandards: quizMetadata?.categoryName
+            ? [quizMetadata.categoryName]
+            : ["ISO 9001"],
+        },
+        answers: answersPayload,
+      }).unwrap();
+
+      if (response) {
+        const dataToSave = response.data || response;
+        const resultWithCounts = {
+          ...dataToSave,
+          rightAns,
+          wrongAns,
+        };
+        setAssessmentData(resultWithCounts);
+        localStorage.setItem(
+          "active_iso_assessment_result",
+          JSON.stringify(resultWithCounts)
+        );
+      }
+      setShowResults(true);
+      setCurrentQuestion(0);
+    } catch (error: any) {
+      const apiMessage =
+        error?.data?.message ||
+        error?.data?.errorSources?.[0]?.message ||
+        error?.error ||
+        error?.message ||
+        null;
+      console.error(
+        "Critical error in submitAssessment:",
+        apiMessage || error?.status || "unknown",
+        error?.data || error
+      );
+      const isUnauthorized =
+        error?.status === 401 ||
+        error?.data?.statusCode === 401 ||
+        String(apiMessage || "")
+          .toLowerCase()
+          .includes("unauthorized");
+
+      if (isUnauthorized) {
+        toast.error(
+          t("auth.loginRequired", "Please sign in to submit your assessment.")
+        );
+        const currentLang = params?.lang || "en";
+        const fromPath = `/${currentLang}/mastery-lab/assessment`;
+        router.push(
+          `/${currentLang}/auth/login?from=${encodeURIComponent(fromPath)}`
+        );
+        return;
+      }
+
+      toast.error(
+        typeof apiMessage === "string" && apiMessage
+          ? apiMessage
+          : t(
+              "mastery.submitFailed",
+              "Could not submit assessment. Please try again."
+            )
+      );
+      // Stay on assessment so the user can retry after a recoverable claim/server error
+    } finally {
+      setIsAdvancing(false);
     }
+  };
+
+  const handleAnswerSelect = (label: string) => {
+    if (showResults || isAdvancing || isSubmitting) return;
+
+    const questionIndex = currentQuestion;
+    const nextAnswers = { ...selectedAnswers, [questionIndex]: label };
+    setSelectedAnswers(nextAnswers);
+
+    try {
+      const q = quizQuestions[questionIndex];
+      const selectedOptionText =
+        q?.options?.find((o) => o.label === label)?.text || "";
+      const answerRecord = {
+        questionIndex,
+        questionText: q?.question || "",
+        selectedOption: label,
+        optionText: selectedOptionText,
+        timestamp: new Date().toISOString(),
+      };
+
+      localStorage.setItem("last_selected_option", JSON.stringify(answerRecord));
+
+      const existingAnswers = JSON.parse(
+        localStorage.getItem("all_selected_answers") || "[]"
+      );
+      const updatedAnswers = existingAnswers.filter(
+        (item: any) => item.questionIndex !== questionIndex
+      );
+      updatedAnswers.push(answerRecord);
+      updatedAnswers.sort(
+        (a: any, b: any) => a.questionIndex - b.questionIndex
+      );
+      localStorage.setItem(
+        "all_selected_answers",
+        JSON.stringify(updatedAnswers)
+      );
+    } catch (e) {
+      console.error("Failed to save answer to local storage", e);
+    }
+
+    // Keep selected highlight visible briefly, then advance with the recorded answers
+    setIsAdvancing(true);
+    window.setTimeout(() => {
+      void advanceAfterAnswer(nextAnswers);
+    }, 650);
   };
 
   const loadMoreQuestions = async (count: number = 10) => {
@@ -244,40 +402,44 @@ const AssessmentQuizPage = () => {
           department: quizMetadata.jobFunction || "Operation"
         },
         num_questions: count,
-        difficulty: "intermediate"
+        difficulty: MASTERY_QUIZ_DIFFICULTY
       }).unwrap();
 
       const quizData = res.data || res;
       const extraQuestionsRaw = quizData.questions || [];
 
       if (extraQuestionsRaw.length > 0) {
-        const transformedExtra = extraQuestionsRaw.map((q: any, idx: number) => ({
-          id: quizQuestions.length + idx + 1,
-          question: q.question,
-          options: Object.entries(q.options).map(([label, text]) => ({
-            label,
-            text: String(text)
-          })),
-          correctAnswer: q.correct_answer,
-          explanation: q.explanation,
-          hint: q.hint,
-          hintInsight: q.explanation
-        }));
+        const transformedExtra = transformQuizQuestions(
+          extraQuestionsRaw,
+          quizQuestions.length + 1
+        );
+        const newSessionId = quizData.examSessionId
+          ? String(quizData.examSessionId)
+          : null;
 
-        setQuizQuestions(prev => {
-          const combined = [...prev, ...transformedExtra].slice(0, 30);
-          const activeQuiz = localStorage.getItem("active_iso_quiz");
-          if (activeQuiz) {
-            try {
-              const parsed = JSON.parse(activeQuiz);
-              parsed.questions = combined;
-              localStorage.setItem("active_iso_quiz", JSON.stringify(parsed));
-            } catch (e) { }
-          }
-          return combined;
+        setExamSessionIds((prev) => {
+          const next = newSessionId && !prev.includes(newSessionId)
+            ? [...prev, newSessionId]
+            : prev;
+          setQuizQuestions((qPrev) => {
+            const combined = [...qPrev, ...transformedExtra].slice(0, 30);
+            const activeQuiz = localStorage.getItem("active_iso_quiz");
+            if (activeQuiz) {
+              try {
+                const parsed = JSON.parse(activeQuiz);
+                parsed.questions = combined;
+                parsed.examSessionIds = next;
+                localStorage.setItem("active_iso_quiz", JSON.stringify(parsed));
+              } catch (e) { }
+            }
+            return combined;
+          });
+          return next;
         });
       }
-    } catch (error) { }
+    } catch (error) {
+      console.error("Failed to load additional Mastery Lab questions:", error);
+    }
   };
 
   const handleNext = async () => {
@@ -286,13 +448,22 @@ const AssessmentQuizPage = () => {
         setCurrentQuestion(currentQuestion + 1);
       } else {
         const { rightAns, wrongAns } = calculateCounts();
+        const score = Math.round((rightAns / (rightAns + wrongAns)) * 100);
         // Explicitly save the results for the success-evaluation page
-        localStorage.setItem('active_iso_assessment_result', JSON.stringify({
-          rightAns,
-          wrongAns,
-          score: Math.round((rightAns / (rightAns + wrongAns)) * 100),
-          isFresh: true
-        }));
+        localStorage.setItem(
+          "active_iso_assessment_result",
+          JSON.stringify({
+            ...(assessmentData || {}),
+            rightAns,
+            wrongAns,
+            score,
+            overallScore: assessmentData?.overallScore ?? score,
+            industry: quizMetadata?.categoryName,
+            management_level: quizMetadata?.difficulty,
+            department: quizMetadata?.jobFunction,
+            isFresh: true,
+          })
+        );
 
         localStorage.removeItem(STORAGE_KEY);
         const currentLang = params?.lang || 'en';
@@ -301,94 +472,51 @@ const AssessmentQuizPage = () => {
       return;
     }
 
-    if (currentQuestion < quizQuestions.length - 1) {
-      setCurrentQuestion(currentQuestion + 1);
-    } else if (quizQuestions.length < 30) {
-      toast.info(t('mastery.loadingMore', 'Loading more questions, please wait a moment...'));
-      return;
-    } else {
-      const { rightAns, wrongAns } = calculateCounts();
-      try {
-        const timeTaken = INITIAL_TIME - timeRemaining;
-        const answersPayload = quizQuestions.map((q, idx) => ({
-          question: q.question,
-          selected_answer: selectedAnswers[idx] || "",
-          correct_answer: q.correctAnswer
-        }));
-
-        const response = await submitAssessment({
-          userId: user?.id || null,
-          guestId: !token ? guestId : undefined,
-          timeTaken,
-          metadata: {
-            industry: quizMetadata?.categoryName || "General",
-            management_level: quizMetadata?.difficulty || "Manager",
-            department: quizMetadata?.jobFunction || "Operation",
-            suggestedStandards: quizMetadata?.categoryName ? [quizMetadata.categoryName] : ["ISO 9001"]
-          },
-          answers: answersPayload
-        }).unwrap();
-
-        if (response) {
-          const dataToSave = response.data || response;
-
-          // Inject counts for the success page
-          const resultWithCounts = {
-            ...dataToSave,
-            rightAns,
-            wrongAns
-          };
-
-          setAssessmentData(resultWithCounts);
-          localStorage.setItem('active_iso_assessment_result', JSON.stringify(resultWithCounts));
-        }
-        setShowResults(true);
-        setCurrentQuestion(0);
-      } catch (error: any) {
-        console.error("Critical error in submitAssessment:", error);
-        const isUnauthorized =
-          error?.status === 401 ||
-          error?.data?.statusCode === 401 ||
-          error?.data?.message?.toLowerCase().includes("unauthorized") ||
-          error?.message?.toLowerCase().includes("unauthorized");
-
-        if (isUnauthorized) {
-          toast.error(t('auth.loginRequired', 'Please sign in to submit your assessment.'));
-          const currentLang = params?.lang || 'en';
-          const fromPath = `/${currentLang}/mastery-lab/assessment`;
-          router.push(`/${currentLang}/auth/login?from=${encodeURIComponent(fromPath)}`);
-          return;
-        }
-
-        // For other errors, still show results screen
-        setShowResults(true);
-        setCurrentQuestion(0);
-      }
-    }
-  };
-
-  const calculateCounts = () => {
-    const rightAns = quizQuestions.filter((q, idx) => {
-      return selectedAnswers[idx] === q.correctAnswer;
-    }).length;
-    const total = quizQuestions.length;
-    const wrongAns = total - rightAns;
-    return { rightAns, wrongAns, total };
+    await advanceAfterAnswer(selectedAnswers);
   };
 
   const handlePrevious = () => {
     if (currentQuestion > 0) setCurrentQuestion(currentQuestion - 1);
   };
 
-  if (!isLoaded) return null;
+  const loaderSteps = [
+    t("mastery.loaderStep1", "Analyzing your industry context"),
+    t("mastery.loaderStep2", "Building scenario-based questions"),
+    t("mastery.loaderStep3", "Calibrating difficulty level"),
+  ];
+
+  if (!isLoaded) {
+    return (
+      <FullPageLoader
+        isLoading
+        title={t("mastery.loaderTitle", "Preparing your assessment")}
+        description={t(
+          "mastery.loaderDesc",
+          "Building scenario-based questions for your role…"
+        )}
+        steps={loaderSteps}
+      />
+    );
+  }
 
   const currentQ = quizQuestions[currentQuestion];
   const currentAnswer = selectedAnswers[currentQuestion];
 
   if (!currentQ) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[var(--ib-bg)]">
-        <div className="animate-spin w-8 h-8 border-4 border-[var(--ib-acc)] border-t-transparent rounded-full"></div>
+      <div className="flex min-h-[60vh] flex-col items-center justify-center gap-4 px-4 text-center">
+        <p className="text-[15px] text-[var(--ib-mute)]">
+          {t(
+            "mastery.noActiveQuiz",
+            "No active assessment found. Start a new one from Mastery Lab."
+          )}
+        </p>
+        <Link
+          href={`/${params?.lang || "en"}/mastery-lab`}
+          className="inline-flex items-center justify-center rounded-[10px] bg-[var(--ib-acc)] px-5 py-2.5 text-[13px] font-bold text-white"
+        >
+          {t("mastery.cta", "Start Your Free Assessment")}
+        </Link>
       </div>
     );
   }
@@ -597,22 +725,63 @@ const AssessmentQuizPage = () => {
     );
   }
 
+  const answeredCount = Object.keys(selectedAnswers).filter(
+    (key) => selectedAnswers[Number(key)]
+  ).length;
+  const totalQuestions = Math.max(quizQuestions.length, 1);
+  const contextBits = [
+    quizMetadata?.categoryName,
+    quizMetadata?.difficulty,
+    quizMetadata?.jobFunction,
+  ].filter(Boolean);
+
   return (
-    <div style={{ background: "var(--ib-bg)", minHeight: "100vh", padding: "100px 16px 64px" }}>
+    <div className="min-h-screen bg-[var(--ib-bg)] px-4 pb-16 pt-8 font-inter sm:px-6 sm:pb-20 sm:pt-10">
       <FullPageLoader
         isLoading={isSubmitting}
-        title={t('mastery.submittingTitle', 'Analyzing Your Performance')}
-        description={t('mastery.submittingDesc', 'Our AI is evaluating your responses to generate a detailed competency report.')}
+        title={t("mastery.submittingTitle", "Analyzing Your Performance")}
+        description={t(
+          "mastery.submittingDesc",
+          "Our AI is evaluating your responses to generate a detailed competency report."
+        )}
         steps={[
-          t('mastery.submittingStep1', 'Checking accuracy'),
-          t('mastery.submittingStep2', 'Benchmarking performance'),
-          t('mastery.submittingStep3', 'Generating roadmap')
+          t("mastery.submittingStep1", "Checking accuracy"),
+          t("mastery.submittingStep2", "Benchmarking performance"),
+          t("mastery.submittingStep3", "Generating roadmap"),
         ]}
       />
-      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10">
+
+      <div className="mx-auto grid max-w-7xl grid-cols-1 gap-8 lg:grid-cols-12 lg:gap-10">
         <div className="lg:col-span-8 xl:col-span-9">
-          <Timer timeRemaining={timeRemaining} />
-          <QuizProgressBar currentQuestion={currentQuestion} totalQuestions={30} />
+          <header className="mb-6 rounded-[24px] border border-[var(--ib-line)] bg-[var(--ib-card)] p-5 sm:mb-8 sm:p-6 md:p-7">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+              <div className="min-w-0">
+                <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-[var(--ib-acc)]">
+                  ISOBrain.AI · Mastery Lab
+                </p>
+                <h1 className="mb-0! mt-2 text-[22px] font-bold tracking-[-0.03em] text-[var(--ib-ink)] sm:text-[28px]">
+                  {quizTitle || t("mastery.assessmentTitle")}
+                </h1>
+                {contextBits.length > 0 ? (
+                  <p className="mt-2 text-[12px] font-semibold uppercase tracking-wider text-[var(--ib-mute)] sm:text-[13px]">
+                    {contextBits.join(" · ")}
+                  </p>
+                ) : null}
+                <p className="mt-3 text-[13px] text-[var(--ib-mute)]">
+                  {answeredCount} / {totalQuestions}{" "}
+                  {t("mastery.answeredLabel", "answered")}
+                </p>
+              </div>
+              <div className="shrink-0 self-start sm:self-center">
+                <Timer timeRemaining={timeRemaining} />
+              </div>
+            </div>
+          </header>
+
+          <QuizProgressBar
+            currentQuestion={currentQuestion}
+            totalQuestions={totalQuestions}
+          />
           <QuestionCard
             question={currentQ.question}
             options={currentQ.options}
@@ -620,12 +789,20 @@ const AssessmentQuizPage = () => {
             onAnswerSelect={handleAnswerSelect}
             onHintClick={() => setShowHint(true)}
             onSwipeNext={handleNext}
-            onSwipePrev={handlePrevious}
+            onSwipePrev={currentQuestion > 0 ? handlePrevious : undefined}
+            disableAnswers={isAdvancing || isSubmitting}
           />
-          <HintModal isOpen={showHint} onClose={() => setShowHint(false)} hint={currentQ.hint} hintInsight={currentQ.hintInsight} />
+          <HintModal
+            isOpen={showHint}
+            onClose={() => setShowHint(false)}
+            hint={currentQ.hint}
+            hintInsight={currentQ.hintInsight}
+          />
         </div>
         <div className="lg:col-span-4 xl:col-span-3">
-          <Leaderboard />
+          <div className="ib-card sticky top-24 overflow-hidden">
+            <Leaderboard />
+          </div>
         </div>
       </div>
     </div>

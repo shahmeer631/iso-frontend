@@ -148,24 +148,24 @@ function NavigatorImsDocFields({
     <div className={`${textClass} mt-1 space-y-0.5`}>
       {clause && !/^ims$/i.test(clause) && (
         <p>
-          <span className="text-[#64748B]">{clauseLabel}:</span> {clause}
+          <span className="text-[var(--ib-mute)]">{clauseLabel}:</span> {clause}
           {cbs.length > 1 ? ` (${cbs.join("; ")})` : ""}
         </p>
       )}
       {standards.length > 0 && (
         <p>
-          <span className="text-[#64748B]">Applicable standards:</span>{" "}
+          <span className="text-[var(--ib-mute)]">Applicable standards:</span>{" "}
           {standards.join(" · ")}
         </p>
       )}
       {showRequirement && (
         <p className={clamp}>
-          <span className="text-[#64748B]">Requirement:</span> {requirement}
+          <span className="text-[var(--ib-mute)]">Requirement:</span> {requirement}
         </p>
       )}
       {contextText && (
         <p className={compact ? "line-clamp-3" : undefined}>
-          <span className="text-[#64748B]">Context &amp; application:</span>{" "}
+          <span className="text-[var(--ib-mute)]">Context &amp; application:</span>{" "}
           {contextText}
         </p>
       )}
@@ -179,6 +179,7 @@ import 'rc-steps/assets/index.css';
 
 import { useTranslation } from "react-i18next";
 import i18n from "@/lib/i18n/client";
+import { ActivityTracker } from "@/components/activity/ActivityTracker";
 
 
 import { Link } from "lucide-react";
@@ -986,6 +987,12 @@ export default function ISONavigator() {
   return (
 
     <div className="w-full mx-auto space-y-8 md:space-y-12 animate-in fade-in duration-500 bg-[var(--ib-bg)] min-h-screen p-2 sm:p-4 md:p-6 lg:p-8 overflow-x-hidden">
+      <ActivityTracker
+        source="AI_TOOL"
+        aiToolId="ISO_NAVIGATOR"
+        resourceLabel="ISO Navigator"
+        sessionKey="ai_iso_navigator"
+      />
 
       {/* Header */}
       <header className="space-y-4 px-2 sm:px-0 mb-8 md:mb-12 mt-12 md:mt-20">
@@ -1228,46 +1235,26 @@ export default function ISONavigator() {
 
                           }}
 
-                          className={`bg-[var(--ib-bg)] border rounded-2xl p-4 text-sm cursor-pointer transition-all flex gap-4 group ${isSelected
-
-                            ? "border-[var(--ib-acc)] bg-[var(--ib-mute)] text-[var(--ib-ink)]/5 shadow-[0_0_20px_rgba(27, 77, 219,0.1)]"
-
-                            : "border-[var(--ib-line)] hover:border-[var(--ib-mute)] hover:bg-[#232736]"
-
+                          className={`flex cursor-pointer gap-4 rounded-2xl border bg-[var(--ib-bg)] p-4 text-sm transition-all group ${isSelected
+                            ? "border-[var(--ib-acc)] bg-[var(--ib-accbg)] shadow-[0_0_20px_rgba(58,75,208,0.12)]"
+                            : "border-[var(--ib-line)] hover:border-[color-mix(in_srgb,var(--ib-acc)_40%,var(--ib-line))] hover:bg-[var(--ib-accbg)]/60"
                             }`}
-
                         >
-
                           <span
-
-                            className={`font-jetbrains-mono text-xs transition-colors ${isSelected
-
-                              ? "text-[var(--ib-mute)]"
-
-                              : "text-[var(--ib-mute)] group-hover:text-[var(--ib-mute)]"
-
+                            className={`shrink-0 font-jetbrains-mono text-xs font-semibold transition-colors ${isSelected
+                              ? "text-[var(--ib-acc)]"
+                              : "text-[var(--ib-mute)] group-hover:text-[var(--ib-acc)]"
                               }`}
-
                           >
-
-                            [{sug.id.toString().padStart(2, '0')}]
-
+                            [{sug.id.toString().padStart(2, "0")}]
                           </span>
-
                           <p
-
                             className={`leading-relaxed font-medium ${isSelected
-
                               ? "text-[var(--ib-ink)]"
-
-                              : "text-[var(--ib-mute)]"
-
+                              : "text-[var(--ib-ink)]/85"
                               }`}
-
                           >
-
                             {sug.what}
-
                           </p>
 
                         </div>
@@ -1302,7 +1289,7 @@ export default function ISONavigator() {
 
                   onClick={() => dispatch(setStep(1))}
 
-                  className="bg-[var(--ib-accbg)] border border-[var(--ib-acc)]/30 rounded-2xl p-5 space-y-3 cursor-pointer hover:bg-[var(--ib-acc)] hover:text-white/10 transition-all group pointer-events-auto"
+                  className="pointer-events-auto cursor-pointer space-y-3 rounded-2xl border border-[var(--ib-acc)]/30 bg-[var(--ib-accbg)] p-5 transition-all hover:border-[var(--ib-acc)]/50 hover:bg-[var(--ib-accbg)] group"
 
                 >
 
@@ -1376,7 +1363,7 @@ export default function ISONavigator() {
 
                   <div className="space-y-3">
 
-                    <p className="text-[10px] font-bold text-[#64748B] uppercase tracking-wider">
+                    <p className="text-[10px] font-bold text-[var(--ib-mute)] uppercase tracking-wider">
 
                       {t('isoNavigator.recommendedIso')}
 
@@ -1415,10 +1402,10 @@ export default function ISONavigator() {
                                 ? "p-5"
                                 : "p-3"
                             } ${formData?.specific_requirements === iso?.standard
-                              ? "border-[var(--ib-acc)] bg-[var(--ib-accbg)] text-[var(--ib-ink)]/5 shadow-[0_0_20px_rgba(27, 77, 219,0.1)]"
+                              ? "border-[var(--ib-acc)] bg-[var(--ib-accbg)] shadow-[0_0_20px_rgba(58,75,208,0.12)]"
                               : isNavigatorImsLabel(iso?.standard || iso?.title)
                                 ? "border-[var(--ib-line)] hover:border-[var(--ib-acc)]/50 hover:bg-[var(--ib-card)]"
-                                : "border-[var(--ib-line)] hover:border-[var(--ib-mute)] hover:bg-[#232736]"
+                                : "border-[var(--ib-line)] hover:border-[color-mix(in_srgb,var(--ib-acc)_40%,var(--ib-line))] hover:bg-[var(--ib-accbg)]/60"
                               }`}
 
                           >
@@ -1443,7 +1430,7 @@ export default function ISONavigator() {
                                               (token) => (
                                                 <span
                                                   key={token}
-                                                  className="inline-flex items-center px-2 py-0.5 rounded-md bg-[#1D4ED8]/15 text-[#93C5FD] font-jetbrains-mono text-[10px] font-medium border border-[#3B82F6]/20"
+                                                  className="inline-flex items-center px-2 py-0.5 rounded-md border border-[color-mix(in_srgb,var(--ib-acc)_22%,var(--ib-line))] bg-[var(--ib-accbg)] font-jetbrains-mono text-[10px] font-medium text-[var(--ib-acc)]"
                                                 >
                                                   {token}
                                                 </span>
@@ -1542,7 +1529,7 @@ export default function ISONavigator() {
 
                     <button
                       onClick={handlePrevStep}
-                      className="px-6 py-4 bg-transparent border border-[var(--ib-line)] hover:bg-[#232736] text-[var(--ib-mute)] rounded-2xl text-sm font-medium uppercase tracking-widest transition-all"
+                      className="px-6 py-4 bg-transparent border border-[var(--ib-line)] hover:bg-[var(--ib-accbg)] text-[var(--ib-mute)] rounded-2xl text-sm font-medium uppercase tracking-widest transition-all"
                     >
                       {t('isoNavigator.back')}
                     </button>
@@ -1596,7 +1583,7 @@ export default function ISONavigator() {
                           ).map((token) => (
                             <span
                               key={token}
-                              className="inline-flex items-center px-2 py-0.5 rounded-md bg-[#1D4ED8]/15 text-[#93C5FD] font-jetbrains-mono text-[11px] font-medium border border-[#3B82F6]/20"
+                              className="inline-flex items-center px-2 py-0.5 rounded-md border border-[color-mix(in_srgb,var(--ib-acc)_22%,var(--ib-line))] bg-[var(--ib-accbg)] font-jetbrains-mono text-[11px] font-medium text-[var(--ib-acc)]"
                             >
                               {token}
                             </span>
@@ -1644,7 +1631,7 @@ export default function ISONavigator() {
                         <p className="text-[10px] font-bold text-[var(--ib-mute)] uppercase tracking-wider">
                           Annex SL Harmonized Structure (HS)
                         </p>
-                        <p className="text-[11px] leading-relaxed text-[#CBD5E1]">
+                        <p className="text-[11px] leading-relaxed text-[var(--ib-ink)]/85">
                           Under the Annex SL Harmonized Structure (HS), ISO 9001 (Quality),
                           ISO 14001 (Environmental), and ISO 45001 (Occupational Health &amp; Safety)
                           share an identical core clause structure (Clauses 4 through 10) and common
@@ -1678,7 +1665,7 @@ export default function ISONavigator() {
 
                     {selectedISO?.documents && selectedISO.documents.length > 0 && (
                       <div className="space-y-2">
-                        <p className="text-[10px] font-bold text-[#64748B] uppercase tracking-wider">
+                        <p className="text-[10px] font-bold text-[var(--ib-mute)] uppercase tracking-wider">
                           {isQhseAnnexSlImsLabel(formData?.specific_requirements || "")
                             ? "Maintained Documented Information (Common · 9001 · 14001 · 45001)"
                             : isNavigatorImsLabel(formData?.specific_requirements || "") &&
@@ -1708,7 +1695,7 @@ export default function ISONavigator() {
                                 }
                                 className={`bg-[var(--ib-bg)] border rounded-2xl p-3 text-xs cursor-pointer transition-all flex gap-3 items-center ${isSelected
                                   ? "border-[var(--ib-acc)] bg-[var(--ib-accbg)] shadow-[0_0_20px_rgba(27, 77, 219,0.1)]"
-                                  : "border-[var(--ib-line)] hover:border-[var(--ib-mute)] hover:bg-[#232736]"
+                                  : "border-[var(--ib-line)] hover:border-[color-mix(in_srgb,var(--ib-acc)_40%,var(--ib-line))] hover:bg-[var(--ib-accbg)]/60"
                                   }`}
                               >
                                 <div className="flex-1 min-w-0">
@@ -1731,7 +1718,7 @@ export default function ISONavigator() {
 
                     {selectedISO?.records && selectedISO.records.length > 0 && (
                       <div className="space-y-2">
-                        <p className="text-[10px] font-bold text-[#64748B] uppercase tracking-wider">
+                        <p className="text-[10px] font-bold text-[var(--ib-mute)] uppercase tracking-wider">
                           {isQhseAnnexSlImsLabel(formData?.specific_requirements || "")
                             ? "Retained Documented Information (Records)"
                             : "Mandatory IMS Records — Evidence of Implementation"}
@@ -1756,8 +1743,8 @@ export default function ISONavigator() {
                                   })
                                 }
                                 className={`bg-[var(--ib-bg)] border rounded-2xl p-3 text-xs cursor-pointer transition-all flex gap-3 items-center ${isSelected
-                                  ? "border-[var(--ib-acc)] bg-[var(--ib-accbg)] shadow-[0_0_20px_rgba(27, 77, 219,0.1)]"
-                                  : "border-[var(--ib-line)] hover:border-[var(--ib-mute)] hover:bg-[#232736]"
+                                  ? "border-[var(--ib-acc)] bg-[var(--ib-accbg)] shadow-[0_0_20px_rgba(58,75,208,0.12)]"
+                                  : "border-[var(--ib-line)] hover:border-[color-mix(in_srgb,var(--ib-acc)_40%,var(--ib-line))] hover:bg-[var(--ib-accbg)]/60"
                                   }`}
                               >
                                 <div className="flex-1 min-w-0">
@@ -1781,7 +1768,7 @@ export default function ISONavigator() {
                     {Array.isArray((selectedISO as any)?.additional) &&
                       (selectedISO as any).additional.length > 0 && (
                       <div className="space-y-2">
-                        <p className="text-[10px] font-bold text-[#64748B] uppercase tracking-wider">
+                        <p className="text-[10px] font-bold text-[var(--ib-mute)] uppercase tracking-wider">
                           Additional Documented Information Necessary for IMS Effectiveness
                         </p>
                         <div className="space-y-2">
@@ -1800,7 +1787,7 @@ export default function ISONavigator() {
                                 }
                                 className={`bg-[var(--ib-bg)] border rounded-2xl p-3 text-xs cursor-pointer transition-all flex gap-3 items-center ${isSelected
                                   ? "border-[var(--ib-acc)] bg-[var(--ib-accbg)] shadow-[0_0_20px_rgba(27, 77, 219,0.1)]"
-                                  : "border-[var(--ib-line)] hover:border-[var(--ib-mute)] hover:bg-[#232736]"
+                                  : "border-[var(--ib-line)] hover:border-[var(--ib-mute)] hover:bg-[var(--ib-accbg)]"
                                   }`}
                               >
                                 <div className="flex-1 min-w-0">
@@ -1842,7 +1829,7 @@ export default function ISONavigator() {
                   <div className="flex gap-4">
                     <button
                       onClick={handlePrevStep}
-                      className="px-6 py-4 bg-transparent border border-[var(--ib-line)] hover:bg-[#232736] text-[var(--ib-mute)] rounded-2xl text-sm font-medium uppercase tracking-widest transition-all"
+                      className="px-6 py-4 bg-transparent border border-[var(--ib-line)] hover:bg-[var(--ib-accbg)] text-[var(--ib-mute)] rounded-2xl text-sm font-medium uppercase tracking-widest transition-all"
                     >
                       {t('isoNavigator.back')}
                     </button>
@@ -1888,13 +1875,13 @@ export default function ISONavigator() {
 
             {generatedDocument && (
 
-              <div className="mt-8 pt-8 border-t border-[var(--ib-dktx)] animate-in zoom-in-95 duration-300">
+              <div className="mt-8 animate-in zoom-in-95 border-t border-[var(--ib-line)] pt-8 duration-300">
 
                 <button
 
                   onClick={handleReset}
 
-                  className="w-full bg-white border border-[#E2E8F0] hover:bg-[#F8FAFC] text-[#475569] rounded-xl md:rounded-2xl p-3 md:p-4 text-xs md:text-sm font-bold transition-all shadow-sm active:scale-[0.98] flex items-center justify-center gap-2"
+                  className="flex w-full items-center justify-center gap-2 rounded-xl border border-[var(--ib-line)] bg-[var(--ib-card)] p-3 text-xs font-bold text-[var(--ib-ink)] shadow-sm transition-all hover:bg-[var(--ib-bg)] active:scale-[0.98] md:rounded-2xl md:p-4 md:text-sm"
 
                 >
 
@@ -2033,7 +2020,7 @@ export default function ISONavigator() {
                                 {standards.map((token) => (
                                   <span
                                     key={token}
-                                    className="inline-flex items-center px-2 py-1 rounded-md bg-[#1D4ED8]/15 text-[#93C5FD] font-jetbrains-mono text-[11px] font-medium tracking-[0.02em] border border-[#3B82F6]/20"
+                                    className="inline-flex items-center rounded-md border border-[color-mix(in_srgb,var(--ib-acc)_22%,var(--ib-line))] bg-[var(--ib-accbg)] px-2 py-1 font-jetbrains-mono text-[11px] font-medium tracking-[0.02em] text-[var(--ib-acc)]"
                                   >
                                     {token}
                                   </span>
@@ -2048,7 +2035,7 @@ export default function ISONavigator() {
                         extractIsoStandardBadge(generatedDocument.metadata?.grounded_standard) ||
                         extractIsoStandardBadge(formData.specific_requirements);
                       return isoBadge ? (
-                      <span className="inline-flex items-center px-2 py-1 rounded-md bg-[#1D4ED8]/15 text-[#93C5FD] font-jetbrains-mono text-[12px] font-medium tracking-[0.02em] border border-[#3B82F6]/20">
+                      <span className="inline-flex items-center rounded-md border border-[color-mix(in_srgb,var(--ib-acc)_22%,var(--ib-line))] bg-[var(--ib-accbg)] px-2 py-1 font-jetbrains-mono text-[12px] font-medium tracking-[0.02em] text-[var(--ib-acc)]">
                         {isoBadge}
                       </span>
                       ) : null;
@@ -2058,7 +2045,7 @@ export default function ISONavigator() {
                       formData.clause !== "IMS" &&
                       generatedDocument.metadata?.clause !== "IMS" && (
 
-                      <span className="inline-flex items-center px-2 py-1 rounded-md bg-[var(--ib-card)] text-[var(--ib-acc)] font-jetbrains-mono text-[12px] font-medium tracking-[0.02em] border border-[var(--ib-line)]">
+                      <span className="inline-flex items-center rounded-md border border-[var(--ib-line)] bg-[var(--ib-card)] px-2 py-1 font-jetbrains-mono text-[12px] font-medium tracking-[0.02em] text-[var(--ib-ink)]">
 
                         {t('isoNavigator.clauseLabel')} {formData.clause || generatedDocument.metadata?.clause}
 
@@ -2068,7 +2055,7 @@ export default function ISONavigator() {
 
                     {(formData.document_taxonomy || generatedDocument.metadata?.document_taxonomy) && (
 
-                      <span className="inline-flex items-center px-2 py-1 rounded-full bg-[#FFFBEB]/10 text-[#FBBF24] text-[11px] font-medium leading-[1.3] border border-[#F59E0B]/20">
+                      <span className="inline-flex items-center rounded-full border border-amber-200 bg-amber-50 px-2 py-1 text-[11px] font-medium leading-[1.3] text-amber-800">
 
                         {(formData.document_taxonomy || generatedDocument.metadata?.document_taxonomy) === 'recommended'
                           ? 'Recommended'
@@ -2082,11 +2069,11 @@ export default function ISONavigator() {
 
                   </div>
 
-                  <div className="flex items-center gap-2 flex-wrap shrink-0 ml-auto">
+                  <div className="ml-auto flex shrink-0 flex-wrap items-center gap-2">
 
                     {typeof generatedDocument.confidence_score === 'number' && (
 
-                      <span className="inline-flex items-center px-2 py-1 rounded-full bg-[#ECFDF5]/10 text-[#6EE7B7] text-[11px] font-medium leading-[1.3] border border-[#047857]/30">
+                      <span className="inline-flex items-center rounded-full border border-[color-mix(in_srgb,var(--ib-ok)_30%,var(--ib-line))] bg-[var(--ib-okbg)] px-2 py-1 text-[11px] font-medium leading-[1.3] text-[var(--ib-ok)]">
 
                         {Math.round((generatedDocument.confidence_score || 0) * 100)}% {t('isoNavigator.match')}
 
@@ -2106,7 +2093,7 @@ export default function ISONavigator() {
 
                       }}
 
-                      className="inline-flex items-center gap-1.5 rounded-lg border border-[var(--ib-line)] bg-[var(--ib-card)] px-3 py-1.5 text-[12px] font-medium text-[var(--ib-ink)] hover:border-[#3B82F6]/40 hover:text-[var(--ib-ink)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3B82F6]"
+                      className="inline-flex items-center gap-1.5 rounded-lg border border-[var(--ib-line)] bg-[var(--ib-card)] px-3 py-1.5 text-[12px] font-medium text-[var(--ib-ink)] hover:border-[color-mix(in_srgb,var(--ib-acc)_40%,var(--ib-line))] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ib-acc)]/30"
 
                     >
 
@@ -2123,7 +2110,7 @@ export default function ISONavigator() {
                 {/* Full-bleed title + switcher — not beside Match/Copy */}
                 <div className="w-full min-w-0 space-y-2">
 
-                  <h2 className="block w-full max-w-none text-[20px] md:text-[22px] font-semibold leading-[1.3] tracking-[-0.01em] text-[#F8FAFC] text-balance break-normal">
+                  <h2 className="block w-full max-w-none text-balance break-normal text-[20px] font-semibold leading-[1.3] tracking-[-0.01em] text-[var(--ib-ink)] md:text-[22px]">
 
                     {generatedDocument.title}
 
@@ -2131,14 +2118,14 @@ export default function ISONavigator() {
 
                   {generatedDocument.metadata?.ims_guide_available === true &&
                     generatedDocument.metadata?.ims_guide_title && (
-                    <p className="text-[12px] leading-[1.4] text-[#5EEAD4]/90">
+                    <p className="text-[12px] leading-[1.4] text-[var(--ib-ok)]">
                       Primary IMS source: {generatedDocument.metadata.ims_guide_title} + selected ISO standards.
                     </p>
                   )}
 
                   {Array.isArray(generatedDocument.metadata?.missing_editions) &&
                     generatedDocument.metadata.missing_editions.length > 0 && (
-                    <p className="text-[12px] leading-[1.4] text-amber-300/90">
+                    <p className="text-[12px] leading-[1.4] text-amber-700">
                       Unavailable library editions (not substituted):{" "}
                       {generatedDocument.metadata.missing_editions.join("; ")}
                     </p>
@@ -2146,7 +2133,7 @@ export default function ISONavigator() {
 
                   {Array.isArray(generatedDocument.metadata?.grounding_sources) &&
                     generatedDocument.metadata.grounding_sources.length > 0 && (
-                    <p className="text-[11px] leading-[1.45] text-[var(--ib-ink)]/45">
+                    <p className="text-[11px] leading-[1.45] text-[var(--ib-mute)]">
                       Grounded on{" "}
                       {generatedDocument.metadata.grounding_sources
                         .map((s) => {
@@ -2203,7 +2190,7 @@ export default function ISONavigator() {
                               className={`max-w-full truncate rounded-lg border px-2.5 py-1.5 text-[11px] font-medium transition-colors disabled:opacity-40 ${
                                 active
                                   ? "border-[var(--ib-acc)]/50 bg-[var(--ib-accbg)] text-[var(--ib-acc)]"
-                                  : "border-[var(--ib-line)] bg-[var(--ib-card)] text-[var(--ib-mute)] hover:border-[#334155] hover:text-[var(--ib-ink)]"
+                                  : "border-[var(--ib-line)] bg-[var(--ib-card)] text-[var(--ib-mute)] hover:border-[color-mix(in_srgb,var(--ib-acc)_35%,var(--ib-line))] hover:text-[var(--ib-ink)]"
                               }`}
                             >
                               {d?.title}
@@ -2216,7 +2203,7 @@ export default function ISONavigator() {
 
                   {(generatedDocument.generation_timestamp || generatedDocument.word_count) && (
 
-                    <p className="text-[11px] font-normal leading-[1.3] text-[#64748B]">
+                    <p className="text-[11px] font-normal leading-[1.3] text-[var(--ib-mute)]">
 
                       {[
                         generatedDocument.generation_timestamp
@@ -2280,7 +2267,7 @@ export default function ISONavigator() {
             <div className="text-[10px] sm:text-xs md:text-sm lg:text-base font-black text-[var(--ib-ink)] uppercase tracking-wider">
               {t('isoNavigator.chatTitle')}
             </div>
-            <p className="text-[8px] text-[#6f7b8d] font-black uppercase tracking-widest mt-1">
+            <p className="mt-1 text-[8px] font-black uppercase tracking-widest text-[var(--ib-mute)]">
               {t('isoNavigator.chatDesc')}
             </p>
           </div>
@@ -2307,7 +2294,7 @@ export default function ISONavigator() {
                         }`}
                     >
                       {msg.role !== "user" ? (
-                        <div className="prose prose-invert prose-sm max-w-none w-full min-w-0">
+                        <div className="prose prose-sm max-w-none w-full min-w-0 text-[var(--ib-ink)] prose-headings:text-[var(--ib-ink)] prose-p:text-[var(--ib-ink)]/90 prose-strong:text-[var(--ib-ink)] prose-li:text-[var(--ib-ink)]/90">
                           <ReactMarkdown
                             remarkPlugins={[remarkGfm]}
                             components={{
@@ -2325,8 +2312,8 @@ export default function ISONavigator() {
                                   <table className="w-full text-left border-collapse text-sm md:text-base min-w-[500px]" {...props} />
                                 </div>
                               ),
-                              th: ({ ...props }) => <th className="border-b border-white/20 px-3 py-2 md:px-4 md:py-3 bg-[var(--ib-card)] font-bold text-[var(--ib-ink)] break-normal" {...props} />,
-                              td: ({ ...props }) => <td className="border-b border-[var(--ib-line)] px-3 py-2 md:px-4 md:py-3 break-normal align-top" {...props} />,
+                              th: ({ ...props }) => <th className="border-b border-[var(--ib-line)] bg-[var(--ib-bg)] px-3 py-2 font-bold break-normal text-[var(--ib-ink)] md:px-4 md:py-3" {...props} />,
+                              td: ({ ...props }) => <td className="border-b border-[var(--ib-line)] px-3 py-2 align-top break-normal text-[var(--ib-ink)] md:px-4 md:py-3" {...props} />,
                             }}
                           >
                             {msg.content}
@@ -2460,7 +2447,7 @@ export default function ISONavigator() {
                           (token) => (
                             <span
                               key={token}
-                              className="inline-flex items-center px-2 py-0.5 rounded-md bg-[#1D4ED8]/15 text-[#93C5FD] font-jetbrains-mono text-[11px] font-medium border border-[#3B82F6]/20"
+                              className="inline-flex items-center px-2 py-0.5 rounded-md border border-[color-mix(in_srgb,var(--ib-acc)_22%,var(--ib-line))] bg-[var(--ib-accbg)] font-jetbrains-mono text-[11px] font-medium text-[var(--ib-acc)]"
                             >
                               {token}
                             </span>
@@ -2523,7 +2510,7 @@ export default function ISONavigator() {
                   <p className="text-[10px] font-bold text-[var(--ib-mute)] uppercase tracking-wider">
                     Annex SL Harmonized Structure (HS)
                   </p>
-                  <p className="text-[11px] leading-relaxed text-[#CBD5E1]">
+                  <p className="text-[11px] leading-relaxed text-[var(--ib-ink)]/85">
                     Under the Annex SL Harmonized Structure (HS), ISO 9001 (Quality),
                     ISO 14001 (Environmental), and ISO 45001 (Occupational Health &amp; Safety)
                     share an identical core clause structure (Clauses 4 through 10) and common

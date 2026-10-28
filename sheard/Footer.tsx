@@ -15,90 +15,65 @@ const Footer = () => {
     return null;
   }
 
-  const footerLinks = [
+  const links = [
+    { label: t("nav.library") || "Library", href: `/${lang}/library/iso-standards` },
+    { label: t("nav.academy") || "Academy", href: `/${lang}/academy` },
+    { label: t("nav.masteryLab") || "Mastery Lab", href: `/${lang}/mastery-lab` },
+    { label: t("nav.pricing") || "Pricing", href: `/${lang}/pricing` },
+    { label: t("nav.about") || "About", href: `/${lang}/about` },
+    { label: t("footer.contact") || "Contact", href: `/${lang}/contact` },
     {
-      id: "product",
-      title: t("footer.product") || "Product",
-      links: [
-        { label: t("nav.library") || "Library", href: `/${lang}/library/iso-standards` },
-        { label: t("nav.academy") || "Academy", href: `/${lang}/academy` },
-        { label: t("nav.masteryLab") || "Mastery Lab", href: `/${lang}/mastery-lab` },
-        { label: t("nav.pricing") || "Pricing", href: `/${lang}/pricing` },
-      ],
+      label: t("footer.privacy") || "Privacy",
+      href: `/${lang}/privacy-policy`,
     },
     {
-      id: "company",
-      title: t("footer.company") || "Company",
-      links: [
-        { label: t("nav.about") || "About", href: `/${lang}/about` },
-        { label: t("footer.contact") || "Contact", href: `/${lang}/contact` },
-        { label: t("footer.careers") || "Careers", href: "#" },
-        {
-          label: "Refund & Cancellation",
-          href: `/${lang}/refund-and-cancellation`,
-        },
-      ],
+      label: t("footer.terms") || "Terms",
+      href: `/${lang}/terms-of-service`,
     },
     {
-      id: "legal",
-      title: t("footer.legal") || "Legal",
-      links: [
-        {
-          label: t("footer.privacy") || "Privacy Policy",
-          href: `/${lang}/privacy-policy`,
-        },
-        {
-          label: t("footer.terms") || "Terms of Service",
-          href: `/${lang}/terms-of-service`,
-        },
-        {
-          label: t("footer.cookiePolicy") || "Cookie Policy",
-          href: `/${lang}/cookie-policy`,
-        },
-      ],
+      label: t("footer.cookiePolicy") || "Cookies",
+      href: `/${lang}/cookie-policy`,
     },
   ];
 
   return (
-    <footer className="border-t border-[var(--ib-line)] bg-[var(--ib-bg)] py-12 text-sm text-[var(--ib-mute)]">
-      <div className="ib-w grid grid-cols-2 gap-7 md:grid-cols-4">
-        <div className="col-span-2 md:col-span-1">
+    <footer className="border-t border-[var(--ib-line)] bg-[var(--ib-bg)] py-6 text-sm text-[var(--ib-mute)] sm:py-7">
+      <div className="ib-w flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
+        <div className="flex min-w-0 flex-col gap-1.5 sm:max-w-[320px]">
           <Link
             href={`/${lang}/`}
-            className="mb-2 inline-flex items-center gap-2.5 font-semibold text-[var(--ib-ink)]"
+            className="inline-flex items-center gap-2 font-semibold text-[var(--ib-ink)]"
           >
-            <span className="relative size-9 shrink-0 overflow-hidden rounded-lg">
+            <span className="relative size-8 shrink-0 overflow-hidden rounded-lg">
               <Image
                 src="/Icon.png"
                 alt="ISOBrain"
-                width={36}
-                height={36}
+                width={32}
+                height={32}
                 className="animate-brain-spin object-contain"
               />
             </span>
-            <b className="text-base font-semibold">ISOBrain.AI</b>
+            <b className="text-[15px] font-semibold">ISOBrain.AI</b>
           </Link>
-          <p className="mt-2">
-            AI-powered platform for understanding and applying ISO management
-            standards.
+          <p className="text-[12.5px] leading-snug">
+            Assess · Learn · Master · Apply — one system for ISO standards.
           </p>
         </div>
-        {footerLinks.map((section) => (
-          <div key={section.id}>
-            <b className="mb-2 block font-semibold text-[var(--ib-ink)]">
-              {section.title}
-            </b>
-            {section.links.map((link) => (
-              <Link
-                key={link.label}
-                href={link.href}
-                className="block leading-[2] hover:text-[var(--ib-ink)]"
-              >
-                {link.label}
-              </Link>
-            ))}
-          </div>
-        ))}
+
+        <nav
+          aria-label="Footer"
+          className="flex flex-wrap items-center gap-x-4 gap-y-2 sm:justify-end"
+        >
+          {links.map((link) => (
+            <Link
+              key={link.label}
+              href={link.href}
+              className="text-[12.5px] font-medium text-[var(--ib-mute)] transition-colors hover:text-[var(--ib-ink)]"
+            >
+              {link.label}
+            </Link>
+          ))}
+        </nav>
       </div>
     </footer>
   );

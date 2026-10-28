@@ -135,6 +135,7 @@ import { useTranslation } from "react-i18next";
 
 
 import i18n from "@/lib/i18n/client";
+import { ActivityTracker } from "@/components/activity/ActivityTracker";
 
 
 
@@ -2195,6 +2196,12 @@ const AuditLensPage = () => {
 
 
     <div className="w-full mx-auto space-y-8 md:space-y-12 animate-in fade-in duration-500 bg-[var(--ib-bg)] min-h-screen p-2 md:p-8">
+      <ActivityTracker
+        source="AI_TOOL"
+        aiToolId="AUDIT_LENS"
+        resourceLabel="Audit Lens"
+        sessionKey="ai_audit_lens"
+      />
 
 
 

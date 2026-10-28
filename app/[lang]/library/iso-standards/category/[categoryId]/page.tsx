@@ -5,13 +5,46 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useParams, useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import {
-  ArrowLeft, ArrowRight, Loader2, Info, Search,
-  ShieldCheck, Leaf, Lock, Cpu, Utensils, Stethoscope, Zap, Scale, Layers,
-  Building2, Beaker, AlertTriangle, Activity, Gavel, Server, Smile,
-  Microscope, GraduationCap, Briefcase, Calendar,
-  ClipboardList, HardHat, Shield, TrendingUp, Users, Landmark, Banknote
+  ArrowLeft,
+  ArrowRight,
+  Loader2,
+  Info,
+  Search,
+  Leaf,
+  Lock,
+  Cpu,
+  Utensils,
+  Stethoscope,
+  Zap,
+  Scale,
+  Layers,
+  Building2,
+  Beaker,
+  AlertTriangle,
+  Activity,
+  Gavel,
+  Server,
+  Smile,
+  Microscope,
+  GraduationCap,
+  Briefcase,
+  Calendar,
+  ClipboardList,
+  HardHat,
+  Shield,
+  TrendingUp,
+  Users,
+  Landmark,
+  Banknote,
 } from "lucide-react";
-import { useGetISOStandardsQuery, useGetCategoriesQuery } from "@/lib/redux/api/isoStandardsApi";
+import {
+  useGetISOStandardsQuery,
+  useGetCategoriesQuery,
+} from "@/lib/redux/api/isoStandardsApi";
+import {
+  formatStandardMeta,
+  sortStandardsByYearNumberName,
+} from "@/lib/library/sortStandards";
 import "@/lib/i18n/client";
 
 const getCategoryIcon = (slug: string, name: string = "") => {
@@ -41,6 +74,8 @@ const getCategoryIcon = (slug: string, name: string = "") => {
   if (textToMatch.includes("lean six sigma") || textToMatch.includes("dmaic")) return TrendingUp;
   if (textToMatch.includes("human resources") || textToMatch.includes("hr ")) return Users;
   if (textToMatch.includes("banking") || textToMatch.includes("finance")) return Banknote;
+  if (textToMatch.includes("security") || textToMatch.includes("lock")) return Lock;
+  if (textToMatch.includes("lab") || textToMatch.includes("beaker")) return Beaker;
 
   return Info;
 };
@@ -54,43 +89,69 @@ const ISOStandardCard = ({
   onOpenChat: (id: string) => void;
   category: any;
 }) => {
-  const Icon = getCategoryIcon(item.category?.slug || category?.slug || "", item.category?.name || category?.name || "");
+  const Icon = getCategoryIcon(
+    item.category?.slug || category?.slug || "",
+    item.category?.name || category?.name || "",
+  );
+  const meta = formatStandardMeta(item.title || "");
+  const overview =
+    String(item.description || item.summary || "").trim() ||
+    "No overview yet. Open the standard to explore with ISOBrain.AI.";
 
   return (
     <motion.div
       layout
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 16 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
-      whileHover={{ y: -5, boxShadow: "0 0 40px rgba(27, 77, 219, 0.1)" }}
+      whileHover={{ y: -4 }}
       transition={{ duration: 0.3 }}
-      className="group relative bg-[var(--ib-card)] backdrop-blur-md border border-[var(--ib-line)] rounded-2xl p-6 sm:p-8 flex flex-col gap-6 overflow-hidden"
+      className="group relative flex flex-col gap-5 overflow-hidden rounded-2xl border border-[var(--ib-line)] bg-[var(--ib-card)] p-6 font-sans sm:p-7"
     >
-      <div className="absolute top-4 right-4 text-[var(--ib-acc)] opacity-20 group-hover:opacity-40 group-hover:scale-110 transition-all duration-500">
-        <Icon size={80} strokeWidth={0.5} className="blur-[1px] opacity-10 group-hover:opacity-30" />
-      </div>
-      <div className="absolute -inset-px bg-[var(--ib-acc)] rounded-2xl opacity-0 group-hover:opacity-10 transition-opacity duration-500" />
-      <div className="flex flex-col gap-4 relative z-10">
-        <div className="p-3 bg-[var(--ib-accbg)] rounded-xl w-fit ">
-          <Icon className="w-8 h-8 text-[var(--ib-acc)]" />
+      <div className="relative z-10 flex items-start justify-between gap-3">
+        <div className="grid size-11 place-items-center rounded-xl bg-[var(--ib-accbg)] text-[var(--ib-acc)]">
+          <Icon className="size-5" />
         </div>
-        <div className="flex flex-col gap-2 text-left">
-          <h3 className="text-[16px] font-bold text-[var(--ib-ink)] leading-snug font-sans group-hover:text-[var(--ib-acc)] transition-colors line-clamp-3">
-            {item.title}
-          </h3>
+        <div className="flex flex-wrap items-center justify-end gap-1.5">
+          <span className="rounded-md border border-[var(--ib-line)] bg-[var(--ib-bg)] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-[var(--ib-mute)]">
+            {meta.yearLabel}
+          </span>
+          <span className="rounded-md border border-[color-mix(in_srgb,var(--ib-acc)_20%,var(--ib-line))] bg-[var(--ib-accbg)] px-2 py-0.5 text-[10px] font-semibold text-[var(--ib-acc)]">
+            {meta.numberLabel}
+          </span>
         </div>
       </div>
-      <p className="text-[var(--ib-mute)] text-sm leading-relaxed line-clamp-3 relative z-10">
-        {item.category?.standardDesc || item.category?.name || ""}
-      </p>
+
+      <div className="relative z-10 flex flex-col gap-2 text-left">
+        <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--ib-mute)]">
+          Year · Number · Name
+        </p>
+        <h3 className="mb-0! text-[16px] font-bold leading-snug tracking-[-0.02em] text-[var(--ib-ink)] transition-colors group-hover:text-[var(--ib-acc)]">
+          {meta.nameLabel || item.title}
+        </h3>
+        <p className="text-[12.5px] font-medium text-[var(--ib-mute)]">
+          {item.title}
+        </p>
+      </div>
+
+      <div className="relative z-10 rounded-xl border border-[var(--ib-line)] bg-[var(--ib-bg)] p-3.5">
+        <p className="mb-1 text-[10px] font-bold uppercase tracking-[0.12em] text-[var(--ib-acc)]">
+          Overview
+        </p>
+        <p className="text-[13.5px] font-medium leading-relaxed text-[var(--ib-mute)] line-clamp-4">
+          {overview}
+        </p>
+      </div>
+
       <button
+        type="button"
         onClick={(e) => {
           e.stopPropagation();
           onOpenChat(item.id);
         }}
-        className="mt-auto w-full flex items-center justify-center gap-2 bg-[var(--ib-acc)] text-white  px-6 py-3 rounded-[4px] font-inter font-semibold text-[15px] hover:bg-[var(--ib-acc)] hover:text-white/90  transition-all duration-300 relative z-10 cursor-pointer"
+        className="relative z-10 mt-auto flex w-full items-center justify-center gap-2 rounded-[10px] bg-[var(--ib-acc)] px-6 py-3 text-[14px] font-semibold text-white transition-opacity hover:opacity-92"
       >
-        View Details <ArrowRight size={16} />
+        Open standard <ArrowRight size={16} />
       </button>
     </motion.div>
   );
@@ -106,22 +167,34 @@ const CategoryStandardsPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
 
   const { data: categoriesData } = useGetCategoriesQuery();
-  const { data: standardsData, isLoading, isError } = useGetISOStandardsQuery({ categoryId });
+  const { data: standardsData, isLoading, isError } = useGetISOStandardsQuery({
+    categoryId,
+  });
 
   const category = useMemo(() => {
-    return categoriesData?.data?.find(c => c.id === categoryId);
+    return categoriesData?.data?.find((c) => c.id === categoryId);
   }, [categoriesData, categoryId]);
 
   const categoryName = category ? category.name : "Category Standards";
-  const categoryDescription = category?.description || `Browse and explore detailed ISO standards within the ${categoryName} management system.`;
+  const categoryDescription =
+    category?.description ||
+    `Browse and explore detailed ISO standards within the ${categoryName} management system.`;
 
   const filteredStandards = useMemo(() => {
     const standards = standardsData?.data || [];
-    if (!searchTerm) return standards;
-    return standards.filter((s: any) =>
-      s.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (s.isoCode && s.isoCode.toLowerCase().includes(searchTerm.toLowerCase()))
-    );
+    const filtered = !searchTerm
+      ? standards
+      : standards.filter(
+          (s: any) =>
+            s.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            (s.isoCode &&
+              s.isoCode.toLowerCase().includes(searchTerm.toLowerCase())) ||
+            (s.description &&
+              String(s.description)
+                .toLowerCase()
+                .includes(searchTerm.toLowerCase())),
+        );
+    return sortStandardsByYearNumberName(filtered);
   }, [standardsData, searchTerm]);
 
   const handleOpenChat = (id: string) => {
@@ -129,43 +202,42 @@ const CategoryStandardsPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[var(--ib-bg)] text-[var(--ib-ink)] font-inter selection:bg-[var(--ib-acc)]/30">
-      {/* ── Header Section ─────────────────────────── */}
-      <section className="relative pt-12 pb-10 px-6 overflow-hidden">
-        {/* Animated Background Gradients */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-[600px] pointer-events-none">
-          <div className="absolute top-[-10%] left-1/4 w-[600px] h-[600px] bg-[var(--ib-acc)]/10 rounded-full blur-[140px] animate-pulse" />
-          <div className="absolute top-[10%] right-1/4 w-[500px] h-[500px] bg-[var(--ib-acc)]/10 rounded-full blur-[120px] animate-pulse delay-700" />
+    <div className="min-h-screen bg-[var(--ib-bg)] font-sans text-[var(--ib-ink)] selection:bg-[var(--ib-acc)]/30">
+      <section className="relative overflow-hidden px-6 pb-10 pt-12">
+        <div className="pointer-events-none absolute left-1/2 top-0 h-[520px] w-full max-w-7xl -translate-x-1/2">
+          <div className="absolute left-1/4 top-[-10%] h-[480px] w-[520px] rounded-full bg-[color-mix(in_srgb,var(--ib-acc)_10%,transparent)] blur-[120px]" />
         </div>
 
-        <div className="relative z-10 max-w-5xl mx-auto">
+        <div className="relative z-10 mx-auto max-w-5xl">
           <button
+            type="button"
             onClick={() => router.back()}
-            className="group mb-8 flex items-center gap-2 text-[var(--ib-mute)] hover:text-white transition-colors"
+            className="group mb-8 flex items-center gap-2 text-[var(--ib-mute)] transition-colors hover:text-[var(--ib-ink)]"
           >
-            <ArrowLeft size={20} className="group-hover:-translate-x-1 transition-transform" />
-            <span>{t('common.back', 'Back')}</span>
+            <ArrowLeft
+              size={20}
+              className="transition-transform group-hover:-translate-x-1"
+            />
+            <span>{t("common.back", "Back")}</span>
           </button>
 
           <div className="text-center">
-            <h1 className="text-lg lg:text-[48px] font-semibold text-[var(--ib-ink)] leading-[1.1] tracking-tight mb-8">
+            <h1 className="mb-4 text-[28px] font-bold leading-[1.12] tracking-[-0.03em] text-[var(--ib-ink)] sm:text-[40px] lg:text-[48px]">
               {categoryName}
             </h1>
-            <p className="text-[var(--ib-mute)] text-sm md:text-lg leading-relaxed  mx-auto mb-12">
+            <p className="mx-auto mb-10 max-w-2xl text-[15px] font-medium leading-relaxed text-[var(--ib-mute)] sm:text-[17px]">
               {categoryDescription}
             </p>
 
-            {/* Search Bar */}
-            <div className="relative max-w-2xl mx-auto">
-              <div className="absolute -inset-1 bg-[var(--ib-acc)] rounded-2xl blur opacity-20  transition duration-500" />
-              <div className="relative flex items-center bg-[var(--ib-card)] border border-[var(--ib-line)] rounded-2xl px-6 h-16 transition-all duration-300">
-                <Search className="w-5 h-5 text-[var(--ib-mute)]" />
+            <div className="relative mx-auto max-w-2xl">
+              <div className="relative flex h-14 items-center rounded-2xl border border-[var(--ib-line)] bg-[var(--ib-card)] px-5 transition-all duration-300 focus-within:border-[var(--ib-acc)] focus-within:ring-2 focus-within:ring-[color-mix(in_srgb,var(--ib-acc)_18%,transparent)]">
+                <Search className="size-5 text-[var(--ib-mute)]" />
                 <input
                   type="text"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  placeholder="Search standards in this category..."
-                  className="flex-1 bg-transparent border-none outline-none px-4 text-lg text-[var(--ib-ink)] placeholder:text-[#475569]"
+                  placeholder="Search by year, number, or name..."
+                  className="flex-1 border-none bg-transparent px-4 text-[15px] font-medium text-[var(--ib-ink)] outline-none placeholder:text-[var(--ib-mute)]"
                 />
               </div>
             </div>
@@ -173,32 +245,44 @@ const CategoryStandardsPage = () => {
         </div>
       </section>
 
-      {/* ── Standards Grid ─────────────────────────── */}
-      <section className="pb-32 px-6">
-        <div className="max-w-7xl mx-auto">
+      <section className="px-6 pb-32">
+        <div className="mx-auto max-w-7xl">
+          {!isLoading && !isError && filteredStandards.length > 0 ? (
+            <p className="mb-6 text-center text-[12.5px] font-semibold text-[var(--ib-mute)]">
+              Sorted by Year → Number → Name · {filteredStandards.length}{" "}
+              standard{filteredStandards.length === 1 ? "" : "s"}
+            </p>
+          ) : null}
+
           {isLoading ? (
-            <div className="flex flex-col items-center justify-center py-20 gap-4">
-              <Loader2 className="w-10 h-10 text-[var(--ib-acc)] animate-spin" />
-              <p className="text-[var(--ib-mute)] font-medium">Loading standards...</p>
+            <div className="flex flex-col items-center justify-center gap-4 py-20">
+              <Loader2 className="size-10 animate-spin text-[var(--ib-acc)]" />
+              <p className="font-medium text-[var(--ib-mute)]">
+                Loading standards...
+              </p>
             </div>
           ) : isError ? (
-            <div className="text-center py-20">
-              <p className="text-red-400 font-medium">Failed to load standards. Please try again later.</p>
+            <div className="py-20 text-center">
+              <p className="font-medium text-red-500">
+                Failed to load standards. Please try again later.
+              </p>
             </div>
           ) : filteredStandards.length === 0 ? (
-            <div className="text-center py-20">
-              <p className="text-[var(--ib-mute)] text-lg font-medium">No standards found in this category.</p>
+            <div className="py-20 text-center">
+              <p className="text-lg font-medium text-[var(--ib-mute)]">
+                No standards found in this category.
+              </p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
               <AnimatePresence mode="popLayout">
                 {filteredStandards.map((std: any) => (
-                    <ISOStandardCard
-                      key={std.id}
-                      item={std}
-                      onOpenChat={handleOpenChat}
-                      category={category}
-                    />
+                  <ISOStandardCard
+                    key={std.id}
+                    item={std}
+                    onOpenChat={handleOpenChat}
+                    category={category}
+                  />
                 ))}
               </AnimatePresence>
             </div>

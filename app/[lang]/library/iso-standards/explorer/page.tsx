@@ -52,7 +52,7 @@ const ExplorerContent = () => {
             </Link>
             <div>
               <h1 className="text-2xl font-bold tracking-tight">{t('library.heading')}</h1>
-              <p className="text-[#64748B] text-sm">{t('library.description')}</p>
+              <p className="text-[var(--ib-mute)] text-sm">{t('library.description')}</p>
             </div>
           </div>
 
@@ -62,7 +62,7 @@ const ExplorerContent = () => {
               group flex items-center gap-3 bg-[var(--ib-card)] border backdrop-blur-xl rounded-xl px-4 h-12 transition-all duration-300
               ${isBarFocused ? 'border-[var(--ib-acc)] ring-2 ring-brand-cyan/10 shadow-[0_0_20px_-10px_var(--ib-acc)44]' : 'border-[var(--ib-line)] hover:border-white/20'}
             `}>
-              <Search className={`w-4 h-4 transition-colors duration-300 ${isBarFocused ? 'text-[var(--ib-acc)]' : 'text-[#64748B]'}`} />
+              <Search className={`w-4 h-4 transition-colors duration-300 ${isBarFocused ? 'text-[var(--ib-acc)]' : 'text-[var(--ib-mute)]'}`} />
               <input
                 ref={inputRef}
                 value={inputValue}
@@ -70,9 +70,9 @@ const ExplorerContent = () => {
                 onFocus={() => setIsBarFocused(true)}
                 onBlur={() => setIsBarFocused(false)}
                 placeholder={t('library.searchPlaceholder')}
-                className="flex-1 bg-transparent border-none outline-none text-white placeholder:text-[#475569] text-sm"
+                className="flex-1 bg-transparent border-none outline-none text-white placeholder:text-[var(--ib-mute)] text-sm"
               />
-              <div className="hidden md:flex items-center gap-1 px-1.5 py-0.5 rounded bg-[var(--ib-card)] border border-[var(--ib-line)] text-[#64748B] text-[10px] font-bold uppercase">
+              <div className="hidden md:flex items-center gap-1 px-1.5 py-0.5 rounded bg-[var(--ib-card)] border border-[var(--ib-line)] text-[var(--ib-mute)] text-[10px] font-bold uppercase">
                 <Command className="w-2.5 h-2.5" />
                 <span>K</span>
               </div>

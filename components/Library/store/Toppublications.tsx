@@ -87,13 +87,13 @@ const Toppublications = () => {
 
               {/* Content Container */}
               <div className="flex flex-col pt-2">
-                <span className="text-[#64748B] text-sm font-medium mb-2">
+                <span className="text-[var(--ib-mute)] text-sm font-medium mb-2">
                   {pub.category}
                 </span>
                 <h3 className="text-[#EF4444] text-md font-bold mb-3 leading-tight group-hover:underline transition-all">
                   {pub.title}
                 </h3>
-                <p className="text-[#64748B] text-sm leading-relaxed line-clamp-6">
+                <p className="text-[var(--ib-mute)] text-sm leading-relaxed line-clamp-6">
                   {pub.description}
                 </p>
               </div>

@@ -79,17 +79,20 @@ const PricingSection = () => {
       try {
         const result = await checkEnrollment({ courseId }).unwrap();
         const isEnrolled =
-          result?.success === true ||
-          result?.enrolled ||
-          result?.isEnrolled ||
-          result?.isPurchased ||
-          result?.data?.enrolled ||
-          result?.data?.isEnrolled ||
-          result?.data?.isPurchased ||
-          !!result?.data?.id;
-        if (isEnrolled) router.push(`/${lang}/academy`);
-      } catch (error) {
-        console.error("Failed to verify existing enrollment status:", error);
+          result?.data?.enrolled === true ||
+          result?.data?.isEnrolled === true ||
+          result?.enrolled === true ||
+          result?.isEnrolled === true;
+        if (isEnrolled) router.push(`/${lang}/academy/${courseId}`);
+      } catch (error: unknown) {
+        const err = error as { status?: number; data?: { message?: string } };
+        // Not enrolled / network issues should not block the pricing page
+        if (err?.status && err.status !== 404) {
+          console.error(
+            "Failed to verify existing enrollment status:",
+            err?.data?.message || err.status,
+          );
+        }
       } finally {
         setIsVerifyingOwnership(false);
       }
@@ -327,10 +330,25 @@ const PricingSection = () => {
               plan.name.toLowerCase() === "gold" ||
               index === 1;
             const isFree = index === 0;
-            const displayPrice = plan.discountedPrice;
-            const period = plan.validityDays
-              ? ` / ${plan.validityDays} ${t("pricingPage.days")}`
-              : "";
+            const planName = (plan.name || "").toLowerCase();
+            // Display monthly equivalent billed annually (client pricing)
+            const monthlyDisplay =
+              planName.includes("ultra")
+                ? 13
+                : planName.includes("pro")
+                  ? 10
+                  : planName.includes("plus")
+                    ? 7
+                    : null;
+            const displayPrice = monthlyDisplay ?? plan.discountedPrice;
+            const period = monthlyDisplay
+              ? t(
+                  "pricingPage.perMonthBilledAnnually",
+                  "per month, billed annually"
+                )
+              : plan.validityDays
+                ? ` / ${plan.validityDays} ${t("pricingPage.days")}`
+                : ` / ${t("pricingPage.oneTime")}`;
 
             const isPurchased = userOwnsPlanId(user, plan.id || plan._id);
 
@@ -401,27 +419,12 @@ const PricingSection = () => {
                   ) : null}
 
                   <div className="mt-5 flex flex-col items-center">
-                    {plan.originalPrice > 0 &&
-                    plan.originalPrice !== plan.discountedPrice ? (
-                      <div className="mb-1 flex items-baseline justify-center gap-1.5">
-                        <span className="relative px-1 text-[16px] font-medium text-[var(--ib-mute)] sm:text-[18px]">
-                          {t("pricingPage.was")} ${plan.originalPrice}
-                          <span
-                            aria-hidden
-                            className="absolute inset-x-0 top-1/2 h-[1.5px] -translate-y-1/2 bg-red-500"
-                          />
-                        </span>
-                        <span className="text-[12px] font-medium text-[var(--ib-mute)] sm:text-[13px]">
-                          {period || ` / ${t("pricingPage.wasOneTime", "month")}`}
-                        </span>
-                      </div>
-                    ) : null}
                     <div className="flex flex-wrap items-end justify-center gap-x-2 gap-y-1">
                       <span className="text-[40px] font-bold leading-none tracking-tight text-[var(--ib-ink)] sm:text-[48px] lg:text-[52px]">
                         ${displayPrice}
                       </span>
-                      <span className="mb-1 text-[12px] font-medium text-[var(--ib-mute)] sm:text-[13px]">
-                        {period || ` / ${t("pricingPage.oneTime")}`}
+                      <span className="mb-1 max-w-[140px] text-left text-[12px] font-medium leading-snug text-[var(--ib-mute)] sm:text-[13px]">
+                        {period}
                       </span>
                     </div>
                   </div>

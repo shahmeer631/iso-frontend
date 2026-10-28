@@ -2,9 +2,48 @@
 
 import { FC } from "react";
 import { motion, useReducedMotion } from "framer-motion";
-import { ArrowRight, Clock3, Mail, MapPin, Phone } from "lucide-react";
+import {
+  ArrowRight,
+  BookOpen,
+  Brain,
+  Clock3,
+  GraduationCap,
+  Mail,
+  MapPin,
+  Microscope,
+  Phone,
+} from "lucide-react";
 import { useTranslation } from "react-i18next";
 import "@/lib/i18n/client";
+import Link from "next/link";
+import { useParams } from "next/navigation";
+
+const HELP_TOPICS = [
+  {
+    title: "Mastery Lab assessments",
+    body: "Questions about role-based assessments, scoring, or how gap reports map to learning paths.",
+    icon: Microscope,
+    href: "/mastery-lab",
+  },
+  {
+    title: "ISO Library & standards",
+    body: "Help finding clauses, editions, or how Library insights connect to your assessment results.",
+    icon: BookOpen,
+    href: "/library/iso-standards",
+  },
+  {
+    title: "Academy courses",
+    body: "Enrollment, course access, learning paths, and certification-oriented curricula.",
+    icon: GraduationCap,
+    href: "/academy",
+  },
+  {
+    title: "AI Assistant tools",
+    body: "Support for ISO Navigator, Audit Lens, Benchmark AI, and document generation workflows.",
+    icon: Brain,
+    href: "/ai-assistant-home",
+  },
+];
 
 const ease = [0.22, 1, 0.36, 1] as const;
 
@@ -17,6 +56,8 @@ const labelClassName =
 const ContactSection: FC = () => {
   const { t } = useTranslation();
   const reduceMotion = useReducedMotion();
+  const params = useParams();
+  const lang = (params?.lang as string) || "en";
 
   const reveal = (delay = 0) =>
     reduceMotion
@@ -258,6 +299,83 @@ const ContactSection: FC = () => {
             </motion.div>
           </div>
         </div>
+
+        <motion.div
+          {...reveal(0.12)}
+          className="mt-12 rounded-[20px] border border-[var(--ib-line)] bg-[var(--ib-card)] p-6 sm:mt-14 sm:p-8 lg:p-10"
+        >
+          <div className="max-w-[720px]">
+            <div className="ib-eye">How we can help</div>
+            <h2 className="mb-0! text-[26px] font-bold tracking-[-0.03em] text-[var(--ib-ink)] sm:text-[30px]">
+              Talk to us about the full Assess → Apply journey
+            </h2>
+            <p className="mt-3 text-[15.5px] leading-relaxed text-[var(--ib-mute)] sm:text-base">
+              Whether you need product guidance, partnership details, billing
+              help, or a walkthrough of Mastery Lab, Library, Academy, or AI
+              Assistant—send a message and we will route it to the right team.
+              Most inquiries receive a first response within one business day.
+            </p>
+          </div>
+
+          <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+            {HELP_TOPICS.map((topic) => {
+              const Icon = topic.icon;
+              return (
+                <Link
+                  key={topic.title}
+                  href={`/${lang}${topic.href}`}
+                  className="group rounded-2xl border border-[var(--ib-line)] bg-[var(--ib-bg)] p-5 transition-all hover:-translate-y-0.5 hover:border-[color-mix(in_srgb,var(--ib-acc)_30%,var(--ib-line))] hover:shadow-[0_16px_36px_-24px_rgba(27,77,219,0.3)]"
+                >
+                  <span className="grid size-10 place-items-center rounded-xl border border-[color-mix(in_srgb,var(--ib-acc)_18%,var(--ib-line))] bg-[var(--ib-accbg)] text-[var(--ib-acc)]">
+                    <Icon className="size-4" aria-hidden />
+                  </span>
+                  <h3 className="mt-4 mb-0! text-[16px] font-bold tracking-[-0.02em] text-[var(--ib-ink)]">
+                    {topic.title}
+                  </h3>
+                  <p className="mt-2 text-[13.5px] leading-relaxed text-[var(--ib-mute)]">
+                    {topic.body}
+                  </p>
+                  <span className="mt-4 inline-flex items-center gap-1.5 text-[13px] font-semibold text-[var(--ib-acc)] group-hover:gap-2">
+                    Explore
+                    <ArrowRight className="size-3.5" aria-hidden />
+                  </span>
+                </Link>
+              );
+            })}
+          </div>
+        </motion.div>
+
+        <motion.div
+          {...reveal(0.18)}
+          className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-3"
+        >
+          {[
+            {
+              title: "Sales & demos",
+              body: "Book a walkthrough of Assess · Learn · Master · Apply for your team or consulting practice.",
+            },
+            {
+              title: "Support & access",
+              body: "Account access, plan changes, refunds, and technical issues with tools or course players.",
+            },
+            {
+              title: "Partnerships",
+              body: "Training partners, enterprise rollouts, and content collaboration opportunities.",
+            },
+          ].map((card) => (
+            <div
+              key={card.title}
+              className="rounded-2xl border border-[var(--ib-line)] bg-[var(--ib-card)] p-5 sm:p-6"
+            >
+              <h3 className="mb-0! text-[16px] font-bold tracking-[-0.02em] text-[var(--ib-ink)]">
+                {card.title}
+              </h3>
+              <p className="mt-2 text-[13.5px] leading-relaxed text-[var(--ib-mute)]">
+                {card.body}
+              </p>
+            </div>
+          ))}
+        </motion.div>
       </div>
     </section>
   );

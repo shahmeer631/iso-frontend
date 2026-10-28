@@ -1,6 +1,14 @@
 import type { Metadata } from "next";
+import { Inter } from "next/font/google";
 import ClientWrapper from "@/components/layout/ClientWrapper";
 import "./globals.css";
+
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter",
+  weight: ["400", "500", "600", "700"],
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: "ISO Compliance Software | AI-Powered Audit & Management",
@@ -13,8 +21,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html suppressHydrationWarning>
-      <body className="font-inter" suppressHydrationWarning>
+    <html suppressHydrationWarning className={inter.variable}>
+      <body className="font-sans antialiased" suppressHydrationWarning>
         <ClientWrapper>{children}</ClientWrapper>
       </body>
     </html>

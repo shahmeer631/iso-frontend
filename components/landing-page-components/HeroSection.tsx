@@ -61,11 +61,11 @@ export default function HeroSection({
           {/* Top Badge */}
           <div data-aos="fade-down" className="inline-flex items-center gap-2 px-3 py-1.5 sm:px-4 sm:py-2 rounded-full bg-[var(--ib-accbg)] border border-[var(--ib-line)] mb-8 max-w-full">
             <span className="flex h-2 w-2 rounded-full  bg-[var(--ib-acc)] animate-pulse shrink-0" />
-            <span className="text-[var(--ib-acc)] text-[10px] sm:text-xs font-light tracking-widest uppercase font-inter whitespace-nowrap overflow-hidden text-ellipsis">{t("hero.badge")}</span>
+            <span className="whitespace-nowrap overflow-hidden text-ellipsis font-inter text-[10px] font-semibold uppercase tracking-widest text-[var(--ib-acc)] sm:text-xs">{t("hero.badge")}</span>
           </div>
 
           {/* Main Heading */}
-          <h2 className="text-lg   font-thin text-[var(--ib-ink)] leading-[1.1] mb-8" data-aos="fade-up">{t("hero.heading1")}
+          <h2 className="mb-8 text-lg font-semibold leading-[1.1] text-[var(--ib-ink)]" data-aos="fade-up">{t("hero.heading1")}
             {" "} <br />
             <span className="text-[var(--ib-acc)]">
               <Typewriter
@@ -81,7 +81,7 @@ export default function HeroSection({
           </h2>
 
           {/* Subheadline */}
-          <p className="text-[var(--ib-mute)] text-sm lg:text-base max-w-4xl mx-auto leading-relaxed mb-12 font-inter" data-aos="fade-up" data-aos-delay="100">{t("hero.description")}</p>
+          <p className="mx-auto mb-12 max-w-4xl font-inter text-sm font-medium leading-relaxed text-[var(--ib-mute)] lg:text-base" data-aos="fade-up" data-aos-delay="100">{t("hero.description")}</p>
 
           {/* Primary Hero CTA button */}
           <div className="mb-10 flex flex-col items-center gap-3" data-aos="fade-up" data-aos-delay="150">

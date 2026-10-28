@@ -8,6 +8,7 @@ export interface GenerateQuizRequest {
   };
   num_questions: number;
   difficulty: string;
+  guestId?: string;
 }
 
 
@@ -17,7 +18,10 @@ export interface GenerateQuizResponse {
   iso_standard: string | null;
   total_questions: number;
   difficulty: string;
+  /** Server-issued exam session for trusted scoring (Phase 3.1) */
+  examSessionId?: string;
   questions: Array<{
+    id?: string;
     question: string;
     options: Record<string, string>;
     correct_answer: string;

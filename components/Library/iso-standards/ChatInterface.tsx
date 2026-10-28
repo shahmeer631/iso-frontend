@@ -6,8 +6,6 @@ import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowLeft,
-  Share2,
-  User,
   LayoutPanelLeft,
   X,
   GraduationCap,
@@ -20,12 +18,12 @@ import {
   CheckSquare,
   Sparkles,
   ShieldCheck,
-  AlertCircle,
   Globe,
   Dna,
   LifeBuoy,
   Plus,
-  FileUp,
+  Mic,
+  MicOff,
   Send,
   ChevronLeft,
   ChevronRight,
@@ -49,6 +47,7 @@ import ReactMarkdown from "react-markdown";
 import { useTranslation } from "react-i18next";
 import "@/lib/i18n/client";
 import { useAskAiPageContext } from "@/components/ask-ai/AskAiPageContext";
+import { ActivityTracker } from "@/components/activity/ActivityTracker";
 
 import remarkGfm from "remark-gfm";
 
@@ -59,8 +58,8 @@ function getStandardCode(standard: any): string {
 
 function getStandardSummary(standard: any, fallback = ""): string {
   return String(
-    standard?.summary ||
-      standard?.description ||
+    standard?.description ||
+      standard?.summary ||
       standard?.title ||
       fallback,
   ).trim();
@@ -655,16 +654,16 @@ function LibraryQuizPlayer({
   }, 0);
 
   return (
-    <div className="space-y-5 mt-2">
-      <div className="flex items-center justify-between gap-3">
-        <h3 className="text-[15px] md:text-[16px] font-black text-[var(--ib-ink)] tracking-tight">
+    <div className="mt-2 space-y-5 font-sans">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <h3 className="mb-0! text-[16px] font-bold tracking-[-0.02em] text-[var(--ib-ink)] md:text-[17px]">
           Knowledge Assessment
         </h3>
-        <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--ib-mute)]">
+        <span className="text-[12px] font-semibold text-[var(--ib-mute)]">
           {attemptItems.length} questions
         </span>
         {submitted && (
-          <span className="text-[11px] font-black uppercase tracking-widest text-emerald-400">
+          <span className="text-[12px] font-bold text-emerald-600">
             Score {score}/{attemptItems.length}
           </span>
         )}
@@ -674,17 +673,18 @@ function LibraryQuizPlayer({
         return (
           <div
             key={`${libraryQuestionFingerprint(item.question)}-${idx}`}
-            className="rounded-2xl border border-[var(--ib-line)] bg-[var(--ib-card)] p-4 md:p-5 space-y-3"
+            className="space-y-3 rounded-2xl border border-[var(--ib-line)] bg-[var(--ib-card)] p-4 md:p-5"
           >
-            <p className="text-[14px] md:text-[15px] font-semibold text-[var(--ib-ink)] leading-relaxed">
-              <span className="text-[var(--ib-acc)] mr-2">Q{idx + 1}.</span>
+            <p className="text-[15px] font-semibold leading-relaxed text-[var(--ib-ink)] md:text-[16px]">
+              <span className="mr-2 text-[var(--ib-acc)]">Q{idx + 1}.</span>
               {item.question}
             </p>
             <div className="space-y-2">
               {item.options.map((opt) => {
                 const isSelected = selected === opt.key;
                 const isCorrect = submitted && opt.key === item.correct;
-                const isWrong = submitted && isSelected && opt.key !== item.correct;
+                const isWrong =
+                  submitted && isSelected && opt.key !== item.correct;
                 return (
                   <button
                     key={opt.key}
@@ -693,27 +693,29 @@ function LibraryQuizPlayer({
                     onClick={() =>
                       setAnswers((prev) => ({ ...prev, [idx]: opt.key }))
                     }
-                    className={`w-full text-left px-3 py-2.5 rounded-xl border text-[13px] md:text-[14px] transition-all ${
+                    className={`w-full rounded-xl border px-3 py-3 text-left text-[14px] font-medium transition-all md:text-[15px] ${
                       isCorrect
-                        ? "border-emerald-400/50 bg-emerald-400/10 text-emerald-200"
+                        ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-800"
                         : isWrong
-                          ? "border-rose-400/50 bg-rose-400/10 text-rose-200"
+                          ? "border-rose-400/40 bg-rose-400/10 text-rose-800"
                           : isSelected
-                            ? "border-[var(--ib-acc)]/40 bg-[var(--ib-acc)]/10 text-white"
-                            : "border-[var(--ib-line)] bg-[var(--ib-bg)] text-[var(--ib-mute)] hover:border-[var(--ib-line)]"
+                            ? "border-[var(--ib-acc)] bg-[var(--ib-accbg)] text-[var(--ib-ink)]"
+                            : "border-[var(--ib-line)] bg-[var(--ib-bg)] text-[var(--ib-ink)] hover:border-[color-mix(in_srgb,var(--ib-acc)_28%,var(--ib-line))]"
                     }`}
                   >
-                    <span className="font-black text-[var(--ib-acc)] mr-2">{opt.key})</span>
+                    <span className="mr-2 font-bold text-[var(--ib-acc)]">
+                      {opt.key})
+                    </span>
                     {opt.text}
                   </button>
                 );
               })}
             </div>
-            {submitted && item.explanation && (
-              <p className="text-[12px] md:text-[13px] text-[var(--ib-mute)] leading-relaxed border-t border-[var(--ib-line)] pt-3">
+            {submitted && item.explanation ? (
+              <p className="border-t border-[var(--ib-line)] pt-3 text-[13px] font-medium leading-relaxed text-[var(--ib-mute)] md:text-[14px]">
                 {item.explanation}
               </p>
-            )}
+            ) : null}
           </div>
         );
       })}
@@ -724,7 +726,7 @@ function LibraryQuizPlayer({
             Object.keys(answers).length < attemptItems.length || isRetrying
           }
           onClick={() => setSubmitted(true)}
-          className="w-full py-3 rounded-xl bg-[var(--ib-acc)] text-white font-black text-xs uppercase tracking-widest disabled:opacity-40 disabled:cursor-not-allowed"
+          className="w-full rounded-xl bg-[var(--ib-acc)] py-3 text-[13px] font-semibold uppercase tracking-[0.08em] text-white disabled:cursor-not-allowed disabled:opacity-40"
         >
           Check answers
         </button>
@@ -892,33 +894,35 @@ const ChatHeader = ({
 }) => {
   const { t } = useTranslation();
   return (
-    <div className="flex items-center absolute top-0 left-0 z-50 right-0 justify-between p-4 bg-[var(--ib-bg)]/80 backdrop-blur-2xl border-b border-[var(--ib-line)] shrink-0">
-      <div className="flex-1 flex items-center gap-4">
+    <div className="absolute left-0 right-0 top-0 z-50 flex shrink-0 items-center justify-between border-b border-[var(--ib-line)] bg-[var(--ib-bg)]/85 p-4 font-sans backdrop-blur-xl">
+      <div className="flex flex-1 items-center gap-4">
         <button
+          type="button"
           onClick={onToggleLeftSidebar}
-          className="p-2.5 bg-[var(--ib-card)] border border-[var(--ib-line)] rounded-xl text-[var(--ib-mute)] hover:text-[var(--ib-acc)] transition-all shadow-sm block lg:hidden "
-          title={t('common.openNavigation')}
+          className="block rounded-xl border border-[var(--ib-line)] bg-[var(--ib-card)] p-2.5 text-[var(--ib-mute)] shadow-sm transition-all hover:text-[var(--ib-acc)] lg:hidden"
+          title={t("common.openNavigation")}
         >
           <MessageSquare size={18} />
         </button>
       </div>
 
-      <div className="flex items-center gap-3 mt-2">
-        {standardTitle && (
-          <div className="flex items-center gap-2 px-3 py-1.5 bg-[var(--ib-card)] border border-[var(--ib-line)] rounded-full">
-            <FileText size={14} className="text-[var(--ib-acc)]" />
-            <span className="text-[11px] font-bold text-[var(--ib-mute)] uppercase tracking-wider text-center">
+      <div className="mt-1 flex items-center gap-3">
+        {standardTitle ? (
+          <div className="flex max-w-[min(70vw,420px)] items-center gap-2 rounded-full border border-[var(--ib-line)] bg-[var(--ib-card)] px-3.5 py-1.5">
+            <FileText size={14} className="shrink-0 text-[var(--ib-acc)]" />
+            <span className="truncate text-center text-[12.5px] font-semibold text-[var(--ib-ink)]">
               {standardTitle}
             </span>
           </div>
-        )}
+        ) : null}
       </div>
 
-      <div className="flex-1 flex items-center justify-end gap-3 px-2">
+      <div className="flex flex-1 items-center justify-end gap-3 px-2">
         <button
+          type="button"
           onClick={onToggleRightSidebar}
-          className="xl:hidden p-2.5 bg-[var(--ib-card)] border border-[var(--ib-line)] rounded-xl text-[var(--ib-mute)] hover:text-[var(--ib-acc)] transition-all shadow-sm"
-          title={t('common.openStudio')}
+          className="rounded-xl border border-[var(--ib-line)] bg-[var(--ib-card)] p-2.5 text-[var(--ib-mute)] shadow-sm transition-all hover:text-[var(--ib-acc)] xl:hidden"
+          title={t("common.openStudio")}
         >
           <LayoutPanelLeft size={18} />
         </button>
@@ -1216,130 +1220,83 @@ const InitialChatView = ({ title, summary, code, category, standardId, onActionC
     };
   }, [standardId, token]);
 
-  const quickActions = [
-    {
-      title: t('library.quickSummarize'),
-      desc: t('library.quickSummarizeDesc'),
-      action: t('library.quickSummarize'),
-      icon: Sparkles,
-      color: "text-[var(--ib-acc)]",
-      bgColor: "bg-[var(--ib-acc)]/10",
-      borderColor: "border-[var(--ib-line)]",
-    },
-    {
-      title: t('library.quickRequirements'),
-      desc: t('library.quickRequirementsDesc'),
-      action: t('library.quickRequirements'),
-      icon: ShieldCheck,
-      color: "text-emerald-400",
-      bgColor: "bg-emerald-400/10",
-      borderColor: "border-[var(--ib-line)]",
-    },
-    {
-      title: t('library.quickRisks'),
-      desc: t('library.quickRisksDesc'),
-      action: t('library.quickRisks'),
-      icon: AlertCircle,
-      color: "text-rose-400",
-      bgColor: "bg-rose-400/10",
-      borderColor: "border-[var(--ib-line)]",
-    },
-    {
-      title: t('library.quickChecklist'),
-      desc: t('library.quickChecklistDesc'),
-      action: t('library.quickChecklist'),
-      icon: CheckSquare,
-      color: "text-[var(--ib-acc)]",
-      bgColor: "bg-[var(--ib-accbg)]",
-      borderColor: "border-[var(--ib-line)]",
-    },
-  ];
-
   if (!title) return <DocumentSkeleton />;
 
   return (
-    <div className="flex-1 flex flex-col items-center justify-start px-4 md:px-8 lg:px-12 overflow-y-auto w-full h-full relative no-scrollbar mt-4 md:mt-6">
-      {/* Decorative background elements */}
-      <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-[var(--ib-accbg)] rounded-full blur-[120px] -z-10 pointer-events-none" />
-      <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-[var(--ib-acc)]/5 rounded-full blur-[120px] -z-10 pointer-events-none" />
+    <div className="relative mt-2 flex h-full w-full flex-1 flex-col items-center justify-start overflow-y-auto px-4 font-sans no-scrollbar md:mt-4 md:px-8 lg:px-12">
+      <div className="pointer-events-none absolute right-0 top-0 -z-10 size-[480px] rounded-full bg-[var(--ib-accbg)] blur-[110px]" />
+      <div className="pointer-events-none absolute bottom-0 left-0 -z-10 size-[400px] rounded-full bg-[color-mix(in_srgb,var(--ib-acc)_8%,transparent)] blur-[110px]" />
 
-      <div className="max-w-4xl w-full">
+      <div className="w-full max-w-3xl pb-8">
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, ease: "easeOut" }}
+          transition={{ duration: 0.5, ease: "easeOut" }}
           className="text-center"
         >
-          {/* Welcome Branding */}
-          <div className="mb-14">
-            <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 bg-[var(--ib-card)] border border-[var(--ib-line)] rounded-full mb-6">
-              <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-[var(--ib-acc)] animate-pulse" />
-              <div className="text-[var(--ib-mute)] text-[8px] sm:text-[10px] font-black uppercase tracking-[0.1em] sm:tracking-[0.4em] whitespace-nowrap">{t('library.neuralInterface')}</div>
-            </div>
-            <div className="text-xl sm:text-3xl md:text-4xl lg:text-4xl font-black text-[var(--ib-ink)] mb-6 tracking-tight">ISO Brain <span className="text-[var(--ib-acc)]">{t('academy.headingHighlight', 'AI')}</span></div>
-            <div className="flex flex-wrap justify-center gap-4 sm:gap-6 md:gap-8 text-[var(--ib-mute)] text-[8px] sm:text-[10px] font-black uppercase tracking-[0.1em] sm:tracking-[0.3em]">
-              <span className="flex items-center gap-2">
-                <div className="w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full bg-[var(--ib-acc)] shadow-[0_0_8px_rgba(27,77,219,0.4)]" /> {t('library.realtimeAnalysis')}
-              </span>
-              <span className="flex items-center gap-2">
-                <div className="w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full bg-emerald-500" /> {t('library.regulatoryGuardrails')}
-              </span>
-              <span className="flex items-center gap-2">
-                <div className="w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full bg-[var(--ib-acc)]" /> {t('library.auditPreparedness')}
-              </span>
+          <div className="mb-8">
+            <p className="mb-3 text-[13px] font-semibold tracking-[-0.01em] text-[var(--ib-acc)] sm:text-[14px]">
+              ISOBrain.AI
+            </p>
+            <h1 className="mb-0! text-[28px] font-bold leading-[1.15] tracking-[-0.035em] text-[var(--ib-ink)] sm:text-[36px] lg:text-[40px]">
+              {title || t("library.standard")}
+            </h1>
+            <div className="mt-4 inline-flex flex-wrap items-center justify-center gap-2 rounded-full border border-[var(--ib-line)] bg-[var(--ib-card)] px-3.5 py-1.5 text-[12.5px] font-semibold text-[var(--ib-mute)] sm:text-[13px]">
+              <span className="text-[var(--ib-acc)]">{code || "ISO"}</span>
+              <span aria-hidden>·</span>
+              <span>{category || "Standard"}</span>
             </div>
           </div>
 
-          <div className="inline-flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-1.5 sm:py-2 bg-[var(--ib-card)] border border-[var(--ib-line)] rounded-2xl text-[var(--ib-mute)] mb-8">
-            <Share2 size={14} className="text-[var(--ib-acc)] sm:w-4 sm:h-4" />
-            <span className="text-[9px] sm:text-[11px] font-black uppercase tracking-widest">
-              {category || "Standard"} • {code}
-            </span>
-          </div>
+          {summary ? (
+            <div className="mx-auto mb-8 max-w-2xl rounded-2xl border border-[var(--ib-line)] bg-[var(--ib-card)] px-5 py-4 text-left sm:px-6 sm:py-5">
+              <p className="mb-1.5 text-[11px] font-bold uppercase tracking-[0.12em] text-[var(--ib-acc)]">
+                Overview
+              </p>
+              <p className="font-sans text-[15px] font-medium leading-relaxed text-[var(--ib-ink)] sm:text-[16px]">
+                {summary}
+              </p>
+            </div>
+          ) : null}
 
-          <div className="text-[12px] sm:text-base md:text-xl lg:text-xl font-black text-[var(--ib-ink)] mb-8 leading-tight mx-auto max-w-2xl">
-            {t('library.redefining')} <span className="text-[var(--ib-acc)]">{title || t('library.standard')}</span> {t('library.complianceThrough')}
-          </div>
-          <div className="text-[11px] sm:text-base md:text-lg text-[var(--ib-mute)] leading-relaxed font-medium italic max-w-3xl mx-auto mb-8">
-            "{summary}"
-          </div>
+          <p className="mb-4 text-[13px] font-semibold text-[var(--ib-mute)] sm:text-[14px]">
+            Suggested questions
+          </p>
 
           {isFetchingSuggestions && suggestions.length === 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-w-4xl mx-auto mt-8 w-full px-4">
+            <div className="mx-auto grid w-full max-w-2xl grid-cols-1 gap-3">
               {[1, 2, 3, 4].map((i) => (
                 <div
                   key={i}
-                  className="flex min-h-[88px] w-full items-start gap-3 rounded-2xl border border-[var(--ib-line)] bg-[var(--ib-card)] px-4 py-4"
+                  className="flex min-h-[72px] w-full items-start gap-3 rounded-2xl border border-[var(--ib-line)] bg-[var(--ib-card)] px-4 py-4"
                 >
-                  <div className="mt-0.5 size-8 shrink-0 animate-pulse rounded-[10px] bg-[var(--ib-accbg)]" />
+                  <div className="mt-0.5 size-8 shrink-0 animate-pulse rounded-lg bg-[var(--ib-accbg)]" />
                   <div className="flex flex-1 flex-col gap-2 pt-1">
-                    <div className="h-3 w-full animate-pulse rounded-full bg-[var(--ib-line)]" />
-                    <div className="h-3 w-4/5 animate-pulse rounded-full bg-[var(--ib-line)]" />
-                    <div className="h-3 w-2/3 animate-pulse rounded-full bg-[var(--ib-line)]" />
+                    <div className="h-3.5 w-full animate-pulse rounded-full bg-[var(--ib-line)]" />
+                    <div className="h-3.5 w-4/5 animate-pulse rounded-full bg-[var(--ib-line)]" />
                   </div>
                 </div>
               ))}
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-w-4xl mx-auto mt-8 w-full px-4">
+            <div className="mx-auto grid w-full max-w-2xl grid-cols-1 gap-3">
               {suggestions.map((quiz, index) => (
                 <button
                   key={index}
                   type="button"
                   onClick={() => onActionClick(quiz)}
-                  className="group flex min-h-[88px] w-full items-start gap-3 rounded-2xl border border-[var(--ib-line)] bg-[var(--ib-card)] px-4 py-4 text-left shadow-none transition-all hover:-translate-y-0.5 hover:border-[var(--ib-acc)] hover:bg-[var(--ib-accbg)] hover:shadow-[0_12px_32px_-20px_rgba(11,18,32,0.35)]"
+                  className="group flex min-h-[72px] w-full items-start gap-3 rounded-2xl border border-[var(--ib-line)] bg-[var(--ib-card)] px-4 py-4 text-left transition-all hover:-translate-y-0.5 hover:border-[var(--ib-acc)] hover:bg-[var(--ib-accbg)] sm:px-5"
                 >
-                  <span className="mt-0.5 grid size-8 shrink-0 place-items-center rounded-[10px] bg-[var(--ib-accbg)] text-[13px] font-bold text-[var(--ib-acc)] transition-colors group-hover:bg-[var(--ib-acc)] group-hover:text-white">
+                  <span className="mt-0.5 grid size-8 shrink-0 place-items-center rounded-lg bg-[var(--ib-accbg)] font-sans text-[13px] font-bold text-[var(--ib-acc)] transition-colors group-hover:bg-[var(--ib-acc)] group-hover:text-white">
                     {index + 1}
                   </span>
-                  <span className="text-[13px] sm:text-[14px] font-medium leading-[1.55] text-[var(--ib-ink)]">
+                  <span className="font-sans text-[15px] font-semibold leading-[1.55] text-[var(--ib-ink)] sm:text-[16px]">
                     {quiz}
                   </span>
                 </button>
               ))}
             </div>
           )}
-
         </motion.div>
       </div>
     </div>
@@ -1864,79 +1821,132 @@ const ChatInput = ({
   onChange,
   onSend,
   isLoading,
-  showSuggestions,
   placeholder,
-  onFileSelect,
-  selectedFile,
 }: any) => {
   const { t } = useTranslation();
-  const resolvedPlaceholder = placeholder ?? t('library.askAnything');
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const resolvedPlaceholder = placeholder ?? t("library.askAnything");
+  const [isListening, setIsListening] = useState(false);
+  const recognitionRef = useRef<any>(null);
+  const baseValueRef = useRef("");
+
+  useEffect(() => {
+    return () => {
+      try {
+        recognitionRef.current?.stop?.();
+      } catch {
+        /* ignore */
+      }
+    };
+  }, []);
+
+  const toggleVoice = () => {
+    if (typeof window === "undefined") return;
+    const SpeechRecognition =
+      (window as any).SpeechRecognition ||
+      (window as any).webkitSpeechRecognition;
+
+    if (!SpeechRecognition) {
+      toast.error("Voice input is not supported in this browser.");
+      return;
+    }
+
+    if (isListening && recognitionRef.current) {
+      try {
+        recognitionRef.current.stop();
+      } catch {
+        /* ignore */
+      }
+      setIsListening(false);
+      return;
+    }
+
+    const recognition = new SpeechRecognition();
+    recognitionRef.current = recognition;
+    recognition.continuous = false;
+    recognition.interimResults = true;
+    recognition.lang =
+      (typeof navigator !== "undefined" && navigator.language) || "en-US";
+
+    baseValueRef.current = String(value || "").trim();
+
+    recognition.onstart = () => setIsListening(true);
+    recognition.onend = () => setIsListening(false);
+    recognition.onerror = () => {
+      setIsListening(false);
+      toast.error("Could not capture voice. Please try again.");
+    };
+    recognition.onresult = (event: any) => {
+      let transcript = "";
+      for (let i = 0; i < event.results.length; i += 1) {
+        transcript += event.results[i][0]?.transcript || "";
+      }
+      const next = [baseValueRef.current, transcript.trim()]
+        .filter(Boolean)
+        .join(" ")
+        .trim();
+      onChange(next);
+    };
+
+    try {
+      recognition.start();
+    } catch {
+      setIsListening(false);
+      toast.error("Could not start voice input.");
+    }
+  };
 
   return (
-    <div className="pt-1 pb-3 sm:pt-2 sm:pb-4 md:pt-3 md:pb-8 px-3 sm:px-4 md:px-6 lg:px-8 bg-transparent shrink-0 relative z-30 mb-4 w-full min-w-0">
-      <div className="w-full max-w-full mx-auto">
+    <div className="relative z-30 mb-3 w-full min-w-0 shrink-0 bg-transparent px-3 pb-3 pt-1 font-sans sm:px-4 sm:pb-4 md:mb-4 md:px-6 md:pb-6 lg:px-8">
+      <div className="mx-auto w-full max-w-3xl">
+        <div className="group relative">
+          <div className="relative flex items-center gap-2 rounded-[1.35rem] border border-[var(--ib-line)] bg-[var(--ib-card)] p-1.5 shadow-[0_16px_40px_-28px_rgba(11,18,32,0.45)] transition-all duration-300 group-focus-within:border-[var(--ib-acc)] group-focus-within:ring-2 group-focus-within:ring-[color-mix(in_srgb,var(--ib-acc)_16%,transparent)] sm:gap-3 sm:rounded-[1.5rem] sm:p-2">
+            <button
+              type="button"
+              onClick={toggleVoice}
+              disabled={isLoading}
+              className={`ml-0.5 flex size-9 shrink-0 items-center justify-center rounded-full border transition-all sm:ml-1 sm:size-11 ${
+                isListening
+                  ? "border-rose-400/50 bg-rose-500/15 text-rose-500"
+                  : "border-[var(--ib-line)] bg-[var(--ib-bg)] text-[var(--ib-mute)] hover:border-[color-mix(in_srgb,var(--ib-acc)_30%,var(--ib-line))] hover:bg-[var(--ib-accbg)] hover:text-[var(--ib-acc)]"
+              } disabled:opacity-40`}
+              title={isListening ? "Stop listening" : "Voice input"}
+              aria-label={isListening ? "Stop listening" : "Voice input"}
+              aria-pressed={isListening}
+            >
+              {isListening ? (
+                <MicOff size={16} className="sm:size-5" strokeWidth={2.25} />
+              ) : (
+                <Mic size={16} className="sm:size-5" strokeWidth={2.25} />
+              )}
+            </button>
 
-
-        <div className="relative group mb-12">
-          {/* Tokens Remaining Micro-UI */}
-          {/* <div className="absolute -top-7 left-1/2 -translate-x-1/2 flex items-center gap-2 px-3 py-1 bg-[var(--ib-card)] border border-[var(--ib-line)] rounded-full">
-            <div className="w-16 h-1 bg-[var(--ib-accbg)] rounded-full overflow-hidden">
-              <div className="w-[30%] h-full bg-[var(--ib-acc)] text-white shadow-[0_0_8px_rgba(27,77,219,0.4)]" />
-            </div>
-            <span className="text-[8px] font-black text-[var(--ib-mute)] uppercase tracking-widest">{t('library.queriesLeft', { count: 7, total: 10 })}</span>
-          </div> */}
-
-          <div className="relative flex items-center gap-2 sm:gap-3 p-1.5 sm:p-2 bg-[var(--ib-card)] backdrop-blur-2xl border border-[var(--ib-line)] rounded-[2.5rem] shadow-[0_30px_60px_-15px_rgba(0,0,0,0.5)] group-focus-within:border-[var(--ib-acc)]/30 group-focus-within:shadow-[0_0_40px_rgba(27, 77, 219,0.1)] transition-all duration-500 ">
-            <div className="relative pl-1 sm:pl-2">
-              <input
-                type="file"
-                ref={fileInputRef}
-                onChange={(e) => onFileSelect(e.target.files?.[0] || null)}
-                accept="image/*,.pdf,.doc,.docx,.txt"
-                className="hidden"
-              />
-              <button
-                onClick={() => fileInputRef.current?.click()}
-                disabled={isLoading}
-                className={`flex items-center justify-center w-8 h-8 sm:w-11 sm:h-11 rounded-full border transition-all ${selectedFile
-                  ? "bg-[var(--ib-acc)]/20 border-[var(--ib-acc)]/40 text-[var(--ib-acc)]"
-                  : "bg-[var(--ib-card)] border-[var(--ib-line)] text-[var(--ib-mute)] hover:text-[var(--ib-acc)] hover:bg-[var(--ib-accbg)]"
-                  } shadow-sm`}
-                title={t('library.attachFile') || "Attach file or image"}
-              >
-                <Plus size={16} className="sm:w-5 sm:h-5" strokeWidth={2.5} />
-                {selectedFile && (
-                  <div className="absolute -top-1 -right-1 w-3.5 h-3.5 sm:w-4 sm:h-4 bg-[var(--ib-acc)] text-white text-[var(--ib-bg)] text-[8px] sm:text-[9px] rounded-full flex items-center justify-center font-black shadow-[0_0_10px_rgba(27,77,219,0.4)]">
-                    1
-                  </div>
-                )}
-              </button>
-            </div>
-
-            <div className="relative flex-1">
+            <div className="relative min-w-0 flex-1">
               <input
                 type="text"
                 value={value}
                 onChange={(e) => onChange(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && !isLoading && onSend()}
-                placeholder={selectedFile ? `File: ${selectedFile.name}` : resolvedPlaceholder}
+                placeholder={
+                  isListening ? "Listening…" : resolvedPlaceholder
+                }
                 disabled={isLoading}
-                className="w-full h-10 sm:h-14 pl-1.5 sm:pl-2 pr-10 sm:pr-14 bg-transparent focus:outline-none placeholder:text-[var(--ib-mute)] font-bold text-[13px] sm:text-[16px] text-[var(--ib-ink)] disabled:opacity-50"
+                className="h-10 w-full bg-transparent pl-1 pr-10 font-sans text-[14px] font-medium text-[var(--ib-ink)] outline-none placeholder:text-[var(--ib-mute)] disabled:opacity-50 sm:h-12 sm:pl-2 sm:pr-14 sm:text-[15.5px]"
               />
               <button
+                type="button"
                 onClick={() => onSend()}
-                disabled={(!value.trim() && !selectedFile) || isLoading}
-                className="absolute right-0 top-1/2 -translate-y-1/2 w-8 h-8 sm:w-11 sm:h-11 bg-[var(--ib-acc)] text-white rounded-full flex items-center justify-center hover:scale-105 transition-all shadow-[0_0_20px_rgba(27, 77, 219,0.3)] active:scale-95 disabled:opacity-30 disabled:cursor-not-allowed"
+                disabled={!value.trim() || isLoading}
+                className="absolute right-0 top-1/2 flex size-9 -translate-y-1/2 items-center justify-center rounded-full bg-[var(--ib-acc)] text-white transition-all hover:opacity-92 active:scale-95 disabled:cursor-not-allowed disabled:opacity-30 sm:size-11"
+                aria-label="Send message"
               >
-                <Send size={14} className="sm:w-[18px] sm:h-[18px]" strokeWidth={2.5} />
+                <Send size={14} className="sm:size-[18px]" strokeWidth={2.5} />
               </button>
             </div>
           </div>
         </div>
-        <div className="text-center mt-4 sm:mt-6 flex items-center justify-center gap-2 text-[var(--ib-mute)] text-[8px] sm:text-[9px] font-black uppercase tracking-[0.2em]">
-          <ShieldCheck size={10} className="text-[var(--ib-acc)]/40" />
-          {t('library.aiEngineBranding')}
+        <div className="mt-3 flex items-center justify-center gap-2 text-[10px] font-semibold uppercase tracking-[0.14em] text-[var(--ib-mute)] sm:mt-4 sm:text-[11px]">
+          <ShieldCheck size={12} className="text-[var(--ib-acc)]/50" />
+          {t("library.aiEngineBranding")}
         </div>
       </div>
     </div>
@@ -1950,44 +1960,49 @@ const StudioSidebar = ({ studyTools, isMobile, onClose, onToolClick }: any) => {
   return (
     <div
       className={`
-    flex flex-col bg-[var(--ib-card)] p-8 shrink-0 h-full
-    ${isMobile ? "w-full" : "hidden xl:flex w-[300px] border-l border-[var(--ib-line)]"}
+    flex h-full shrink-0 flex-col bg-[var(--ib-card)] p-6 font-sans sm:p-8
+    ${isMobile ? "w-full" : "hidden w-[300px] border-l border-[var(--ib-line)] xl:flex"}
   `}
     >
-      <div className="flex items-center justify-between mb-8 mt-20">
+      <div className="mb-8 mt-16 flex items-center justify-between sm:mt-20">
         <div className="flex flex-col">
-          <h2 className="text-base font-black text-[var(--ib-ink)] uppercase tracking-wider">{t('library.expertStudio')}</h2>
-          <p className="text-[8px] sm:text-[10px] font-bold text-[var(--ib-acc)] uppercase tracking-[0.15em] sm:tracking-[0.3em]">{t('library.complianceTools')}</p>
+          <h2 className="mb-0! text-[15px] font-bold tracking-[-0.02em] text-[var(--ib-ink)]">
+            {t("library.expertStudio")}
+          </h2>
+          <p className="mt-1 text-[12px] font-medium text-[var(--ib-acc)]">
+            {t("library.complianceTools")}
+          </p>
         </div>
         {isMobile && onClose && (
           <button
+            type="button"
             onClick={onClose}
-            className="p-2 hover:bg-[var(--ib-card)] rounded-full transition-colors"
+            className="rounded-full p-2 transition-colors hover:bg-[var(--ib-bg)]"
           >
             <X size={20} className="text-[var(--ib-mute)]" />
           </button>
         )}
       </div>
 
-      <div className="flex-1 overflow-y-auto pr-2 -mr-2 no-scrollbar">
-        <div className="space-y-4">
+      <div className="no-scrollbar -mr-2 flex-1 overflow-y-auto pr-2">
+        <div className="space-y-3">
           {studyTools.map((tool: any, idx: number) => (
             <motion.div
               key={idx}
-              whileHover={{ x: 5, backgroundColor: "var(--ib-card)" }}
+              whileHover={{ x: 4 }}
               onClick={() => onToolClick(tool)}
-              className="flex items-center gap-4 p-4 rounded-2xl border border-[var(--ib-line)] bg-[var(--ib-card)] cursor-pointer transition-all group /30"
+              className="group flex cursor-pointer items-center gap-3 rounded-2xl border border-[var(--ib-line)] bg-[var(--ib-bg)] p-3.5 transition-all hover:border-[color-mix(in_srgb,var(--ib-acc)_28%,var(--ib-line))]"
             >
               <div
-                className={`p-3 rounded-xl shrink-0 transition-all group-hover:scale-110 shadow-lg ${tool.bgColor} ${tool.color.replace('text-', 'text-opacity-80 text-')}`}
+                className={`shrink-0 rounded-xl p-2.5 transition-transform group-hover:scale-105 ${tool.bgColor} ${tool.color}`}
               >
-                <tool.icon size={20} strokeWidth={2.5} />
+                <tool.icon size={18} strokeWidth={2.25} />
               </div>
               <div>
-                <h4 className="text-[13px] font-black text-[var(--ib-ink)] mb-0.5 group-hover:text-[var(--ib-acc)] transition-colors uppercase tracking-tight">
+                <h4 className="mb-0.5 text-[13px] font-semibold text-[var(--ib-ink)] transition-colors group-hover:text-[var(--ib-acc)]">
                   {tool.title}
                 </h4>
-                <p className="text-[10px] text-[var(--ib-mute)] font-bold leading-tight">
+                <p className="text-[11.5px] font-medium leading-snug text-[var(--ib-mute)]">
                   {tool.description}
                 </p>
               </div>
@@ -1996,9 +2011,12 @@ const StudioSidebar = ({ studyTools, isMobile, onClose, onToolClick }: any) => {
         </div>
       </div>
 
-      <Link href={`/${lang}/academy`} className="mt-8 bg-[var(--ib-acc)] text-white  py-4 rounded-2xl font-black text-xs uppercase tracking-[0.2em] transition-all shadow-2xl shadow-[0_4px_20px_rgba(27,77,219,0.2)] flex items-center justify-center gap-3 group">
-        <GraduationCap size={18} className="group-hover:rotate-12 transition-transform" />
-        {t('library.getCertified')}
+      <Link
+        href={`/${lang}/academy`}
+        className="mt-8 flex items-center justify-center gap-2.5 rounded-2xl bg-[var(--ib-acc)] py-3.5 text-[12px] font-semibold uppercase tracking-[0.08em] text-white transition-opacity hover:opacity-92"
+      >
+        <GraduationCap size={18} />
+        {t("library.getCertified")}
       </Link>
     </div>
   );
@@ -2102,7 +2120,6 @@ const ChatInterface = ({ id }: { id: string }) => {
   const [isDesktopLeftSidebarOpen, setIsDesktopLeftSidebarOpen] = useState(true);
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState("");
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [sessionId, setSessionId] = useState<string | null>(() => searchParams.get("sessionId"));
   const lastLoadedSessionId = useRef<string | null>(null);
 
@@ -2124,7 +2141,7 @@ const ChatInterface = ({ id }: { id: string }) => {
     try {
       const formData = new FormData();
       formData.append("context", JSON.stringify({ purpose: "library_standards", isoStandardId: standardId }));
-      formData.append("num_cards", "12");
+      formData.append("num_cards", "20");
       formData.append("difficulty", "advanced");
       if (sessionId) {
         formData.append("session_id", sessionId);
@@ -2392,25 +2409,18 @@ const ChatInterface = ({ id }: { id: string }) => {
   ) => {
     const apiMessage = (options?.apiMessage ?? text ?? inputValue).trim();
     const displayText = (options?.displayText ?? apiMessage).trim();
-    const fileToSend = selectedFile;
-    if ((!apiMessage && !fileToSend) || isChatBusy) return;
+    if (!apiMessage || isChatBusy) return;
 
     const newMessage: Message = {
       id: Date.now(),
       role: "user",
       content: displayText,
       timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-      attachment: fileToSend ? {
-        name: fileToSend.name,
-        type: fileToSend.type,
-        url: fileToSend.type.startsWith('image/') ? URL.createObjectURL(fileToSend) : undefined
-      } : undefined
     };
 
     setIsAwaitingReply(true);
     setMessages((prev) => [...prev, newMessage]);
     setInputValue("");
-    setSelectedFile(null);
 
     try {
       const formData = new FormData();
@@ -2452,10 +2462,6 @@ const ChatInterface = ({ id }: { id: string }) => {
       );
       if (sessionId) {
         formData.append("session_id", sessionId);
-      }
-
-      if (fileToSend) {
-        formData.append("file", fileToSend);
       }
 
       const result = await sendChat(formData as any).unwrap();
@@ -2594,12 +2600,19 @@ const ChatInterface = ({ id }: { id: string }) => {
   };
 
   return (
-    <div className="flex h-screen bg-[var(--ib-bg)] text-[var(--ib-ink)] overflow-hidden relative">
-      {/* Premium background mesh */}
-      <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
-        <div className="absolute -top-[10%] -left-[10%] w-[40%] h-[40%] bg-[var(--ib-acc)]/5 rounded-full blur-[120px]" />
-        <div className="absolute top-[20%] -right-[5%] w-[30%] h-[30%] bg-[var(--ib-acc)]/5 rounded-full blur-[100px]" />
-        <div className="absolute -bottom-[10%] left-[20%] w-[50%] h-[50%] bg-[var(--ib-acc)]/5 rounded-full blur-[150px]" />
+    <div className="relative flex h-screen overflow-hidden bg-[var(--ib-bg)] font-sans text-[var(--ib-ink)]">
+      <ActivityTracker
+        source="LIBRARY"
+        enabled={Boolean(token && standardId)}
+        isoStandardId={standardId}
+        documentId={searchParams.get("documentId") || undefined}
+        resourceLabel={standard ? getStandardLabel(standard) : undefined}
+        sessionKey={`library_${standardId}`}
+      />
+      <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
+        <div className="absolute -left-[10%] -top-[10%] h-[40%] w-[40%] rounded-full bg-[color-mix(in_srgb,var(--ib-acc)_8%,transparent)] blur-[120px]" />
+        <div className="absolute -right-[5%] top-[20%] h-[30%] w-[30%] rounded-full bg-[color-mix(in_srgb,var(--ib-acc)_6%,transparent)] blur-[100px]" />
+        <div className="absolute -bottom-[10%] left-[20%] h-[50%] w-[50%] rounded-full bg-[color-mix(in_srgb,var(--ib-acc)_5%,transparent)] blur-[150px]" />
       </div>
 
       <button
@@ -2698,8 +2711,8 @@ const ChatInterface = ({ id }: { id: string }) => {
                           </button>
                         </div>
 
-                        {/* Animated Card Holder */}
-                        <div className="w-full max-w-md aspect-[4/3] min-h-[240px] sm:min-h-[280px] relative perspective-1000">
+                        {/* Animated Card Holder — larger, higher-contrast, Inter */}
+                        <div className="relative aspect-[5/4] min-h-[300px] w-full max-w-xl perspective-1000 sm:min-h-[360px]">
                           <AnimatePresence initial={false} custom={swipeDirection} mode="wait">
                             <motion.div
                               key={currentCardIndex}
@@ -2714,69 +2727,68 @@ const ChatInterface = ({ id }: { id: string }) => {
                               onDragEnd={(e, info) => {
                                 const swipeThreshold = 60;
                                 if (info.offset.x < -swipeThreshold) {
-                                  // Drag left -> Next card
                                   if (currentCardIndex < flashcardsData.cards.length - 1) {
                                     setIsCardFlipped(false);
                                     setSwipeDirection(1);
                                     setTimeout(() => {
-                                      setCurrentCardIndex(prev => prev + 1);
+                                      setCurrentCardIndex((prev) => prev + 1);
                                     }, 50);
                                   }
                                 } else if (info.offset.x > swipeThreshold) {
-                                  // Drag right -> Prev card
                                   if (currentCardIndex > 0) {
                                     setIsCardFlipped(false);
                                     setSwipeDirection(-1);
                                     setTimeout(() => {
-                                      setCurrentCardIndex(prev => prev - 1);
+                                      setCurrentCardIndex((prev) => prev - 1);
                                     }, 50);
                                   }
                                 }
                               }}
                               onClick={() => setIsCardFlipped(!isCardFlipped)}
-                              className="absolute inset-0 w-full h-full cursor-pointer preserve-3d"
+                              className="absolute inset-0 h-full w-full cursor-pointer preserve-3d"
                             >
-                              <div className={`relative w-full h-full preserve-3d duration-700 ${isCardFlipped ? "rotate-y-180" : ""}`}>
-                                {/* Front Face */}
-                                <div className="absolute inset-0 w-full h-full backface-hidden rounded-[2rem] sm:rounded-[2.5rem] border border-[var(--ib-line)] bg-[var(--ib-card)] backdrop-blur-2xl p-5 sm:p-8 flex flex-col justify-between shadow-2xl hover:border-[var(--ib-line)] transition-colors">
+                              <div
+                                className={`relative h-full w-full preserve-3d duration-700 ${isCardFlipped ? "rotate-y-180" : ""}`}
+                              >
+                                <div className="absolute inset-0 flex h-full w-full flex-col justify-between rounded-[1.75rem] border border-[var(--ib-line)] bg-[var(--ib-card)] p-6 shadow-[0_20px_50px_-28px_rgba(11,18,32,0.35)] backface-hidden sm:rounded-[2rem] sm:p-8">
                                   <div className="flex items-center justify-between">
-                                    <span className="text-[9px] font-black text-[var(--ib-acc)] uppercase tracking-[0.2em] bg-[var(--ib-acc)]/10 px-3 py-1 rounded-full border border-[var(--ib-acc)]/20">
+                                    <span className="rounded-full border border-[var(--ib-acc)]/20 bg-[var(--ib-accbg)] px-3 py-1 text-[11px] font-bold uppercase tracking-[0.12em] text-[var(--ib-acc)]">
                                       Question
                                     </span>
-                                    <Sparkles size={14} className="text-[var(--ib-acc)]" />
+                                    <Sparkles size={16} className="text-[var(--ib-acc)]" />
                                   </div>
-                                  <div className="flex-1 flex flex-col justify-center py-4 text-left">
-                                    <h4 className="text-xs font-black text-[var(--ib-ink)] uppercase tracking-wider mb-2 font-jetbrains-mono leading-snug">
+                                  <div className="flex flex-1 flex-col justify-center py-5 text-left">
+                                    <h4 className="mb-3 font-sans text-[14px] font-bold leading-snug tracking-[-0.02em] text-[var(--ib-ink)] sm:text-[15px]">
                                       {flashcardsData.cards[currentCardIndex]?.front?.title}
                                     </h4>
-                                    <p className="text-[13px] sm:text-base text-[var(--ib-mute)] font-medium leading-relaxed overflow-y-auto no-scrollbar max-h-[120px] sm:max-h-[160px]">
+                                    <p className="max-h-[180px] overflow-y-auto font-sans text-[16px] font-semibold leading-relaxed text-[var(--ib-ink)] no-scrollbar sm:max-h-[220px] sm:text-[18px]">
                                       {flashcardsData.cards[currentCardIndex]?.front?.body}
                                     </p>
                                   </div>
-                                  <div className="text-center text-[9px] font-black text-[var(--ib-mute)] uppercase tracking-widest flex items-center justify-center gap-2">
-                                    <span>👈 Swipe to Navigate 👉</span>
-                                    <span>•</span>
-                                    <span className="text-[var(--ib-mute)]">Click to Flip</span>
+                                  <div className="flex items-center justify-center gap-2 text-center text-[11px] font-semibold uppercase tracking-[0.1em] text-[var(--ib-mute)]">
+                                    <span>Swipe to navigate</span>
+                                    <span aria-hidden>·</span>
+                                    <span>Click to flip</span>
                                   </div>
                                 </div>
 
-                                {/* Back Face */}
-                                <div className="absolute inset-0 w-full h-full backface-hidden rotate-y-180 rounded-[2rem] sm:rounded-[2.5rem] border border-emerald-500/30 bg-[#0A0D10]/95 backdrop-blur-2xl p-5 sm:p-8 flex flex-col justify-between shadow-[0_0_50px_rgba(16,185,129,0.08)]">
+                                <div className="absolute inset-0 flex h-full w-full rotate-y-180 flex-col justify-between rounded-[1.75rem] border border-emerald-500/25 bg-[var(--ib-card)] p-6 shadow-[0_20px_50px_-28px_rgba(11,18,32,0.35)] backface-hidden sm:rounded-[2rem] sm:p-8">
                                   <div className="flex items-center justify-between">
-                                    <span className="text-[9px] font-black text-emerald-400 uppercase tracking-[0.2em] bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20">
-                                      Answer Revealed
+                                    <span className="rounded-full border border-emerald-500/25 bg-emerald-500/10 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.12em] text-emerald-700">
+                                      Answer
                                     </span>
-                                    <CheckSquare size={14} className="text-emerald-400" />
+                                    <CheckSquare size={16} className="text-emerald-600" />
                                   </div>
-                                  <div className="flex-1 flex flex-col justify-center py-4 text-left">
-                                    <h4 className="text-xs font-black text-emerald-400 uppercase tracking-widest mb-2 font-jetbrains-mono">
-                                      {flashcardsData.cards[currentCardIndex]?.back?.title || "Answer"}
+                                  <div className="flex flex-1 flex-col justify-center py-5 text-left">
+                                    <h4 className="mb-3 font-sans text-[14px] font-bold tracking-[-0.02em] text-emerald-700 sm:text-[15px]">
+                                      {flashcardsData.cards[currentCardIndex]?.back?.title ||
+                                        "Answer"}
                                     </h4>
-                                    <p className="text-[12px] sm:text-[14px] text-[var(--ib-ink)] font-bold leading-relaxed overflow-y-auto no-scrollbar max-h-[120px] sm:max-h-[140px]">
+                                    <p className="max-h-[180px] overflow-y-auto font-sans text-[16px] font-semibold leading-relaxed text-[var(--ib-ink)] no-scrollbar sm:max-h-[220px] sm:text-[18px]">
                                       {flashcardsData.cards[currentCardIndex]?.back?.body}
                                     </p>
                                   </div>
-                                  <div className="text-center text-[9px] font-black text-[var(--ib-mute)] uppercase tracking-widest">
+                                  <div className="text-center text-[11px] font-semibold uppercase tracking-[0.1em] text-[var(--ib-mute)]">
                                     Click card to flip back
                                   </div>
                                 </div>
@@ -2948,9 +2960,6 @@ const ChatInterface = ({ id }: { id: string }) => {
                   onChange={setInputValue}
                   onSend={(text?: string) => handleSend(text)}
                   isLoading={isChatBusy}
-                  showSuggestions={!isChatStarted}
-                  onFileSelect={setSelectedFile}
-                  selectedFile={selectedFile}
                 />
               </>
             )}

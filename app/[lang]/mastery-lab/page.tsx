@@ -5,14 +5,25 @@ import ExploreFeatures from "@/components/Shared/ExploreFeatures";
 import { useGenerateQuizMutation } from "@/lib/redux/api/quizApi";
 import { useRouter, useParams } from "next/navigation";
 import { toast } from "sonner";
-import { Settings, Clock, Unlock, Target, ArrowRight } from "lucide-react";
-import FullPageLoader from "@/components/Shared/FullPageLoader";
+import {
+  Settings,
+  Clock,
+  Unlock,
+  Target,
+  ArrowRight,
+  AlertCircle,
+} from "lucide-react";
+import InlineAssessmentLoader from "@/components/mastery-lab/InlineAssessmentLoader";
 import { motion, useReducedMotion } from "framer-motion";
 import Image from "next/image";
 import { useTranslation } from "react-i18next";
 import i18n from "@/lib/i18n/client";
 import Leaderboard from "@/components/assessment/Leaderboard";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import {
+  MASTERY_QUIZ_DIFFICULTY,
+  transformQuizQuestions,
+} from "@/lib/mastery/normalizeQuizOptions";
 
 const ease = [0.22, 1, 0.36, 1] as const;
 
@@ -120,12 +131,23 @@ const AssessmentPage = () => {
   }, [lang]);
 
   const [generateQuiz, { isLoading: isGeneratingQuiz }] = useGenerateQuizMutation();
+  const [generateError, setGenerateError] = useState<string | null>(null);
+  const [lastStartPayload, setLastStartPayload] = useState<{
+    industry: string;
+    managementLevel: string;
+    department: string;
+  } | null>(null);
 
   const handleStartAssessment = async (data: {
     industry: string;
     managementLevel: string;
     department: string;
   }) => {
+    if (isGeneratingQuiz) return;
+
+    setGenerateError(null);
+    setLastStartPayload(data);
+
     try {
       const res = await generateQuiz({
         context: {
@@ -134,36 +156,30 @@ const AssessmentPage = () => {
           department: data.department,
         },
         num_questions: 10,
-        difficulty: "intermediate",
+        difficulty: MASTERY_QUIZ_DIFFICULTY,
       }).unwrap();
 
       const quizData = res.data || res;
       const questionsRaw = quizData.questions || [];
+      const transformedQuestions = transformQuizQuestions(questionsRaw);
 
-      if (questionsRaw.length > 0) {
-        const transformedQuestions = questionsRaw.map((q: any, idx: number) => ({
-          id: idx + 1,
-          question: q.question,
-          options: Object.entries(q.options).map(([label, text]) => ({
-            label,
-            text: String(text),
-          })),
-          correctAnswer: q.correct_answer,
-          explanation: q.explanation,
-          hint: q.hint,
-          hintInsight: q.explanation,
-        }));
-
+      if (transformedQuestions.length > 0) {
+        const examSessionIds = quizData.examSessionId
+          ? [String(quizData.examSessionId)]
+          : [];
         const quizPayload = {
           title: quizData.quiz_title || "ISO Assessment Evaluation",
           questions: transformedQuestions,
+          examSessionIds,
           generatedAt: quizData.generated_at || new Date().toISOString(),
           categoryId: data.industry,
           categoryName: data.industry,
           difficulty: data.managementLevel,
           jobFunction: data.department,
+          quizDifficulty: MASTERY_QUIZ_DIFFICULTY,
         };
 
+        // Persist quiz first, then navigate — page stays mounted during loading
         localStorage.setItem("active_iso_quiz", JSON.stringify(quizPayload));
         localStorage.removeItem("mastery_lab_progress");
         localStorage.removeItem("iso_assessment_progress");
@@ -172,23 +188,34 @@ const AssessmentPage = () => {
 
         router.push(`/${lang}/mastery-lab/assessment`);
       } else {
-        console.warn("No questions found in the quiz data.");
-        toast.error(
-          t(
-            "mastery.failedGenerate",
-            "Failed to generate enough questions. Please try again."
-          )
+        const msg = t(
+          "mastery.failedGenerate",
+          "Failed to generate enough questions. Please try again."
         );
+        setGenerateError(msg);
+        toast.error(msg);
       }
     } catch (err: any) {
-      console.error("Critical error in startAssessment:", err);
-      toast.error(
+      const message =
         err?.data?.message ||
-          t(
-            "mastery.generating",
-            "Failed to generate quiz. Our AI might be busy, please try again."
-          )
+        err?.data?.errorSources?.[0]?.details ||
+        err?.error ||
+        err?.message ||
+        (typeof err === "string" ? err : null);
+
+      console.error("Critical error in startAssessment:", {
+        status: err?.status,
+        message,
+        data: err?.data,
+        raw: err,
+      });
+
+      const fallback = t(
+        "mastery.failedGenerate",
+        "Failed to generate quiz. Our AI might be busy, please try again."
       );
+      setGenerateError(message || fallback);
+      toast.error(message || fallback);
     }
   };
 
@@ -326,17 +353,6 @@ const AssessmentPage = () => {
             </h2>
           </motion.div>
 
-          <FullPageLoader
-            isLoading={isGeneratingQuiz}
-            title={t("mastery.loaderTitle")}
-            description={t("mastery.loaderDesc")}
-            steps={[
-              t("mastery.loaderStep1"),
-              t("mastery.loaderStep2"),
-              t("mastery.loaderStep3"),
-            ]}
-          />
-
           <div className="grid grid-cols-1 gap-8 lg:grid-cols-12 lg:gap-10">
             <div className="lg:col-span-8">
               <GetStartedCard
@@ -348,10 +364,59 @@ const AssessmentPage = () => {
                 ]}
                 departments={HARDCODED_DEPARTMENTS}
                 onSubmit={handleStartAssessment}
+                isLoading={isGeneratingQuiz}
                 buttonText={
-                  isGeneratingQuiz ? t("mastery.generating") : t("mastery.cta")
+                  isGeneratingQuiz
+                    ? t("mastery.preparingAssessment", "Preparing your assessment...")
+                    : t("mastery.cta")
                 }
               />
+
+              {isGeneratingQuiz ? (
+                <InlineAssessmentLoader
+                  title={t("mastery.loaderTitle")}
+                  description={t(
+                    "mastery.loaderDescInline",
+                    "Preparing your assessment… This usually takes under a minute. You can stay on this page."
+                  )}
+                  steps={[
+                    t("mastery.loaderStep1"),
+                    t("mastery.loaderStep2"),
+                    t("mastery.loaderStep3"),
+                  ]}
+                />
+              ) : null}
+
+              {generateError && !isGeneratingQuiz ? (
+                <div
+                  role="alert"
+                  className="mt-5 flex flex-col gap-3 rounded-[16px] border border-red-500/25 bg-red-500/5 p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5"
+                >
+                  <div className="flex items-start gap-3">
+                    <AlertCircle
+                      className="mt-0.5 size-5 shrink-0 text-red-500"
+                      aria-hidden
+                    />
+                    <div>
+                      <p className="text-[14px] font-semibold text-[var(--ib-ink)]">
+                        {t("mastery.generateFailedTitle", "Couldn’t start assessment")}
+                      </p>
+                      <p className="mt-1 text-[13px] leading-relaxed text-[var(--ib-mute)]">
+                        {generateError}
+                      </p>
+                    </div>
+                  </div>
+                  {lastStartPayload ? (
+                    <button
+                      type="button"
+                      onClick={() => handleStartAssessment(lastStartPayload)}
+                      className="inline-flex shrink-0 items-center justify-center rounded-[10px] bg-[var(--ib-acc)] px-4 py-2.5 text-[12px] font-bold uppercase tracking-wider text-white transition-opacity hover:opacity-95"
+                    >
+                      {t("mastery.retry", "Retry")}
+                    </button>
+                  ) : null}
+                </div>
+              ) : null}
 
               <div className="mt-10 grid grid-cols-1 gap-5 sm:grid-cols-3 sm:gap-6">
                 {howItWorks.map((s, i) => (

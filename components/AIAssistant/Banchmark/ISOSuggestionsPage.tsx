@@ -70,7 +70,7 @@ export default function ISOSuggestionsPage({
           {t('benchmarkAi.suggestionsHeading') || "Recommended ISO Standards"}
         </h1>
 
-        <p className="text-[#A1A1A6] text-sm lg:text-lg max-w-4xl mx-auto leading-relaxed text-center font-inter mb-12">
+        <p className="text-[var(--ib-mute)] text-sm lg:text-lg max-w-4xl mx-auto leading-relaxed text-center font-inter mb-12">
           {t('benchmarkAi.suggestionsDesc') || "Explore applicable ISO standards based on your document content"}
         </p>
       </header>

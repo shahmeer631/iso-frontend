@@ -1,14 +1,11 @@
 import createMiddleware from "next-intl/middleware";
 import { NextRequest, NextResponse } from "next/server";
+import { routing } from "@/lib/i18n/routing";
 
-const SUPPORTED_LOCALES = ["en", "fr", "es", "de", "it", "pt", "ar", "ru", "mg"] as const;
-type Locale = typeof SUPPORTED_LOCALES[number];
+const SUPPORTED_LOCALES = routing.locales;
+type Locale = (typeof SUPPORTED_LOCALES)[number];
 
-const intlMiddleware = createMiddleware({
-  locales: SUPPORTED_LOCALES,
-  defaultLocale: "en",
-  localePrefix: "as-needed",
-});
+const intlMiddleware = createMiddleware(routing);
 
 // Routes that require authentication (without locale prefix)
 const PROTECTED_PATHS: string[] = [];

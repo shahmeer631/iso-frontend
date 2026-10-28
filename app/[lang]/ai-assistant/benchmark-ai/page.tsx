@@ -9,7 +9,7 @@ import { useAppSelector, useAppDispatch } from "@/lib/redux/hooks";
 import { clearResults } from "@/lib/redux/features/benchmarkSlice";
 import { Phase } from "@/components/AIAssistant/Banchmark/data";
 import { ISOSuggestion } from "@/types/benchmark";
-
+import { ActivityTracker } from "@/components/activity/ActivityTracker";
 
 export default function BenchmarkAIPage() {
   const [phase, setPhase] = useState<Phase>("upload");
@@ -21,21 +21,25 @@ export default function BenchmarkAIPage() {
     setPhase("upload");
   };
 
-  // Check if we have ISO suggestions to display
-  const isoSuggestions = analysisResults?.iso_suggestions as ISOSuggestion[] | undefined;
+  const isoSuggestions = analysisResults?.iso_suggestions as
+    | ISOSuggestion[]
+    | undefined;
 
-  if (isoSuggestions && isoSuggestions.length > 0) {
-    return (
-      <ISOSuggestionsPage 
-        suggestions={isoSuggestions} 
-        onReset={handleReset} 
+  return (
+    <>
+      <ActivityTracker
+        source="AI_TOOL"
+        aiToolId="BENCHMARK_AI"
+        resourceLabel="Benchmark AI"
+        sessionKey="ai_benchmark"
       />
-    );
-  }
-
-  if (phase === "results" && analysisResults && !isoSuggestions) {
-    return <ResultsPage result={analysisResults} onReset={handleReset} />;
-  }
-
-  return <UploadPage onAnalyze={() => setPhase("results")} />;
+      {isoSuggestions && isoSuggestions.length > 0 ? (
+        <ISOSuggestionsPage suggestions={isoSuggestions} onReset={handleReset} />
+      ) : phase === "results" && analysisResults && !isoSuggestions ? (
+        <ResultsPage result={analysisResults} onReset={handleReset} />
+      ) : (
+        <UploadPage onAnalyze={() => setPhase("results")} />
+      )}
+    </>
+  );
 }

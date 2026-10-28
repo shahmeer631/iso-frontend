@@ -1,5 +1,5 @@
 import React from "react";
-import { motion } from "framer-motion";
+import { Check } from "lucide-react";
 
 interface AnswerOptionProps {
   label: string;
@@ -17,48 +17,35 @@ export const AnswerOption: React.FC<AnswerOptionProps> = ({
   disabled = false,
 }) => {
   return (
-    <motion.button
-      whileHover={!disabled ? { backgroundColor: "rgba(255,255,255,0.05)" } : {}}
-      whileTap={!disabled ? { scale: 0.99 } : {}}
+    <button
+      type="button"
       onClick={() => !disabled && onSelect(label)}
       disabled={disabled}
-      className="px-4 py-3 sm:px-6 sm:py-4"
-      style={{
-        width: "100%",
-        textAlign: "left",
-        borderRadius: 16,
-        border: isSelected ? "1px solid var(--ib-acc)" : "1px solid var(--ib-line)",
-        background: isSelected ? "rgba(27, 77, 219, 0.05)" : "rgba(255,255,255,0.02)",
-        display: "flex",
-        alignItems: "center",
-        gap: 16,
-        transition: "all 0.2s ease",
-        cursor: disabled ? "not-allowed" : "pointer",
-        opacity: disabled ? 0.6 : 1,
-        boxShadow: isSelected ? "0 0 20px rgba(27, 77, 219, 0.1)" : "none",
-        outline: "none"
-      }}
+      aria-pressed={isSelected}
+      className={`group flex w-full items-start gap-3 rounded-2xl border px-4 py-3.5 text-left transition-all duration-200 sm:items-center sm:gap-4 sm:px-5 sm:py-4 ${
+        isSelected
+          ? "border-[var(--ib-acc)] bg-[var(--ib-accbg)] shadow-[0_10px_28px_-20px_rgba(27,77,219,0.55)]"
+          : "border-[var(--ib-line)] bg-[var(--ib-card)] hover:border-[color-mix(in_srgb,var(--ib-acc)_40%,var(--ib-line))] hover:bg-[color-mix(in_srgb,var(--ib-accbg)_55%,var(--ib-card))]"
+      } ${disabled ? "cursor-not-allowed opacity-60" : "cursor-pointer"} focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ib-acc)]`}
     >
-      <div
-        className="font-inter text-sm sm:text-[18px]"
-        style={{
-          fontWeight: 700,
-          color: isSelected ? "var(--ib-acc)" : "var(--ib-mute)",
-          flexShrink: 0
-        }}
-      >
-        {label}.
-      </div>
       <span
-        className="text-xs sm:text-base"
-        style={{
-          fontWeight: 500,
-          lineHeight: 1.4,
-          color: isSelected ? "#FFFFFF" : "var(--ib-mute)"
-        }}
+        className={`mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-full border text-[13px] font-bold sm:mt-0 sm:size-9 sm:text-[15px] ${
+          isSelected
+            ? "border-[var(--ib-acc)] bg-[var(--ib-acc)] text-white"
+            : "border-[var(--ib-line)] bg-[var(--ib-bg)] text-[var(--ib-mute)] group-hover:border-[color-mix(in_srgb,var(--ib-acc)_35%,var(--ib-line))] group-hover:text-[var(--ib-acc)]"
+        }`}
+      >
+        {isSelected ? <Check className="size-4" strokeWidth={3} aria-hidden /> : label}
+      </span>
+      <span
+        className={`min-w-0 flex-1 text-[13px] leading-relaxed sm:text-[15px] ${
+          isSelected
+            ? "font-semibold text-[var(--ib-ink)]"
+            : "font-medium text-[var(--ib-mute)] group-hover:text-[var(--ib-ink)]"
+        }`}
       >
         {text}
       </span>
-    </motion.button>
+    </button>
   );
 };

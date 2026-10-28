@@ -352,7 +352,7 @@ function MdUl({ className, ...props }: any) {
       className={mergeClass(
         task
           ? "list-none pl-0 mb-3 space-y-2"
-          : "list-disc pl-5 mb-3 space-y-1.5 text-[14px] leading-[1.6] text-[#CBD5E1]",
+          : "list-disc pl-5 mb-3 space-y-1.5 text-[14px] leading-[1.6] text-[var(--ib-ink)]/90",
         className,
       )}
       {...props}
@@ -367,7 +367,7 @@ function MdOl({ className, ...props }: any) {
       className={mergeClass(
         checklist
           ? "list-none pl-0 mb-3 space-y-2"
-          : "list-decimal pl-5 mb-3 space-y-1.5 text-[14px] leading-[1.6] text-[#CBD5E1]",
+          : "list-decimal pl-5 mb-3 space-y-1.5 text-[14px] leading-[1.6] text-[var(--ib-ink)]/90",
         className,
       )}
       {...props}
@@ -380,7 +380,7 @@ function MdLi({ className, children, ...props }: any) {
   const isTask = className?.includes("task-list-item") || checklist;
   if (!isTask) {
     return (
-      <li className={mergeClass("text-[14px] leading-[1.6] text-[#CBD5E1]", className)} {...props}>
+      <li className={mergeClass("text-[14px] leading-[1.6] text-[var(--ib-ink)]/90", className)} {...props}>
         {decorateInline(children)}
       </li>
     );
@@ -417,7 +417,7 @@ function MdLi({ className, children, ...props }: any) {
         )}
         <div className="min-w-0 flex-1 space-y-1.5">
           <div className="flex flex-wrap items-start justify-between gap-2">
-            <div className="text-[14px] font-medium leading-[1.6] text-[#E2E8F0]">
+            <div className="text-[14px] font-medium leading-[1.6] text-[var(--ib-ink)]">
               {decorateInline(titleText || raw)}
             </div>
             {clauses.length > 0 && (
@@ -429,7 +429,7 @@ function MdLi({ className, children, ...props }: any) {
             )}
           </div>
           {detailText ? (
-            <p className="text-[13px] leading-[1.6] text-[#94A3B8]">{detailText}</p>
+            <p className="text-[13px] leading-[1.6] text-[var(--ib-mute)]">{detailText}</p>
           ) : null}
         </div>
       </div>
@@ -441,7 +441,7 @@ const mdComponents: any = {
   h1: ({ className, children, ...props }: any) => (
     <h1
       className={mergeClass(
-        "text-[20px] font-semibold leading-[1.3] tracking-[-0.01em] text-[var(--ib-dktx)] mb-3",
+        "text-[20px] font-semibold leading-[1.3] tracking-[-0.01em] text-[var(--ib-ink)] mb-3",
         className,
       )}
       {...props}
@@ -452,7 +452,7 @@ const mdComponents: any = {
   h2: ({ className, children, ...props }: any) => (
     <h2
       className={mergeClass(
-        "text-[16px] font-semibold leading-[1.4] text-[var(--ib-dktx)] mt-5 mb-2",
+        "text-[16px] font-semibold leading-[1.4] text-[var(--ib-ink)] mt-5 mb-2",
         className,
       )}
       {...props}
@@ -463,7 +463,7 @@ const mdComponents: any = {
   h3: ({ className, children, ...props }: any) => (
     <h3
       className={mergeClass(
-        "text-[14px] font-semibold leading-[1.4] text-[#E2E8F0] mt-3.5 mb-1.5",
+        "text-[14px] font-semibold leading-[1.4] text-[var(--ib-ink)] mt-3.5 mb-1.5",
         className,
       )}
       {...props}
@@ -474,7 +474,7 @@ const mdComponents: any = {
   h4: ({ className, children, ...props }: any) => (
     <h4
       className={mergeClass(
-        "text-[13px] font-semibold leading-[1.4] text-[#E2E8F0] mt-3 mb-1.5",
+        "text-[13px] font-semibold leading-[1.4] text-[var(--ib-ink)] mt-3 mb-1.5",
         className,
       )}
       {...props}
@@ -485,7 +485,7 @@ const mdComponents: any = {
   p: ({ className, children, ...props }: any) => (
     <p
       className={mergeClass(
-        "text-[14px] font-normal leading-[1.6] text-[#CBD5E1] mb-3",
+        "text-[14px] font-normal leading-[1.6] text-[var(--ib-ink)]/90 mb-3",
         className,
       )}
       {...props}
@@ -494,14 +494,14 @@ const mdComponents: any = {
     </p>
   ),
   strong: ({ className, children, ...props }: any) => (
-    <strong className={mergeClass("font-semibold text-[#F8FAFC]", className)} {...props}>
+    <strong className={mergeClass("font-semibold text-[var(--ib-ink)]", className)} {...props}>
       {children}
     </strong>
   ),
   blockquote: ({ className, children, ...props }: any) => (
     <blockquote
       className={mergeClass(
-        "my-3 border-l-2 border-[#0D9488] bg-[var(--ib-ink)]/70 rounded-r-xl px-3.5 py-2.5 text-[14px] leading-[1.6] text-[#CBD5E1]",
+        "my-3 border-l-2 border-[#0D9488] bg-[var(--ib-ink)]/70 rounded-r-xl px-3.5 py-2.5 text-[14px] leading-[1.6] text-[var(--ib-ink)]/90",
         className,
       )}
       {...props}
@@ -516,7 +516,7 @@ const mdComponents: any = {
     const isBlock = className?.includes("language-");
     if (isBlock) {
       return (
-        <code className={mergeClass("font-jetbrains-mono text-[13px] text-[#E2E8F0]", className)} {...props}>
+        <code className={mergeClass("font-jetbrains-mono text-[13px] text-[var(--ib-ink)]", className)} {...props}>
           {children}
         </code>
       );
@@ -558,7 +558,7 @@ const mdComponents: any = {
   th: ({ className, children, ...props }: any) => (
     <th
       className={mergeClass(
-        "py-2.5 px-3 text-left text-[12px] font-semibold uppercase tracking-[0.04em] text-[#94A3B8] border-b border-[#334155]",
+        "py-2.5 px-3 text-left text-[12px] font-semibold uppercase tracking-[0.04em] text-[var(--ib-mute)] border-b border-[#334155]",
         className,
       )}
       {...props}
@@ -569,7 +569,7 @@ const mdComponents: any = {
   td: ({ className, children, ...props }: any) => (
     <td
       className={mergeClass(
-        "py-2.5 px-3 text-[14px] leading-[1.55] text-[#CBD5E1] border-b border-[#334155]/50 align-top border-x-0",
+        "py-2.5 px-3 text-[14px] leading-[1.55] text-[var(--ib-ink)]/90 border-b border-[#334155]/50 align-top border-x-0",
         className,
       )}
       {...props}
@@ -656,17 +656,17 @@ function GuidanceBriefing({
         aria-expanded={open}
       >
         <div>
-          <h2 className="text-[16px] font-semibold leading-[1.4] text-[var(--ib-dktx)]">
+          <h2 className="text-[16px] font-semibold leading-[1.4] text-[var(--ib-ink)]">
             Auditor Guidance
           </h2>
-          <p className="text-[12px] leading-[1.3] text-[#64748B] mt-0.5">
+          <p className="text-[12px] leading-[1.3] text-[var(--ib-mute)] mt-0.5">
             {cards.length
               ? `${cards.length} briefing cards — expand to review`
               : "Expand to review auditor briefing"}
           </p>
         </div>
         <ChevronDown
-          className={`h-4 w-4 shrink-0 text-[#94A3B8] transition-transform ${open ? "rotate-180" : ""}`}
+          className={`h-4 w-4 shrink-0 text-[var(--ib-mute)] transition-transform ${open ? "rotate-180" : ""}`}
         />
       </button>
       {open ? (
@@ -686,7 +686,7 @@ function GuidanceBriefing({
                     className="rounded-xl border border-[#334155] bg-[var(--ib-ink)] px-3.5 py-3"
                   >
                     <div className="mb-2 flex items-start justify-between gap-2">
-                      <h3 className="text-[12px] font-semibold uppercase tracking-[0.04em] text-[#94A3B8]">
+                      <h3 className="text-[12px] font-semibold uppercase tracking-[0.04em] text-[var(--ib-mute)]">
                         {card.title}
                       </h3>
                       <CopyControl text={text} label={copyLabel} />
@@ -776,7 +776,7 @@ function WorkingPaperView({ text, copyLabel }: { text: string; copyLabel: string
   return (
     <div className={`${FULL} space-y-4`}>
       <div className="flex items-start justify-between gap-3">
-        <h2 className="text-[20px] font-semibold leading-[1.3] tracking-[-0.01em] text-[var(--ib-dktx)]">
+        <h2 className="text-[20px] font-semibold leading-[1.3] tracking-[-0.01em] text-[var(--ib-ink)]">
           Audit Working Paper
         </h2>
         <CopyControl text={cleaned} label={copyLabel} />
@@ -808,12 +808,12 @@ function WorkingPaperView({ text, copyLabel }: { text: string; copyLabel: string
               >
                 <div className="border-b border-[#334155] bg-[var(--ib-ink)]/50 px-3.5 py-2">
                   {label ? (
-                    <p className="text-[12px] uppercase tracking-[0.04em] text-[#64748B] mb-0.5">
+                    <p className="text-[12px] uppercase tracking-[0.04em] text-[var(--ib-mute)] mb-0.5">
                       {label}
                     </p>
                   ) : null}
                   {part.title ? (
-                    <h3 className="text-[14px] font-semibold leading-[1.4] text-[#E2E8F0]">
+                    <h3 className="text-[14px] font-semibold leading-[1.4] text-[var(--ib-ink)]">
                       {part.title}
                     </h3>
                   ) : null}
@@ -845,7 +845,7 @@ function DocumentedInfoView({ text, copyLabel }: { text: string; copyLabel: stri
   return (
     <div className={`${FULL} space-y-4`}>
       <div className="flex items-start justify-between gap-3">
-        <h2 className="text-[20px] font-semibold leading-[1.3] tracking-[-0.01em] text-[var(--ib-dktx)]">
+        <h2 className="text-[20px] font-semibold leading-[1.3] tracking-[-0.01em] text-[var(--ib-ink)]">
           Documented Information
         </h2>
         <CopyControl text={cleaned} label={copyLabel} />
@@ -860,10 +860,10 @@ function DocumentedInfoView({ text, copyLabel }: { text: string; copyLabel: stri
             >
               <div className="flex flex-wrap items-start justify-between gap-2 mb-2.5">
                 <div className="min-w-0 flex-1">
-                  <p className="text-[12px] uppercase tracking-[0.04em] text-[#64748B] mb-1">
+                  <p className="text-[12px] uppercase tracking-[0.04em] text-[var(--ib-mute)] mb-1">
                     Evidence Name
                   </p>
-                  <h3 className="text-[14px] font-semibold leading-[1.4] text-[var(--ib-dktx)]">
+                  <h3 className="text-[14px] font-semibold leading-[1.4] text-[var(--ib-ink)]">
                     {card.name}
                   </h3>
                 </div>
@@ -877,7 +877,7 @@ function DocumentedInfoView({ text, copyLabel }: { text: string; copyLabel: stri
               </div>
               {card.body ? (
                 <>
-                  <p className="text-[12px] uppercase tracking-[0.04em] text-[#64748B] mb-1.5">
+                  <p className="text-[12px] uppercase tracking-[0.04em] text-[var(--ib-mute)] mb-1.5">
                     Verification Action
                   </p>
                   <MarkdownBody text={card.body} />
@@ -923,7 +923,7 @@ function TemplateView({ text, copyLabel }: { text: string; copyLabel: string }) 
   return (
     <div className={`${FULL} space-y-4`}>
       <div className="flex flex-wrap items-start justify-between gap-3">
-        <h2 className="text-[20px] font-semibold leading-[1.3] tracking-[-0.01em] text-[var(--ib-dktx)]">
+        <h2 className="text-[20px] font-semibold leading-[1.3] tracking-[-0.01em] text-[var(--ib-ink)]">
           Template
         </h2>
         <div className="flex flex-wrap items-center gap-2">
@@ -932,7 +932,7 @@ function TemplateView({ text, copyLabel }: { text: string; copyLabel: string }) 
             <button
               type="button"
               onClick={downloadCsv}
-              className="inline-flex items-center gap-1 rounded-lg border border-[var(--ib-ink)] bg-[var(--ib-ink)]/80 backdrop-blur-[8px] px-2 py-1 text-[12px] font-medium text-[#94A3B8] hover:text-[#F8FAFC] hover:border-[#0D9488]/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0D9488]"
+              className="inline-flex items-center gap-1 rounded-lg border border-[var(--ib-ink)] bg-[var(--ib-ink)]/80 backdrop-blur-[8px] px-2 py-1 text-[12px] font-medium text-[var(--ib-mute)] hover:text-[var(--ib-ink)] hover:border-[#0D9488]/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0D9488]"
               aria-label="Export as CSV"
             >
               <Download className="w-3 h-3" />
@@ -1039,10 +1039,10 @@ function CaseStudyView({ text, copyLabel }: { text: string; copyLabel: string })
     <div className={`${NARRATIVE} space-y-4`}>
       <div className="flex items-start justify-between gap-3">
         <div>
-          <p className="text-[12px] uppercase tracking-[0.04em] text-[#64748B] mb-1">
+          <p className="text-[12px] uppercase tracking-[0.04em] text-[var(--ib-mute)] mb-1">
             Case Study
           </p>
-          <h2 className="text-[20px] font-semibold leading-[1.3] tracking-[-0.01em] text-[var(--ib-dktx)]">
+          <h2 className="text-[20px] font-semibold leading-[1.3] tracking-[-0.01em] text-[var(--ib-ink)]">
             {hasStructured ? scenarioTitle : "Case Study"}
           </h2>
         </div>
@@ -1079,7 +1079,7 @@ function CaseStudyView({ text, copyLabel }: { text: string; copyLabel: string })
                 key={`${part.title}-${idx}`}
                 className={`w-full rounded-r-xl border border-[#334155] border-l-2 px-3.5 py-3.5 sm:px-4 sm:py-4 ${accent}`}
               >
-                <h3 className="text-[14px] font-semibold leading-[1.4] text-[var(--ib-dktx)] mb-2 inline-flex items-center gap-2">
+                <h3 className="text-[14px] font-semibold leading-[1.4] text-[var(--ib-ink)] mb-2 inline-flex items-center gap-2">
                   {kind === "complication" ? (
                     <AlertTriangle className="h-4 w-4 shrink-0 text-amber-400" aria-hidden />
                   ) : null}
@@ -1104,7 +1104,7 @@ function CaseStudyView({ text, copyLabel }: { text: string; copyLabel: string })
 function EmptyTab({ label }: { label: string }) {
   return (
     <div className={`${FULL} rounded-xl border border-dashed border-[#334155] bg-[var(--ib-ink)]/30 px-4 py-6 text-center`}>
-      <p className="text-[14px] leading-[1.6] text-[#94A3B8]">
+      <p className="text-[14px] leading-[1.6] text-[var(--ib-mute)]">
         No {label.toLowerCase()} content for this step.
       </p>
     </div>
@@ -1638,14 +1638,14 @@ export default function AuditStepGuidanceView({ data, emptyMessage }: Props) {
 
   if (!hasGuidance && availableTabs.length === 0 && !guidance) {
     return (
-      <p className="text-[#94A3B8] text-[14px] leading-[1.6] font-inter">
+      <p className="text-[var(--ib-mute)] text-[14px] leading-[1.6] font-inter">
         {emptyMessage || "No guidance was generated for this step. Please retry."}
       </p>
     );
   }
 
   return (
-    <div className="space-y-4 font-inter text-[14px] leading-[1.6] text-[#CBD5E1] w-full min-w-0">
+    <div className="space-y-4 font-inter text-[14px] leading-[1.6] text-[var(--ib-ink)]/90 w-full min-w-0">
       {hasGuidance ? <GuidanceBriefing data={data} copyLabel={copyLabel} /> : null}
 
       {(availableTabs.length > 0 || hasGuidance) && (
@@ -1672,7 +1672,7 @@ export default function AuditStepGuidanceView({ data, emptyMessage }: Props) {
                   className={`shrink-0 rounded-lg px-3 py-1.5 text-[12px] font-semibold tracking-[0.02em] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0D9488] disabled:opacity-35 disabled:cursor-not-allowed ${
                     selected
                       ? "bg-[#0D9488]/20 text-[#5EEAD4] border border-[#0D9488]/40"
-                      : "text-[#94A3B8] border border-transparent hover:text-[#E2E8F0] hover:bg-[var(--ib-ink)]/60"
+                      : "text-[var(--ib-mute)] border border-transparent hover:text-[var(--ib-ink)] hover:bg-[var(--ib-ink)]/60"
                   }`}
                 >
                   {TAB_LABELS[id]}

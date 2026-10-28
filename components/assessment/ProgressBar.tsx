@@ -21,10 +21,13 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({
     <div style={{ width: "100%", marginBottom: 16 }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: 12 }}>
         <span className="font-inter" style={{ color: "var(--ib-mute)", fontWeight: 600, fontSize: 13, textTransform: "uppercase" }}>
-          {t('mastery.questionLabel')} <span style={{ color: "#FFFFFF" }}>{currentQuestion + 1}</span> {t('mastery.ofLabel')} <span style={{ color: "#FFFFFF" }}>{totalQuestions}</span>
+          {t("mastery.questionLabel", "Question")}{" "}
+          <span style={{ color: "var(--ib-ink)" }}>{currentQuestion + 1}</span>{" "}
+          {t("mastery.ofLabel", "of")}{" "}
+          <span style={{ color: "var(--ib-ink)" }}>{totalQuestions}</span>
         </span>
-        <span className="font-inter" style={{ color: "#FFFFFF", fontWeight: 700, fontSize: 13 }}>
-          {Math.round(progress)}% {t('mastery.completePercent')}
+        <span className="font-inter" style={{ color: "var(--ib-ink)", fontWeight: 700, fontSize: 13 }}>
+          {Math.round(progress)}% {t("mastery.completePercent", "complete")}
         </span>
       </div>
 

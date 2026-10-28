@@ -109,7 +109,7 @@ const LibrarySection = () => {
                 {category.subtitle}
               </p>
               <Link href="/library" className="flex justify-center">
-                <button className="flex sm:w-autorounded-full  text-[var(--ib-ink)] font-normal text-sm   cursor-pointerfont-thin mt-3 cursor-pointer">
+                <button className="mt-3 flex cursor-pointer text-sm font-semibold text-[var(--ib-ink)] sm:w-auto">
                   Get Started Free
                   <ArrowRight
                     strokeWidth={1}

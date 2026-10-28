@@ -74,9 +74,23 @@ const GetInTouchWithForm: FC = () => {
 
           <motion.p
             {...fade(0.16)}
-            className="mx-auto mt-5 max-w-[560px] text-[16px] leading-[1.7] text-[var(--ib-mute)] sm:text-[17px] lg:text-lg"
+            className="mx-auto mt-5 max-w-[620px] text-[16px] leading-[1.7] text-[var(--ib-mute)] sm:text-[17px] lg:text-lg"
           >
-            {t("contact.subtitle")}
+            {t("contact.subtitle") ||
+              "Tell us what you need—product guidance, enterprise onboarding, Academy access, or AI Assistant support. We respond to most messages within one business day."}
+          </motion.p>
+          <motion.p
+            {...fade(0.22)}
+            className="mx-auto mt-4 max-w-[560px] text-[14px] font-medium leading-relaxed text-[var(--ib-ink)]/80"
+          >
+            Prefer a direct line? Email{" "}
+            <a
+              href="mailto:support@isobrain.ai"
+              className="font-semibold text-[var(--ib-acc)] underline-offset-2 hover:underline"
+            >
+              support@isobrain.ai
+            </a>{" "}
+            or use the form below with as much context as you can share.
           </motion.p>
         </div>
       </div>

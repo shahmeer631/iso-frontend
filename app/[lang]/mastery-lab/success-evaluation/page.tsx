@@ -314,6 +314,55 @@ export default function SuccessEvaluationPage() {
             </div>
           )}
 
+          {/* CPD Certificate */}
+          {(assessmentData?.certificateIssued ||
+            assessmentData?.passed ||
+            overallScore >= 70) && (
+            <div className="bg-[var(--ib-card)] border border-[var(--ib-line)] p-6 sm:p-10 rounded-[40px] border-l-4 border-l-[var(--ib-acc)]">
+              <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
+                <div className="space-y-3">
+                  <h3 className="mb-0! text-xs font-medium uppercase tracking-[0.2em] text-[var(--ib-acc)]">
+                    {t("mastery.step3Title", "CPD Certificate")}
+                  </h3>
+                  <p className="text-lg font-semibold text-[var(--ib-ink)]">
+                    {t(
+                      "mastery.certificateReady",
+                      "Your Certificate of Competency is ready"
+                    )}
+                  </p>
+                  <p className="text-sm leading-relaxed text-[var(--ib-mute)]">
+                    {[
+                      assessmentData?._uiMetadata?.industry ||
+                        assessmentData?.industry,
+                      assessmentData?._uiMetadata?.managementLevel ||
+                        assessmentData?.management_level,
+                      assessmentData?._uiMetadata?.department ||
+                        assessmentData?.department,
+                    ]
+                      .filter(Boolean)
+                      .join(" · ") ||
+                      t(
+                        "mastery.step3Desc",
+                        "Receive a verifiable certificate with accredited CPD hours and skill benchmarks."
+                      )}
+                  </p>
+                </div>
+                <a
+                  href="https://dashboard.isobrain.ai/user/certificates"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center gap-2 rounded-full bg-[var(--ib-acc)] px-8 py-4 text-xs font-bold uppercase tracking-wider text-white transition-transform hover:scale-105 md:text-sm"
+                >
+                  <Award size={18} className="shrink-0" />
+                  {t(
+                    "mastery.viewCertificate",
+                    "View Certificate in Dashboard"
+                  )}
+                </a>
+              </div>
+            </div>
+          )}
+
           {/* Footer Actions */}
           <div className="pt-12 flex flex-col md:flex-row gap-4 md:gap-6 justify-center max-w-sm mx-auto md:max-w-none">
             <Link

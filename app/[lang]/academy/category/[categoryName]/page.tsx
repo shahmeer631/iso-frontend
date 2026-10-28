@@ -9,7 +9,10 @@ import { useSelector } from "react-redux";
 import { selectCurrentToken } from "@/lib/redux/features/auth/authSlice";
 import { useGetCoursesQuery } from "@/lib/redux/api/courseApi";
 import { useGetCategoriesQuery } from "@/lib/redux/api/isoStandardsApi";
-import { useCheckEnrollmentMutation } from "@/lib/redux/features/auth/authApi";
+import {
+  useCheckEnrollmentMutation,
+  useEnrollCourseMutation,
+} from "@/lib/redux/features/auth/authApi";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -36,6 +39,7 @@ const CategoryCoursesPage = () => {
   const { data: popularCourses, isLoading, isError } = useGetCoursesQuery({ limit: 100 });
   const { data: categoriesData, isLoading: isCategoriesLoading } = useGetCategoriesQuery();
   const [checkEnrollment] = useCheckEnrollmentMutation();
+  const [enrollCourse] = useEnrollCourseMutation();
 
   const CATEGORY_LABELS: Record<string, string> = {
     "quality": t('academy.quality'),
@@ -125,10 +129,8 @@ const CategoryCoursesPage = () => {
           if (checkIsEnrolled(result)) {
             setEnrollmentStatus((prev) => ({ ...prev, [course.id]: true }));
           }
-        } catch (err: any) {
-          if (err?.data?.message === "Already enrolled" || err?.status === 400) {
-            setEnrollmentStatus((prev) => ({ ...prev, [course.id]: true }));
-          }
+        } catch {
+          // Leave as not enrolled; pricing/enroll flow handles access
         }
       });
     };
@@ -151,35 +153,43 @@ const CategoryCoursesPage = () => {
 
     try {
       setIsCheckingId(courseId);
-      const result = await checkEnrollment({ courseId }).unwrap();
 
-      if (checkIsEnrolled(result) || result?.success === true) {
-        const activatedCourses = JSON.parse(localStorage.getItem("activated_courses") || "[]");
-        if (!activatedCourses.includes(courseId)) {
-          activatedCourses.push(courseId);
-          localStorage.setItem("activated_courses", JSON.stringify(activatedCourses));
-        }
-
-        setEnrollmentStatus((prev) => ({ ...prev, [courseId]: true }));
-        toast.success(t('auth.redirecting'));
-        setTimeout(() => { router.push(`/${lang}/academy/${courseId}`); }, 1000);
-      } else {
-        router.push(`/${lang}/pricing?courseId=${courseId}`);
-      }
-    } catch (error: any) {
-      const isAlreadyEnrolled = error?.data?.message === "Already enrolled" || error?.status === 400;
-
-      if (isAlreadyEnrolled) {
-        const activatedCourses = JSON.parse(localStorage.getItem("activated_courses") || "[]");
-        if (!activatedCourses.includes(courseId)) {
-          activatedCourses.push(courseId);
-          localStorage.setItem("activated_courses", JSON.stringify(activatedCourses));
-        }
+      // Already enrolled? Open the course.
+      const status = await checkEnrollment({ courseId }).unwrap();
+      if (checkIsEnrolled(status)) {
         setEnrollmentStatus((prev) => ({ ...prev, [courseId]: true }));
         router.push(`/${lang}/academy/${courseId}`);
-      } else {
-        router.push(`/${lang}/pricing?courseId=${courseId}`);
+        return;
       }
+
+      // Otherwise attempt enrollment (requires plan feature access).
+      await enrollCourse({ courseId }).unwrap();
+
+      const activatedCourses = JSON.parse(localStorage.getItem("activated_courses") || "[]");
+      if (!activatedCourses.includes(courseId)) {
+        activatedCourses.push(courseId);
+        localStorage.setItem("activated_courses", JSON.stringify(activatedCourses));
+      }
+
+      setEnrollmentStatus((prev) => ({ ...prev, [courseId]: true }));
+      toast.success(t('auth.redirecting'));
+      setTimeout(() => { router.push(`/${lang}/academy/${courseId}`); }, 1000);
+    } catch (error: any) {
+      const isAlreadyEnrolled = error?.data?.message === "Already enrolled";
+      if (isAlreadyEnrolled) {
+        setEnrollmentStatus((prev) => ({ ...prev, [courseId]: true }));
+        router.push(`/${lang}/academy/${courseId}`);
+        return;
+      }
+
+      if (
+        error?.status === 403 ||
+        error?.data?.message?.toLowerCase?.().includes("plan") ||
+        error?.data?.message?.toLowerCase?.().includes("upgrade")
+      ) {
+        toast.error(error?.data?.message || t('isoNavigator.upgradeUltra'));
+      }
+      router.push(`/${lang}/pricing?courseId=${courseId}`);
     } finally {
       setIsCheckingId(null);
     }
@@ -245,55 +255,33 @@ const CategoryCoursesPage = () => {
         </div>
 
         {/* Two-Column Category Header & Featured Card */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-12 items-center">
+        <div className="mb-12 grid grid-cols-1 items-center gap-8 lg:grid-cols-12 lg:gap-10">
           {/* Left Column: Title & Subtitle */}
-          <div className="lg:col-span-7 space-y-5 text-left">
-            <h2 className="text-lg sm:text-xl font-bold text-[var(--ib-ink)] m-0 leading-tight">
+          <div className="space-y-5 text-left font-sans lg:col-span-7">
+            <h1 className="m-0 mb-0! text-[28px] font-bold leading-[1.15] tracking-[-0.035em] text-[var(--ib-ink)] sm:text-[36px] lg:text-[42px]">
               {meta.title}
-            </h2>
-            <p className="text-lg sm:text-xl text-[var(--ib-acc)] font-medium tracking-wide">
+            </h1>
+            <p className="text-[16px] font-semibold tracking-[-0.01em] text-[var(--ib-acc)] sm:text-[18px]">
               {meta.subtitle}
             </p>
-            <p className="font-inter text-[var(--ib-mute)] text-sm sm:text-base leading-relaxed max-w-2xl">
+            <p className="max-w-2xl text-[15px] font-medium leading-relaxed text-[var(--ib-mute)] sm:text-[16.5px]">
               {meta.desc}
             </p>
 
             {/* Hero CTAs */}
-            <div className="flex flex-wrap gap-4 pt-2">
+            <div className="flex flex-wrap gap-3 pt-2 sm:gap-4">
               <button
+                type="button"
                 onClick={scrollToCourses}
-                style={{
-                  background: "var(--ib-acc)",
-                  color: "var(--ib-bg)",
-                  border: "none",
-                  borderRadius: 12,
-                  padding: "14px 28px",
-                  fontSize: 15,
-                  fontWeight: 700,
-                  cursor: "pointer",
-                  transition: "all 0.2s"
-                }}
-                className="hover:scale-[1.02] active:scale-[0.98] transition-all hover:shadow-[0_0_20px_rgba(27, 77, 219,0.25)]"
+                className="inline-flex items-center justify-center rounded-xl bg-[var(--ib-acc)] px-6 py-3.5 text-[14px] font-semibold text-white transition-all hover:opacity-92 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ib-acc)] sm:px-7 sm:text-[15px]"
               >
-                {t('academy.browseCourses', 'Browse Courses')}
+                {t("academy.browseCourses", "Browse Courses")}
               </button>
-              <Link href={`/${lang}/pricing`} style={{ textDecoration: "none" }}>
-                <button
-                  style={{
-                    background: "rgba(27, 77, 219, 0.05)",
-                    color: "var(--ib-acc)",
-                    border: "1px solid rgba(27, 77, 219, 0.25)",
-                    borderRadius: 12,
-                    padding: "14px 28px",
-                    fontSize: 15,
-                    fontWeight: 700,
-                    cursor: "pointer",
-                    transition: "all 0.2s"
-                  }}
-                  className="hover:bg-[var(--ib-acc)]/15 transition-colors"
-                >
-                  {t('academy.startFreeTrial', 'Start Free Trial')}
-                </button>
+              <Link
+                href={`/${lang}/pricing`}
+                className="inline-flex items-center justify-center rounded-xl border border-[var(--ib-acc)] bg-[var(--ib-accbg)] px-6 py-3.5 text-[14px] font-semibold text-[var(--ib-acc)] transition-all hover:bg-[var(--ib-acc)] hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ib-acc)] sm:px-7 sm:text-[15px]"
+              >
+                Start Your Trial - Enroll Free
               </Link>
             </div>
           </div>
@@ -323,7 +311,7 @@ const CategoryCoursesPage = () => {
                   {t('academy.featuredCourse', 'Featured Program')}
                 </span>
 
-                <h3 className="font-sans text-lg sm:text-xl font-bold text-[var(--ib-ink)] mt-3 mb-2 leading-snug">
+                <h3 className="mt-3 mb-2 font-sans text-[18px] font-bold leading-snug tracking-[-0.02em] text-[var(--ib-ink)] sm:text-[20px]">
                   {courses[0].title}
                 </h3>
 
@@ -351,41 +339,42 @@ const CategoryCoursesPage = () => {
                   </span>
                 </div>
 
-                <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                <div className="flex flex-col gap-2.5">
                   <button
+                    type="button"
                     onClick={(e) => handleEnrollClick(e, courses[0].id)}
                     disabled={isCheckingId === courses[0].id}
-                    style={{
-                      width: "100%", padding: "12px 20px", borderRadius: 12, fontSize: 14, fontWeight: 700,
-                      display: "flex", alignItems: "center", justifyContent: "center", gap: 8, cursor: "pointer",
-                      background: (token && enrollmentStatus[courses[0].id]) ? "var(--ib-acc)" : "rgba(255,255,255,0.05)", 
-                      color: (token && enrollmentStatus[courses[0].id]) ? "black" : "#FFFFFF", 
-                      border: (token && enrollmentStatus[courses[0].id]) ? "none" : "1px solid var(--ib-line)",
-                      transition: "all 0.2s"
-                    }}
-                    className="hover:scale-[1.02] active:scale-[0.98]"
+                    className={`flex w-full items-center justify-center gap-2 rounded-xl px-5 py-3 text-[14px] font-semibold transition-all hover:opacity-92 disabled:opacity-60 ${
+                      token && enrollmentStatus[courses[0].id]
+                        ? "bg-[var(--ib-acc)] text-white"
+                        : "border border-[var(--ib-acc)] bg-[var(--ib-acc)] text-white shadow-[0_10px_24px_-12px_color-mix(in_srgb,var(--ib-acc)_55%,transparent)]"
+                    }`}
                   >
                     {isCheckingId === courses[0].id ? (
-                      t('academy.verifying', 'Verifying...')
-                    ) : (token && enrollmentStatus[courses[0].id]) ? (
-                      <>{t('academy.continueLearning', 'Continue Learning')} <PlayCircle size={16} /></>
+                      t("academy.verifying", "Verifying...")
+                    ) : token && enrollmentStatus[courses[0].id] ? (
+                      <>
+                        {t("academy.continueLearning", "Continue Learning")}{" "}
+                        <PlayCircle size={16} />
+                      </>
                     ) : (
-                      <>{t('academy.viewSyllabus', 'View Syllabus')} <BookOpen size={16} /></>
+                      <>
+                        Start Your Trial - Enroll Free <BookOpen size={16} />
+                      </>
                     )}
                   </button>
                   <button
-                    onClick={() => window.open('https://dashboard.isobrain.ai/user/certificates', '_blank')}
-                    style={{
-                      width: "100%", padding: "12px 20px", borderRadius: 12, fontSize: 14, fontWeight: 700,
-                      display: "flex", alignItems: "center", justifyContent: "center", gap: 8, cursor: "pointer",
-                      background: (token && enrollmentStatus[courses[0].id]) ? "var(--ib-acc)" : "rgba(255,255,255,0.05)", 
-                      color: (token && enrollmentStatus[courses[0].id]) ? "black" : "#FFFFFF", 
-                      border: (token && enrollmentStatus[courses[0].id]) ? "none" : "1px solid var(--ib-line)",
-                      transition: "all 0.2s"
-                    }}
-                    className="hover:scale-[1.02] active:scale-[0.98]"
+                    type="button"
+                    onClick={() =>
+                      window.open(
+                        "https://dashboard.isobrain.ai/user/certificates",
+                        "_blank",
+                      )
+                    }
+                    className="flex w-full items-center justify-center gap-2 rounded-xl border border-[var(--ib-line)] bg-[var(--ib-card)] px-5 py-3 text-[14px] font-semibold text-[var(--ib-ink)] transition-all hover:border-[var(--ib-acc)] hover:bg-[var(--ib-accbg)] hover:text-[var(--ib-acc)]"
                   >
-                    {t('academy.viewSampleCertificate', 'View Sample Certificate')} <Award size={16} />
+                    {t("academy.viewSampleCertificate", "View Sample Certificate")}{" "}
+                    <Award size={16} />
                   </button>
                 </div>
               </div>
@@ -483,8 +472,8 @@ const CategoryCoursesPage = () => {
           <>
             {/* Available Programs Header */}
             <div ref={coursesSectionRef} style={{ marginTop: 64, marginBottom: 32 }} className="text-left">
-              <h2 className="text-2xl sm:text-4xl font-bold text-[var(--ib-ink)] mb-2">
-                {t('academy.availablePrograms', 'Available Programs')}
+              <h2 className="mb-2 font-sans text-[26px] font-bold tracking-[-0.03em] text-[var(--ib-ink)] sm:text-[34px]">
+                {t("academy.availablePrograms", "Available Programs")}
               </h2>
               <p className="font-inter text-sm sm:text-base text-[var(--ib-mute)] m-0">
                 {t('academy.availableProgramsDesc', 'Fully accredited ISO courses built for immediate corporate auditing competency.')}
@@ -566,7 +555,7 @@ const CategoryCoursesPage = () => {
                             {displayCategoryName}
                           </span>
                         </div>
-                        <h3 className="font-inter text-base sm:text-xl lg:text-[22px] font-semibold text-[var(--ib-ink)] mb-4 leading-snug">
+                        <h3 className="mb-4 font-sans text-[17px] font-bold leading-snug tracking-[-0.02em] text-[var(--ib-ink)] sm:text-[20px] lg:text-[22px]">
                           {course.title}
                         </h3>
 
@@ -591,38 +580,46 @@ const CategoryCoursesPage = () => {
                         </div>
 
                         {/* CTA Button */}
-                        <div style={{ marginTop: "auto", display: "flex", flexDirection: "column", gap: "8px" }}>
+                        <div className="mt-auto flex flex-col gap-2.5">
                           <button
+                            type="button"
                             onClick={(e) => handleEnrollClick(e, course.id)}
                             disabled={isCheckingId === course.id}
-                            style={{
-                              width: "100%", padding: "14px 20px", borderRadius: 12, fontSize: 15, fontWeight: 700,
-                              display: "flex", alignItems: "center", justifyContent: "center", gap: 8, cursor: "pointer",
-                              background: isPurchased ? "var(--ib-acc)" : "rgba(255,255,255,0.05)", color: isPurchased ? "black" : "#FFFFFF", border: isPurchased ? "none" : "1px solid var(--ib-line)",
-                              transition: "all 0.2s"
-                            }}
-                            className="hover:scale-[1.02] active:scale-[0.98]"
+                            className={`flex w-full items-center justify-center gap-2 rounded-xl px-5 py-3.5 text-[15px] font-semibold transition-all hover:opacity-92 disabled:opacity-60 ${
+                              isPurchased
+                                ? "bg-[var(--ib-acc)] text-white"
+                                : "border border-[var(--ib-acc)] bg-[var(--ib-acc)] text-white shadow-[0_10px_24px_-12px_color-mix(in_srgb,var(--ib-acc)_55%,transparent)]"
+                            }`}
                           >
                             {isCheckingId === course.id ? (
-                              t('academy.verifying', 'Verifying...')
+                              t("academy.verifying", "Verifying...")
                             ) : isPurchased ? (
-                              <>{t('academy.continueLearning', 'Continue Learning')} <PlayCircle size={16} /></>
+                              <>
+                                {t("academy.continueLearning", "Continue Learning")}{" "}
+                                <PlayCircle size={16} />
+                              </>
                             ) : (
-                              <>{t('academy.viewSyllabus', 'View Syllabus')} <BookOpen size={16} /></>
+                              <>
+                                Start Your Trial - Enroll Free <BookOpen size={16} />
+                              </>
                             )}
                           </button>
-                          
+
                           <button
-                            onClick={() => window.open('https://dashboard.isobrain.ai/user/certificates', '_blank')}
-                            style={{
-                              width: "100%", padding: "14px 20px", borderRadius: 12, fontSize: 15, fontWeight: 700,
-                              display: "flex", alignItems: "center", justifyContent: "center", gap: 8, cursor: "pointer",
-                              background: isPurchased ? "var(--ib-acc)" : "rgba(255,255,255,0.05)", color: isPurchased ? "black" : "#FFFFFF", border: isPurchased ? "none" : "1px solid var(--ib-line)",
-                              transition: "all 0.2s"
-                            }}
-                            className="hover:scale-[1.02] active:scale-[0.98]"
+                            type="button"
+                            onClick={() =>
+                              window.open(
+                                "https://dashboard.isobrain.ai/user/certificates",
+                                "_blank",
+                              )
+                            }
+                            className="flex w-full items-center justify-center gap-2 rounded-xl border border-[var(--ib-line)] bg-[var(--ib-card)] px-5 py-3.5 text-[15px] font-semibold text-[var(--ib-ink)] transition-all hover:border-[var(--ib-acc)] hover:bg-[var(--ib-accbg)] hover:text-[var(--ib-acc)]"
                           >
-                            {t('academy.viewSampleCertificate', 'View Sample Certificate')} <Award size={16} />
+                            {t(
+                              "academy.viewSampleCertificate",
+                              "View Sample Certificate",
+                            )}{" "}
+                            <Award size={16} />
                           </button>
                         </div>
                       </div>

@@ -233,13 +233,13 @@ const LibraryUseCases = () => {
                   {category.name}
                 </h3>
 
-                <p className="text-[#64748B] text-base leading-relaxed mb-8 grow">
+                <p className="text-[var(--ib-mute)] text-base leading-relaxed mb-8 grow">
                   {config.description}
                 </p>
 
                 <Link
                   href={`/library/iso-standards?category=${category.slug}`}
-                  className="text-[#64748B] text-base font-semibold flex items-center gap-2 group-hover:text-[var(--ib-acc)] transition-colors"
+                  className="text-[var(--ib-mute)] text-base font-semibold flex items-center gap-2 group-hover:text-[var(--ib-acc)] transition-colors"
                 >
                   Explore Courses{" "}
                   <span className="text-lg">

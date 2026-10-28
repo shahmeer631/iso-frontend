@@ -23,7 +23,7 @@ export const NavigationButtons: React.FC<NavigationButtonsProps> = ({
         disabled={isFirstQuestion}
         className={`flex-1 inline-flex justify-center items-center gap-2 px-3 py-3 md:px-10 md:py-3.5 rounded-xl md:rounded-2xl font-bold transition-all text-sm md:text-lg border-2 ${isFirstQuestion
             ? "bg-[var(--ib-bg)] text-[var(--ib-mute)] border-[var(--ib-line)] cursor-not-allowed"
-            : "bg-white text-[#475569] border-[#E2E8F0] hover:bg-[var(--ib-bg)] active:scale-95 shadow-sm"
+            : "border-[var(--ib-line)] bg-[var(--ib-card)] text-[var(--ib-mute)] shadow-sm hover:bg-[var(--ib-bg)] active:scale-95"
           }`}
       >
         <ArrowLeft className="w-5 h-5 shrink-0" /> Previous

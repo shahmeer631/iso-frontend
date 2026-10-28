@@ -67,7 +67,7 @@ const StarterPackage = () => {
             <h2 className="text-4xl lg:text-[42px] font-semibold text-[var(--ib-ink)] mb-2 leading-[1.2] tracking-tight">
               Starter packages
             </h2>
-            <p className="text-[#64748B] text-lg">
+            <p className="text-[var(--ib-mute)] text-lg">
               Get started with essential standards for your business
             </p>
           </div>
@@ -115,7 +115,7 @@ const StarterPackage = () => {
                 </span>
               </div>
 
-              <p className="text-[#64748B] text-sm leading-relaxed mb-8 flex-grow">
+              <p className="text-[var(--ib-mute)] text-sm leading-relaxed mb-8 flex-grow">
                 {pkg.description}
               </p>
 

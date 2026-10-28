@@ -103,7 +103,7 @@ const Leaderboard = () => {
                       {performer.name}
                     </h4>
                     <p className="m-0 mt-0.5 truncate text-[9px] font-semibold uppercase text-[var(--ib-mute)]">
-                      {performer.category}
+                      {performer.category || performer.industry || "Mastery Lab"}
                     </p>
                   </div>
                 </div>

@@ -151,7 +151,7 @@ Key Gaps: ${result.identified_gaps?.map(g => g.gap_title).join(', ') ?? 'N/A'}.`
           Benchmark Diagnostic <span className="text-[var(--ib-acc)]">Workspace</span>
         </h1>
 
-        <p className="text-[#A1A1A6] text-sm lg:text-lg max-w-4xl mx-auto leading-relaxed text-center font-inter mb-12">
+        <p className="mb-12 max-w-4xl mx-auto text-center font-inter text-sm font-medium leading-relaxed text-[var(--ib-mute)] lg:text-lg">
           Compare your document content directly against ISO compliance definitions.
         </p>
       </header>

@@ -34,7 +34,7 @@ const TopStandards = () => {
           <h2 className="text-4xl lg:text-[42px] font-semibold text-[var(--ib-ink)] mb-2 leading-[1.2] tracking-tight">
             Top Standards
           </h2>
-          <p className="text-[#64748B] text-base">
+          <p className="text-base font-medium text-[var(--ib-mute)]">
             Most viewed and highly rated standards
           </p>
         </div>

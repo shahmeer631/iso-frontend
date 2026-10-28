@@ -12,92 +12,28 @@ import {
   Globe,
   GraduationCap,
   Sparkles,
-  Search,
-  Send,
   BookOpen,
+  Cpu,
+  Layers,
+  Radar,
+  Workflow,
 } from "lucide-react";
 import Link from "next/link";
 import {
   useState,
   useEffect,
-  useRef,
   Fragment,
-  FormEvent,
   type ComponentType,
 } from "react";
-import { useParams, useRouter, useSearchParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useSelector } from "react-redux";
-import { useGetPlansQuery, Plan } from "@/lib/redux/features/pricing/pricingApi";
-import { useCreatePaymentIntentMutation } from "@/lib/redux/features/payments/paymentApi";
-import { selectCurrentUser, selectCurrentToken } from "@/lib/redux/features/auth/authSlice";
-import { toast } from "sonner";
+import { useGetPlansQuery } from "@/lib/redux/features/pricing/pricingApi";
+import { selectCurrentUser } from "@/lib/redux/features/auth/authSlice";
 import { userHasFeature, userOwnsPlanId } from "@/lib/access/effectiveAccess";
 import { useTranslation } from "react-i18next";
 import i18n from "@/lib/i18n/client";
 
 const ease = [0.22, 1, 0.36, 1] as const;
-
-const decodeJwt = (token: string) => {
-  try {
-    const base64Url = token.split(".")[1];
-    const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
-    const jsonPayload = decodeURIComponent(
-      atob(base64)
-        .split("")
-        .map((c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
-        .join("")
-    );
-    return JSON.parse(jsonPayload);
-  } catch {
-    return null;
-  }
-};
-
-const PromptPills = ({
-  onClick,
-  reduceMotion,
-}: {
-  onClick: (p: string) => void;
-  reduceMotion: boolean | null;
-}) => {
-  const { t } = useTranslation();
-
-  const prompts = [
-    { label: t("aiAssistantHome.promptQuality"), value: "Quality (9001) Courses" },
-    { label: t("aiAssistantHome.promptSecurity"), value: "Security (27001) Courses" },
-    {
-      label: t("aiAssistantHome.promptEnvironmental"),
-      value: "Environmental (14001) Courses",
-    },
-    { label: t("aiAssistantHome.promptHealth"), value: "Health & Safety Courses" },
-    {
-      label: t("aiAssistantHome.promptInfoSec"),
-      value: "Information Security Policy",
-    },
-  ];
-
-  return (
-    <div className="mt-6 flex flex-wrap justify-center gap-2.5 sm:gap-3">
-      {prompts.map((prompt, i) => (
-        <motion.button
-          key={prompt.value}
-          type="button"
-          initial={reduceMotion ? false : { opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{
-            duration: 0.35,
-            delay: reduceMotion ? 0 : 0.12 + i * 0.05,
-            ease,
-          }}
-          onClick={() => onClick(prompt.value)}
-          className="rounded-full border border-[var(--ib-line)] bg-[var(--ib-card)] px-3.5 py-2 text-[12.5px] font-medium text-[var(--ib-mute)] transition-all duration-200 hover:-translate-y-0.5 hover:border-[color-mix(in_srgb,var(--ib-acc)_35%,var(--ib-line))] hover:bg-[var(--ib-accbg)] hover:text-[var(--ib-ink)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ib-acc)] sm:text-[13.5px]"
-        >
-          {prompt.label}
-        </motion.button>
-      ))}
-    </div>
-  );
-};
 
 const ModuleCard = ({
   badge,
@@ -168,11 +104,9 @@ const ModuleCard = ({
 const AIAssistantHome = () => {
   const params = useParams();
   const lang = (params?.lang as string) || "en";
-  const [searchQuery, setSearchQuery] = useState("");
-  const [isInputFocused, setIsInputFocused] = useState(false);
   const { t } = useTranslation();
   const reduceMotion = useReducedMotion();
-  const inputRef = useRef<HTMLInputElement>(null);
+  const router = useRouter();
 
   useEffect(() => {
     if (lang && i18n.language !== lang) {
@@ -217,30 +151,8 @@ const AIAssistantHome = () => {
     return () => clearInterval(interval);
   }, []);
 
-  const router = useRouter();
-  const searchParams = useSearchParams();
-
   const { data: response } = useGetPlansQuery();
-  const [createPaymentIntent] = useCreatePaymentIntentMutation();
   const user = useSelector(selectCurrentUser);
-  const token = useSelector(selectCurrentToken);
-  const [processingPlanId, setProcessingPlanId] = useState<string | null>(null);
-
-  const getUserId = () => {
-    if (user?.id) return user.id;
-    let currentToken = token;
-    if (!currentToken && typeof document !== "undefined") {
-      const match = document.cookie.match(new RegExp("(^| )token=([^;]+)"));
-      if (match) currentToken = match[2];
-    }
-    if (currentToken) {
-      const decoded = decodeJwt(currentToken);
-      return decoded?.id || decoded?.userId || decoded?._id || null;
-    }
-    return null;
-  };
-
-  const currentUserId = getUserId();
   const plans = response?.data || [];
   const plan =
     plans.find(
@@ -251,164 +163,6 @@ const AIAssistantHome = () => {
   const isPurchased =
     userOwnsPlanId(user, plan?.id || plan?._id) ||
     userHasFeature(user, "AI_ASSISTANT");
-
-  const handlePlanSelect = async (selectedPlan: Plan) => {
-    if (isPurchased) {
-      toast.success(
-        t("aiAssistantHome.alreadyPurchased", "You already have access to this plan.")
-      );
-      return;
-    }
-    if (!currentUserId) {
-      router.push(`/${lang}/auth/login`);
-      return;
-    }
-    const isFree =
-      selectedPlan.discountedPrice === 0 ||
-      selectedPlan.name?.toLowerCase().includes("free");
-    if (isFree) {
-      router.push(`/${lang}/academy`);
-      return;
-    }
-    const isAdmin =
-      user?.role === "admin" || (token ? decodeJwt(token)?.role === "admin" : false);
-
-    if (isAdmin) {
-      toast.warning(
-        t(
-          "pricingPage.adminWarning",
-          "Admin Account: Real payments are disabled for admin roles. Redirecting to Sandbox checkout..."
-        ),
-        {
-          description: t(
-            "pricingPage.adminWarningDesc",
-            "Admins are not allowed to make live transactions. Test credentials have been prefilled for your convenience."
-          ),
-          duration: 5000,
-        }
-      );
-      setTimeout(() => {
-        const mockQueryParams = new URLSearchParams({
-          clientSecret: "pi_mock_123_secret_mock_456",
-          planName: selectedPlan.name,
-          price: selectedPlan.discountedPrice.toString(),
-          originalPrice: selectedPlan.originalPrice.toString(),
-          isMock: "true",
-          isAdminPayment: "true",
-        }).toString();
-        router.push(`/${lang}/payment?${mockQueryParams}`);
-      }, 1500);
-      return;
-    }
-
-    try {
-      setProcessingPlanId(selectedPlan._id || selectedPlan.id);
-      const courseId = searchParams.get("courseId") || undefined;
-      const result = await createPaymentIntent({
-        planId: selectedPlan.id,
-        userId: currentUserId,
-        courseId: courseId,
-      }).unwrap();
-
-      if (result.success && result.data?.clientSecret) {
-        const queryParams = new URLSearchParams({
-          clientSecret: result.data.clientSecret,
-          planId: selectedPlan.id || selectedPlan._id || "",
-          planName: selectedPlan.name,
-          price: selectedPlan.discountedPrice.toString(),
-          originalPrice: selectedPlan.originalPrice.toString(),
-          courseId: courseId ?? "",
-        }).toString();
-        router.push(`/${lang}/payment?${queryParams}`);
-      } else if (result.success && (result.data as { url?: string })?.url) {
-        window.location.href = (result.data as { url: string }).url;
-      }
-    } catch (error) {
-      const err = error as {
-        data?: { err?: { type?: string } };
-        status?: number;
-        message?: string;
-      };
-      console.error("Failed to create payment intent:", error);
-
-      if (err?.status === 500) {
-        toast.error(
-          t(
-            "pricingPage.serverError",
-            "Internal Server Error: Could not initiate payment. Please try again later."
-          )
-        );
-        return;
-      }
-
-      const isStripeError =
-        err?.data?.err?.type?.includes("Stripe") ||
-        JSON.stringify(err).includes("Stripe") ||
-        JSON.stringify(error).includes("customer");
-
-      if (isStripeError) {
-        const confirmMock = window.confirm(
-          t(
-            "pricingPage.stripeError",
-            "Stripe payment initiation failed. Do you want to proceed with a mock checkout?"
-          )
-        );
-        if (confirmMock) {
-          const mockQueryParams = new URLSearchParams({
-            clientSecret: "pi_mock_123_secret_mock_456",
-            planName: selectedPlan.name,
-            price: selectedPlan.discountedPrice.toString(),
-            originalPrice: selectedPlan.originalPrice.toString(),
-            isMock: "true",
-          }).toString();
-          router.push(`/${lang}/payment?${mockQueryParams}`);
-        }
-      } else {
-        toast.error(
-          t("pricingPage.paymentError", "Failed to initiate payment. Please try again.")
-        );
-      }
-    } finally {
-      setProcessingPlanId(null);
-    }
-  };
-
-  void processingPlanId;
-  void handlePlanSelect;
-
-  const runSearch = (customQuery?: string) => {
-    const query = (customQuery || searchQuery).trim();
-    if (!query) return;
-
-    const lowerQuery = query.toLowerCase();
-
-    if (lowerQuery.includes("course") || lowerQuery.includes("academy")) {
-      if (lowerQuery.includes("quality")) router.push(`/${lang}/academy?category=Quality`);
-      else if (lowerQuery.includes("security"))
-        router.push(`/${lang}/academy?category=Security`);
-      else if (lowerQuery.includes("environmental"))
-        router.push(`/${lang}/academy?category=Environmental`);
-      else if (lowerQuery.includes("health")) router.push(`/${lang}/academy?category=Health`);
-      else router.push(`/${lang}/academy`);
-    } else if (lowerQuery.includes("audit") || lowerQuery.includes("lens")) {
-      router.push(`/${lang}/ai-assistant/audit-lens`);
-    } else if (lowerQuery.includes("navigator") || lowerQuery.includes("map")) {
-      router.push(`/${lang}/ai-assistant/iso-navigator`);
-    } else if (lowerQuery.includes("benchmark") || lowerQuery.includes("analysis")) {
-      router.push(`/${lang}/ai-assistant/benchmark-ai`);
-    } else if (lowerQuery.includes("price") || lowerQuery.includes("plan")) {
-      router.push(`/${lang}/pricing`);
-    } else {
-      router.push(
-        `/${lang}/library/iso-standards?search=${encodeURIComponent(query)}`
-      );
-    }
-  };
-
-  const handleSearch = (e: FormEvent) => {
-    e.preventDefault();
-    runSearch();
-  };
 
   const modules = [
     {
@@ -449,97 +203,150 @@ const AIAssistantHome = () => {
     },
   ];
 
+  const visualBeacons = [
+    {
+      icon: Workflow,
+      label: t("aiAssistantHome.isoNavigator", "ISO Navigator"),
+      href: `/${lang}/ai-assistant/iso-navigator`,
+    },
+    {
+      icon: Radar,
+      label: t("aiAssistantHome.auditLens", "Audit Lens"),
+      href: `/${lang}/ai-assistant/audit-lens`,
+    },
+    {
+      icon: Layers,
+      label: t("aiAssistantHome.benchmarkAi", "Benchmark AI"),
+      href: `/${lang}/ai-assistant/benchmark-ai`,
+    },
+    {
+      icon: Cpu,
+      label: t("aiAssistantHome.isoLibrary", "ISO Library"),
+      href: `/${lang}/library/iso-standards`,
+    },
+  ];
+
   return (
     <div className="min-h-screen overflow-x-clip bg-[var(--ib-bg)] font-inter text-[var(--ib-ink)] selection:bg-[var(--ib-accbg)] selection:text-[var(--ib-acc)]">
       <Navbar />
 
-      {/* ── Assistant Welcome ────────────────────────────── */}
-      <header className="relative overflow-x-clip px-4 pb-10 pt-14 sm:px-6 sm:pb-14 sm:pt-16">
+      {/* ── Hero ─────────────────────────────────────────── */}
+      <header className="relative overflow-x-clip px-4 pb-16 pt-14 sm:px-6 sm:pb-20 sm:pt-16">
         <div aria-hidden className="pointer-events-none absolute inset-0">
-          <div className="absolute left-1/2 top-[-12%] h-[520px] w-[min(920px,100%)] -translate-x-1/2 rounded-full bg-[radial-gradient(ellipse_at_center,color-mix(in_srgb,var(--ib-acc)_14%,transparent),transparent_70%)]" />
-          <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[var(--ib-line)] to-transparent" />
+          <div className="absolute left-1/2 top-[-18%] h-[620px] w-[min(1100px,120%)] -translate-x-1/2 rounded-full bg-[radial-gradient(ellipse_at_center,color-mix(in_srgb,var(--ib-acc)_18%,transparent),transparent_68%)]" />
+          <div className="absolute -left-24 top-24 h-72 w-72 rounded-full bg-[color-mix(in_srgb,var(--ib-acc)_10%,transparent)] blur-3xl" />
+          <div className="absolute -right-16 bottom-10 h-80 w-80 rounded-full bg-[color-mix(in_srgb,var(--ib-acc)_12%,transparent)] blur-3xl" />
+          <div
+            className="absolute inset-0 opacity-[0.35]"
+            style={{
+              backgroundImage:
+                "linear-gradient(color-mix(in_srgb,var(--ib-line)_70%,transparent) 1px, transparent 1px), linear-gradient(90deg, color-mix(in_srgb,var(--ib-line)_70%,transparent) 1px, transparent 1px)",
+              backgroundSize: "48px 48px",
+              maskImage:
+                "radial-gradient(ellipse at center, black 20%, transparent 72%)",
+            }}
+          />
         </div>
 
         <div className="ib-w relative z-[1] max-w-7xl!">
-          <motion.div
-            initial={reduceMotion ? false : { opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, ease }}
-            className="mx-auto max-w-[720px] text-center"
-          >
-            <div className="ib-eye mx-auto inline-flex items-center gap-2">
-              <Sparkles className="size-3.5" aria-hidden />
-              {t("nav.aiAssistant")}
-            </div>
-
-            <h1 className="mb-0! mt-3 text-[30px] font-bold leading-[1.12] tracking-[-0.035em] text-[var(--ib-ink)] sm:text-[40px] lg:text-[46px]">
-              {t("nav.aiAssistantSub.home")}
-            </h1>
-
-            <p className="mx-auto mt-4 max-w-[580px] text-[15px] leading-relaxed text-[var(--ib-mute)] sm:text-[16.5px]">
-              {t("platform.aiAssistant.description")}
-            </p>
-          </motion.div>
-
-          {/* Prompt input */}
-          <motion.form
-            onSubmit={handleSearch}
-            initial={reduceMotion ? false : { opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.45, delay: reduceMotion ? 0 : 0.08, ease }}
-            className="mx-auto mt-8 w-full max-w-[680px]"
-          >
-            <label htmlFor="ai-assistant-prompt" className="sr-only">
-              {t(
-                "aiAssistantHome.searchPlaceholder",
-                "Ask about ISO standards, audits, or courses…"
-              )}
-            </label>
-            <div
-              className={`flex items-center gap-3 rounded-[16px] border bg-[var(--ib-card)] px-4 py-3 shadow-[0_14px_44px_-28px_rgba(11,18,32,0.4)] transition-all duration-300 sm:px-5 sm:py-3.5 ${
-                isInputFocused
-                  ? "border-[var(--ib-acc)] ring-2 ring-[color-mix(in_srgb,var(--ib-acc)_18%,transparent)] shadow-[0_16px_48px_-24px_rgba(27,77,219,0.35)]"
-                  : "border-[var(--ib-line)] hover:border-[color-mix(in_srgb,var(--ib-acc)_28%,var(--ib-line))]"
-              }`}
+          <div className="grid items-center gap-12 lg:grid-cols-12 lg:gap-10">
+            <motion.div
+              initial={reduceMotion ? false : { opacity: 0, y: 18 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, ease }}
+              className="lg:col-span-6"
             >
-              <Search
-                className={`size-[18px] shrink-0 transition-colors ${
-                  isInputFocused ? "text-[var(--ib-acc)]" : "text-[var(--ib-mute)]"
-                }`}
-                aria-hidden
-              />
-              <input
-                id="ai-assistant-prompt"
-                ref={inputRef}
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                onFocus={() => setIsInputFocused(true)}
-                onBlur={() => setIsInputFocused(false)}
-                placeholder={t(
-                  "aiAssistantHome.searchPlaceholder",
-                  "Ask about ISO standards, audits, or courses…"
-                )}
-                className="min-w-0 flex-1 border-none bg-transparent text-[15px] text-[var(--ib-ink)] outline-none placeholder:text-[var(--ib-mute)]"
-                autoComplete="off"
-              />
-              <button
-                type="submit"
-                disabled={!searchQuery.trim()}
-                className="inline-flex size-10 shrink-0 items-center justify-center rounded-xl bg-[var(--ib-acc)] text-white transition-all duration-200 hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-40 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ib-acc)]"
-                aria-label={t("platform.aiAssistant.btn")}
-              >
-                <Send className="size-4" aria-hidden />
-              </button>
-            </div>
+              <div className="ib-eye inline-flex items-center gap-2">
+                <Sparkles className="size-3.5" aria-hidden />
+                {t("nav.aiAssistant")}
+              </div>
 
-            <PromptPills
-              reduceMotion={reduceMotion}
-              onClick={(value) => {
-                setSearchQuery(value);
-                runSearch(value);
-              }}
-            />
-          </motion.form>
+              <h1 className="mb-0! mt-4 text-[34px] font-bold leading-[1.08] tracking-[-0.04em] text-[var(--ib-ink)] sm:text-[44px] lg:text-[52px]">
+                {t("nav.aiAssistantSub.home", "ISOBrain AI Assistant")}
+              </h1>
+
+              <p className="mt-5 max-w-[540px] text-[15.5px] leading-relaxed text-[var(--ib-mute)] sm:text-[17px]">
+                {t("platform.aiAssistant.description")}
+              </p>
+
+              <div className="mt-8 flex flex-wrap items-center gap-3">
+                <Link
+                  href={`/${lang}/ai-assistant/iso-navigator`}
+                  className="group inline-flex items-center justify-center gap-2 rounded-[12px] bg-[var(--ib-acc)] px-6 py-3.5 text-[13px] font-semibold text-white shadow-[0_14px_32px_-14px_rgba(27,77,219,0.55)] transition-all duration-300 hover:-translate-y-0.5 hover:opacity-95"
+                >
+                  {t("aiAssistantHome.initializeSync", "Launch Navigator")}
+                  <ArrowRight
+                    className="size-4 transition-transform group-hover:translate-x-1"
+                    aria-hidden
+                  />
+                </Link>
+                <Link
+                  href={`/${lang}/pricing`}
+                  className="inline-flex items-center justify-center rounded-[12px] border border-[var(--ib-line)] bg-[var(--ib-card)] px-6 py-3.5 text-[13px] font-semibold text-[var(--ib-ink)] transition-all hover:border-[color-mix(in_srgb,var(--ib-acc)_35%,var(--ib-line))] hover:bg-[var(--ib-accbg)]"
+                >
+                  {t("aiAssistantHome.getStartedBtn", "View Ultra plan")}
+                </Link>
+              </div>
+            </motion.div>
+
+            <motion.div
+              initial={reduceMotion ? false : { opacity: 0, scale: 0.96 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.55, delay: reduceMotion ? 0 : 0.08, ease }}
+              className="relative lg:col-span-6"
+            >
+              <div className="relative overflow-hidden rounded-[28px] border border-[var(--ib-line)] bg-[linear-gradient(160deg,var(--ib-card),color-mix(in_srgb,var(--ib-accbg)_55%,var(--ib-card)))] p-5 shadow-[0_28px_70px_-36px_rgba(27,77,219,0.45)] sm:p-7">
+                <div
+                  aria-hidden
+                  className="pointer-events-none absolute -right-10 -top-10 size-48 rounded-full bg-[color-mix(in_srgb,var(--ib-acc)_18%,transparent)] blur-2xl"
+                />
+                <div className="relative z-[1] mb-5 flex items-center justify-between">
+                  <div>
+                    <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-[var(--ib-acc)]">
+                      Live toolkit
+                    </p>
+                    <p className="mt-1 text-[15px] font-semibold text-[var(--ib-ink)]">
+                      Compliance intelligence stack
+                    </p>
+                  </div>
+                  <div className="flex size-11 items-center justify-center rounded-2xl bg-[var(--ib-acc)] text-white shadow-lg">
+                    <Cpu className="size-5" aria-hidden />
+                  </div>
+                </div>
+
+                <div className="relative z-[1] grid grid-cols-2 gap-3 sm:gap-4">
+                  {visualBeacons.map((item, i) => (
+                    <motion.div
+                      key={item.label}
+                      initial={reduceMotion ? false : { opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{
+                        duration: 0.35,
+                        delay: reduceMotion ? 0 : 0.12 + i * 0.05,
+                        ease,
+                      }}
+                    >
+                      <Link
+                        href={item.href}
+                        className="group flex h-full flex-col gap-3 rounded-2xl border border-[var(--ib-line)] bg-[var(--ib-card)]/90 p-4 transition-all hover:-translate-y-0.5 hover:border-[color-mix(in_srgb,var(--ib-acc)_40%,var(--ib-line))] hover:shadow-[0_16px_36px_-24px_rgba(27,77,219,0.4)]"
+                      >
+                        <div className="flex size-10 items-center justify-center rounded-xl bg-[var(--ib-accbg)] text-[var(--ib-acc)]">
+                          <item.icon className="size-5" aria-hidden />
+                        </div>
+                        <span className="text-[13px] font-semibold text-[var(--ib-ink)]">
+                          {item.label}
+                        </span>
+                        <span className="mt-auto inline-flex items-center gap-1 text-[11px] font-bold uppercase tracking-widest text-[var(--ib-acc)] opacity-80 group-hover:opacity-100">
+                          Open
+                          <ArrowRight className="size-3.5" aria-hidden />
+                        </span>
+                      </Link>
+                    </motion.div>
+                  ))}
+                </div>
+              </div>
+            </motion.div>
+          </div>
         </div>
       </header>
 
@@ -556,7 +363,10 @@ const AIAssistantHome = () => {
               <h2 className="mb-0! text-[24px] font-bold tracking-[-0.03em] text-[var(--ib-ink)] sm:text-[30px]">
                 {t("aiAssistantHome.isobrainUltraTitle")}{" "}
                 <span className="text-[var(--ib-acc)]">
-                  {t("aiAssistantHome.isobrainUltraPrice")}
+                  {t(
+                    "aiAssistantHome.isobrainUltraPrice",
+                    "USD $13 per month, billed annually"
+                  )}
                 </span>
               </h2>
 
@@ -688,7 +498,6 @@ const AIAssistantHome = () => {
             ))}
           </div>
 
-          {/* Academy card */}
           <motion.article
             initial={reduceMotion ? false : { opacity: 0, y: 16 }}
             whileInView={{ opacity: 1, y: 0 }}

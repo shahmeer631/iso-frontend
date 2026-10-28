@@ -1,5 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-
 @import "tailwindcss";
 @import "tw-animate-css";
 
@@ -140,9 +138,9 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-sans: var(--font-inter), Inter, system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  --font-heading: "Inter", system-ui, sans-serif;
+  --font-heading: var(--font-inter), Inter, system-ui, sans-serif;
 
   /* Brand aliases (keep legacy class names working) */
   --color-bg-primary: var(--bg-primary);
@@ -220,11 +218,11 @@
 }
 
 :root {
-  /* Approved v4 palette */
+  /* Approved v4 palette — darker ink/mute for WCAG-friendly light backgrounds */
   --ib-bg: #F5F7FB;
   --ib-card: #ffffff;
-  --ib-ink: #0B1220;
-  --ib-mute: #59657A;
+  --ib-ink: #0A0F1A;
+  --ib-mute: #3F4B5E;
   --ib-line: #E1E7F0;
   --ib-acc: #1B4DDB;
   --ib-accbg: #EAF0FF;
@@ -251,17 +249,17 @@
 
   /* shadcn semantic tokens mapped to v4 */
   --background: #F5F7FB;
-  --foreground: #0B1220;
+  --foreground: #0A0F1A;
   --card: #ffffff;
-  --card-foreground: #0B1220;
+  --card-foreground: #0A0F1A;
   --popover: #ffffff;
-  --popover-foreground: #0B1220;
+  --popover-foreground: #0A0F1A;
   --primary: #1B4DDB;
   --primary-foreground: #ffffff;
   --secondary: #EAF0FF;
-  --secondary-foreground: #0B1220;
+  --secondary-foreground: #0A0F1A;
   --muted: #F5F7FB;
-  --muted-foreground: #59657A;
+  --muted-foreground: #3F4B5E;
   --accent: #EAF0FF;
   --accent-foreground: #1B4DDB;
   --destructive: #dc2626;
@@ -270,15 +268,15 @@
   --ring: #1B4DDB;
   --chart-1: #1B4DDB;
   --chart-2: #0F8A5F;
-  --chart-3: #59657A;
+  --chart-3: #3F4B5E;
   --chart-4: #7AA2FF;
   --chart-5: #0B1530;
   --sidebar: #ffffff;
-  --sidebar-foreground: #0B1220;
+  --sidebar-foreground: #0A0F1A;
   --sidebar-primary: #1B4DDB;
   --sidebar-primary-foreground: #ffffff;
   --sidebar-accent: #EAF0FF;
-  --sidebar-accent-foreground: #0B1220;
+  --sidebar-accent-foreground: #0A0F1A;
   --sidebar-border: #E1E7F0;
   --sidebar-ring: #1B4DDB;
 }
@@ -297,8 +295,8 @@
   :root:not([data-theme="light"]) {
     --ib-bg: #080D1A;
     --ib-card: #101830;
-    --ib-ink: #EEF2FB;
-    --ib-mute: #9AA6BF;
+    --ib-ink: #F2F5FC;
+    --ib-mute: #A3AEC7;
     --ib-line: #1F2A45;
     --ib-acc: #7AA2FF;
     --ib-accbg: #16244A;
@@ -348,8 +346,8 @@
 :root[data-theme="dark"] {
   --ib-bg: #080D1A;
   --ib-card: #101830;
-  --ib-ink: #EEF2FB;
-  --ib-mute: #9AA6BF;
+  --ib-ink: #F2F5FC;
+  --ib-mute: #A3AEC7;
   --ib-line: #1F2A45;
   --ib-acc: #7AA2FF;
   --ib-accbg: #16244A;
@@ -413,78 +411,94 @@
   body {
     background: var(--ib-bg);
     color: var(--ib-ink);
-    font-family: Inter, system-ui, -apple-system, "Segoe UI", sans-serif !important;
+    font-family: var(--font-inter), Inter, system-ui, -apple-system, "Segoe UI", sans-serif;
     font-size: 16px;
-    font-weight: 400;
-    line-height: 1.6;
+    font-weight: 500;
+    line-height: 1.65;
     -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
   }
 
   h1,
   .text-h1 {
-    font-family: Inter, system-ui, sans-serif !important;
+    font-family: inherit;
     font-weight: 700;
-    line-height: 1.06 !important;
-    letter-spacing: -0.035em !important;
-    font-size: 38px !important;
+    line-height: 1.08;
+    letter-spacing: -0.035em;
+    font-size: var(--font-size-h1);
     color: var(--ib-ink);
   }
 
   h2,
   .text-h2 {
-    font-family: Inter, system-ui, sans-serif !important;
+    font-family: inherit;
     font-weight: 700;
-    line-height: 1.12 !important;
-    letter-spacing: -0.03em !important;
-    font-size: 30px !important;
+    line-height: 1.15;
+    letter-spacing: -0.03em;
+    font-size: var(--font-size-h2);
     color: var(--ib-ink);
   }
 
   h3,
   .text-h3 {
-    font-family: Inter, system-ui, sans-serif !important;
-    font-weight: 700;
-    line-height: 1.25 !important;
-    letter-spacing: -0.01em !important;
-    font-size: 19px !important;
+    font-family: inherit;
+    font-weight: 600;
+    line-height: 1.3;
+    letter-spacing: -0.015em;
+    font-size: var(--font-size-h3);
     color: var(--ib-ink);
   }
 
   p,
   .text-body {
-    font-family: Inter, system-ui, sans-serif !important;
-    font-weight: 400 !important;
-    line-height: 1.6 !important;
-    font-size: 16px;
+    font-family: inherit;
+    font-weight: 500;
+    line-height: 1.65;
+    font-size: var(--font-size-body);
+    color: var(--ib-ink);
   }
 
   small,
   .text-caption,
   .text-small {
-    font-family: Inter, system-ui, sans-serif !important;
-    font-weight: 400 !important;
-    line-height: 1.5 !important;
-    font-size: 14px !important;
+    font-family: inherit;
+    font-weight: 500;
+    line-height: 1.5;
+    font-size: var(--font-size-small);
+    color: var(--ib-mute);
+  }
+
+  label {
+    font-family: inherit;
+    font-weight: 600;
+    color: var(--ib-ink);
+  }
+
+  button,
+  input,
+  textarea,
+  select {
+    font-family: inherit;
   }
 
   @media (min-width: 901px) {
     h1,
     .text-h1 {
-      font-size: 54px !important;
+      font-size: 54px;
     }
 
     h2,
     .text-h2 {
-      font-size: 38px !important;
+      font-size: 38px;
     }
   }
 
   h4,
   h5,
   h6 {
-    font-family: Inter, system-ui, sans-serif !important;
+    font-family: inherit;
     font-weight: 600;
-    letter-spacing: -0.02em !important;
+    letter-spacing: -0.02em;
     color: var(--ib-ink);
   }
 
@@ -669,9 +683,15 @@ body[style*="top:"] {
 .font-space-grotesk,
 .font-sans,
 .font-inter {
-  font-family: Inter, system-ui, -apple-system, "Segoe UI", sans-serif !important;
+  font-family: var(--font-inter), Inter, system-ui, -apple-system, "Segoe UI", sans-serif;
 }
 
 .font-jetbrains-mono {
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+/* Muted helper — darker secondary text for light surfaces */
+.text-mute,
+.text-muted {
+  color: var(--ib-mute);
 }

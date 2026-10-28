@@ -1,19 +1,19 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import { motion, useReducedMotion } from "framer-motion";
 import { ArrowRight, type LucideIcon } from "lucide-react";
+import HomeProductVisual from "@/components/landing-page-components/HomeProductVisual";
 
 export type EcosystemProduct = {
   id: string;
   title: string;
   description: string;
-  image: string;
   href: string;
   cta: string;
   icon: LucideIcon;
   reverse: boolean;
+  eyebrow?: string;
 };
 
 type ProductEcosystemProps = {
@@ -36,12 +36,11 @@ export default function ProductEcosystem({ products }: ProductEcosystemProps) {
           <div className="ib-eye">The complete ISO ecosystem</div>
           <h2 className="mb-0!">Four tools, one connected system</h2>
           <p className="mt-3.5 text-[17px] text-[var(--ib-mute)]">
-            Most ISO tools cover one part of the process. ISOBrain connects
-            learning, assessment, guidance, and standards in one clear system.
+            Start assessing, learn the standards, master the curriculum, then
+            apply with AI—directly from the homepage.
           </p>
         </motion.div>
 
-        {/* Shared ecosystem motif — subtle vertical spine on desktop */}
         <div className="relative flex flex-col gap-10 md:gap-14">
           <div
             aria-hidden
@@ -52,14 +51,14 @@ export default function ProductEcosystem({ products }: ProductEcosystemProps) {
             const Icon = product.icon;
             const step = String(index + 1).padStart(2, "0");
             const textFrom = product.reverse ? 24 : -24;
-            const imageFrom = product.reverse ? -24 : 24;
+            const visualFrom = product.reverse ? -24 : 24;
 
             return (
               <motion.article
                 key={product.id}
                 initial={reduceMotion ? false : { opacity: 0, y: 28 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.25 }}
+                viewport={{ once: true, amount: 0.2 }}
                 transition={{
                   duration: 0.55,
                   delay: reduceMotion ? 0 : 0.05,
@@ -67,14 +66,9 @@ export default function ProductEcosystem({ products }: ProductEcosystemProps) {
                 }}
                 className="ib-card group relative z-[1] overflow-hidden p-6 sm:p-8 lg:p-12"
               >
-                {/* Soft accent wash */}
                 <div
                   aria-hidden
                   className="pointer-events-none absolute -right-20 -top-24 size-[280px] rounded-full bg-[radial-gradient(circle,color-mix(in_srgb,var(--ib-acc)_16%,transparent),transparent_70%)] opacity-70 transition-opacity duration-500 group-hover:opacity-100"
-                />
-                <div
-                  aria-hidden
-                  className="pointer-events-none absolute -bottom-24 -left-16 size-[220px] rounded-full bg-[radial-gradient(circle,color-mix(in_srgb,var(--ib-acc)_10%,transparent),transparent_70%)]"
                 />
 
                 <div
@@ -82,7 +76,6 @@ export default function ProductEcosystem({ products }: ProductEcosystemProps) {
                     product.reverse ? "lg:flex-row-reverse" : "lg:flex-row"
                   }`}
                 >
-                  {/* Copy */}
                   <motion.div
                     className="w-full space-y-5 text-center lg:w-1/2 lg:text-left"
                     initial={
@@ -98,7 +91,7 @@ export default function ProductEcosystem({ products }: ProductEcosystemProps) {
                   >
                     <div className="flex flex-wrap items-center justify-center gap-3 lg:justify-start">
                       <span className="inline-flex items-center rounded-full border border-[var(--ib-line)] bg-[var(--ib-bg)] px-2.5 py-1 text-[11px] font-bold tracking-[0.08em] text-[var(--ib-acc)] uppercase">
-                        Tool {step}
+                        {product.eyebrow || `Step ${step}`}
                       </span>
                       <div className="grid size-12 place-items-center rounded-[12px] border border-[var(--ib-line)] bg-[var(--ib-accbg)] text-[var(--ib-acc)] transition-transform duration-300 group-hover:scale-105">
                         <Icon className="size-6" aria-hidden />
@@ -120,49 +113,22 @@ export default function ProductEcosystem({ products }: ProductEcosystemProps) {
                     </Link>
                   </motion.div>
 
-                  {/* Image frame */}
                   <motion.div
                     className="w-full lg:w-1/2"
                     initial={
-                      reduceMotion ? false : { opacity: 0, x: imageFrom, scale: 0.97 }
+                      reduceMotion
+                        ? false
+                        : { opacity: 0, x: visualFrom, scale: 0.97 }
                     }
                     whileInView={{ opacity: 1, x: 0, scale: 1 }}
-                    viewport={{ once: true, amount: 0.3 }}
+                    viewport={{ once: true, amount: 0.25 }}
                     transition={{
                       duration: 0.55,
                       delay: reduceMotion ? 0 : 0.18,
                       ease: [0.22, 1, 0.36, 1],
                     }}
                   >
-                    <div className="relative">
-                      {/* Decorative offset plate */}
-                      <div
-                        aria-hidden
-                        className="absolute inset-3 translate-x-2 translate-y-2 rounded-2xl border border-[var(--ib-line)] bg-[var(--ib-accbg)]/40"
-                      />
-
-                      <div className="relative overflow-hidden rounded-2xl border border-[var(--ib-line)] bg-[var(--ib-bg)] shadow-[0_24px_60px_-24px_rgba(11,18,32,0.28)] transition-transform duration-500 ease-out group-hover:-translate-y-1 group-hover:shadow-[0_28px_64px_-24px_rgba(27,77,219,0.28)] motion-safe:group-hover:scale-[1.01]">
-                        {/* Window chrome */}
-                        <div className="flex items-center gap-1.5 border-b border-[var(--ib-line)] bg-[color-mix(in_srgb,var(--ib-card)_90%,var(--ib-accbg))] px-3.5 py-2.5">
-                          <i className="block size-2 rounded-full bg-[var(--ib-line)]" />
-                          <i className="block size-2 rounded-full bg-[var(--ib-line)]" />
-                          <i className="block size-2 rounded-full bg-[var(--ib-line)]" />
-                          <span className="ml-2 truncate text-[11px] font-medium text-[var(--ib-mute)]">
-                            {product.title}
-                          </span>
-                        </div>
-
-                        <div className="relative aspect-[4/3] w-full overflow-hidden motion-safe:animate-[hero-float_8s_ease-in-out_infinite]">
-                          <Image
-                            src={product.image}
-                            alt={`${product.title} product preview`}
-                            fill
-                            className="object-cover object-top"
-                            sizes="(max-width: 1024px) 100vw, 50vw"
-                          />
-                        </div>
-                      </div>
-                    </div>
+                    <HomeProductVisual productId={product.id} />
                   </motion.div>
                 </div>
               </motion.article>

@@ -10,6 +10,8 @@ import remarkGfm from "remark-gfm";
 import { toast } from "sonner";
 import { useChatSimpleMutation } from "@/lib/redux/api/auditLensApi";
 import { useAskAiPageContext } from "@/components/ask-ai/AskAiPageContext";
+import { ActivityTracker } from "@/components/activity/ActivityTracker";
+import type { AiToolId } from "@/lib/redux/api/activityApi";
 import "@/lib/i18n/client";
 
 interface ChatMessage {
@@ -171,6 +173,18 @@ export default function GlobalChatbot() {
     }
     return "ISOBrain Ask AI · Library standards & documents";
   }, [resolvedContext]);
+
+  const activityToolId = useMemo((): AiToolId => {
+    if (pathname?.includes("/academy")) return "ACADEMY_CHAT";
+    if (
+      pathname?.includes("/library") ||
+      resolvedContext.isoStandardId ||
+      resolvedContext.documentId
+    ) {
+      return "LIBRARY_CHAT";
+    }
+    return "UNIVERSAL_ASK";
+  }, [pathname, resolvedContext.isoStandardId, resolvedContext.documentId]);
 
   // When a standard is open, load starter questions grounded in THAT document only.
   useEffect(() => {
@@ -474,6 +488,17 @@ export default function GlobalChatbot() {
     <div
       className={`pointer-events-none fixed right-4 z-[120] flex flex-col items-end justify-end sm:right-6 ${shellTop} ${shellBottom}`}
     >
+      <ActivityTracker
+        source="AI_TOOL"
+        enabled={isOpen}
+        aiToolId={activityToolId}
+        isoStandardId={resolvedContext.isoStandardId}
+        documentId={resolvedContext.documentId}
+        resourceLabel={
+          resolvedContext.standardTitle || contextBanner || "Ask AI"
+        }
+        sessionKey={`ai_${activityToolId}`}
+      />
       <div className="pointer-events-auto flex h-full max-h-full min-h-0 w-full max-w-[calc(100vw-2rem)] flex-col items-end justify-end sm:max-w-[400px]">
       <AnimatePresence>
         {isOpen && (

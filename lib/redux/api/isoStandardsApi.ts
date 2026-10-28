@@ -16,6 +16,8 @@ export interface ISOCategory {
 export interface ISOStandard {
   id: string;
   title: string;
+  description?: string | null;
+  summary?: string | null;
   isoCode: string;
   version: string;
   fileUrl: string;
@@ -107,6 +109,9 @@ export interface ISOChatRequest {
 export interface SubmitAssessmentRequest {
   userId?: string | null;
   guestId?: string;
+  /** Server-issued session id(s) from quiz generation (required for scoring) */
+  examSessionId?: string;
+  examSessionIds?: string[];
   timeTaken: number;
   metadata: {
     industry: string;
@@ -115,9 +120,11 @@ export interface SubmitAssessmentRequest {
     suggestedStandards: string[];
   };
   answers: {
+    questionId?: string;
     question: string;
     selected_answer: string;
-    correct_answer: string;
+    /** Untrusted — ignored by server scoring */
+    correct_answer?: string;
   }[];
 }
 
@@ -186,7 +193,8 @@ export interface LeaderboardEntry {
   userId: string;
   name: string;
   score: number;
-  category: string;
+  category?: string;
+  industry?: string;
 }
 
 export interface LeaderboardResponse {

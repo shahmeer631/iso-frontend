@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { LayoutGrid, Loader2, Sparkles, ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useGetCategoriesQuery, useGetISOStandardsQuery } from "@/lib/redux/api/isoStandardsApi";
+import { sortStandardsByYearNumberName } from "@/lib/library/sortStandards";
 import { useTranslation } from "react-i18next";
 import "@/lib/i18n/client";
 
@@ -252,7 +253,7 @@ const Standards = ({ searchTerm = "", selectedCategoryId }: StandardsProps) => {
   });
 
   const categories = categoriesData?.data || [];
-  const allStandards = standardsData?.data || [];
+  const allStandards = sortStandardsByYearNumberName(standardsData?.data || []);
   const totalItems = standardsData?.meta?.total || 0;
   const totalPages = Math.max(1, Math.ceil(totalItems / PAGE_LIMIT));
 

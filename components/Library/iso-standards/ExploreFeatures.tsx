@@ -46,7 +46,7 @@ const ExploreFeatures = () => {
           <h2 className="text-4xl lg:text-[42px] font-semibold text-[var(--ib-ink)] mb-4 leading-[1.2] tracking-tight">
             {t('mastery.exploreMore')}
           </h2>
-          <p className="text-[#64748B] text-lg max-w-2xl mx-auto">
+          <p className="text-[var(--ib-mute)] text-lg max-w-2xl mx-auto">
             {t('mastery.nextStepSubtitle')}
           </p>
         </div>
@@ -76,7 +76,7 @@ const ExploreFeatures = () => {
                 {feature.title}
               </h3>
 
-              <p className="text-[#64748B] text-base leading-relaxed mb-8">
+              <p className="text-[var(--ib-mute)] text-base leading-relaxed mb-8">
                 {feature.description}
               </p>
 

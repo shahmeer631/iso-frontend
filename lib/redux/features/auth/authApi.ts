@@ -58,7 +58,15 @@ export const authApi = baseApi.injectEndpoints({
       }),
       providesTags: ['User'],
     }),
+    /** Read-only enrollment status — does not create an enrollment. */
     checkEnrollment: builder.mutation<any, { courseId: string }>({
+      query: ({ courseId }) => ({
+        url: `/user-dashboard/enrollment/${courseId}`,
+        method: 'GET',
+      }),
+    }),
+    /** Creates enrollment when the user has course access. */
+    enrollCourse: builder.mutation<any, { courseId: string }>({
       query: (data) => ({
         url: '/user-dashboard',
         method: 'POST',
@@ -78,5 +86,6 @@ export const {
   useVerifyOtpMutation,
   useCompleteProfileMutation,
   useGetProfileQuery,
-  useCheckEnrollmentMutation
+  useCheckEnrollmentMutation,
+  useEnrollCourseMutation,
 } = authApi;

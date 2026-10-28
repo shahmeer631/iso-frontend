@@ -1,11 +1,10 @@
 "use client";
 
 import React from "react";
-import { Lightbulb } from "lucide-react";
-import { motion } from "framer-motion";
 import { AnswerOption } from "./AnswerOption";
 import { useTranslation } from "react-i18next";
 import "@/lib/i18n/client";
+import { ArrowLeft } from "lucide-react";
 
 interface QuestionOption {
   label: string;
@@ -20,6 +19,7 @@ interface QuestionCardProps {
   onHintClick: () => void;
   onSwipeNext?: () => void;
   onSwipePrev?: () => void;
+  disableAnswers?: boolean;
 }
 
 export const QuestionCard: React.FC<QuestionCardProps> = ({
@@ -27,77 +27,43 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
   options,
   selectedAnswer,
   onAnswerSelect,
-  onHintClick,
-  onSwipeNext,
   onSwipePrev,
+  disableAnswers = false,
 }) => {
   const { t } = useTranslation();
   return (
-    <div style={{
-      background: "var(--ib-card)",
-      borderRadius: 32,
-      padding: "clamp(24px, 5vw, 48px)",
-      border: "1px solid var(--ib-line)",
-      marginBottom: 32,
-      position: "relative"
-    }}>
-      {/* Question Text */}
-      <h3
-        className="text-sm sm:text-[18px]" style={{
-          fontWeight: 400,
-          color: "var(--ib-ink)",
-          marginBottom: 32,
-          lineHeight: 1.6
-        }}>
+    <div className="relative mb-8 rounded-[24px] border border-[var(--ib-line)] bg-[var(--ib-card)] p-5 sm:mb-8 sm:rounded-[32px] sm:p-8 md:p-10">
+      <h3 className="mb-0! text-[15px] font-medium leading-relaxed text-[var(--ib-ink)] sm:text-[18px]">
         {question}
       </h3>
 
-      {/* Answer Options */}
-      <div style={{ display: "flex", flexDirection: "column", gap: 16, marginBottom: 32 }}>
-        {options.map((option, idx) => (
+      <div className="mt-6 flex flex-col gap-3 sm:mt-8 sm:gap-4">
+        {options.map((option) => (
           <AnswerOption
             key={option.label}
             label={option.label}
             text={option.text}
             isSelected={selectedAnswer === option.label}
             onSelect={onAnswerSelect}
+            disabled={disableAnswers}
           />
         ))}
       </div>
 
-      {/* Footer Info */}
-      <div style={{ display: "flex", flexDirection: "column", gap: 32 }}>
-        {/* <button
-          onClick={onHintClick}
-          style={{
-            display: "inline-flex", alignItems: "center", gap: 8,
-            color: "#FFB800", fontWeight: 600, fontSize: 16,
-            background: "transparent", border: "none", cursor: "pointer"
-          }}
-          onMouseEnter={(e) => e.currentTarget.style.textDecoration = "underline"}
-          onMouseLeave={(e) => e.currentTarget.style.textDecoration = "none"}
+      <div className="mt-8 flex items-center justify-between gap-3">
+        <button
+          type="button"
+          onClick={onSwipePrev}
+          disabled={!onSwipePrev}
+          className={`inline-flex items-center justify-center gap-2 rounded-xl border px-4 py-2.5 text-[13px] font-bold transition-all sm:px-6 sm:py-3 sm:text-[14px] ${
+            !onSwipePrev
+              ? "cursor-not-allowed border-[var(--ib-line)] bg-[var(--ib-bg)] text-[var(--ib-mute)] opacity-50"
+              : "border-[var(--ib-line)] bg-[var(--ib-bg)] text-[var(--ib-ink)] hover:border-[color-mix(in_srgb,var(--ib-acc)_35%,var(--ib-line))] hover:bg-[var(--ib-accbg)]"
+          } focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ib-acc)]`}
         >
-          <Lightbulb size={20} />
-          {t('mastery.needHint')}
-        </button> */}
-
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <button
-            onClick={onSwipePrev}
-            disabled={!onSwipePrev}
-            style={{
-              padding: "12px 32px", borderRadius: 12, fontWeight: 700, fontSize: 15,
-              transition: "all 0.2s",
-              display: "flex", alignItems: "center", justifyContent: "center", gap: 12,
-              background: !onSwipePrev ? "rgba(255,255,255,0.02)" : "rgba(255,255,255,0.05)",
-              color: !onSwipePrev ? "rgba(255,255,255,0.2)" : "#FFFFFF",
-              border: !onSwipePrev ? "1px solid var(--ib-line)" : "1px solid var(--ib-line)",
-              cursor: !onSwipePrev ? "not-allowed" : "pointer"
-            }}
-          >
-            {t('mastery.previous')}
-          </button>
-        </div>
+          <ArrowLeft className="size-4 shrink-0" aria-hidden />
+          {t("mastery.previous", "Previous")}
+        </button>
       </div>
     </div>
   );

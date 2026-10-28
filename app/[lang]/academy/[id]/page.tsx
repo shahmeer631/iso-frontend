@@ -14,6 +14,7 @@ import { useCheckEnrollmentMutation } from "@/lib/redux/features/auth/authApi";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 import i18n from "@/lib/i18n/client";
+import { ActivityTracker } from "@/components/activity/ActivityTracker";
 
 export default function AcademyCoursePage({
   params,
@@ -139,14 +140,10 @@ export default function AcademyCoursePage({
       try {
         const result = await checkEnrollment({ courseId: activeCourseId }).unwrap();
         const isEnrolled =
-          result?.success === true ||
-          result?.enrolled ||
-          result?.isEnrolled ||
-          result?.isPurchased ||
-          result?.data?.enrolled ||
-          result?.data?.isEnrolled ||
-          result?.data?.isPurchased ||
-          !!result?.data?.id;
+          result?.data?.enrolled === true ||
+          result?.data?.isEnrolled === true ||
+          result?.enrolled === true ||
+          result?.isEnrolled === true;
 
         if (isEnrolled) {
           setIsAccessVerified(true);
@@ -157,8 +154,6 @@ export default function AcademyCoursePage({
         if (error?.status === 403 || error?.data?.statusCode === 403 || error?.data?.message?.includes("Upgrade your plan")) {
           toast.error(error?.data?.message || "Upgrade your plan to access courses");
           router.push(`/${lang}/pricing?courseId=${activeCourseId}`);
-        } else if (error?.data?.message === "Already enrolled" || error?.status === 400) {
-          setIsAccessVerified(true);
         } else {
           router.push(`/${lang}/pricing?courseId=${activeCourseId}`);
         }
@@ -369,6 +364,14 @@ export default function AcademyCoursePage({
   // ─── Main Render ──────────────────────────────────────────────────────────
   return (
     <div className="min-h-screen bg-[var(--ib-bg)] font-inter text-[var(--ib-ink)] relative overflow-hidden">
+      <ActivityTracker
+        source="ACADEMY"
+        enabled={Boolean(token && isAccessVerified && courseId && currentLesson?.id)}
+        courseId={courseId}
+        lessonId={currentLesson?.id}
+        resourceLabel={currentLesson?.title || course?.title}
+        sessionKey={`academy_${courseId}`}
+      />
       {/* Background Glows */}
       <div className="absolute top-0 left-[-10%] w-[500px] h-[500px] bg-[var(--ib-acc)]/5 rounded-full blur-[100px] pointer-events-none" />
       <div className="absolute bottom-0 right-[-10%] w-[600px] h-[600px] bg-[var(--ib-acc)]/5 rounded-full blur-[120px] pointer-events-none" />
@@ -704,7 +707,7 @@ export default function AcademyCoursePage({
                             )}
                             {m.role === "ai" && m.sources && m.sources.length > 0 && (
                               <div className="mt-3 pt-2 border-t border-[var(--ib-line)]">
-                                <p className="text-[10px] font-bold text-[#6B7280] uppercase tracking-widest mb-1.5">Sources</p>
+                                <p className="mb-1.5 text-[10px] font-bold uppercase tracking-widest text-[var(--ib-mute)]">Sources</p>
                                 <ul className="space-y-1">
                                   {m.sources.map((s, si) => (
                                     <li key={si} className="text-[10px] text-[var(--ib-mute)] leading-snug">• {s}</li>

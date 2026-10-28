@@ -235,11 +235,15 @@ const ISOStandardsNexus = ({ searchTerm = "" }: ISOStandardsNexusProps) => {
           <div className="ib-card mx-auto max-w-lg px-6 py-16 text-center">
             <LayoutGrid className="mx-auto mb-4 size-10 text-[var(--ib-mute)] opacity-50" />
             <p className="text-lg font-semibold text-[var(--ib-ink)]">
-              {t("library.noResultsFor")} &ldquo;{searchTerm}&rdquo;
+              {searchTerm
+                ? `${t("library.noResultsFor")} “${searchTerm}”`
+                : t("library.noStandards") || "No standards found."}
             </p>
-            <p className="mt-2 text-sm text-[var(--ib-mute)]">
-              {t("library.tryDifferent")}
-            </p>
+            {searchTerm ? (
+              <p className="mt-2 text-sm text-[var(--ib-mute)]">
+                {t("library.tryDifferent")}
+              </p>
+            ) : null}
           </div>
         ) : (
           <div className="grid grid-cols-1 gap-5 md:grid-cols-2 md:gap-6 lg:grid-cols-3">

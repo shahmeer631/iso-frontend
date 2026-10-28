@@ -99,7 +99,7 @@ function decorateInline(children: React.ReactNode): React.ReactNode {
         parts.push(
           <span
             key={`c-${i++}-${match.index}`}
-            className="inline-flex items-center mx-0.5 px-1.5 py-0.5 rounded-md bg-[#1D4ED8]/15 text-[#93C5FD] font-jetbrains-mono text-[12px] font-medium leading-[1.4] tracking-[0.02em] align-middle"
+            className="mx-0.5 inline-flex items-center rounded-md border border-[color-mix(in_srgb,var(--ib-acc)_22%,var(--ib-line))] bg-[var(--ib-accbg)] px-1.5 py-0.5 align-middle font-jetbrains-mono text-[12px] font-medium leading-[1.4] tracking-[0.02em] text-[var(--ib-acc)]"
           >
             {match[0]}
           </span>,
@@ -127,16 +127,16 @@ function renderStatusPill(text: string): React.ReactNode | null {
   let tone = "";
   let mark = "";
   if (/^(conformant|conforming|compliant|conformity)\b/.test(lower)) {
-    tone = "bg-emerald-950/70 text-emerald-300 border border-emerald-800/50";
+    tone = "bg-[var(--ib-okbg)] text-[var(--ib-ok)] border border-[color-mix(in_srgb,var(--ib-ok)_25%,var(--ib-line))]";
     mark = "✓";
   } else if (/^(non[-\s]?conformant|non[-\s]?compliant|nonconformity)\b/.test(lower)) {
-    tone = "bg-red-950/70 text-red-300 border border-red-800/50";
+    tone = "bg-rose-50 text-rose-700 border border-rose-200";
     mark = "✕";
   } else if (/^(minor gap|gap)\b/.test(lower)) {
-    tone = "bg-amber-950/70 text-amber-300 border border-amber-800/50";
+    tone = "bg-amber-50 text-amber-800 border border-amber-200";
     mark = "!";
   } else if (/^(observation|observe)\b/.test(lower)) {
-    tone = "bg-blue-950/70 text-blue-300 border border-blue-800/50";
+    tone = "bg-[var(--ib-accbg)] text-[var(--ib-acc)] border border-[color-mix(in_srgb,var(--ib-acc)_25%,var(--ib-line))]";
     mark = "i";
   }
   if (!tone) return null;
@@ -188,7 +188,7 @@ function MdUl({ className, ...props }: any) {
       className={mergeClass(
         task
           ? "list-none pl-0 mb-4 space-y-2 w-full max-w-none"
-          : "list-disc pl-5 mb-4 space-y-1.5 text-[14px] leading-[1.6] text-[#CBD5E1] w-full max-w-none",
+          : "mb-4 w-full max-w-none list-disc space-y-1.5 pl-5 text-[14px] leading-[1.6] text-[var(--ib-ink)]/90",
         className,
       )}
       {...props}
@@ -202,8 +202,8 @@ function MdOl({ className, ...props }: any) {
     <ol
       className={mergeClass(
         checklist
-          ? "list-none pl-0 mb-4 space-y-2 w-full max-w-none"
-          : "list-decimal pl-5 mb-4 space-y-1.5 text-[14px] leading-[1.6] text-[#CBD5E1] w-full max-w-none",
+          ? "mb-4 w-full max-w-none list-none space-y-2 pl-0"
+          : "mb-4 w-full max-w-none list-decimal space-y-1.5 pl-5 text-[14px] leading-[1.6] text-[var(--ib-ink)]/90",
         className,
       )}
       {...props}
@@ -216,7 +216,7 @@ function MdLi({ className, children, ...props }: any) {
   const isTask = className?.includes("task-list-item") || checklist;
   if (!isTask) {
     return (
-      <li className={mergeClass("text-[14px] leading-[1.6] text-[#CBD5E1]", className)} {...props}>
+      <li className={mergeClass("text-[14px] leading-[1.6] text-[var(--ib-ink)]/90", className)} {...props}>
         {decorateInline(children)}
       </li>
     );
@@ -242,17 +242,17 @@ function MdLi({ className, children, ...props }: any) {
 
   return (
     <li className={mergeClass("list-none", className)} {...props}>
-        <div className="flex items-start gap-3 rounded-xl border border-[var(--ib-ink)] bg-[#0B1220]/80 px-4 py-3 hover:border-[#334155] transition-colors">
+      <div className="flex items-start gap-3 rounded-xl border border-[var(--ib-line)] bg-[var(--ib-bg)] px-4 py-3 transition-colors hover:border-[color-mix(in_srgb,var(--ib-acc)_30%,var(--ib-line))]">
         {checkbox ? (
           <span className="mt-0.5 shrink-0">{checkbox}</span>
         ) : (
           <span
             aria-hidden="true"
-            className="mt-0.5 shrink-0 h-4 w-4 rounded-[4px] border border-[#475569] bg-[#0B1220]"
+            className="mt-0.5 size-4 shrink-0 rounded-[4px] border border-[var(--ib-line)] bg-[var(--ib-card)]"
           />
         )}
         <div className="min-w-0 flex-1 space-y-1.5">
-          <div className="text-[14px] font-medium leading-[1.6] text-[#E2E8F0]">
+          <div className="text-[14px] font-medium leading-[1.6] text-[var(--ib-ink)]">
             {decorateInline(titleText || raw)}
           </div>
           {clauses.length > 0 && (
@@ -260,7 +260,7 @@ function MdLi({ className, children, ...props }: any) {
               {clauses.map((c) => (
                 <span
                   key={c}
-                  className="inline-flex items-center px-1.5 py-0.5 rounded-md bg-[#1D4ED8]/15 text-[#93C5FD] font-jetbrains-mono text-[12px] font-medium tracking-[0.02em]"
+                  className="inline-flex items-center rounded-md border border-[color-mix(in_srgb,var(--ib-acc)_22%,var(--ib-line))] bg-[var(--ib-accbg)] px-1.5 py-0.5 font-jetbrains-mono text-[12px] font-medium tracking-[0.02em] text-[var(--ib-acc)]"
                 >
                   {c}
                 </span>
@@ -268,7 +268,7 @@ function MdLi({ className, children, ...props }: any) {
             </div>
           )}
           {evidenceText ? (
-            <div className="text-[11px] leading-[1.5] text-[#94A3B8] bg-[#0B1220] border border-[var(--ib-ink)] rounded-lg px-3 py-2 whitespace-pre-wrap">
+            <div className="whitespace-pre-wrap rounded-lg border border-[var(--ib-line)] bg-[var(--ib-card)] px-3 py-2 text-[11px] leading-[1.5] text-[var(--ib-mute)]">
               {evidenceMatch?.[1]}
               {evidenceText}
             </div>
@@ -283,7 +283,7 @@ const mdComponents = {
   h1: ({ className, children, ...props }: any) => (
     <h1
       className={mergeClass(
-        "text-[22px] md:text-[24px] font-semibold leading-[1.25] tracking-[-0.015em] text-[var(--ib-dktx)] mb-4 w-full max-w-none",
+        "mb-4 w-full max-w-none text-[22px] font-semibold leading-[1.25] tracking-[-0.015em] text-[var(--ib-ink)] md:text-[24px]",
         className,
       )}
       {...props}
@@ -294,7 +294,7 @@ const mdComponents = {
   h2: ({ className, children, ...props }: any) => (
     <h2
       className={mergeClass(
-        "text-[18px] md:text-[20px] font-semibold leading-[1.3] tracking-[-0.01em] text-[var(--ib-dktx)] mt-5 mb-3",
+        "mb-3 mt-5 text-[18px] font-semibold leading-[1.3] tracking-[-0.01em] text-[var(--ib-ink)] md:text-[20px]",
         className,
       )}
       {...props}
@@ -305,7 +305,7 @@ const mdComponents = {
   h3: ({ className, children, ...props }: any) => (
     <h3
       className={mergeClass(
-        "text-[15px] md:text-[16px] font-semibold leading-[1.35] text-[#E2E8F0] mt-4 mb-2",
+        "mb-2 mt-4 text-[15px] font-semibold leading-[1.35] text-[var(--ib-ink)] md:text-[16px]",
         className,
       )}
       {...props}
@@ -316,7 +316,7 @@ const mdComponents = {
   p: ({ className, children, ...props }: any) => (
     <p
       className={mergeClass(
-        "text-[14px] md:text-[15px] font-normal leading-[1.65] text-[#CBD5E1] mb-3 w-full max-w-3xl",
+        "mb-3 w-full max-w-3xl text-[14px] font-normal leading-[1.65] text-[var(--ib-ink)]/90 md:text-[15px]",
         className,
       )}
       {...props}
@@ -325,19 +325,19 @@ const mdComponents = {
     </p>
   ),
   strong: ({ className, children, ...props }: any) => (
-    <strong className={mergeClass("font-semibold text-[#F8FAFC]", className)} {...props}>
+    <strong className={mergeClass("font-semibold text-[var(--ib-ink)]", className)} {...props}>
       {children}
     </strong>
   ),
   em: ({ className, children, ...props }: any) => (
-    <em className={mergeClass("italic text-[#E2E8F0]", className)} {...props}>
+    <em className={mergeClass("italic text-[var(--ib-ink)]/85", className)} {...props}>
       {children}
     </em>
   ),
   blockquote: ({ className, children, ...props }: any) => (
     <blockquote
       className={mergeClass(
-        "w-full max-w-none my-4 border-l-2 border-[#3B82F6]/50 bg-[#0B1220] rounded-r-xl px-4 py-3 text-[14px] leading-[1.6] text-[#CBD5E1]",
+        "my-4 w-full max-w-none rounded-r-xl border-l-2 border-[var(--ib-acc)] bg-[var(--ib-accbg)]/70 px-4 py-3 text-[14px] leading-[1.6] text-[var(--ib-ink)]",
         className,
       )}
       {...props}
@@ -348,7 +348,7 @@ const mdComponents = {
   a: ({ className, children, ...props }: any) => (
     <a
       className={mergeClass(
-        "text-[#60A5FA] underline-offset-2 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3B82F6] rounded-sm",
+        "rounded-sm text-[var(--ib-acc)] underline-offset-2 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ib-acc)]/40",
         className,
       )}
       {...props}
@@ -360,7 +360,7 @@ const mdComponents = {
     const isBlock = className?.includes("language-");
     if (isBlock) {
       return (
-        <code className={mergeClass("font-jetbrains-mono text-[12px] text-[#E2E8F0]", className)} {...props}>
+        <code className={mergeClass("font-jetbrains-mono text-[12px] text-[var(--ib-ink)]", className)} {...props}>
           {children}
         </code>
       );
@@ -368,7 +368,7 @@ const mdComponents = {
     return (
       <code
         className={mergeClass(
-          "font-jetbrains-mono text-[12px] font-medium tracking-[0.02em] text-[#93C5FD] bg-[var(--ib-ink)]/80 px-1.5 py-0.5 rounded-md",
+          "rounded-md bg-[var(--ib-accbg)] px-1.5 py-0.5 font-jetbrains-mono text-[12px] font-medium tracking-[0.02em] text-[var(--ib-acc)]",
           className,
         )}
         {...props}
@@ -380,7 +380,7 @@ const mdComponents = {
   pre: ({ className, children, ...props }: any) => (
     <pre
       className={mergeClass(
-        "w-full overflow-x-auto my-4 rounded-xl border border-[var(--ib-ink)] bg-[#0B1220] p-4 text-[12px] leading-[1.5]",
+        "my-4 w-full overflow-x-auto rounded-xl border border-[var(--ib-line)] bg-[var(--ib-bg)] p-4 text-[12px] leading-[1.5] text-[var(--ib-ink)]",
         className,
       )}
       {...props}
@@ -389,24 +389,24 @@ const mdComponents = {
     </pre>
   ),
   table: ({ className, ...props }: any) => (
-    <div className="w-full overflow-x-auto my-4 rounded-xl border border-[var(--ib-ink)] bg-[#0B1220]">
+    <div className="my-4 w-full overflow-x-auto rounded-xl border border-[var(--ib-line)] bg-[var(--ib-card)]">
       <table
-        className={mergeClass("w-full min-w-[280px] sm:min-w-[420px] border-collapse text-left", className)}
+        className={mergeClass("w-full min-w-[280px] border-collapse text-left sm:min-w-[420px]", className)}
         {...props}
       />
     </div>
   ),
   thead: ({ className, ...props }: any) => (
-    <thead className={mergeClass("bg-[var(--ib-ink)]/90 sticky top-0 backdrop-blur-[8px]", className)} {...props} />
+    <thead className={mergeClass("sticky top-0 bg-[var(--ib-bg)] backdrop-blur-[8px]", className)} {...props} />
   ),
   tbody: ({ className, ...props }: any) => <tbody className={className} {...props} />,
   tr: ({ className, ...props }: any) => (
-    <tr className={mergeClass("hover:bg-white/[0.02]", className)} {...props} />
+    <tr className={mergeClass("hover:bg-[var(--ib-accbg)]/40", className)} {...props} />
   ),
   th: ({ className, children, ...props }: any) => (
     <th
       className={mergeClass(
-        "py-3 px-4 text-left text-[11px] font-semibold uppercase tracking-[0.05em] text-[#94A3B8] border-b border-white/[0.06]",
+        "border-b border-[var(--ib-line)] px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.05em] text-[var(--ib-mute)]",
         className,
       )}
       {...props}
@@ -421,12 +421,11 @@ const mdComponents = {
     return (
       <td
         className={mergeClass(
-          `py-3 px-4 text-[13px] font-medium leading-[1.4] tracking-[0.02em] text-[#E2E8F0] border-b border-white/[0.06] ${
+          `border-b border-[var(--ib-line)] px-4 py-3 text-[13px] font-medium leading-[1.4] tracking-[0.02em] text-[var(--ib-ink)] ${
             numeric ? "text-right tabular-nums" : "text-left"
           }`,
           className,
         )}
-        style={{ color: "#E2E8F0" }}
         {...props}
       >
         {status || decorateInline(children) || text}
@@ -445,7 +444,7 @@ const mdComponents = {
           disabled
           aria-label={checked ? "Completed" : "Not completed"}
           className={mergeClass(
-            "mt-0.5 shrink-0 h-4 w-4 rounded-[4px] border border-[#475569] bg-[#0B1220] accent-[#3B82F6]",
+            "mt-0.5 size-4 shrink-0 rounded-[4px] border border-[var(--ib-line)] bg-[var(--ib-card)] accent-[var(--ib-acc)]",
             className,
           )}
         />
@@ -454,7 +453,7 @@ const mdComponents = {
     return <input type={type} className={className} disabled={disabled} {...props} />;
   },
   hr: ({ className, ...props }: any) => (
-    <hr className={mergeClass("my-6 border-[var(--ib-ink)]", className)} {...props} />
+    <hr className={mergeClass("my-6 border-[var(--ib-line)]", className)} {...props} />
   ),
 };
 
@@ -700,17 +699,17 @@ function FormField({ label, value }: { label: string; value: string }) {
   const clauses = extractClauses(`${label} ${value}`);
   const wide = value.length > 140 || value.includes("\n");
   return (
-    <div className={wide ? "md:col-span-2 min-w-0" : "min-w-0"}>
-      <div className="text-[12px] font-medium leading-[1.4] text-[#94A3B8] mb-1.5">
+    <div className={wide ? "min-w-0 md:col-span-2" : "min-w-0"}>
+      <div className="mb-1.5 text-[12px] font-medium leading-[1.4] text-[var(--ib-mute)]">
         {stripClauses(label) || label}
       </div>
-      <div className="rounded-lg border border-[var(--ib-ink)] bg-[var(--ib-ink)] px-3 py-2.5 text-[14px] leading-[1.6] text-[#E2E8F0] min-h-[42px]">
+      <div className="min-h-[42px] rounded-lg border border-[var(--ib-line)] bg-[var(--ib-bg)] px-3 py-2.5 text-[14px] leading-[1.6] text-[var(--ib-ink)]">
         {value ? decorateInline(stripClauses(value) || value) : (
-          <span className="text-[#64748B]">—</span>
+          <span className="text-[var(--ib-mute)]">—</span>
         )}
       </div>
       {clauses.length > 0 && (
-        <p className="mt-1.5 text-[11px] leading-[1.3] text-[#64748B] font-jetbrains-mono tracking-[0.02em]">
+        <p className="mt-1.5 font-jetbrains-mono text-[11px] leading-[1.3] tracking-[0.02em] text-[var(--ib-mute)]">
           {clauses.join(" · ")}
         </p>
       )}
@@ -733,16 +732,7 @@ function TableCellText({ text }: { text: string }) {
   const status = renderStatusPill(text);
   if (status) return status;
   return (
-    <span
-      style={{
-        color: "#E2E8F0",
-        fontSize: 13,
-        lineHeight: 1.4,
-        fontWeight: 500,
-        whiteSpace: "pre-wrap",
-        display: "block",
-      }}
-    >
+    <span className="block whitespace-pre-wrap text-[13px] font-medium leading-[1.4] text-[var(--ib-ink)]">
       {text}
     </span>
   );
@@ -758,14 +748,14 @@ function NativeTable({
   const colCount = Math.max(headers.length, ...rows.map((r) => r.length), 1);
   const paddedHeaders = [...headers, ...Array(Math.max(0, colCount - headers.length)).fill("")];
   return (
-    <div className="navigator-output-table w-full overflow-x-auto my-4 rounded-xl border border-[var(--ib-ink)] bg-[#0B1220]">
-      <table className="w-full min-w-[280px] sm:min-w-[420px] border-collapse text-left" style={{ color: "#E2E8F0" }}>
-        <thead className="bg-[var(--ib-ink)]/90 sticky top-0 backdrop-blur-[8px]">
+    <div className="navigator-output-table my-4 w-full overflow-x-auto rounded-xl border border-[var(--ib-line)] bg-[var(--ib-card)]">
+      <table className="w-full min-w-[280px] border-collapse text-left text-[var(--ib-ink)] sm:min-w-[420px]">
+        <thead className="sticky top-0 bg-[var(--ib-bg)] backdrop-blur-[8px]">
           <tr>
             {paddedHeaders.map((header, idx) => (
               <th
                 key={`h-${idx}`}
-                className="py-3 px-4 text-left text-[11px] font-semibold uppercase tracking-[0.05em] text-[#94A3B8] border-b border-white/[0.06]"
+                className="border-b border-[var(--ib-line)] px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.05em] text-[var(--ib-mute)]"
               >
                 {header}
               </th>
@@ -774,17 +764,16 @@ function NativeTable({
         </thead>
         <tbody>
           {rows.map((row, rIdx) => (
-            <tr key={`r-${rIdx}`} className="hover:bg-white/[0.02]">
+            <tr key={`r-${rIdx}`} className="hover:bg-[var(--ib-accbg)]/40">
               {paddedHeaders.map((_, cIdx) => {
                 const cell = row[cIdx] || "";
                 const numeric = cellLooksNumeric(cell);
                 return (
                   <td
                     key={`c-${rIdx}-${cIdx}`}
-                    className={`py-3 px-4 border-b border-white/[0.06] ${
+                    className={`border-b border-[var(--ib-line)] px-4 py-3 ${
                       numeric ? "text-right tabular-nums" : "text-left"
                     }`}
-                    style={{ color: "#E2E8F0" }}
                   >
                     <TableCellText text={cell} />
                   </td>
@@ -851,20 +840,18 @@ function OutputCard({
   const summary = variant === "summary";
   return (
     <section
-      className={`rounded-2xl border px-4 py-4 sm:px-5 sm:py-5 shadow-[0_4px_20px_-2px_rgba(0,0,0,0.12)] ${
+      className={`rounded-2xl border px-4 py-4 shadow-[0_8px_24px_-18px_rgba(14,20,36,0.18)] sm:px-5 sm:py-5 ${
         summary
-          ? "border-[#3B82F6]/25 bg-[#1D4ED8]/10"
-          : "border-[var(--ib-ink)] bg-[#111827]"
+          ? "border-[color-mix(in_srgb,var(--ib-acc)_28%,var(--ib-line))] bg-[var(--ib-accbg)]/70"
+          : "border-[var(--ib-line)] bg-[var(--ib-bg)]"
       }`}
     >
       {(title || copyText) && (
         <div className="mb-3 flex items-start justify-between gap-3">
           {title ? (
             <h3
-              className={`min-w-0 ${
-                summary
-                  ? "text-[15px] md:text-[16px] font-semibold leading-[1.35] text-[#BFDBFE]"
-                  : "text-[15px] md:text-[16px] font-semibold leading-[1.35] text-[var(--ib-dktx)]"
+              className={`min-w-0 text-[15px] font-semibold leading-[1.35] text-[var(--ib-ink)] md:text-[16px] ${
+                summary ? "text-[var(--ib-acc)]" : ""
               }`}
             >
               {title}
@@ -889,8 +876,8 @@ function MajorSection({
 }) {
   return (
     <section className="space-y-4">
-      <div className="flex items-end justify-between gap-3 pb-2 border-b border-[var(--ib-ink)]">
-        <h2 className="text-[18px] md:text-[20px] font-semibold leading-[1.3] tracking-[-0.01em] text-[#F8FAFC]">
+      <div className="flex items-end justify-between gap-3 border-b border-[var(--ib-line)] pb-2">
+        <h2 className="text-[18px] font-semibold leading-[1.3] tracking-[-0.01em] text-[var(--ib-ink)] md:text-[20px]">
           {label}
         </h2>
       </div>
@@ -1149,7 +1136,7 @@ export default function NavigatorDocumentView({ document, labels }: Props) {
   );
 
   return (
-    <div className="font-sans text-[14px] md:text-[15px] font-normal leading-[1.65] text-[#CBD5E1] min-w-0 w-full max-w-none">
+    <div className="min-w-0 w-full max-w-none font-sans text-[14px] font-normal leading-[1.65] text-[var(--ib-ink)] md:text-[15px]">
       {summaryBody ? (
         <div className="mb-8">
           <OutputCard
@@ -1198,7 +1185,7 @@ export default function NavigatorDocumentView({ document, labels }: Props) {
       ) : (() => {
           const content = cleanMarkdown(document.content || "");
           if (!content) {
-            return <p className="text-[14px] leading-[1.6] text-[#94A3B8]">{labels.emptyGenerate}</p>;
+            return <p className="text-[14px] leading-[1.6] text-[var(--ib-mute)]">{labels.emptyGenerate}</p>;
           }
           const h2Parts = content.split(/\n(?=##\s+)/);
           const namedH2 = h2Parts
@@ -1236,15 +1223,15 @@ export default function NavigatorDocumentView({ document, labels }: Props) {
         })()}
 
       {Array.isArray(document.iso_clauses_referenced) && document.iso_clauses_referenced.length > 0 && (
-        <div className="mt-8 pt-6 border-t border-[var(--ib-ink)]">
-          <p className="text-[11px] font-normal leading-[1.3] uppercase tracking-[0.12em] text-[#64748B] mb-3">
+        <div className="mt-8 border-t border-[var(--ib-line)] pt-6">
+          <p className="mb-3 text-[11px] font-normal uppercase leading-[1.3] tracking-[0.12em] text-[var(--ib-mute)]">
             {labels.mappedProtocols}
           </p>
           <div className="flex flex-wrap gap-2">
             {document.iso_clauses_referenced.map((clause) => (
               <span
                 key={clause}
-                className="inline-flex items-center px-2 py-1 rounded-md bg-[#1D4ED8]/15 text-[#93C5FD] font-jetbrains-mono text-[12px] font-medium tracking-[0.02em] border border-[#3B82F6]/20"
+                className="inline-flex items-center rounded-md border border-[color-mix(in_srgb,var(--ib-acc)_22%,var(--ib-line))] bg-[var(--ib-accbg)] px-2 py-1 font-jetbrains-mono text-[12px] font-medium tracking-[0.02em] text-[var(--ib-acc)]"
               >
                 {labels.clauseLabel} {clause}
               </span>
