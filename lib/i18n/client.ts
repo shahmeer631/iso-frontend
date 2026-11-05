@@ -675,14 +675,19 @@ export const commonEN = {
     "login": "Login",
     "getStarted": "Get Started",
     "masteryLab": "Mastery Lab",
-    "aiAssistant": "AI Assistant",
+    "aiAssistant": "Assistant",
     "signUp": "Sign Up",
+    "startFreeTrial": "Start Your Free Trial",
     "logout": "Logout",
     "dashboard": "Dashboard",
     "home": "Home",
     "platform": "Platform",
     "assessment": "Assessment",
     "about": "About",
+    "masteryLabDesc": "See your gaps. Fix them fast. Assess your ISO knowledge by role and get a clear path forward—no guesswork, no wasted time.",
+    "libraryDesc": "Work with the standards, not around them. Search, explore, and break down complex clauses into something you can act on.",
+    "academyDesc": "Structured learning paths that turn ISO management systems into practical, role-ready skills.",
+    "aiAssistantDesc": "Your compliance co-pilot—draft documents, prepare audits, and get clause-grounded answers when you need them.",
     "academySub": {
       "all": "All Courses",
       "quality": "Quality (9001) Courses",
@@ -692,6 +697,10 @@ export const commonEN = {
     },
     "librarySub": {
       "all": "All Standards"
+    },
+    "masteryLabSub": {
+      "open": "Open Mastery Lab",
+      "assessment": "Start Free Assessment"
     },
     "aiAssistantSub": {
       "home": "ISOBrain AI Assistant",

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -140,7 +141,14 @@ export default function GetStartedCard({
           onClick={handleSubmit}
           className="h-12 w-full rounded-[10px] bg-[var(--ib-acc)] text-[13px] font-bold text-white shadow-[0_12px_28px_-14px_rgba(27,77,219,0.55)] transition-all duration-200 hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ib-acc)]"
         >
-          {displayButtonText}
+          {isLoading ? (
+            <span className="inline-flex items-center justify-center gap-2">
+              <Loader2 className="size-4 animate-spin" aria-hidden />
+              {displayButtonText}
+            </span>
+          ) : (
+            displayButtonText
+          )}
         </Button>
       </div>
     </div>

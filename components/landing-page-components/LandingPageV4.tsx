@@ -131,7 +131,7 @@ export default function LandingPageV4() {
 
             <motion.h1
               {...heroFadeUp(reduceMotion, 0.08)}
-              className="mt-5 mb-0! max-w-[640px] text-[36px] font-bold leading-[1.08] tracking-[-0.038em] sm:text-[42px] lg:text-[54px]"
+              className="mt-5 mb-0! max-w-[640px] text-[clamp(1.75rem,5vw+0.5rem,3.375rem)] font-bold leading-[1.2] tracking-[-0.025em] sm:leading-[1.14] sm:tracking-[-0.035em] lg:text-[54px]"
             >
               See where you stand.{" "}
               <span className="bg-[linear-gradient(105deg,var(--ib-acc)_0%,color-mix(in_srgb,var(--ib-acc)_55%,var(--ib-ink))_48%,var(--ib-ink)_100%)] bg-clip-text text-transparent">
@@ -141,7 +141,7 @@ export default function LandingPageV4() {
 
             <motion.p
               {...heroFadeUp(reduceMotion, 0.16)}
-              className="mt-5 max-w-[540px] text-[17px] leading-[1.65] text-[var(--ib-mute)] sm:text-lg"
+              className="mt-4 max-w-[540px] text-[15px] leading-[1.55] text-[var(--ib-mute)] sm:mt-5 sm:text-[17px] sm:leading-[1.65]"
             >
               ISOBrain connects Mastery Lab, ISO Library, Academy, and AI
               Assistant into one path—so compliance teams, auditors, and
@@ -153,16 +153,16 @@ export default function LandingPageV4() {
               className="mt-8 flex flex-wrap items-center gap-3"
             >
               <Link
-                href={`${base}/mastery-lab`}
+                href={`${base}/auth/sign-up`}
                 className="ib-btn shadow-[0_10px_28px_-10px_color-mix(in_srgb,var(--ib-acc)_55%,transparent)] transition-[transform,box-shadow,opacity,background-color] duration-200 hover:-translate-y-0.5 hover:opacity-100 hover:shadow-[0_14px_32px_-10px_color-mix(in_srgb,var(--ib-acc)_65%,transparent)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ib-acc)]"
               >
-                Start Mastery Lab →
+                Start Your Free Trial
               </Link>
               <Link
-                href={`${base}/auth/sign-up`}
+                href={`${base}/mastery-lab`}
                 className="ib-btn ib-btn-o transition-[transform,box-shadow,border-color,background-color] duration-200 hover:-translate-y-0.5 hover:border-[color-mix(in_srgb,var(--ib-acc)_35%,var(--ib-line))] hover:shadow-[0_10px_24px_-14px_rgba(11,18,32,0.22)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ib-acc)]"
               >
-                Create your account
+                Open Mastery Lab
               </Link>
             </motion.div>
 
@@ -226,40 +226,38 @@ export default function LandingPageV4() {
               <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/35 to-transparent" />
             </div>
 
-            <div className="relative z-[1] flex flex-col items-start justify-between gap-8 md:flex-row md:items-center md:gap-10">
-              <div className="min-w-0 max-w-[640px]">
-                <motion.h2
-                  initial={reduceMotion ? false : { opacity: 0, y: 14 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, amount: 0.5 }}
-                  transition={{
-                    duration: 0.45,
-                    delay: reduceMotion ? 0 : 0.08,
-                    ease: heroEase,
-                  }}
-                  className="mb-0! max-w-[560px] text-[28px] font-bold leading-[1.15] tracking-[-0.03em] text-white! sm:text-[32px] md:text-[38px]"
-                >
-                  Ready to see your gaps in{" "}
-                  <span className="bg-[linear-gradient(105deg,#FFFFFF_0%,#C9D8FF_55%,#FFFFFF_100%)] bg-clip-text text-transparent">
-                    Mastery Lab
-                  </span>
-                  ?
-                </motion.h2>
-                <motion.p
-                  initial={reduceMotion ? false : { opacity: 0, y: 12 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, amount: 0.5 }}
-                  transition={{
-                    duration: 0.45,
-                    delay: reduceMotion ? 0 : 0.16,
-                    ease: heroEase,
-                  }}
-                  className="mt-3 max-w-[500px] text-[15.5px] leading-[1.6] text-white/85 sm:text-base"
-                >
-                  Configure your role, start a free assessment, and get a clear
-                  path from where you are to what to learn and apply next.
-                </motion.p>
-              </div>
+            <div className="relative z-[1] mx-auto flex max-w-[720px] flex-col items-center text-center">
+              <motion.h2
+                initial={reduceMotion ? false : { opacity: 0, y: 14 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.5 }}
+                transition={{
+                  duration: 0.45,
+                  delay: reduceMotion ? 0 : 0.08,
+                  ease: heroEase,
+                }}
+                className="mb-0! text-[28px] font-bold leading-[1.15] tracking-[-0.03em] text-white! sm:text-[32px] md:text-[38px]"
+              >
+                Ready to see your gaps in{" "}
+                <span className="bg-[linear-gradient(105deg,#FFFFFF_0%,#C9D8FF_55%,#FFFFFF_100%)] bg-clip-text text-transparent">
+                  Mastery Lab
+                </span>
+                ?
+              </motion.h2>
+              <motion.p
+                initial={reduceMotion ? false : { opacity: 0, y: 12 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.5 }}
+                transition={{
+                  duration: 0.45,
+                  delay: reduceMotion ? 0 : 0.16,
+                  ease: heroEase,
+                }}
+                className="mt-3 max-w-[540px] text-[15.5px] leading-[1.6] text-white/85 sm:text-base"
+              >
+                Configure your role, start a free assessment, and get a clear
+                path from where you are to what to learn and apply next.
+              </motion.p>
 
               <motion.div
                 initial={reduceMotion ? false : { opacity: 0, y: 12 }}
@@ -270,7 +268,7 @@ export default function LandingPageV4() {
                   delay: reduceMotion ? 0 : 0.24,
                   ease: heroEase,
                 }}
-                className="shrink-0"
+                className="mt-8 shrink-0"
               >
                 <Link
                   href={`${base}/mastery-lab`}

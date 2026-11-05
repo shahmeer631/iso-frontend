@@ -886,42 +886,63 @@ const standardsData = [
 const ChatHeader = ({
   onToggleLeftSidebar,
   onToggleRightSidebar,
-  standardTitle
+  standardTitle,
+  standardOverview,
+  standardCode,
 }: {
-  onToggleLeftSidebar: () => void,
-  onToggleRightSidebar: () => void,
-  standardTitle?: string
+  onToggleLeftSidebar: () => void;
+  onToggleRightSidebar: () => void;
+  standardTitle?: string;
+  standardOverview?: string;
+  standardCode?: string;
 }) => {
   const { t } = useTranslation();
   return (
-    <div className="absolute left-0 right-0 top-0 z-50 flex shrink-0 items-center justify-between border-b border-[var(--ib-line)] bg-[var(--ib-bg)]/85 p-4 font-sans backdrop-blur-xl">
-      <div className="flex flex-1 items-center gap-4">
-        <button
-          type="button"
-          onClick={onToggleLeftSidebar}
-          className="block rounded-xl border border-[var(--ib-line)] bg-[var(--ib-card)] p-2.5 text-[var(--ib-mute)] shadow-sm transition-all hover:text-[var(--ib-acc)] lg:hidden"
-          title={t("common.openNavigation")}
-        >
-          <MessageSquare size={18} />
-        </button>
-      </div>
+    <div className="absolute left-0 right-0 top-0 z-50 shrink-0 border-b border-[var(--ib-line)] bg-[var(--ib-bg)]/92 font-sans backdrop-blur-xl">
+      <div className="flex items-start justify-between gap-3 px-3 py-3 sm:px-4 sm:py-3.5">
+        <div className="flex min-w-0 flex-1 items-start gap-3">
+          <button
+            type="button"
+            onClick={onToggleLeftSidebar}
+            className="mt-0.5 block shrink-0 rounded-xl border border-[var(--ib-line)] bg-[var(--ib-card)] p-2.5 text-[var(--ib-mute)] shadow-sm transition-all hover:text-[var(--ib-acc)] lg:hidden"
+            title={t("common.openNavigation")}
+          >
+            <MessageSquare size={18} />
+          </button>
 
-      <div className="mt-1 flex items-center gap-3">
-        {standardTitle ? (
-          <div className="flex max-w-[min(70vw,420px)] items-center gap-2 rounded-full border border-[var(--ib-line)] bg-[var(--ib-card)] px-3.5 py-1.5">
-            <FileText size={14} className="shrink-0 text-[var(--ib-acc)]" />
-            <span className="truncate text-center text-[12.5px] font-semibold text-[var(--ib-ink)]">
-              {standardTitle}
-            </span>
-          </div>
-        ) : null}
-      </div>
+          {standardTitle ? (
+            <div className="min-w-0 flex-1">
+              <div className="flex flex-wrap items-center gap-2">
+                {standardCode ? (
+                  <span className="rounded-full border border-[var(--ib-line)] bg-[var(--ib-accbg)] px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-[0.08em] text-[var(--ib-acc)]">
+                    {standardCode}
+                  </span>
+                ) : null}
+                <span className="text-[10px] font-bold uppercase tracking-[0.12em] text-[var(--ib-mute)]">
+                  Overview
+                </span>
+              </div>
+              <h2 className="mb-0! mt-1 truncate text-[14px] font-bold leading-snug tracking-[-0.02em] text-[var(--ib-ink)] sm:text-[15.5px]">
+                {standardTitle}
+              </h2>
+              {standardOverview ? (
+                <p className="mt-1 line-clamp-2 text-[12px] font-medium leading-relaxed text-[var(--ib-mute)] sm:text-[12.5px]">
+                  {standardOverview}
+                </p>
+              ) : null}
+            </div>
+          ) : (
+            <div className="flex items-center gap-2 pt-1.5 text-[var(--ib-mute)]">
+              <FileText size={14} className="shrink-0 text-[var(--ib-acc)]" />
+              <span className="text-[12.5px] font-semibold">ISO Standard</span>
+            </div>
+          )}
+        </div>
 
-      <div className="flex flex-1 items-center justify-end gap-3 px-2">
         <button
           type="button"
           onClick={onToggleRightSidebar}
-          className="rounded-xl border border-[var(--ib-line)] bg-[var(--ib-card)] p-2.5 text-[var(--ib-mute)] shadow-sm transition-all hover:text-[var(--ib-acc)] xl:hidden"
+          className="mt-0.5 shrink-0 rounded-xl border border-[var(--ib-line)] bg-[var(--ib-card)] p-2.5 text-[var(--ib-mute)] shadow-sm transition-all hover:text-[var(--ib-acc)] xl:hidden"
           title={t("common.openStudio")}
         >
           <LayoutPanelLeft size={18} />
@@ -1227,7 +1248,7 @@ const InitialChatView = ({ title, summary, code, category, standardId, onActionC
       <div className="pointer-events-none absolute right-0 top-0 -z-10 size-[480px] rounded-full bg-[var(--ib-accbg)] blur-[110px]" />
       <div className="pointer-events-none absolute bottom-0 left-0 -z-10 size-[400px] rounded-full bg-[color-mix(in_srgb,var(--ib-acc)_8%,transparent)] blur-[110px]" />
 
-      <div className="w-full max-w-3xl pb-8">
+      <div className="w-full max-w-4xl pb-10">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -1249,7 +1270,7 @@ const InitialChatView = ({ title, summary, code, category, standardId, onActionC
           </div>
 
           {summary ? (
-            <div className="mx-auto mb-8 max-w-2xl rounded-2xl border border-[var(--ib-line)] bg-[var(--ib-card)] px-5 py-4 text-left sm:px-6 sm:py-5">
+            <div className="mx-auto mb-8 w-full rounded-2xl border border-[var(--ib-line)] bg-[var(--ib-card)] px-5 py-4 text-left sm:px-6 sm:py-5">
               <p className="mb-1.5 text-[11px] font-bold uppercase tracking-[0.12em] text-[var(--ib-acc)]">
                 Overview
               </p>
@@ -1264,7 +1285,7 @@ const InitialChatView = ({ title, summary, code, category, standardId, onActionC
           </p>
 
           {isFetchingSuggestions && suggestions.length === 0 ? (
-            <div className="mx-auto grid w-full max-w-2xl grid-cols-1 gap-3">
+            <div className="mx-auto grid w-full grid-cols-1 gap-3">
               {[1, 2, 3, 4].map((i) => (
                 <div
                   key={i}
@@ -1279,7 +1300,7 @@ const InitialChatView = ({ title, summary, code, category, standardId, onActionC
               ))}
             </div>
           ) : (
-            <div className="mx-auto grid w-full max-w-2xl grid-cols-1 gap-3">
+            <div className="mx-auto grid w-full grid-cols-1 gap-3">
               {suggestions.map((quiz, index) => (
                 <button
                   key={index}
@@ -1786,12 +1807,12 @@ const MessageList = ({
               </div>
 
               {msg.followups && msg.followups.length > 0 && index === messages.length - 1 && (
-                <div className="mt-2.5 md:mt-4 flex flex-wrap gap-2 justify-start">
+                <div className="mt-2.5 md:mt-4 grid w-full grid-cols-1 gap-2">
                   {msg.followups.map((action, idx) => (
                     <button
                       key={idx}
                       onClick={() => onActionClick(action)}
-                      className="px-3 py-1.5 md:px-4 md:py-2 bg-[var(--ib-card)] hover:bg-[var(--ib-acc)] hover:text-white text-[var(--ib-mute)] hover:text-[var(--ib-acc)] border border-[var(--ib-line)] /30 rounded-full text-[11px] md:text-[12px] font-bold transition-all hover:scale-105 active:scale-95"
+                      className="w-full rounded-2xl border border-[var(--ib-line)] bg-[var(--ib-card)] px-4 py-3 text-left text-[13px] font-semibold leading-relaxed text-[var(--ib-ink)] transition-all hover:-translate-y-0.5 hover:border-[var(--ib-acc)] hover:bg-[var(--ib-accbg)] md:px-5 md:text-[14px]"
                     >
                       {action}
                     </button>
@@ -1896,8 +1917,8 @@ const ChatInput = ({
   };
 
   return (
-    <div className="relative z-30 mb-3 w-full min-w-0 shrink-0 bg-transparent px-3 pb-3 pt-1 font-sans sm:px-4 sm:pb-4 md:mb-4 md:px-6 md:pb-6 lg:px-8">
-      <div className="mx-auto w-full max-w-3xl">
+    <div className="relative z-30 mb-6 w-full min-w-0 shrink-0 bg-transparent px-3 pb-8 pt-2 font-sans sm:mb-8 sm:px-4 sm:pb-10 md:mb-10 md:px-6 md:pb-12 lg:px-8">
+      <div className="mx-auto w-full max-w-4xl">
         <div className="group relative">
           <div className="relative flex items-center gap-2 rounded-[1.35rem] border border-[var(--ib-line)] bg-[var(--ib-card)] p-1.5 shadow-[0_16px_40px_-28px_rgba(11,18,32,0.45)] transition-all duration-300 group-focus-within:border-[var(--ib-acc)] group-focus-within:ring-2 group-focus-within:ring-[color-mix(in_srgb,var(--ib-acc)_16%,transparent)] sm:gap-3 sm:rounded-[1.5rem] sm:p-2">
             <button
@@ -2203,7 +2224,7 @@ const ChatInterface = ({ id }: { id: string }) => {
     {
       id: "practice_questions",
       title: "Exam Questions",
-      description: "Difficult certification-style questions for this standard",
+      description: "Extremely difficult certification-style questions for this standard",
       icon: CheckSquare,
       color: "text-amber-400",
       bgColor: "bg-amber-400/10",
@@ -2639,8 +2660,13 @@ const ChatInterface = ({ id }: { id: string }) => {
           onToggleLeftSidebar={() => setIsLeftSidebarOpen(true)}
           onToggleRightSidebar={() => setIsSidebarOpen(true)}
           standardTitle={standard?.title}
+          standardCode={getStandardCode(standard) || undefined}
+          standardOverview={getStandardSummary(
+            standard,
+            t("library.analyzingDetails"),
+          )}
         />
-        <div className="flex-1 overflow-hidden flex flex-row w-full h-full pt-[64px]">
+        <div className="flex-1 overflow-hidden flex flex-row w-full h-full pt-[88px] sm:pt-[96px]">
           {/* Main Chat Area — min-w-0 so flex child can shrink/grow with viewport */}
           <div className="flex-1 min-w-0 w-full flex flex-col h-full border-r border-[var(--ib-line)] transition-all duration-500 relative">
 

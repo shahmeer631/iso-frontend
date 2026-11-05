@@ -68,7 +68,7 @@ const Footer = () => {
             <Link
               key={link.label}
               href={link.href}
-              className="text-[12.5px] font-medium text-[var(--ib-mute)] transition-colors hover:text-[var(--ib-ink)]"
+              className="text-[13px] font-medium text-[color-mix(in_srgb,var(--ib-ink)_55%,var(--ib-mute))] transition-colors hover:text-[var(--ib-ink)]"
             >
               {link.label}
             </Link>

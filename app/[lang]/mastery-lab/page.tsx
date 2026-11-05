@@ -324,12 +324,13 @@ const AssessmentPage = () => {
         >
           <div className="relative max-w-4xl transition-transform duration-500 hover:-translate-y-1">
             <Image
-              src="/certificate.jpg"
+              src="/certificate-cpd.jpg"
               alt={t("dynamic.dyn_cPDCertificate_225")}
-              width={800}
-              height={600}
-              className="h-auto w-full rounded-2xl border border-[var(--ib-line)] object-contain shadow-[0_24px_60px_-28px_rgba(11,18,32,0.35)]"
+              width={1536}
+              height={1024}
+              className="mx-auto h-auto w-full max-w-4xl rounded-2xl border border-[var(--ib-line)] object-contain shadow-[0_24px_60px_-28px_rgba(11,18,32,0.35)]"
               priority
+              unoptimized
             />
           </div>
         </motion.div>

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import {
   ArrowRight,
+  BookOpen,
   ChevronLeft,
   ChevronRight,
   ClipboardCheck,
@@ -12,16 +13,16 @@ import {
   GraduationCap,
   HardHat,
   Leaf,
-  Library,
-  Scale,
   Shield,
   Sparkles,
   Target,
+  UtensilsCrossed,
+  Zap,
 } from "lucide-react";
 import GetStartedCard from "@/components/mastery-lab/GetStartedSection";
+import InlineAssessmentLoader from "@/components/mastery-lab/InlineAssessmentLoader";
 import { useGenerateQuizMutation } from "@/lib/redux/api/quizApi";
 import { toast } from "sonner";
-import FullPageLoader from "@/components/Shared/FullPageLoader";
 
 const INDUSTRIES = [
   "Aerospace",
@@ -63,79 +64,105 @@ const DEPARTMENTS = [
 
 const LIBRARY_SLIDES = [
   {
+    title: "ISO standards",
+    code: "ISO Standards",
+    desc: "Internationally agreed formulas for quality, safety, energy, food, and IT security—distilled expertise you can apply.",
+    href: "/library/iso-standards",
+    icon: BookOpen,
+  },
+  {
     title: "Quality management",
-    code: "ISO 9001",
-    desc: "Build consistent products and services with a proven QMS framework.",
+    code: "ISO 9000 family",
+    desc: "Improve product and service quality and consistently meet customer expectations with ISO’s best-known QMS standards.",
     href: "/library/iso-standards",
     icon: Target,
   },
   {
-    title: "Information security",
-    code: "ISO/IEC 27001",
-    desc: "Protect sensitive data with cybersecurity and privacy controls.",
-    href: "/library/iso-standards",
-    icon: Shield,
-  },
-  {
     title: "Environmental management",
-    code: "ISO 14001",
-    desc: "Reduce environmental impact with a structured EMS approach.",
+    code: "ISO 14000 family",
+    desc: "Practical tools to manage environmental responsibilities, reduce impact, and build a stronger EMS—anchored by ISO 14001.",
     href: "/library/iso-standards",
     icon: Leaf,
   },
   {
     title: "Occupational health & safety",
-    code: "ISO 45001",
-    desc: "Lower workplace risk and strengthen safety culture.",
+    code: "ISO 45000 family",
+    desc: "Improve employee safety, reduce workplace risks, and create better working conditions with ISO 45001 and related OHS standards.",
     href: "/library/iso-standards",
     icon: HardHat,
   },
   {
-    title: "Compliance management",
-    code: "ISO 37301",
-    desc: "Govern obligations with a clear compliance management system.",
+    title: "Energy management",
+    code: "ISO 50001",
+    desc: "Build an energy management system to cut consumption, conserve resources, and improve the bottom line.",
     href: "/library/iso-standards",
-    icon: Scale,
+    icon: Zap,
   },
   {
-    title: "AI management systems",
-    code: "ISO/IEC 42001",
-    desc: "Govern responsible AI with an emerging management standard.",
+    title: "Food safety management",
+    code: "ISO 22000",
+    desc: "Identify and control food safety hazards across the supply chain so products stay safe and trusted.",
     href: "/library/iso-standards",
-    icon: Sparkles,
+    icon: UtensilsCrossed,
+  },
+  {
+    title: "Information security",
+    code: "ISO/IEC 27000 family",
+    desc: "Keep IT security, cybersecurity, and privacy protected with ISO/IEC 27001 and the broader ISMS family.",
+    href: "/library/iso-standards",
+    icon: Shield,
   },
 ];
 
 const ACADEMY_SLIDES = [
   {
-    title: "Quality management courses",
-    desc: "Structured paths for QMS implementation and audit readiness.",
-    href: "/academy/quality-management",
+    title: "ISO standards foundations",
+    desc: "Learn how internationally agreed standards work—and how to apply them across quality, safety, energy, food, and IT.",
+    href: "/academy",
+    code: "ISO Standards",
+    icon: BookOpen,
+  },
+  {
+    title: "ISO 9000 family courses",
+    desc: "Quality management paths to improve products and services and consistently meet customer expectations.",
+    href: "/academy",
+    code: "ISO 9000",
     icon: GraduationCap,
   },
   {
-    title: "Information security courses",
-    desc: "ISMS learning for cybersecurity, privacy, and controls.",
-    href: "/academy/information-security",
-    icon: Shield,
-  },
-  {
-    title: "Health & safety courses",
-    desc: "OHS programs that connect policy to day-to-day practice.",
-    href: "/academy/health-safety",
-    icon: HardHat,
-  },
-  {
-    title: "Environmental management courses",
-    desc: "EMS training focused on impact, evidence, and improvement.",
-    href: "/academy/environmental-management",
+    title: "ISO 14000 family courses",
+    desc: "Environmental management training to reduce impact, cut waste, and strengthen your EMS.",
+    href: "/academy",
+    code: "ISO 14000",
     icon: Leaf,
   },
   {
-    title: "View all courses",
-    desc: "Browse the full Academy catalog across every management system.",
+    title: "ISO 45000 family courses",
+    desc: "Occupational health & safety programs that reduce workplace risk and improve day-to-day safety culture.",
     href: "/academy",
-    icon: Library,
+    code: "ISO 45000",
+    icon: HardHat,
+  },
+  {
+    title: "ISO 50001 energy courses",
+    desc: "Energy management learning focused on efficient use, measurable targets, and continual improvement.",
+    href: "/academy",
+    code: "ISO 50001",
+    icon: Zap,
+  },
+  {
+    title: "ISO 22000 food safety courses",
+    desc: "Food safety management training to control hazards and protect consumers across the supply chain.",
+    href: "/academy",
+    code: "ISO 22000",
+    icon: UtensilsCrossed,
+  },
+  {
+    title: "ISO/IEC 27000 family courses",
+    desc: "Information security courses covering ISMS, cybersecurity, and privacy protection with ISO/IEC 27001.",
+    href: "/academy",
+    code: "ISO/IEC 27000",
+    icon: Shield,
   },
 ];
 
@@ -321,18 +348,33 @@ function MasteryVisual() {
   };
 
   return (
-    <>
-      {isLoading && <FullPageLoader />}
-      <div className="rounded-2xl border border-[var(--ib-line)] bg-[var(--ib-bg)] p-1 shadow-[0_24px_60px_-24px_rgba(11,18,32,0.28)]">
-        <GetStartedCard
-          industries={INDUSTRIES}
-          managementLevels={LEVELS}
-          departments={DEPARTMENTS}
-          buttonText="Start your free assessment"
-          onSubmit={handleStart}
-        />
-      </div>
-    </>
+    <div className="rounded-2xl border border-[var(--ib-line)] bg-[var(--ib-bg)] p-1 shadow-[0_24px_60px_-24px_rgba(11,18,32,0.28)]">
+      <GetStartedCard
+        industries={INDUSTRIES}
+        managementLevels={LEVELS}
+        departments={DEPARTMENTS}
+        buttonText={
+          isLoading
+            ? "Preparing your assessment..."
+            : "Start your free assessment"
+        }
+        isLoading={isLoading}
+        onSubmit={handleStart}
+      />
+      {isLoading ? (
+        <div className="px-1 pb-1">
+          <InlineAssessmentLoader
+            title="Preparing your assessment"
+            description="Building scenario-based questions for your role… This usually takes under a minute. You can stay on this page."
+            steps={[
+              "Analyzing your role context",
+              "Generating scenario questions",
+              "Calibrating difficulty level",
+            ]}
+          />
+        </div>
+      ) : null}
+    </div>
   );
 }
 
@@ -396,7 +438,7 @@ function AcademyVisual({ lang }: { lang: string }) {
       >
         <div>
           <span className="inline-flex items-center rounded-full border border-[var(--ib-line)] bg-[var(--ib-accbg)] px-2.5 py-1 text-[11px] font-bold tracking-[0.06em] text-[var(--ib-acc)] uppercase">
-            Course track {String(index + 1).padStart(2, "0")}
+            {slide.code}
           </span>
           <div className="mt-5 flex items-start gap-3">
             <span className="grid size-11 shrink-0 place-items-center rounded-[12px] border border-[var(--ib-line)] bg-[var(--ib-accbg)] text-[var(--ib-acc)]">

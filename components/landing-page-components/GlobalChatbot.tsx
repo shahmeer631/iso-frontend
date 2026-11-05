@@ -4,7 +4,7 @@ import React, { useState, useRef, useEffect, useMemo } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { usePathname, useSearchParams } from "next/navigation";
-import { X, MessageCircle, Send } from "lucide-react";
+import { X, MessageCircle, Send, Maximize2, Minimize2 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { toast } from "sonner";
@@ -111,6 +111,7 @@ function persistChatHistory(history: ChatMessage[]) {
 
 export default function GlobalChatbot() {
   const [isOpen, setIsOpen] = useState(false);
+  const [isMaximized, setIsMaximized] = useState(false);
   const [showGreeting, setShowGreeting] = useState(false);
   const [query, setQuery] = useState("");
   const [chatHistory, setChatHistory] = useState<ChatMessage[]>(() =>
@@ -446,11 +447,28 @@ export default function GlobalChatbot() {
 
   const toggleChat = () => {
     setShowGreeting(false);
-    setIsOpen(!isOpen);
+    setIsOpen((open) => {
+      if (open) setIsMaximized(false);
+      return !open;
+    });
     if (isOpen && streamIntervalRef.current) {
       clearInterval(streamIntervalRef.current);
       streamIntervalRef.current = null;
     }
+  };
+
+  const closeChat = () => {
+    setShowGreeting(false);
+    setIsMaximized(false);
+    setIsOpen(false);
+    if (streamIntervalRef.current) {
+      clearInterval(streamIntervalRef.current);
+      streamIntervalRef.current = null;
+    }
+  };
+
+  const toggleMaximize = () => {
+    setIsMaximized((v) => !v);
   };
 
   const openGreeting = () => {
@@ -459,12 +477,17 @@ export default function GlobalChatbot() {
 
   const closeGreeting = () => setShowGreeting(false);
 
-  // Root causes of clipped header (confirmed via layout audit):
-  // 1) Fixed h-[500px] exceeded short viewports → panel top above the window.
-  // 2) Sticky marketing nav (z-[100], ~66px) sat above chat (z-[90]) and covered
-  //    the panel header whenever the panel top entered the nav band.
-  // Fix: pin the shell between nav clearance and bottom edge, let the panel
-  // flex into remaining space (capped at 520px), and stack above the nav.
+  useEffect(() => {
+    if (!isMaximized) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [isMaximized]);
+
+  // DP World–style: mid-viewport right dock; panel expands/maximizes from there.
+  // Avoid bottom-corner FAB so Ask AI stays visible while scrolling.
   const panelMotion = reduceMotion
     ? {
         initial: { opacity: 0 },
@@ -473,41 +496,52 @@ export default function GlobalChatbot() {
         transition: { duration: 0.15 },
       }
     : {
-        initial: { opacity: 0, y: 14, scale: 0.96 },
-        animate: { opacity: 1, y: 0, scale: 1 },
-        exit: { opacity: 0, y: 10, scale: 0.97 },
-        transition: { duration: 0.22, ease: [0.22, 1, 0.36, 1] as const },
+        initial: { opacity: 0, x: 28, scale: 0.96 },
+        animate: { opacity: 1, x: 0, scale: 1 },
+        exit: { opacity: 0, x: 18, scale: 0.97 },
+        transition: { duration: 0.28, ease: [0.22, 1, 0.36, 1] as const },
       };
 
-  const shellBottom = isDenseAiShell
-    ? "bottom-20 sm:bottom-6"
-    : "bottom-4 sm:bottom-6";
-  const shellTop = hasMarketingNav ? "top-[4.75rem]" : "top-4";
+  const shellOffsetY = hasMarketingNav
+    ? "top-[min(48%,calc(50%+12px))]"
+    : "top-1/2";
+  const denseNudge = isDenseAiShell ? "max-sm:-translate-y-[18%]" : "";
+
+  // Panel is viewport-fixed (not inside a transformed parent) so maximize
+  // can use the full screen and docked mode stays under the marketing nav.
+  const dockedPanelClass = hasMarketingNav
+    ? "pointer-events-auto fixed right-3 top-[4.85rem] z-[120] h-[min(560px,calc(100dvh-7rem))] w-[calc(100vw-1.5rem)] sm:right-4 sm:w-[440px]"
+    : "pointer-events-auto fixed right-3 top-4 z-[120] h-[min(560px,calc(100dvh-6rem))] w-[calc(100vw-1.5rem)] sm:right-4 sm:w-[440px]";
+
+  const maximizedPanelClass =
+    "pointer-events-auto fixed inset-3 z-[130] h-auto w-auto max-w-none sm:inset-4 md:inset-6";
 
   return (
-    <div
-      className={`pointer-events-none fixed right-4 z-[120] flex flex-col items-end justify-end sm:right-6 ${shellTop} ${shellBottom}`}
-    >
+    <>
       <ActivityTracker
         source="AI_TOOL"
         enabled={isOpen}
         aiToolId={activityToolId}
-        isoStandardId={resolvedContext.isoStandardId}
         documentId={resolvedContext.documentId}
+        isoStandardId={resolvedContext.isoStandardId}
         resourceLabel={
           resolvedContext.standardTitle || contextBanner || "Ask AI"
         }
         sessionKey={`ai_${activityToolId}`}
       />
-      <div className="pointer-events-auto flex h-full max-h-full min-h-0 w-full max-w-[calc(100vw-2rem)] flex-col items-end justify-end sm:max-w-[400px]">
+
       <AnimatePresence>
         {isOpen && (
           <motion.div
+            key="ask-ai-panel"
             {...panelMotion}
             style={{ transformOrigin: "bottom right" }}
-            className="chatbot-panel mb-3 flex min-h-0 w-[calc(100vw-2rem)] max-h-[min(520px,calc(100%-4.5rem))] flex-1 flex-col overflow-hidden rounded-2xl border border-[var(--ib-line)] bg-[var(--ib-bg)] shadow-[0_24px_60px_-24px_rgba(11,18,32,0.45)] sm:mb-4 sm:w-[400px]"
+            className={`chatbot-panel flex flex-col overflow-hidden rounded-2xl border border-[var(--ib-line)] bg-[var(--ib-bg)] shadow-[0_28px_64px_-22px_rgba(11,18,32,0.5)] transition-[inset,width,height,max-width] duration-300 ease-out ${
+              isMaximized ? maximizedPanelClass : dockedPanelClass
+            }`}
             role="dialog"
             aria-label="Ask AI chat"
+            aria-modal={isMaximized}
           >
             <div className="relative z-[1] flex shrink-0 items-center justify-between gap-3 border-b border-[var(--ib-line)] bg-[linear-gradient(180deg,var(--ib-card)_0%,color-mix(in_srgb,var(--ib-card)_88%,var(--ib-accbg))_100%)] px-4 py-3.5">
               <div className="flex min-w-0 items-center gap-2.5">
@@ -523,14 +557,30 @@ export default function GlobalChatbot() {
                   </span>
                 </div>
               </div>
-              <button
-                type="button"
-                onClick={toggleChat}
-                aria-label="Close Ask AI chat"
-                className="inline-flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-lg text-[var(--ib-mute)] transition-colors hover:bg-[var(--ib-accbg)] hover:text-[var(--ib-ink)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ib-acc)]"
-              >
-                <X className="size-4" aria-hidden />
-              </button>
+              <div className="flex shrink-0 items-center gap-1">
+                <button
+                  type="button"
+                  onClick={toggleMaximize}
+                  aria-label={
+                    isMaximized ? "Restore Ask AI chat size" : "Maximize Ask AI chat"
+                  }
+                  className="inline-flex size-8 cursor-pointer items-center justify-center rounded-lg text-[var(--ib-mute)] transition-colors hover:bg-[var(--ib-accbg)] hover:text-[var(--ib-ink)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ib-acc)]"
+                >
+                  {isMaximized ? (
+                    <Minimize2 className="size-4" aria-hidden />
+                  ) : (
+                    <Maximize2 className="size-4" aria-hidden />
+                  )}
+                </button>
+                <button
+                  type="button"
+                  onClick={closeChat}
+                  aria-label="Close Ask AI chat"
+                  className="inline-flex size-8 cursor-pointer items-center justify-center rounded-lg text-[var(--ib-mute)] transition-colors hover:bg-[var(--ib-accbg)] hover:text-[var(--ib-ink)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ib-acc)]"
+                >
+                  <X className="size-4" aria-hidden />
+                </button>
+              </div>
             </div>
 
             <div
@@ -749,68 +799,59 @@ export default function GlobalChatbot() {
         )}
       </AnimatePresence>
 
-      {/* Launcher + greeting share one hover area (flex sibling — not absolute shrink-wrap) */}
-      <div
-        className="relative z-50 flex max-w-[calc(100vw-1.5rem)] items-center justify-end gap-2.5 sm:gap-3"
-        onMouseEnter={openGreeting}
-        onMouseLeave={closeGreeting}
-        onFocusCapture={openGreeting}
-        onBlurCapture={(e) => {
-          const next = e.relatedTarget as Node | null;
-          if (!e.currentTarget.contains(next)) closeGreeting();
-        }}
-      >
-        <AnimatePresence mode="popLayout">
-          {greetingVisible && (
-            <motion.div
-              key="chat-greeting"
-              initial={
-                reduceMotion
-                  ? { opacity: 1 }
-                  : { opacity: 0, x: 10, scale: 0.97 }
-              }
-              animate={{ opacity: 1, x: 0, scale: 1 }}
-              exit={
-                reduceMotion
-                  ? { opacity: 0 }
-                  : { opacity: 0, x: 8, scale: 0.98 }
-              }
-              transition={{
-                duration: reduceMotion ? 0.12 : 0.22,
-                ease: [0.22, 1, 0.36, 1],
-              }}
-              className="w-max max-w-[min(260px,calc(100vw-5.25rem))] shrink-0"
-              aria-hidden
-            >
-              <div className="chat-greeting-bubble relative flex h-11 items-center rounded-full border border-[color-mix(in_srgb,var(--ib-acc)_28%,var(--ib-line))] bg-[var(--ib-card)] px-4 shadow-[0_12px_32px_-12px_rgba(11,18,32,0.38),0_0_0_1px_color-mix(in_srgb,var(--ib-acc)_8%,transparent)]">
-                <p className="chat-greeting-text relative z-[1] m-0 whitespace-nowrap text-[12.5px] font-semibold leading-none tracking-[-0.01em] sm:text-[13px]">
-                  How can I help you today?
-                </p>
-                {/* Speech-bubble tip toward the launcher */}
-                <span
-                  aria-hidden
-                  className="absolute -right-1 top-1/2 z-0 size-2.5 -translate-y-1/2 rotate-45 border-r border-t border-[color-mix(in_srgb,var(--ib-acc)_28%,var(--ib-line))] bg-[var(--ib-card)]"
-                />
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        <button
-          type="button"
-          onClick={toggleChat}
-          aria-label={isOpen ? "Close Ask AI chat" : "Open Ask AI chat"}
-          aria-expanded={isOpen}
-          className="flex size-14 shrink-0 cursor-pointer items-center justify-center rounded-full bg-[var(--ib-acc)] text-white shadow-[0_12px_28px_-10px_color-mix(in_srgb,var(--ib-acc)_55%,transparent)] transition-[transform,background-color,box-shadow] duration-200 hover:scale-110 hover:bg-[var(--ib-acc)]/90 hover:shadow-[0_16px_36px_-10px_color-mix(in_srgb,var(--ib-acc)_65%,transparent)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ib-acc)] active:scale-95"
+      {/* Mid-right peek — only when chat is closed (panel header owns close/maximize) */}
+      {!isOpen && (
+        <div
+          className={`pointer-events-none fixed right-0 z-[120] ${shellOffsetY} -translate-y-1/2 ${denseNudge}`}
         >
-          {isOpen ? (
-            <X className="size-6" aria-hidden />
-          ) : (
-            <MessageCircle className="size-6" aria-hidden />
-          )}
-        </button>
-      </div>
-      </div>
-    </div>
+          <div className="pointer-events-auto relative flex w-[min(440px,calc(100vw-0.75rem))] flex-col items-end">
+            <div className="relative z-50 flex w-full items-center justify-end">
+              <button
+                type="button"
+                onClick={toggleChat}
+                onMouseEnter={openGreeting}
+                onMouseLeave={closeGreeting}
+                onFocus={openGreeting}
+                onBlur={closeGreeting}
+                aria-label="Ask AI"
+                aria-expanded={false}
+                className="ask-ai-peek group flex h-16 translate-x-1 cursor-pointer items-center gap-3.5 rounded-l-full border border-r-0 border-[color-mix(in_srgb,var(--ib-acc)_40%,var(--ib-line))] bg-[var(--ib-acc)] pl-5 pr-3 text-white shadow-[0_20px_48px_-14px_color-mix(in_srgb,var(--ib-acc)_78%,transparent)] ring-1 ring-white/20 transition-[transform,box-shadow,background-color] duration-300 ease-out hover:translate-x-0 hover:bg-[color-mix(in_srgb,var(--ib-acc)_92%,#0B1530)] hover:shadow-[0_24px_56px_-12px_color-mix(in_srgb,var(--ib-acc)_85%,transparent)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ib-acc)]"
+              >
+                <span className="ask-ai-peek-label whitespace-nowrap text-[15px] font-bold tracking-[-0.015em] sm:text-[16px]">
+                  Ask AI
+                </span>
+                <span
+                  className="relative flex size-11 shrink-0 items-center justify-center overflow-hidden rounded-full bg-white/20 ring-2 ring-white/30"
+                  aria-hidden
+                >
+                  <span className="ask-ai-orb absolute inset-0 rounded-full bg-[radial-gradient(circle_at_30%_30%,rgba(255,255,255,0.7),transparent_55%),radial-gradient(circle_at_70%_70%,rgba(255,255,255,0.35),transparent_50%)] opacity-95" />
+                  <MessageCircle className="relative z-[1] size-6" />
+                </span>
+              </button>
+
+              <AnimatePresence>
+                {greetingVisible && (
+                  <motion.div
+                    key="chat-greeting"
+                    initial={reduceMotion ? { opacity: 1 } : { opacity: 0, x: 8 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={reduceMotion ? { opacity: 0 } : { opacity: 0, x: 6 }}
+                    transition={{ duration: reduceMotion ? 0.1 : 0.2 }}
+                    className="pointer-events-none absolute right-[4.75rem] top-1/2 z-10 -translate-y-1/2"
+                    aria-hidden
+                  >
+                    <div className="chat-greeting-bubble relative flex h-10 items-center rounded-full border border-[color-mix(in_srgb,var(--ib-acc)_28%,var(--ib-line))] bg-[var(--ib-card)] px-3.5 shadow-[0_12px_32px_-12px_rgba(11,18,32,0.38)]">
+                      <p className="chat-greeting-text relative z-[1] m-0 whitespace-nowrap text-[12px] font-semibold leading-none tracking-[-0.01em] sm:text-[12.5px]">
+                        How can I help you today?
+                      </p>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 }

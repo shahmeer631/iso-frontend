@@ -22,6 +22,7 @@ interface NavSubItem {
 interface NavItem {
   label: string;
   href?: string;
+  description?: string;
   subItems?: NavSubItem[];
   requiresAuth?: boolean;
 }
@@ -116,11 +117,44 @@ export default function Navbar() {
     return items;
   }, [libraryCategories, t]);
 
+  const masteryLabSubItems: NavSubItem[] = [
+    {
+      label: t("nav.masteryLabSub.open") || "Open Mastery Lab",
+      href: "/mastery-lab",
+    },
+    {
+      label: t("nav.masteryLabSub.assessment") || "Start Free Assessment",
+      href: "/mastery-lab",
+    },
+  ];
+
   const navigation: NavItem[] = [
-    { label: t("nav.library"), subItems: librarySubItems },
-    { label: t("nav.academy"), subItems: categorySubItems },
+    {
+      label: t("nav.masteryLab"),
+      description:
+        t("nav.masteryLabDesc") ||
+        "See your gaps. Fix them fast. Assess your ISO knowledge by role and get a clear path forward—no guesswork, no wasted time.",
+      subItems: masteryLabSubItems,
+    },
+    {
+      label: t("nav.library"),
+      description:
+        t("nav.libraryDesc") ||
+        "Work with the standards, not around them. Search, explore, and break down complex clauses into something you can act on.",
+      subItems: librarySubItems,
+    },
+    {
+      label: t("nav.academy"),
+      description:
+        t("nav.academyDesc") ||
+        "Structured learning paths that turn ISO management systems into practical, role-ready skills.",
+      subItems: categorySubItems,
+    },
     {
       label: t("nav.aiAssistant"),
+      description:
+        t("nav.aiAssistantDesc") ||
+        "Your compliance co-pilot—draft documents, prepare audits, and get clause-grounded answers when you need them.",
       subItems: [
         { label: t("nav.aiAssistantSub.home"), href: "/ai-assistant-home" },
         {
@@ -137,7 +171,6 @@ export default function Navbar() {
         },
       ],
     },
-    { label: t("nav.masteryLab"), href: "/mastery-lab" },
     { label: t("nav.pricing"), href: "/pricing" },
   ];
 
@@ -184,7 +217,9 @@ export default function Navbar() {
       ? "Explore Courses →"
       : activeDropdown === t("nav.library")
         ? "Explore Standards →"
-        : "Try Tool →";
+        : activeDropdown === t("nav.masteryLab")
+          ? "Open Mastery Lab →"
+          : "Try Tool →";
 
   return (
     <nav className="relative sticky top-0 z-[100] border-b border-[var(--ib-line)] bg-[color-mix(in_srgb,var(--ib-bg)_90%,transparent)] backdrop-blur-[12px]">
@@ -208,7 +243,7 @@ export default function Navbar() {
         </Link>
 
         {/* Desktop menu triggers */}
-        <div className="hidden min-[901px]:flex flex-1 items-center gap-[26px] text-sm font-medium text-[var(--ib-mute)]">
+        <div className="hidden min-[901px]:flex flex-1 items-center gap-[22px] text-[14px] font-semibold tracking-[-0.01em] text-[color-mix(in_srgb,var(--ib-ink)_78%,var(--ib-mute))] lg:gap-[26px]">
           {navigation.map((item) => (
             <div
               key={item.label}
@@ -279,12 +314,14 @@ export default function Navbar() {
             <div className="flex items-center gap-4">
               <Link
                 href={`/${lang}/auth/login`}
-                className="text-sm font-medium text-[var(--ib-mute)] hover:text-[var(--ib-ink)]"
+                className="text-[14px] font-semibold tracking-[-0.01em] text-[color-mix(in_srgb,var(--ib-ink)_78%,var(--ib-mute))] hover:text-[var(--ib-ink)]"
               >
                 {lang === "en" ? "Log in" : t("nav.login")}
               </Link>
               <Link href={`/${lang}/auth/sign-up`} className="ib-btn ib-btn-s">
-                {lang === "en" ? "Get started" : t("nav.signUp") || "Get started"}
+                {lang === "en"
+                  ? "Start Your Free Trial"
+                  : t("nav.startFreeTrial") || "Start Your Free Trial"}
               </Link>
             </div>
           )}
@@ -322,8 +359,8 @@ export default function Navbar() {
                   </h3>
                   <div className="mb-4 h-1 w-10 rounded-full bg-[var(--ib-acc)]" />
                   <p className="max-w-xs text-[13px] leading-relaxed text-[var(--ib-mute)]">
-                    Explore our comprehensive resources and specialized tools
-                    designed for ISO professionals worldwide.
+                    {activeNavItem.description ||
+                      "Explore our comprehensive resources and specialized tools designed for ISO professionals worldwide."}
                   </p>
                 </div>
 
@@ -393,7 +430,7 @@ export default function Navbar() {
                               key={sub.label}
                               href={`/${lang}${sub.href}`}
                               onClick={() => setIsOpen(false)}
-                              className="block py-2 text-sm text-[var(--ib-mute)] hover:text-[var(--ib-acc)]"
+                              className="block py-2.5 text-[14px] font-medium text-[color-mix(in_srgb,var(--ib-ink)_70%,var(--ib-mute))] hover:text-[var(--ib-acc)]"
                             >
                               {sub.label}
                             </Link>
@@ -428,7 +465,9 @@ export default function Navbar() {
                       onClick={() => setIsOpen(false)}
                       className="ib-btn w-full justify-center"
                     >
-                      {lang === "en" ? "Get started" : t("nav.signUp") || "Get started"}
+                      {lang === "en"
+                        ? "Start Your Free Trial"
+                        : t("nav.startFreeTrial") || "Start Your Free Trial"}
                     </Link>
                   </>
                 ) : (

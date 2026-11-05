@@ -44,34 +44,15 @@ const Page = () => {
               ISO Standards Library
             </h1>
 
-            <p className="mx-auto mt-4 max-w-[640px] text-[15px] font-medium leading-relaxed text-[var(--ib-mute)] sm:text-[16.5px]">
-              250+ international standards. Chat with AI, audit clauses, and
-              accelerate compliance — all in one workspace.
+            <p className="mx-auto mt-4 max-w-[680px] text-[15px] font-medium leading-relaxed text-[var(--ib-mute)] sm:text-[16.5px]">
+              Your working knowledge base for 250+ international management-system
+              standards. Browse by category, open the exact edition you need, and
+              use ISOBrain.AI to explain clauses, compare requirements, and prepare
+              for implementation or audit—without digging through disconnected PDFs.
             </p>
           </motion.div>
         </div>
       </header>
-
-      <section className="border-y border-[var(--ib-line)] bg-[var(--ib-card)] px-4 py-12 sm:px-6 sm:py-14">
-        <div className="ib-w mx-auto max-w-3xl! text-center">
-          <div className="ib-eye mx-auto">ISO Library overview</div>
-          <h2 className="mb-0! mt-2 text-[24px] font-bold tracking-[-0.03em] text-[var(--ib-ink)] sm:text-[30px]">
-            What the ISO Library is for
-          </h2>
-          <p className="mt-4 text-[15px] font-medium leading-relaxed text-[var(--ib-mute)] sm:text-[16.5px]">
-            The ISO Library is your working knowledge base for international
-            management-system standards. Browse by category, open the exact
-            edition you need, and use ISOBrain.AI to explain clauses, compare
-            requirements, and prepare for implementation or audit—without
-            digging through disconnected PDFs.
-          </p>
-          <p className="mt-4 text-[15px] font-medium leading-relaxed text-[var(--ib-mute)] sm:text-[16.5px]">
-            Each standard can include its own overview for clearer context and
-            SEO. When you are ready to go deeper, continue into ISO Academy for
-            structured learning paths.
-          </p>
-        </div>
-      </section>
 
       <ISOStandardsNexus />
 
