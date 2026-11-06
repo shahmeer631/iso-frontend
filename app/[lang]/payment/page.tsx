@@ -197,6 +197,12 @@ function PaymentPageContent() {
                 <span>{t('payment.totalAmount')}</span>
                 <span>${price} <span className="text-sm font-medium text-[var(--ib-mute)] ml-1">/{t('payment.oneTime')}</span></span>
               </div>
+              <p className="text-sm leading-relaxed text-[var(--ib-mute)]">
+                {t(
+                  "payment.billingNote",
+                  "Prices shown are monthly equivalents. You are billed yearly for full annual access."
+                )}
+              </p>
             </div>
 
             {/* Coupon Code Section */}

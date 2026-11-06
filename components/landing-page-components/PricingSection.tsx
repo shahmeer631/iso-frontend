@@ -4,15 +4,16 @@ import React, { useState } from "react";
 import { Check, ArrowRight, Loader2 } from "lucide-react";
 import { useSelector } from "react-redux";
 import { useGetPlansQuery, Plan } from "@/lib/redux/features/pricing/pricingApi";
-import {
-  useCreatePaymentIntentMutation,
-  useUpgradeSubscriptionMutation,
-} from "@/lib/redux/features/payments/paymentApi";
+import { useCreatePaymentIntentMutation } from "@/lib/redux/features/payments/paymentApi";
 import { useCheckEnrollmentMutation } from "@/lib/redux/features/auth/authApi";
 import { selectCurrentUser, selectCurrentToken } from "@/lib/redux/features/auth/authSlice";
 import { useRouter, useSearchParams, useParams } from "next/navigation";
 import { toast } from "sonner";
-import { userHasAnyPaidAccess, userOwnsPlanId } from "@/lib/access/effectiveAccess";
+import {
+  userHasAnyPaidAccess,
+  userOwnsPlanId,
+  extractApiErrorMessage,
+} from "@/lib/access/effectiveAccess";
 import { motion, useReducedMotion } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import "@/lib/i18n/client";
@@ -44,7 +45,6 @@ const PricingSection = () => {
   const reduceMotion = useReducedMotion();
   const { data: response, isLoading, isError } = useGetPlansQuery();
   const [createPaymentIntent] = useCreatePaymentIntentMutation();
-  const [upgradeSubscription] = useUpgradeSubscriptionMutation();
   const [checkEnrollment] = useCheckEnrollmentMutation();
   const user = useSelector(selectCurrentUser);
   const token = useSelector(selectCurrentToken);
@@ -113,38 +113,11 @@ const PricingSection = () => {
       return;
     }
 
-    if (hasPurchasedAnyPlan) {
-      try {
-        setProcessingPlanId(plan._id || plan.id);
-        const result = await upgradeSubscription({
-          newPlanId: plan.id || plan._id || "",
-        }).unwrap();
+    const jwtRole = token ? decodeJwt(token)?.role : null;
+    const role = String(user?.role || jwtRole || "").toUpperCase();
+    const isAdmin = role === "ADMIN" || role === "SUPER_ADMIN";
 
-        if (result.success) {
-          toast.success(
-            t("pricingPage.upgradeSuccess", `Successfully upgraded to ${plan.name}!`)
-          );
-          sessionStorage.setItem("just_purchased", plan.id || plan._id || "");
-          router.push(`/${lang}/academy`);
-        } else {
-          toast.error(
-            result.message || t("pricingPage.upgradeError", "Failed to upgrade plan.")
-          );
-        }
-      } catch (error) {
-        console.error("Failed to upgrade subscription:", error);
-        toast.error(
-          t("pricingPage.upgradeError", "Failed to upgrade plan. Please try again.")
-        );
-      } finally {
-        setProcessingPlanId(null);
-      }
-      return;
-    }
-
-    const isAdmin =
-      user?.role === "admin" || (token ? decodeJwt(token)?.role === "admin" : false);
-
+    // Admins never hit live Stripe upgrade/checkout
     if (isAdmin) {
       toast.warning(
         t(
@@ -173,11 +146,14 @@ const PricingSection = () => {
       return;
     }
 
+    // Always start checkout via create-subscription. The upgrade-subscription
+    // endpoint requires an ACTIVE Stripe sub; many "paid" users only have
+    // UserAccess/group grants and that path was failing with console errors.
     try {
       setProcessingPlanId(plan._id || plan.id);
       const courseId = searchParams.get("courseId") || undefined;
       const result = await createPaymentIntent({
-        planId: plan.id,
+        planId: plan.id || plan._id || "",
         userId: currentUserId,
         courseId: courseId,
       }).unwrap();
@@ -253,9 +229,12 @@ const PricingSection = () => {
         }
       } else {
         toast.error(
-          t(
-            "pricingPage.paymentError",
-            "Failed to initiate payment. Please try again."
+          extractApiErrorMessage(
+            error,
+            t(
+              "pricingPage.paymentError",
+              "Failed to initiate payment. Please try again."
+            )
           )
         );
       }

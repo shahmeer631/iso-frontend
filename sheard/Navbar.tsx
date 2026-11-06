@@ -223,23 +223,20 @@ export default function Navbar() {
 
   return (
     <nav className="relative sticky top-0 z-[100] border-b border-[var(--ib-line)] bg-[color-mix(in_srgb,var(--ib-bg)_90%,transparent)] backdrop-blur-[12px]">
-      <div className="ib-w flex h-[66px] items-center gap-9">
+      <div className="ib-w flex h-[96px] items-center gap-5 sm:h-[108px] sm:gap-7 lg:gap-8">
         <Link
           href={`/${lang}/`}
           onClick={() => setIsOpen(false)}
-          className="flex shrink-0 items-center gap-[9px] text-[18px] font-bold tracking-[-0.02em] text-[var(--ib-ink)]"
+          className="flex shrink-0 items-center overflow-hidden rounded-[12px]"
         >
-          <span className="relative size-[26px] shrink-0 overflow-hidden rounded-[7px]">
-            <Image
-              src="/Icon.png"
-              alt="ISOBrain"
-              width={26}
-              height={26}
-              className="object-contain"
-              priority
-            />
-          </span>
-          ISOBrain.AI
+          <Image
+            src="/isobrain-logo.png"
+            alt="ISOBrain.AI"
+            width={320}
+            height={320}
+            className="h-[84px] w-auto object-contain sm:h-[96px] lg:h-[100px]"
+            priority
+          />
         </Link>
 
         {/* Desktop menu triggers */}

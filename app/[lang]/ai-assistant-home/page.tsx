@@ -45,6 +45,7 @@ const ModuleCard = ({
   icon: Icon,
   reduceMotion,
   index,
+  className = "",
 }: {
   badge: string;
   code: string;
@@ -55,6 +56,7 @@ const ModuleCard = ({
   icon: ComponentType<{ className?: string; "aria-hidden"?: boolean }>;
   reduceMotion: boolean | null;
   index: number;
+  className?: string;
 }) => (
   <motion.article
     initial={reduceMotion ? false : { opacity: 0, y: 16 }}
@@ -65,7 +67,7 @@ const ModuleCard = ({
       delay: reduceMotion ? 0 : Math.min(index * 0.06, 0.3),
       ease,
     }}
-    className="ib-card group relative flex h-full flex-col overflow-hidden p-6 transition-all duration-300 hover:-translate-y-1 hover:border-[color-mix(in_srgb,var(--ib-acc)_35%,var(--ib-line))] hover:shadow-[0_18px_40px_-24px_rgba(27,77,219,0.35)] sm:p-8 md:p-10"
+    className={`ib-card group relative flex h-full flex-col overflow-hidden p-6 transition-all duration-300 hover:-translate-y-1 hover:border-[color-mix(in_srgb,var(--ib-acc)_35%,var(--ib-line))] hover:shadow-[0_18px_40px_-24px_rgba(27,77,219,0.35)] sm:p-8 md:p-10 ${className}`}
   >
     <div
       aria-hidden
@@ -164,14 +166,17 @@ const AIAssistantHome = () => {
     userOwnsPlanId(user, plan?.id || plan?._id) ||
     userHasFeature(user, "AI_ASSISTANT");
 
+  const freeTrialHref = `/${lang}/auth/sign-up`;
+  const freeTrialCta = t("aiAssistantHome.getStartedBtn", "Start Your Free Trial");
+  // Order: paired rows first, Benchmark last (centered) so it never sits alone mid-grid
   const modules = [
     {
       badge: t("aiAssistantHome.protocolExecution"),
       code: t("aiAssistantHome.codeNav"),
       title: t("aiAssistantHome.isoNavigator"),
       description: t("aiAssistantHome.navigatorDesc"),
-      href: `/${lang}/ai-assistant/iso-navigator`,
-      cta: t("aiAssistantHome.initializeSync"),
+      href: freeTrialHref,
+      cta: freeTrialCta,
       icon: Globe,
     },
     {
@@ -179,27 +184,36 @@ const AIAssistantHome = () => {
       code: t("aiAssistantHome.codeAud"),
       title: t("aiAssistantHome.auditLens"),
       description: t("aiAssistantHome.auditDesc"),
-      href: `/${lang}/ai-assistant/audit-lens`,
-      cta: t("aiAssistantHome.auditBtn"),
+      href: freeTrialHref,
+      cta: freeTrialCta,
       icon: ShieldCheck,
-    },
-    {
-      badge: t("aiAssistantHome.evaluation"),
-      code: t("aiAssistantHome.codeBen"),
-      title: t("aiAssistantHome.benchmarkAi"),
-      description: t("aiAssistantHome.benchmarkDesc"),
-      href: `/${lang}/ai-assistant/benchmark-ai`,
-      cta: t("aiAssistantHome.benchmarkBtn"),
-      icon: BarChart3,
     },
     {
       badge: t("aiAssistantHome.knowledgeBase"),
       code: t("aiAssistantHome.codeLib"),
       title: t("aiAssistantHome.isoLibrary"),
       description: t("aiAssistantHome.libraryDesc"),
-      href: `/${lang}/library/iso-standards`,
-      cta: t("aiAssistantHome.libraryBtn"),
+      href: freeTrialHref,
+      cta: freeTrialCta,
       icon: FileText,
+    },
+    {
+      badge: t("aiAssistantHome.isoAcademyBadge"),
+      code: t("aiAssistantHome.codeAca"),
+      title: t("aiAssistantHome.isoAcademy"),
+      description: t("aiAssistantHome.academyCardDesc"),
+      href: freeTrialHref,
+      cta: freeTrialCta,
+      icon: GraduationCap,
+    },
+    {
+      badge: t("aiAssistantHome.evaluation"),
+      code: t("aiAssistantHome.codeBen"),
+      title: t("aiAssistantHome.benchmarkAi"),
+      description: t("aiAssistantHome.benchmarkDesc"),
+      href: freeTrialHref,
+      cta: freeTrialCta,
+      icon: BarChart3,
     },
   ];
 
@@ -271,10 +285,10 @@ const AIAssistantHome = () => {
 
               <div className="mt-8 flex flex-wrap items-center gap-3">
                 <Link
-                  href={`/${lang}/ai-assistant/iso-navigator`}
+                  href={`/${lang}/auth/sign-up`}
                   className="group inline-flex items-center justify-center gap-2 rounded-[12px] bg-[var(--ib-acc)] px-6 py-3.5 text-[13px] font-semibold text-white shadow-[0_14px_32px_-14px_rgba(27,77,219,0.55)] transition-all duration-300 hover:-translate-y-0.5 hover:opacity-95"
                 >
-                  {t("aiAssistantHome.initializeSync", "Launch Navigator")}
+                  {t("aiAssistantHome.getStartedBtn", "Start Your Free Trial")}
                   <ArrowRight
                     className="size-4 transition-transform group-hover:translate-x-1"
                     aria-hidden
@@ -284,7 +298,7 @@ const AIAssistantHome = () => {
                   href={`/${lang}/pricing`}
                   className="inline-flex items-center justify-center rounded-[12px] border border-[var(--ib-line)] bg-[var(--ib-card)] px-6 py-3.5 text-[13px] font-semibold text-[var(--ib-ink)] transition-all hover:border-[color-mix(in_srgb,var(--ib-acc)_35%,var(--ib-line))] hover:bg-[var(--ib-accbg)]"
                 >
-                  {t("aiAssistantHome.getStartedBtn", "View Ultra plan")}
+                  View plans
                 </Link>
               </div>
             </motion.div>
@@ -493,49 +507,23 @@ const AIAssistantHome = () => {
           </motion.div>
 
           <div className="grid grid-cols-1 gap-5 md:grid-cols-2 md:gap-6">
-            {modules.map((mod, index) => (
-              <ModuleCard key={mod.href} {...mod} index={index} reduceMotion={reduceMotion} />
-            ))}
-          </div>
-
-          <motion.article
-            initial={reduceMotion ? false : { opacity: 0, y: 16 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.25 }}
-            transition={{ duration: 0.45, ease }}
-            className="ib-card group relative mt-5 overflow-hidden p-6 transition-all duration-300 hover:-translate-y-0.5 hover:border-[color-mix(in_srgb,var(--ib-acc)_35%,var(--ib-line))] hover:shadow-[0_18px_40px_-24px_rgba(27,77,219,0.35)] sm:mt-6 sm:p-8 md:mx-auto md:max-w-4xl md:p-10"
-          >
-            <div
-              aria-hidden
-              className="pointer-events-none absolute -right-4 -bottom-4 text-[var(--ib-acc)] opacity-[0.08] transition-opacity group-hover:opacity-[0.14]"
-            >
-              <GraduationCap className="size-40" aria-hidden />
-            </div>
-            <div className="relative z-[1] flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-              <div className="w-fit rounded-full border border-[color-mix(in_srgb,var(--ib-acc)_20%,var(--ib-line))] bg-[var(--ib-accbg)] px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-[var(--ib-acc)] sm:text-[11px]">
-                {t("aiAssistantHome.isoAcademyBadge")}
-              </div>
-              <div className="font-mono text-[10px] text-[var(--ib-mute)]">
-                {t("aiAssistantHome.codeAca")}
-              </div>
-            </div>
-            <h3 className="relative z-[1] mb-0! mt-5 text-[22px] font-bold text-[var(--ib-ink)] sm:text-[24px]">
-              {t("aiAssistantHome.isoAcademy")}
-            </h3>
-            <p className="relative z-[1] mt-3 max-w-2xl text-[14px] leading-relaxed text-[var(--ib-mute)] sm:text-[15px]">
-              {t("aiAssistantHome.academyCardDesc")}
-            </p>
-            <Link
-              href={`/${lang}/academy`}
-              className="group/btn relative z-[1] mt-6 inline-flex items-center gap-2 text-[12px] font-bold uppercase tracking-widest text-[var(--ib-acc)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ib-acc)]"
-            >
-              {t("aiAssistantHome.startLearning")}
-              <ArrowRight
-                className="size-4 transition-transform group-hover/btn:translate-x-1"
-                aria-hidden
+            {modules.slice(0, 4).map((mod, index) => (
+              <ModuleCard
+                key={mod.code || mod.title}
+                {...mod}
+                index={index}
+                reduceMotion={reduceMotion}
               />
-            </Link>
-          </motion.article>
+            ))}
+            {/* Final odd card: same width as peers, centered — not a mid-section full-bleed row */}
+            <ModuleCard
+              key={modules[4].code || modules[4].title}
+              {...modules[4]}
+              index={4}
+              reduceMotion={reduceMotion}
+              className="md:col-span-2 md:mx-auto md:w-full md:max-w-[calc(50%-0.75rem)]"
+            />
+          </div>
         </div>
       </section>
 

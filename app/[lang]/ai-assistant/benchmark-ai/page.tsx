@@ -1,14 +1,11 @@
 "use client";
 import ResultsPage from "@/components/AIAssistant/Banchmark/ResultPage";
 import UploadPage from "@/components/AIAssistant/Banchmark/uploadPage";
-import ISOSuggestionsPage from "@/components/AIAssistant/Banchmark/ISOSuggestionsPage";
-// page.tsx  →  app/benchmark/page.tsx
 
 import { useState } from "react";
 import { useAppSelector, useAppDispatch } from "@/lib/redux/hooks";
 import { clearResults } from "@/lib/redux/features/benchmarkSlice";
 import { Phase } from "@/components/AIAssistant/Banchmark/data";
-import { ISOSuggestion } from "@/types/benchmark";
 import { ActivityTracker } from "@/components/activity/ActivityTracker";
 
 export default function BenchmarkAIPage() {
@@ -21,10 +18,6 @@ export default function BenchmarkAIPage() {
     setPhase("upload");
   };
 
-  const isoSuggestions = analysisResults?.iso_suggestions as
-    | ISOSuggestion[]
-    | undefined;
-
   return (
     <>
       <ActivityTracker
@@ -33,9 +26,7 @@ export default function BenchmarkAIPage() {
         resourceLabel="Benchmark AI"
         sessionKey="ai_benchmark"
       />
-      {isoSuggestions && isoSuggestions.length > 0 ? (
-        <ISOSuggestionsPage suggestions={isoSuggestions} onReset={handleReset} />
-      ) : phase === "results" && analysisResults && !isoSuggestions ? (
+      {phase === "results" && analysisResults ? (
         <ResultsPage result={analysisResults} onReset={handleReset} />
       ) : (
         <UploadPage onAnalyze={() => setPhase("results")} />

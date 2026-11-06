@@ -276,13 +276,15 @@ export default function StripeCheckoutForm({ couponCode }: { couponCode?: string
 
           {/* Security Combo Microcopy */}
           <p className="text-xs text-[var(--ib-mute)] text-center flex items-center justify-center gap-1.5 font-medium">
-            🔒 Secure checkout. ISO 27001 & SOC2 compliant.
+            Secure checkout · billed yearly · cancel anytime
           </p>
         </div>
 
         {/* Security / SSL Footer */}
         <div className="flex flex-col items-center gap-4 pt-4 border-t border-[var(--ib-line)] mt-2">
-          <p className="text-[10px] text-[var(--ib-mute)] font-bold uppercase tracking-[2px]">Encrypted Secure Connection</p>
+          <p className="text-[10px] text-[var(--ib-mute)] font-bold uppercase tracking-[2px]">
+            Encrypted Secure Connection · Billed Yearly
+          </p>
         </div>
       </form>
     </div>

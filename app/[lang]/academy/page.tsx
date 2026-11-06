@@ -44,36 +44,18 @@ const AcademyPage = () => {
             </div>
 
             <h1 className="mb-0! mt-3 text-[32px] font-bold leading-[1.12] tracking-[-0.035em] text-[var(--ib-ink)] sm:text-[40px] lg:text-[48px]">
-              {t("academy.heroHeading") || "Learn the standards that move careers"}
+              {t("academy.heroHeading") || "Master ISO properly"}
             </h1>
 
-            <p className="mx-auto mt-4 max-w-[560px] text-[15px] font-medium leading-relaxed text-[var(--ib-mute)] sm:text-[16.5px]">
-              {t("academy.description") ||
-                "Structured courses, AI study tools, and CPD pathways—built for professionals who need to apply ISO standards with confidence."}
+            <p className="mx-auto mt-4 max-w-[680px] text-[15px] font-medium leading-relaxed text-[var(--ib-mute)] sm:text-[16.5px]">
+              ISO Academy turns complex management-system standards into clear,
+              career-ready learning. Browse certification categories, follow
+              expert-led courses, and use AI study tools to retain what
+              matters—so you can implement, audit, and lead with confidence.
             </p>
           </motion.div>
         </div>
       </header>
-
-      <section className="border-y border-[var(--ib-line)] bg-[var(--ib-card)] px-4 py-12 sm:px-6 sm:py-14">
-        <div className="ib-w mx-auto max-w-3xl! text-center">
-          <div className="ib-eye mx-auto">Academy overview</div>
-          <h2 className="mb-0! mt-2 text-[24px] font-bold tracking-[-0.03em] text-[var(--ib-ink)] sm:text-[30px]">
-            What ISO Academy is for
-          </h2>
-          <p className="mt-4 text-[15px] font-medium leading-relaxed text-[var(--ib-mute)] sm:text-[16.5px]">
-            ISO Academy turns complex management-system standards into clear,
-            career-ready learning. Browse certification categories, follow
-            expert-led courses, and use AI study tools to retain what matters—so
-            you can implement, audit, and lead with confidence.
-          </p>
-          <p className="mt-4 text-[15px] font-medium leading-relaxed text-[var(--ib-mute)] sm:text-[16.5px]">
-            Start with a free trial to explore paths that match your role, then
-            deepen into CPD-certified programs when you are ready to prove your
-            competency.
-          </p>
-        </div>
-      </section>
 
       <AcademyCategoriesNexus />
 

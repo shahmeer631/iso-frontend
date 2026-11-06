@@ -115,18 +115,15 @@ const CompleteProfileContent = () => {
     <div className="min-h-screen flex items-center justify-center bg-[var(--ib-bg)] p-4">
       <div className="w-full max-w-md space-y-8">
         {/* Logo Section */}
-        <div className="flex justify-center items-center gap-2 mb-8">
-          <div className="bg-[var(--ib-card)] border border-[var(--ib-line)] h-10 w-10 rounded-[10px] flex items-center justify-center">
-            <div className="relative w-8 h-8">
-              <Image
-                src="/Icon.png"
-                alt={t('dynamic.dyn_icon_6')}
-                fill
-                className="object-contain"
-              />
-            </div>
-          </div>
-          <span className="font-bold text-[var(--ib-ink)] text-2xl">ISOBrain.ai</span>
+        <div className="mb-8 flex items-center justify-center">
+          <Image
+            src="/isobrain-logo.png"
+            alt="ISOBrain.AI"
+            width={160}
+            height={160}
+            className="h-auto w-[140px] overflow-hidden rounded-2xl object-contain"
+            priority
+          />
         </div>
 
         <Card className="border border-[var(--ib-line)] bg-[var(--ib-card)] shadow-sm rounded-2xl">

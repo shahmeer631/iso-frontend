@@ -12,6 +12,9 @@ type AccessUser = {
   features?: string[];
   effectivePlans?: string[];
   groupPlans?: string[];
+  subscriptionPlans?: string[];
+  stripeCustomerId?: string | null;
+  hasSubscriptionHistory?: boolean;
 } | null | undefined;
 
 const PLAN_RANK: Record<string, number> = {
@@ -59,4 +62,35 @@ export function userHasAnyPaidAccess(user: AccessUser): boolean {
     return true;
   }
   return false;
+}
+
+/**
+ * True only when the user likely has a live Stripe subscription.
+ * UserAccess / group grants alone are not enough — those often exist without
+ * an ACTIVE/TRIALING Stripe subscription row, which makes upgrade-subscription fail.
+ */
+export function userCanUpgradeSubscription(user: AccessUser): boolean {
+  if (!user) return false;
+  const role = (user.role || "").toUpperCase();
+  if (role === "SUPER_ADMIN" || role === "ADMIN") return false;
+  // Require Stripe customer + subscription-sourced plans (not group-only access)
+  if (!user.stripeCustomerId) return false;
+  if ((user.subscriptionPlans || []).length === 0) return false;
+  return true;
+}
+
+export function extractApiErrorMessage(error: unknown, fallback = "Something went wrong"): string {
+  if (!error || typeof error !== "object") return fallback;
+  const err = error as {
+    data?: { message?: string; errorSources?: Array<{ details?: string }> };
+    error?: string;
+    message?: string;
+  };
+  return (
+    err.data?.message ||
+    err.data?.errorSources?.[0]?.details ||
+    err.message ||
+    (typeof err.error === "string" ? err.error : null) ||
+    fallback
+  );
 }

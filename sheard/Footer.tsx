@@ -42,18 +42,15 @@ const Footer = () => {
         <div className="flex min-w-0 flex-col gap-1.5 sm:max-w-[320px]">
           <Link
             href={`/${lang}/`}
-            className="inline-flex items-center gap-2 font-semibold text-[var(--ib-ink)]"
+            className="inline-flex items-center overflow-hidden rounded-[10px] font-semibold text-[var(--ib-ink)]"
           >
-            <span className="relative size-8 shrink-0 overflow-hidden rounded-lg">
-              <Image
-                src="/Icon.png"
-                alt="ISOBrain"
-                width={32}
-                height={32}
-                className="animate-brain-spin object-contain"
-              />
-            </span>
-            <b className="text-[15px] font-semibold">ISOBrain.AI</b>
+            <Image
+              src="/isobrain-logo.png"
+              alt="ISOBrain.AI"
+              width={148}
+              height={148}
+              className="h-[48px] w-auto object-contain"
+            />
           </Link>
           <p className="text-[12.5px] leading-snug">
             Assess · Learn · Master · Apply — one system for ISO standards.

@@ -24,16 +24,36 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useRegisterMutation } from "@/lib/redux/features/auth/authApi";
-import GoogleLoginButton from "@/components/auth/GoogleLoginButton";
 import AISimulation from "@/components/landing-page-components/AISimulation";
 
 const ease = [0.22, 1, 0.36, 1] as const;
 
 const formSchema = z.object({
   email: z.string().email({
-    message: "Please enter a valid work email address.",
+    message: "Please enter a valid email address.",
   }),
 });
+
+const AUTH_REVIEWS = [
+  {
+    quote:
+      "ISOBrain transformed our audit process from weeks to hours.",
+    author: "Sarah Jenkins",
+    role: "Head of Compliance at Vercel",
+  },
+  {
+    quote:
+      "Finally a platform that connects learning, assessment, and real ISO application.",
+    author: "Marcus Chen",
+    role: "Lead Auditor, Quality Systems",
+  },
+  {
+    quote:
+      "Our team stopped guessing at clauses and started working with clear next steps.",
+    author: "Priya Nair",
+    role: "ISO Program Manager",
+  },
+];
 
 const inputClassName =
   "h-12 bg-[var(--ib-bg)] border-[var(--ib-line)] text-[var(--ib-ink)] px-4 rounded-[12px] focus-visible:border-[var(--ib-acc)] focus-visible:ring-4 focus-visible:ring-[color-mix(in_srgb,var(--ib-acc)_16%,transparent)] transition-[border-color,box-shadow,background-color] duration-200 text-base placeholder:text-[var(--ib-mute)] hover:border-[color-mix(in_srgb,var(--ib-acc)_28%,var(--ib-line))]";
@@ -122,84 +142,84 @@ const SignUpPage = () => {
       <div className="relative z-[1] mx-auto flex min-h-screen max-w-[1280px] font-sans selection:bg-[var(--ib-accbg)]">
         {/* Left — branding */}
         <div className="relative hidden w-[58%] flex-col justify-between overflow-hidden p-10 xl:p-12 lg:flex">
-          <motion.div {...fade(0)}>
+          <motion.div {...fade(0)} className="relative z-10 flex w-full justify-center">
             <Link
               href={`/${lang}`}
-              className="relative z-10 inline-flex items-center gap-3 rounded-xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ib-acc)]"
+              className="inline-flex items-center overflow-hidden rounded-2xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ib-acc)]"
             >
-              <div className="flex size-10 items-center justify-center rounded-xl border border-[var(--ib-line)] bg-[var(--ib-card)] p-2 shadow-sm">
-                <Image
-                  src="/Icon.png"
-                  alt={t("dynamic.dyn_icon_6")}
-                  width={24}
-                  height={24}
-                />
-              </div>
-              <span className="text-xl font-bold tracking-tight text-[var(--ib-ink)]">
-                ISOBrain
-              </span>
+              <Image
+                src="/isobrain-logo.png"
+                alt="ISOBrain.AI"
+                width={180}
+                height={180}
+                className="h-auto w-[140px] object-contain sm:w-[160px]"
+                priority
+              />
             </Link>
           </motion.div>
 
-          <div className="relative z-10 my-8 flex w-full max-w-2xl flex-1 flex-col justify-center gap-8">
-            <motion.div {...fade(0.08)} className="space-y-4">
-              <span className="ib-pill border border-[color-mix(in_srgb,var(--ib-acc)_22%,var(--ib-line))]">
+          <div className="relative z-10 my-8 flex w-full max-w-2xl flex-1 flex-col items-center justify-center gap-8 text-center">
+            <motion.div {...fade(0.08)} className="mx-auto space-y-4">
+              <span className="ib-pill mx-auto border border-[color-mix(in_srgb,var(--ib-acc)_22%,var(--ib-line))]">
                 <Sparkles className="size-3.5 shrink-0" aria-hidden />
                 {t("auth.enterpriseGrade")}
               </span>
               <h1 className="mb-0! text-[36px] font-bold leading-[1.12] tracking-[-0.035em] text-[var(--ib-ink)] xl:text-[42px]">
-                ISO, Without the confusion.
+                See where you stand. Close the gaps. Apply the standard.
               </h1>
-              <p className="mt-4 max-w-[540px] text-[17px] leading-relaxed text-[var(--ib-mute)]">
-                ISO standards are powerful. But working with them rarely feels
-                that way. Most professionals don&apos;t struggle because they
-                lack ability. They struggle because the standards are dense,
-                fragmented, and difficult to apply in real-world situations.
-                ISOBrain was built to change that.
+              <p className="mx-auto mt-4 max-w-[540px] text-[17px] leading-relaxed text-[var(--ib-mute)]">
+                ISO standards are dense and hard to apply in real work. ISOBrain
+                connects assessment, learning, and AI guidance so you know what
+                to fix next—and how to prove it.
               </p>
             </motion.div>
 
             <motion.div
               {...fade(0.14)}
-              className="relative overflow-hidden rounded-2xl shadow-[0_24px_60px_-28px_rgba(11,18,32,0.28)] ring-1 ring-[color-mix(in_srgb,var(--ib-acc)_12%,transparent)]"
+              className="relative w-full overflow-hidden rounded-2xl text-left shadow-[0_24px_60px_-28px_rgba(11,18,32,0.28)] ring-1 ring-[color-mix(in_srgb,var(--ib-acc)_12%,transparent)]"
             >
               <div
                 aria-hidden
                 className="pointer-events-none absolute -inset-4 -z-10 rounded-[28px] bg-[radial-gradient(ellipse_at_30%_20%,color-mix(in_srgb,var(--ib-acc)_16%,transparent),transparent_58%)]"
               />
               <AISimulation
-                customQuery="Create a new workspace for my organization on ISOBrain."
-                customResponse={`For years, ISO has lived in documents, spreadsheets, and disconnected systems. You read the standard. Interpret it yourself. Apply it as best you can. Then hope it holds up under audit. It's slow. It's unclear. And it leaves too much room for doubt. ISOBrain changes how you work with ISO. Instead of digging through documentation or relying on static training, you get a system that shows you exactly where you stand, what's missing, and how to move forward. It connects learning, assessment, and real-world application into one place. So you're not just learning the standard. You're working with it.`}
+                customQuery="Where should my team start with ISO compliance?"
+                customResponse={`Start with a clear view of your gaps. ISOBrain assesses your knowledge, maps the standards that matter for your role, and turns dense clauses into practical next steps—so you learn what you need and apply it with confidence.`}
               />
             </motion.div>
 
             <motion.div
               {...fade(0.2)}
-              className="ib-card p-5 sm:p-6"
+              className="grid w-full gap-3 sm:grid-cols-3"
             >
-              <div className="mb-3 flex gap-1" aria-hidden>
-                {[1, 2, 3, 4, 5].map((i) => (
-                  <svg
-                    key={i}
-                    className="size-4 fill-current text-[var(--ib-acc)]"
-                    viewBox="0 0 20 20"
-                  >
-                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                  </svg>
-                ))}
-              </div>
-              <p className="font-medium italic text-[var(--ib-ink)]">
-                {t("auth.sarahJenkinsTestimonial")}
-              </p>
-              <p className="mt-2 text-sm text-[var(--ib-mute)]">
-                {t("auth.sarahJenkinsTitle")}
-              </p>
+              {AUTH_REVIEWS.map((review) => (
+                <div key={review.author} className="ib-card p-4 text-center sm:p-5">
+                  <div className="mb-2 flex justify-center gap-0.5" aria-hidden>
+                    {[1, 2, 3, 4, 5].map((i) => (
+                      <svg
+                        key={i}
+                        className="size-3.5 fill-current text-[var(--ib-acc)]"
+                        viewBox="0 0 20 20"
+                      >
+                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                      </svg>
+                    ))}
+                  </div>
+                  <p className="text-[13px] font-medium italic leading-snug text-[var(--ib-ink)]">
+                    “{review.quote}”
+                  </p>
+                  <p className="mt-2 text-[11px] font-semibold text-[var(--ib-mute)]">
+                    — {review.author}
+                  </p>
+                  <p className="text-[10px] text-[var(--ib-mute)]">{review.role}</p>
+                </div>
+              ))}
             </motion.div>
           </div>
 
           <motion.div
             {...fade(0.24)}
-            className="relative z-10 flex flex-wrap gap-6 text-[11px] text-[var(--ib-mute)]"
+            className="relative z-10 flex flex-wrap justify-center gap-6 text-[11px] text-[var(--ib-mute)]"
           >
             <span>{t("dynamic.dyn_copy2024ISOBRAINAI_548")}</span>
             <Link
@@ -226,25 +246,22 @@ const SignUpPage = () => {
             >
               <Link
                 href={`/${lang}`}
-                className="inline-flex items-center gap-3 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ib-acc)]"
+                className="inline-flex items-center overflow-hidden rounded-2xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ib-acc)]"
               >
-                <div className="flex size-10 items-center justify-center rounded-xl border border-[var(--ib-line)] bg-[var(--ib-card)] p-2 shadow-sm">
-                  <Image
-                    src="/Icon.png"
-                    alt={t("dynamic.dyn_icon_6")}
-                    width={24}
-                    height={24}
-                  />
-                </div>
-                <span className="text-xl font-bold text-[var(--ib-ink)]">
-                  ISOBrain
-                </span>
+                <Image
+                  src="/isobrain-logo.png"
+                  alt="ISOBrain.AI"
+                  width={140}
+                  height={140}
+                  className="h-auto w-[120px] object-contain"
+                  priority
+                />
               </Link>
             </motion.div>
 
             <motion.div
               {...fade(0.06)}
-              className="mb-8 text-center lg:text-left"
+              className="mb-8 text-center"
             >
               <h2 className="mb-0! text-[28px] font-bold tracking-tight text-[var(--ib-ink)] sm:text-[34px]">
                 {t("auth.createAccountTitle")}
@@ -255,18 +272,6 @@ const SignUpPage = () => {
               {...fade(0.12)}
               className="ib-card space-y-6 p-6 shadow-[0_20px_48px_-28px_rgba(11,18,32,0.22)] sm:p-8"
             >
-              <div className="grid grid-cols-1 gap-3">
-                <GoogleLoginButton shortText />
-              </div>
-
-              <div className="flex items-center gap-4 py-0.5">
-                <div className="h-px flex-1 bg-[var(--ib-line)]" />
-                <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--ib-mute)]">
-                  {t("auth.or")}
-                </span>
-                <div className="h-px flex-1 bg-[var(--ib-line)]" />
-              </div>
-
               <Form {...form}>
                 <form
                   onSubmit={form.handleSubmit(onSubmit)}
@@ -279,7 +284,7 @@ const SignUpPage = () => {
                     render={({ field }) => (
                       <FormItem className="space-y-2">
                         <FormLabel className="text-[12px] font-semibold uppercase tracking-[0.06em] text-[var(--ib-mute)]">
-                          {t("auth.workEmailAddress")}
+                          {t("auth.emailAddress", "Email Address")}
                         </FormLabel>
                         <FormControl>
                           <div className="relative group">
@@ -287,7 +292,7 @@ const SignUpPage = () => {
                               type="email"
                               autoComplete="email"
                               inputMode="email"
-                              placeholder={t("auth.workEmailAddress")}
+                              placeholder={t("auth.emailAddress", "Email Address")}
                               className={`${inputClassName} pr-11`}
                               aria-invalid={!!form.formState.errors.email}
                               {...field}
