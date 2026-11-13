@@ -5,6 +5,7 @@ import Leaderboard from "@/components/assessment/Leaderboard";
 import ProgressBar from "@/components/mastery-lab/evaluation/ProgressBar";
 import ExploreFeatures from "@/components/Shared/ExploreFeatures";
 import { SkillHexGrid } from "@/components/assessment/SkillHexGrid";
+import AssessmentResultGate from "@/components/mastery-lab/AssessmentResultGate";
 import {
   Check,
   Loader2,
@@ -29,106 +30,271 @@ import { motion } from "framer-motion";
 import { useParams } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import "@/lib/i18n/client";
+import { useSelector } from "react-redux";
+import { selectCurrentToken } from "@/lib/redux/features/auth/authSlice";
+import { useClaimMasteryLabResultMutation } from "@/lib/redux/api/isoStandardsApi";
+import { getOrCreateGuestId } from "@/lib/apiUsage/guestId";
+
+const PENDING_MASTERY_RESULT_KEY = "mastery_pending_result";
+
+const getScore = (obj: any, baseKey: string): number => {
+  if (!obj || typeof obj !== "object") return 0;
+  const searchKeys = [
+    baseKey,
+    baseKey.charAt(0).toUpperCase() + baseKey.slice(1),
+    baseKey.toLowerCase(),
+    `${baseKey}Score`,
+    `${baseKey}_score`,
+  ];
+  for (const k of searchKeys) {
+    const val = obj[k];
+    if (val !== undefined && val !== null) {
+      const num = Number(val);
+      if (!isNaN(num)) return num <= 1 && num > 0 ? Math.round(num * 100) : Math.round(num);
+    }
+  }
+  for (const key in obj) {
+    if (obj[key] && typeof obj[key] === "object" && !Array.isArray(obj[key])) {
+      const nestedVal = getScore(obj[key], baseKey);
+      if (nestedVal > 0) return nestedVal;
+    }
+  }
+  return 0;
+};
 
 export default function SuccessEvaluationPage() {
   const { lang } = useParams();
   const { t } = useTranslation();
+  const token = useSelector(selectCurrentToken);
+  const [claimResult] = useClaimMasteryLabResultMutation();
 
   const [isLoaded, setIsLoaded] = useState(false);
+  const [requiresAuth, setRequiresAuth] = useState(false);
   const [assessmentData, setAssessmentData] = useState<any>(null);
   const [displayScores, setDisplayScores] = useState<any[]>([]);
   const [categoryName, setCategoryName] = useState("");
   const [overallScore, setOverallScore] = useState(0);
 
+  const applyResultPayload = (parsedData: any) => {
+    let actual = parsedData;
+    if (parsedData?.data) actual = parsedData.data;
+    if (actual?.data) actual = actual.data;
+
+    const metrics = actual?.metrics || actual?.aiFeedback?.scoring_metrics || {};
+    const rAns = Number(
+      metrics.correct ?? actual?.rightAns ?? getScore(actual, "rightAns") ?? 0,
+    );
+    const total = Number(metrics.total ?? actual?.total ?? 0);
+    const answered = Number(
+      metrics.answered ?? actual?.answered ?? rAns + Number(actual?.incorrectAns || 0),
+    );
+    const incorrectAns = Number(
+      metrics.incorrect ??
+        actual?.incorrectAns ??
+        Math.max(0, answered - rAns),
+    );
+    const unanswered = Number(
+      metrics.unanswered ??
+        actual?.unanswered ??
+        (total > 0 ? Math.max(0, total - answered) : 0),
+    );
+    // Authoritative test score from backend — never use progress or answered-only ratio
+    const rawScore = Number(
+      actual?.score ??
+        actual?.overallScore ??
+        actual?.totalScore ??
+        getScore(actual, "score") ??
+        (total > 0 ? (rAns / total) * 100 : 0),
+    );
+    const finalOverall = Math.round(Number.isFinite(rawScore) ? rawScore : 0);
+    const progress = Math.round(
+      Number(
+        metrics.progress ??
+          actual?.progress ??
+          (total > 0 ? (answered / total) * 100 : 0),
+      ) || 0,
+    );
+
+    actual = {
+      ...actual,
+      rightAns: rAns,
+      total: total || actual?.total,
+      answered,
+      incorrectAns,
+      unanswered,
+      progress,
+      score: finalOverall,
+      overallScore: finalOverall,
+    };
+
+    setAssessmentData(actual);
+    setCategoryName(
+      actual.category ||
+        parsedData.category ||
+        actual.industry ||
+        t("mastery.assessmentTitle"),
+    );
+    setOverallScore(finalOverall);
+    (actual as any)._uiMetadata = {
+      industry: actual.industry || actual.metadata?.industry,
+      managementLevel:
+        actual.management_level || actual.metadata?.management_level,
+      department: actual.department || actual.metadata?.department,
+      timeTaken: actual.timeTaken || 0,
+    };
+    setDisplayScores([
+      {
+        id: "compliance",
+        title: t("mastery.complianceSubject") || "Compliance",
+        score: getScore(actual, "compliance") || finalOverall,
+      },
+      {
+        id: "implementation",
+        title: t("mastery.implementationSubject") || "Implementation",
+        score: getScore(actual, "implementation") || finalOverall,
+      },
+      {
+        id: "auditing",
+        title: t("mastery.auditingSubject") || "Auditing",
+        score: getScore(actual, "auditing") || finalOverall,
+      },
+      {
+        id: "risk",
+        title: t("mastery.riskManagementSubject") || "Risk Management",
+        score:
+          getScore(actual, "riskManagement") ||
+          getScore(actual, "risk") ||
+          finalOverall,
+      },
+      {
+        id: "governance",
+        title: t("mastery.governanceSubject") || "Governance",
+        score: getScore(actual, "governance") || finalOverall,
+      },
+    ]);
+  };
+
   useEffect(() => {
-    const savedData = localStorage.getItem('active_iso_assessment_result');
+    let cancelled = false;
 
-    if (savedData) {
-      try {
-        const parsedData = JSON.parse(savedData);
-        setAssessmentData(parsedData);
-
-        // Find the actual result object (might be nested)
-        let actual = parsedData;
-        if (parsedData?.data) actual = parsedData.data;
-        if (actual?.data) actual = actual.data;
-
-        const getScore = (obj: any, baseKey: string): number => {
-          if (!obj || typeof obj !== 'object') return 0;
-          const searchKeys = [
-            baseKey,
-            baseKey.charAt(0).toUpperCase() + baseKey.slice(1),
-            baseKey.toLowerCase(),
-            `${baseKey}Score`,
-            `${baseKey}_score`
-          ];
-          for (const k of searchKeys) {
-            const val = obj[k];
-            if (val !== undefined && val !== null) {
-              const num = Number(val);
-              if (!isNaN(num)) return num <= 1 && num > 0 ? Math.round(num * 100) : Math.round(num);
-            }
-          }
-          // Recursive search
-          for (const key in obj) {
-            if (obj[key] && typeof obj[key] === 'object' && !Array.isArray(obj[key])) {
-              const nestedVal = getScore(obj[key], baseKey);
-              if (nestedVal > 0) return nestedVal;
-            }
-          }
-          return 0;
-        };
-
-        const rAns = Number(actual?.rightAns || getScore(actual, 'rightAns') || 0);
-        const wAns = Number(actual?.wrongAns || getScore(actual, 'wrongAns') || 0);
-        const totalAns = rAns + wAns;
-
-        // Prioritize calculated percent if counts exist, else use raw score
-        const calculatedPercent = totalAns > 0 ? Math.round((rAns / totalAns) * 100) : 0;
-        const rawScore = Number(actual?.score || actual?.totalScore || actual?.overallScore || getScore(actual, 'score') || 0);
-
-        const finalOverall = calculatedPercent > 0 ? calculatedPercent : rawScore;
-
-        setCategoryName(actual.category || parsedData.category || actual.industry || t('mastery.assessmentTitle'));
-        setOverallScore(finalOverall);
-
-        // Add extra metadata for the UI
-        const metadata = {
-          industry: actual.industry || actual.metadata?.industry,
-          managementLevel: actual.management_level || actual.metadata?.management_level,
-          department: actual.department || actual.metadata?.department,
-          timeTaken: actual.timeTaken || 0
-        };
-        (actual as any)._uiMetadata = metadata;
-
-        setDisplayScores([
-          { id: "compliance", title: t('mastery.complianceSubject') || "Compliance", score: getScore(actual, "compliance") || finalOverall },
-          { id: "implementation", title: t('mastery.implementationSubject') || "Implementation", score: getScore(actual, "implementation") || finalOverall },
-          { id: "auditing", title: t('mastery.auditingSubject') || "Auditing", score: getScore(actual, "auditing") || finalOverall },
-          { id: "risk", title: t('mastery.riskManagementSubject') || "Risk Management", score: getScore(actual, "riskManagement") || getScore(actual, "risk") || finalOverall },
-          { id: "governance", title: t('mastery.governanceSubject') || "Governance", score: getScore(actual, "governance") || finalOverall },
-        ]);
-      } catch (e) {
-        console.error("Failed to parse assessment result:", e);
+    const load = async () => {
+      const currentLang = String(lang || "en");
+      let activeToken = token;
+      if (!activeToken && typeof document !== "undefined") {
+        const match = document.cookie.match(/(^| )token=([^;]+)/);
+        if (match) activeToken = match[2];
       }
-    } else {
-      setCategoryName(t('mastery.assessmentTitle'));
-      setDisplayScores([
-        { id: "compliance", title: t('mastery.complianceSubject') || "Compliance", score: 0 },
-        { id: "implementation", title: t('mastery.implementationSubject') || "Implementation", score: 0 },
-        { id: "auditing", title: t('mastery.auditingSubject') || "Auditing", score: 0 },
-        { id: "risk", title: t('mastery.riskManagementSubject') || "Risk Management", score: 0 },
-        { id: "governance", title: t('mastery.governanceSubject') || "Governance", score: 0 },
-      ]);
-    }
-    setIsLoaded(true);
-  }, [t]);
+
+      const pendingRaw = localStorage.getItem(PENDING_MASTERY_RESULT_KEY);
+      let pending: { resultId?: string; guestId?: string } | null = null;
+      if (pendingRaw) {
+        try {
+          pending = JSON.parse(pendingRaw);
+        } catch {
+          pending = null;
+        }
+      }
+
+      // Anonymous visitor with a completed attempt — show account gate
+      if (!activeToken && pending?.resultId) {
+        if (!cancelled) {
+          setRequiresAuth(true);
+          setIsLoaded(true);
+        }
+        return;
+      }
+
+      // Authenticated user with a pending guest attempt — claim securely
+      if (activeToken && pending?.resultId) {
+        try {
+          const guestId = pending.guestId || getOrCreateGuestId();
+          const claimed = await claimResult({
+            resultId: pending.resultId,
+            guestId,
+          }).unwrap();
+          const payload = claimed?.data || claimed;
+          localStorage.setItem(
+            "active_iso_assessment_result",
+            JSON.stringify(payload),
+          );
+          localStorage.removeItem(PENDING_MASTERY_RESULT_KEY);
+          if (!cancelled) {
+            applyResultPayload(payload);
+            setRequiresAuth(false);
+            setIsLoaded(true);
+          }
+          return;
+        } catch (err) {
+          console.error("Failed to claim Mastery Lab result:", err);
+          // Fall through to local saved result if present
+        }
+      }
+
+      const savedData = localStorage.getItem("active_iso_assessment_result");
+      if (savedData) {
+        try {
+          const parsedData = JSON.parse(savedData);
+          // Never show a redacted/anonymous payload as a score card
+          if (parsedData?.requiresAuth || parsedData?.data?.requiresAuth) {
+            if (!cancelled) {
+              setRequiresAuth(true);
+              setIsLoaded(true);
+            }
+            return;
+          }
+          if (!cancelled) {
+            applyResultPayload(parsedData);
+            setRequiresAuth(false);
+            setIsLoaded(true);
+          }
+          return;
+        } catch (e) {
+          console.error("Failed to parse assessment result:", e);
+        }
+      }
+
+      if (!cancelled) {
+        // No result available — send anonymous users to gate / logged-in to empty state
+        if (!activeToken) {
+          setRequiresAuth(true);
+        } else {
+          setCategoryName(t("mastery.assessmentTitle"));
+          setDisplayScores([
+            { id: "compliance", title: t("mastery.complianceSubject") || "Compliance", score: 0 },
+            { id: "implementation", title: t("mastery.implementationSubject") || "Implementation", score: 0 },
+            { id: "auditing", title: t("mastery.auditingSubject") || "Auditing", score: 0 },
+            { id: "risk", title: t("mastery.riskManagementSubject") || "Risk Management", score: 0 },
+            { id: "governance", title: t("mastery.governanceSubject") || "Governance", score: 0 },
+          ]);
+        }
+        setIsLoaded(true);
+      }
+
+      void currentLang;
+    };
+
+    void load();
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [token, lang, t]);
 
   if (!isLoaded) {
     return (
       <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "var(--ib-bg)" }}>
         <Loader2 className="animate-spin" size={48} color="var(--ib-acc)" />
       </div>
+    );
+  }
+
+  if (requiresAuth) {
+    const currentLang = String(lang || "en");
+    return (
+      <AssessmentResultGate
+        lang={currentLang}
+        returnPath={`/${currentLang}/mastery-lab/success-evaluation`}
+      />
     );
   }
 
@@ -163,6 +329,38 @@ export default function SuccessEvaluationPage() {
                   <span>{assessmentData._uiMetadata.department}</span>
                 </>
               )}
+            </div>
+          </div>
+
+          {/* Score vs Progress — separate metrics (never interchangeable) */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+            <div className="bg-[var(--ib-card)] border border-[var(--ib-line)] p-6 rounded-3xl text-center flex flex-col justify-center min-h-[140px]">
+              <div className="text-3xl font-medium text-[var(--ib-ink)] mb-2">{overallScore}%</div>
+              <div className="text-[10px] font-medium text-[var(--ib-mute)] uppercase tracking-widest">Test Score</div>
+            </div>
+            <div className="bg-[var(--ib-card)] border border-[var(--ib-line)] p-6 rounded-3xl text-center flex flex-col justify-center min-h-[140px]">
+              <div className="text-3xl font-medium text-[var(--ib-ink)] mb-2">
+                {Math.round(Number(assessmentData?.progress) || 0)}%
+              </div>
+              <div className="text-[10px] font-medium text-[var(--ib-mute)] uppercase tracking-widest">Quiz Progress</div>
+            </div>
+            <div className="bg-[var(--ib-card)] border border-[var(--ib-line)] p-6 rounded-3xl text-center flex flex-col justify-center min-h-[140px]">
+              <div className="text-2xl font-medium text-emerald-600 mb-2">
+                {Number(assessmentData?.rightAns) || 0}/{Number(assessmentData?.total) || 0}
+              </div>
+              <div className="text-[10px] font-medium text-[var(--ib-mute)] uppercase tracking-widest">Correct</div>
+            </div>
+            <div className="bg-[var(--ib-card)] border border-[var(--ib-line)] p-6 rounded-3xl text-center flex flex-col justify-center min-h-[140px]">
+              <div className="text-2xl font-medium text-red-500 mb-2">
+                {Number(assessmentData?.incorrectAns) || 0}/{Number(assessmentData?.total) || 0}
+              </div>
+              <div className="text-[10px] font-medium text-[var(--ib-mute)] uppercase tracking-widest">Incorrect</div>
+            </div>
+            <div className="bg-[var(--ib-card)] border border-[var(--ib-line)] p-6 rounded-3xl text-center flex flex-col justify-center min-h-[140px] col-span-2 sm:col-span-1">
+              <div className="text-2xl font-medium text-[var(--ib-mute)] mb-2">
+                {Number(assessmentData?.unanswered) || 0}/{Number(assessmentData?.total) || 0}
+              </div>
+              <div className="text-[10px] font-medium text-[var(--ib-mute)] uppercase tracking-widest">Unanswered</div>
             </div>
           </div>
 

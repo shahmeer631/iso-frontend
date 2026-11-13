@@ -58,6 +58,10 @@ import { AchievementBadge } from "@/components/assessment/AchievementBadge";
 import Leaderboard from '@/components/assessment/Leaderboard';
 import { SkillHexGrid } from "@/components/assessment/SkillHexGrid";
 import EvaluationProgressBar from "@/components/mastery-lab/evaluation/ProgressBar";
+import AssessmentResultGate from "@/components/mastery-lab/AssessmentResultGate";
+import { getOrCreateGuestId } from "@/lib/apiUsage/guestId";
+
+const PENDING_MASTERY_RESULT_KEY = "mastery_pending_result";
 
 const QUESTIONS: Question[] = [
   {
@@ -95,6 +99,7 @@ const AssessmentQuizPage = () => {
   const [showHint, setShowHint] = useState(false);
   const [timeRemaining, setTimeRemaining] = useState(INITIAL_TIME);
   const [showResults, setShowResults] = useState(false);
+  const [requiresAuthForResults, setRequiresAuthForResults] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
   const [categoryId, setCategoryId] = useState("");
   const [assessmentData, setAssessmentData] = useState<SubmitAssessmentResponse['data'] | null>(null);
@@ -108,12 +113,7 @@ const AssessmentQuizPage = () => {
 
   useEffect(() => {
     if (typeof window !== "undefined" && !token) {
-      let gId = localStorage.getItem("iso_guest_id");
-      if (!gId) {
-        gId = `guest_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
-        localStorage.setItem("iso_guest_id", gId);
-      }
-      setGuestId(gId);
+      setGuestId(getOrCreateGuestId());
     }
   }, [token]);
 
@@ -221,12 +221,31 @@ const AssessmentQuizPage = () => {
   }, [isLoaded, quizMetadata, quizQuestions.length, hasTriggeredTen, hasTriggeredTwenty, showResults]);
 
   const calculateCounts = (answers: SelectedAnswers = selectedAnswers) => {
-    const rightAns = quizQuestions.filter((q, idx) => {
-      return answers[idx] === q.correctAnswer;
-    }).length;
     const total = quizQuestions.length;
+    let rightAns = 0;
+    let incorrectAns = 0;
+    quizQuestions.forEach((q, idx) => {
+      const selected = String(answers[idx] || "").trim();
+      if (!selected) return;
+      if (selected === q.correctAnswer) rightAns += 1;
+      else incorrectAns += 1;
+    });
+    const answered = rightAns + incorrectAns;
+    const unanswered = Math.max(0, total - answered);
+    // wrongAns kept as non-correct slots for older consumers
     const wrongAns = total - rightAns;
-    return { rightAns, wrongAns, total };
+    const score = total > 0 ? Math.round((rightAns / total) * 100) : 0;
+    const progress = total > 0 ? Math.round((answered / total) * 100) : 0;
+    return {
+      rightAns,
+      wrongAns,
+      incorrectAns,
+      unanswered,
+      answered,
+      total,
+      score,
+      progress,
+    };
   };
 
   const advanceAfterAnswer = async (answers: SelectedAnswers) => {
@@ -248,7 +267,6 @@ const AssessmentQuizPage = () => {
         return;
       }
 
-      const { rightAns, wrongAns } = calculateCounts(answers);
       const timeTaken = INITIAL_TIME - timeRemaining;
       const answersPayload = quizQuestions.map((q, idx) => ({
         questionId: (q as any).questionId,
@@ -269,9 +287,10 @@ const AssessmentQuizPage = () => {
         return;
       }
 
+      const activeGuestId = !token ? guestId || getOrCreateGuestId() : undefined;
       const response = await submitAssessment({
         userId: user?.id || null,
-        guestId: !token ? guestId : undefined,
+        guestId: activeGuestId,
         examSessionIds,
         timeTaken,
         metadata: {
@@ -285,19 +304,60 @@ const AssessmentQuizPage = () => {
         answers: answersPayload,
       }).unwrap();
 
-      if (response) {
-        const dataToSave = response.data || response;
-        const resultWithCounts = {
-          ...dataToSave,
-          rightAns,
-          wrongAns,
-        };
-        setAssessmentData(resultWithCounts);
-        localStorage.setItem(
-          "active_iso_assessment_result",
-          JSON.stringify(resultWithCounts)
-        );
+      const dataToSave = (response?.data || response) as SubmitAssessmentResponse["data"];
+
+      // Freemium Feature 3: anonymous completion is allowed; results stay gated
+      if (!token || dataToSave?.requiresAuth) {
+        const resultId = dataToSave?.resultId || dataToSave?.id;
+        if (resultId && activeGuestId) {
+          localStorage.setItem(
+            PENDING_MASTERY_RESULT_KEY,
+            JSON.stringify({
+              resultId,
+              guestId: activeGuestId,
+              createdAt: new Date().toISOString(),
+            }),
+          );
+        }
+        // Never persist scores for anonymous visitors
+        localStorage.removeItem("active_iso_assessment_result");
+        localStorage.removeItem(STORAGE_KEY);
+        setRequiresAuthForResults(true);
+        setShowResults(false);
+        setAssessmentData(null);
+        return;
       }
+
+      const localCounts = calculateCounts(answers);
+      const resultWithCounts = {
+        ...dataToSave,
+        // Prefer authoritative backend score/metrics; never invent from progress
+        rightAns: dataToSave?.rightAns ?? localCounts.rightAns,
+        wrongAns: dataToSave?.wrongAns ?? localCounts.wrongAns,
+        total: dataToSave?.total ?? localCounts.total,
+        score: dataToSave?.score ?? dataToSave?.overallScore ?? localCounts.score,
+        overallScore:
+          dataToSave?.overallScore ?? dataToSave?.score ?? localCounts.score,
+        progress: dataToSave?.progress ?? localCounts.progress,
+        answered: dataToSave?.answered ?? localCounts.answered,
+        incorrectAns: dataToSave?.incorrectAns ?? localCounts.incorrectAns,
+        unanswered: dataToSave?.unanswered ?? localCounts.unanswered,
+        metrics: dataToSave?.metrics || {
+          progress: dataToSave?.progress ?? localCounts.progress,
+          score: dataToSave?.score ?? dataToSave?.overallScore ?? localCounts.score,
+          correct: dataToSave?.rightAns ?? localCounts.rightAns,
+          incorrect: dataToSave?.incorrectAns ?? localCounts.incorrectAns,
+          unanswered: dataToSave?.unanswered ?? localCounts.unanswered,
+          answered: dataToSave?.answered ?? localCounts.answered,
+          total: dataToSave?.total ?? localCounts.total,
+        },
+      };
+      setAssessmentData(resultWithCounts);
+      localStorage.setItem(
+        "active_iso_assessment_result",
+        JSON.stringify(resultWithCounts),
+      );
+      localStorage.removeItem(PENDING_MASTERY_RESULT_KEY);
       setShowResults(true);
       setCurrentQuestion(0);
     } catch (error: any) {
@@ -312,24 +372,6 @@ const AssessmentQuizPage = () => {
         apiMessage || error?.status || "unknown",
         error?.data || error
       );
-      const isUnauthorized =
-        error?.status === 401 ||
-        error?.data?.statusCode === 401 ||
-        String(apiMessage || "")
-          .toLowerCase()
-          .includes("unauthorized");
-
-      if (isUnauthorized) {
-        toast.error(
-          t("auth.loginRequired", "Please sign in to submit your assessment.")
-        );
-        const currentLang = params?.lang || "en";
-        const fromPath = `/${currentLang}/mastery-lab/assessment`;
-        router.push(
-          `/${currentLang}/auth/login?from=${encodeURIComponent(fromPath)}`
-        );
-        return;
-      }
 
       toast.error(
         typeof apiMessage === "string" && apiMessage
@@ -402,7 +444,8 @@ const AssessmentQuizPage = () => {
           department: quizMetadata.jobFunction || "Operation"
         },
         num_questions: count,
-        difficulty: MASTERY_QUIZ_DIFFICULTY
+        difficulty: MASTERY_QUIZ_DIFFICULTY,
+        guestId: !token ? guestId || getOrCreateGuestId() : undefined,
       }).unwrap();
 
       const quizData = res.data || res;
@@ -447,17 +490,25 @@ const AssessmentQuizPage = () => {
       if (currentQuestion < quizQuestions.length - 1) {
         setCurrentQuestion(currentQuestion + 1);
       } else {
-        const { rightAns, wrongAns } = calculateCounts();
-        const score = Math.round((rightAns / (rightAns + wrongAns)) * 100);
+        const counts = calculateCounts();
         // Explicitly save the results for the success-evaluation page
         localStorage.setItem(
           "active_iso_assessment_result",
           JSON.stringify({
             ...(assessmentData || {}),
-            rightAns,
-            wrongAns,
-            score,
-            overallScore: assessmentData?.overallScore ?? score,
+            rightAns: assessmentData?.rightAns ?? counts.rightAns,
+            wrongAns: assessmentData?.wrongAns ?? counts.wrongAns,
+            total: assessmentData?.total ?? counts.total,
+            // Score = correct/total — never answered/(answered) or progress
+            score: assessmentData?.score ?? assessmentData?.overallScore ?? counts.score,
+            overallScore:
+              assessmentData?.overallScore ??
+              assessmentData?.score ??
+              counts.score,
+            progress: assessmentData?.progress ?? counts.progress,
+            answered: assessmentData?.answered ?? counts.answered,
+            incorrectAns: assessmentData?.incorrectAns ?? counts.incorrectAns,
+            unanswered: assessmentData?.unanswered ?? counts.unanswered,
             industry: quizMetadata?.categoryName,
             management_level: quizMetadata?.difficulty,
             department: quizMetadata?.jobFunction,
@@ -502,6 +553,16 @@ const AssessmentQuizPage = () => {
   const currentQ = quizQuestions[currentQuestion];
   const currentAnswer = selectedAnswers[currentQuestion];
 
+  if (requiresAuthForResults) {
+    const currentLang = String(params?.lang || "en");
+    return (
+      <AssessmentResultGate
+        lang={currentLang}
+        returnPath={`/${currentLang}/mastery-lab/success-evaluation`}
+      />
+    );
+  }
+
   if (!currentQ) {
     return (
       <div className="flex min-h-[60vh] flex-col items-center justify-center gap-4 px-4 text-center">
@@ -522,8 +583,23 @@ const AssessmentQuizPage = () => {
   }
 
   if (showResults) {
-    const { rightAns, total } = calculateCounts();
-    const overallPercent = total > 0 ? (rightAns / total) * 100 : 0;
+    const counts = calculateCounts();
+    const displayScore = Math.round(
+      Number(
+        assessmentData?.overallScore ??
+          assessmentData?.score ??
+          counts.score,
+      ) || 0,
+    );
+    const displayProgress = Math.round(
+      Number(assessmentData?.progress ?? counts.progress) || 0,
+    );
+    const correct = Number(assessmentData?.rightAns ?? counts.rightAns) || 0;
+    const incorrect =
+      Number(assessmentData?.incorrectAns ?? counts.incorrectAns) || 0;
+    const unanswered =
+      Number(assessmentData?.unanswered ?? counts.unanswered) || 0;
+    const total = Number(assessmentData?.total ?? counts.total) || counts.total;
 
     return (
       <div className="min-h-screen pt-12 pb-12 px-4" style={{ background: "var(--ib-bg)", fontFamily: "'Inter', sans-serif" }}>
@@ -544,10 +620,34 @@ const AssessmentQuizPage = () => {
               </div>
             </div>
 
+            {/* Score vs Progress — separate metrics */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+              <div className="bg-[var(--ib-card)] border border-[var(--ib-line)] p-6 rounded-3xl text-center flex flex-col justify-center min-h-[140px]">
+                <div className="text-3xl font-medium text-[var(--ib-ink)] mb-2">{displayScore}%</div>
+                <div className="text-[10px] font-medium text-[var(--ib-mute)] uppercase tracking-widest">Test Score</div>
+              </div>
+              <div className="bg-[var(--ib-card)] border border-[var(--ib-line)] p-6 rounded-3xl text-center flex flex-col justify-center min-h-[140px]">
+                <div className="text-3xl font-medium text-[var(--ib-ink)] mb-2">{displayProgress}%</div>
+                <div className="text-[10px] font-medium text-[var(--ib-mute)] uppercase tracking-widest">Quiz Progress</div>
+              </div>
+              <div className="bg-[var(--ib-card)] border border-[var(--ib-line)] p-6 rounded-3xl text-center flex flex-col justify-center min-h-[140px]">
+                <div className="text-2xl font-medium text-emerald-600 mb-2">{correct}/{total}</div>
+                <div className="text-[10px] font-medium text-[var(--ib-mute)] uppercase tracking-widest">Correct</div>
+              </div>
+              <div className="bg-[var(--ib-card)] border border-[var(--ib-line)] p-6 rounded-3xl text-center flex flex-col justify-center min-h-[140px]">
+                <div className="text-2xl font-medium text-red-500 mb-2">{incorrect}/{total}</div>
+                <div className="text-[10px] font-medium text-[var(--ib-mute)] uppercase tracking-widest">Incorrect</div>
+              </div>
+              <div className="bg-[var(--ib-card)] border border-[var(--ib-line)] p-6 rounded-3xl text-center flex flex-col justify-center min-h-[140px] col-span-2 sm:col-span-1">
+                <div className="text-2xl font-medium text-[var(--ib-mute)] mb-2">{unanswered}/{total}</div>
+                <div className="text-[10px] font-medium text-[var(--ib-mute)] uppercase tracking-widest">Unanswered</div>
+              </div>
+            </div>
+
             {/* Quick Stats Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               <div className="bg-[var(--ib-card)] border border-[var(--ib-line)] p-8 rounded-3xl text-center flex flex-col justify-center min-h-[160px]">
-                <div className="text-3xl font-medium text-[var(--ib-ink)] mb-2">{assessmentData?.overallScore || Math.round(overallPercent)}%</div>
+                <div className="text-3xl font-medium text-[var(--ib-ink)] mb-2">{displayScore}%</div>
                 <div className="text-[10px] font-medium text-[var(--ib-mute)] uppercase tracking-widest">Overall Score</div>
               </div>
               <div className="bg-[var(--ib-card)] border border-[var(--ib-line)] p-8 rounded-3xl text-center flex flex-col justify-center min-h-[160px]">
@@ -781,6 +881,7 @@ const AssessmentQuizPage = () => {
           <QuizProgressBar
             currentQuestion={currentQuestion}
             totalQuestions={totalQuestions}
+            answeredCount={answeredCount}
           />
           <QuestionCard
             question={currentQ.question}

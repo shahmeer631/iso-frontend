@@ -132,20 +132,39 @@ export interface SubmitAssessmentResponse {
   success: boolean;
   message: string;
   data: {
-    id: string;
-    userId: string | null;
+    id?: string;
+    /** Present when anonymous submit succeeded but scores are gated */
+    requiresAuth?: boolean;
+    completed?: boolean;
+    resultId?: string;
+    userId?: string | null;
     guestId?: string;
-    categoryId: string;
-    rightAns: number;
-    wrongAns: number;
-    total: number;
-    score: number;
-    compliance: number;
-    implementation: number;
-    auditing: number;
-    riskManagement: number;
-    governance: number;
-    createdAt: string;
+    categoryId?: string;
+    rightAns?: number;
+    wrongAns?: number;
+    total?: number;
+    score?: number;
+    overallScore?: number;
+    /** Quiz progress % (answered / total) — separate from score */
+    progress?: number;
+    answered?: number;
+    incorrectAns?: number;
+    unanswered?: number;
+    metrics?: {
+      progress?: number;
+      score?: number;
+      correct?: number;
+      incorrect?: number;
+      unanswered?: number;
+      answered?: number;
+      total?: number;
+    };
+    compliance?: number;
+    implementation?: number;
+    auditing?: number;
+    riskManagement?: number;
+    governance?: number;
+    createdAt?: string;
     formattedScore?: string;
     category?: string;
     weakAreas?: string[];
@@ -153,6 +172,10 @@ export interface SubmitAssessmentResponse {
     industry?: string;
     management_level?: string;
     department?: string;
+    benchmark?: {
+      industryAverage?: number;
+      comparison?: string;
+    };
     aiFeedback?: {
       overall_score: string;
       competency_level: {
@@ -178,12 +201,8 @@ export interface SubmitAssessmentResponse {
       }[];
       mentor_closing_note: string;
     };
-    overallScore?: number;
-    benchmark?: {
-      industryAverage: number;
-      comparison: string;
-    };
     weakStandards?: string[];
+    passed?: boolean;
   };
 }
 
@@ -259,7 +278,7 @@ export const isoStandardsApi = baseApi.injectEndpoints({
         method: 'POST',
         body,
       }),
-      invalidatesTags: ['ChatSessions'],
+      invalidatesTags: ['ChatSessions', 'ApiUsage'],
     }),
 
 
@@ -269,6 +288,7 @@ export const isoStandardsApi = baseApi.injectEndpoints({
         method: 'POST',
         body,
       }),
+      invalidatesTags: ['ApiUsage'],
     }),
     chatWithISOStandardsNew: builder.mutation<ISOChatResponse, ISOChatRequest>({
       query: (body) => ({
@@ -276,7 +296,7 @@ export const isoStandardsApi = baseApi.injectEndpoints({
         method: 'POST',
         body,
       }),
-      invalidatesTags: ['ChatSessions'],
+      invalidatesTags: ['ChatSessions', 'ApiUsage'],
     }),
 
 
@@ -289,6 +309,7 @@ export const isoStandardsApi = baseApi.injectEndpoints({
         method: 'POST',
         body,
       }),
+      invalidatesTags: ['ApiUsage'],
     }),
 
 
@@ -307,6 +328,22 @@ export const isoStandardsApi = baseApi.injectEndpoints({
     submitAssessment: builder.mutation<SubmitAssessmentResponse, SubmitAssessmentRequest>({
       query: (body) => ({
         url: '/mastery-labs/submit',
+        method: 'POST',
+        body,
+      }),
+      invalidatesTags: ['Leaderboard'],
+    }),
+    getMasteryLabResult: builder.query<SubmitAssessmentResponse, string>({
+      query: (resultId) => ({
+        url: `/mastery-labs/results/${resultId}`,
+      }),
+    }),
+    claimMasteryLabResult: builder.mutation<
+      SubmitAssessmentResponse,
+      { resultId: string; guestId: string }
+    >({
+      query: (body) => ({
+        url: '/mastery-labs/claim',
         method: 'POST',
         body,
       }),
@@ -331,5 +368,8 @@ export const {
   useGetChatHistoryQuery,
   useGetChatSessionsQuery,
   useSubmitAssessmentMutation,
+  useGetMasteryLabResultQuery,
+  useLazyGetMasteryLabResultQuery,
+  useClaimMasteryLabResultMutation,
   useGetLeaderboardQuery,
 } = isoStandardsApi;

@@ -11,6 +11,7 @@ import { store } from "@/lib/redux/store";
 import AuthHydrator from "@/components/auth/AuthHydrator";
 import GlobalChatbot from "@/components/landing-page-components/GlobalChatbot";
 import { AskAiPageContextProvider } from "@/components/ask-ai/AskAiPageContext";
+import ApiUsageBanner from "@/components/api-usage/ApiUsageBanner";
 
 const ClientWrapper = ({ children }: { children: React.ReactNode }) => {
   const pathname = usePathname();
@@ -24,6 +25,7 @@ const ClientWrapper = ({ children }: { children: React.ReactNode }) => {
 
   // Universal Ask AI: available on every page except auth
   const showUniversalChat = !pathname?.includes("/auth");
+  const showUsageBanner = !pathname?.includes("/auth");
 
   return (
     <Provider store={store}>
@@ -31,6 +33,11 @@ const ClientWrapper = ({ children }: { children: React.ReactNode }) => {
       <AuthHydrator>
         <AskAiPageContextProvider>
           {!hideMarketingChrome && <Navbar />}
+          {showUsageBanner && (
+            <Suspense fallback={null}>
+              <ApiUsageBanner />
+            </Suspense>
+          )}
           <main className="select-none">{children}</main>
           {showUniversalChat && (
             <Suspense fallback={null}>

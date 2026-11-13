@@ -15,6 +15,7 @@ export const benchmarkApi = baseApi.injectEndpoints({
         body: formData,
         // FormData is automatically handled by RTK Query's fetchBaseQuery
       }),
+      invalidatesTags: ['ApiUsage'],
     }),
     analyzeText: builder.mutation<BenchmarkResponse, BenchmarkTextRequest>({
       query: (data) => ({
@@ -22,6 +23,7 @@ export const benchmarkApi = baseApi.injectEndpoints({
         method: 'POST',
         body: data,
       }),
+      invalidatesTags: ['ApiUsage'],
     }),
     getISOSuggestions: builder.mutation<ISOSuggestionsResponse, FormData>({
       query: (formData) => ({
@@ -29,6 +31,7 @@ export const benchmarkApi = baseApi.injectEndpoints({
         method: 'POST',
         body: formData,
       }),
+      invalidatesTags: ['ApiUsage'],
     }),
     chatSimple: builder.mutation<any, any>({
       query: (data) => ({
@@ -36,6 +39,7 @@ export const benchmarkApi = baseApi.injectEndpoints({
         method: 'POST',
         body: data,
       }),
+      invalidatesTags: ['ApiUsage'],
     }),
   }),
 });

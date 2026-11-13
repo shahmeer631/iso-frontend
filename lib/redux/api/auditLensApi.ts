@@ -10,6 +10,7 @@ export const auditLensApi = baseApi.injectEndpoints({
         method: 'POST',
         body,
       }),
+      invalidatesTags: ['ApiUsage'],
     }),
     chatWithAuditAi: builder.mutation<{ content: string }, { message: string; history: AuditChatHistoryItem[]; sessionId?: string }>({
       query: (body) => ({
@@ -17,6 +18,7 @@ export const auditLensApi = baseApi.injectEndpoints({
         method: 'POST',
         body,
       }),
+      invalidatesTags: ['ApiUsage'],
     }),
     chatSimple: builder.mutation<any, any>({
       query: (data) => ({
@@ -24,6 +26,7 @@ export const auditLensApi = baseApi.injectEndpoints({
         method: 'POST',
         body: data,
       }),
+      invalidatesTags: ['ApiUsage'],
     }),
     generateAuditContext: builder.mutation<any, any>({
       query: (data) => ({
@@ -31,6 +34,7 @@ export const auditLensApi = baseApi.injectEndpoints({
         method: 'POST',
         body: data,
       }),
+      invalidatesTags: ['ApiUsage'],
       transformResponse: (response: any) => {
         if (response?.success !== undefined) return response;
         if (response?.options) return { success: true, data: response };
@@ -44,6 +48,7 @@ export const auditLensApi = baseApi.injectEndpoints({
         method: 'POST',
         body: data,
       }),
+      invalidatesTags: ['ApiUsage'],
       transformResponse: (response: any) => {
         if (response?.success !== undefined && response?.data) return response;
         if (response?.guidance || response?.step_number) {

@@ -48,6 +48,8 @@ import { useTranslation } from "react-i18next";
 import "@/lib/i18n/client";
 import { useAskAiPageContext } from "@/components/ask-ai/AskAiPageContext";
 import { ActivityTracker } from "@/components/activity/ActivityTracker";
+import { getOrCreateGuestId } from "@/lib/apiUsage/guestId";
+import { refreshApiUsageFromBackend } from "@/lib/apiUsage/refreshApiUsage";
 
 import remarkGfm from "remark-gfm";
 
@@ -355,8 +357,11 @@ async function fetchLibraryStarterQuestions(
 
       const res = await fetch(`${apiUrl}/ai-assistant/library/chat`, {
         method: "POST",
+        credentials: "include",
         headers: {
-          ...(activeToken ? { Authorization: `Bearer ${activeToken}` } : {}),
+          ...(activeToken
+            ? { Authorization: `Bearer ${activeToken}` }
+            : { "X-Guest-Id": getOrCreateGuestId() }),
         },
         body: formData,
         signal,
@@ -378,6 +383,9 @@ async function fetchLibraryStarterQuestions(
         }
         throw err;
       }
+
+      // Raw fetch bypasses RTK — sync Daily Free Usage from backend-confirmed count
+      refreshApiUsageFromBackend();
 
       const result = await res.json();
       if (!result?.success || !result?.data?.response) return [];

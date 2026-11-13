@@ -141,8 +141,9 @@ const CategoryCoursesPage = () => {
   const handleEnrollClick = async (e: React.MouseEvent<HTMLButtonElement>, courseId: string) => {
     e.preventDefault();
 
+    // Freemium: first two lessons of every course are free — open player without login/enroll.
     if (!token) {
-      router.push(`/${lang}/auth/login?courseId=${courseId}`);
+      router.push(`/${lang}/academy/${courseId}`);
       return;
     }
 
@@ -187,9 +188,14 @@ const CategoryCoursesPage = () => {
         error?.data?.message?.toLowerCase?.().includes("plan") ||
         error?.data?.message?.toLowerCase?.().includes("upgrade")
       ) {
-        toast.error(error?.data?.message || t('isoNavigator.upgradeUltra'));
+        // Free-tier / visitors: still open the course for first-two-lessons preview
+        router.push(`/${lang}/academy/${courseId}`);
+        return;
       }
-      router.push(`/${lang}/pricing?courseId=${courseId}`);
+
+      toast.error(error?.data?.message || t('auth.somethingWentWrong', 'Something went wrong'));
+      // Still allow freemium preview when enrollment APIs fail unexpectedly
+      router.push(`/${lang}/academy/${courseId}`);
     } finally {
       setIsCheckingId(null);
     }

@@ -1,5 +1,8 @@
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
+import { commonHIOverlays } from "./hi-overlays";
+import { mergeDeep } from "./mergeDeep";
+import { DEFAULT_LOCALE } from "./locales";
 
 // ─── Translation resources ─────────────────────────────────────────────────
 
@@ -7823,24 +7826,39 @@ export const commonAR = {
   }
 };
 
+/** Hindi: English base + UI overlays until full Google-generated pack is reviewed. */
+export const commonHI = mergeDeep(
+  commonEN as Record<string, unknown>,
+  commonHIOverlays,
+) as typeof commonEN;
+
 const resources = {
   en: { translation: commonEN },
-  fr: { translation: commonFR },
   es: { translation: commonES },
-  it: { translation: commonIT },
   ar: { translation: commonAR },
+  fr: { translation: commonFR },
+  it: { translation: commonIT },
+  hi: { translation: commonHI },
 };
 
 if (!i18n.isInitialized) {
   i18n.use(initReactI18next).init({
     resources,
-    lng: "en", // fallback language
-    fallbackLng: "en",
+    lng: DEFAULT_LOCALE,
+    fallbackLng: DEFAULT_LOCALE,
+    supportedLngs: ["en", "es", "ar", "fr", "it", "hi"],
+    nonExplicitSupportedLngs: true,
     interpolation: {
       escapeValue: false,
     },
     react: {
-      useSuspense: false, // Disable suspense to avoid loading states
+      useSuspense: false,
+    },
+    parseMissingKeyHandler: (key) => {
+      if (process.env.NODE_ENV === "development") {
+        console.warn(`[i18n] Missing key: ${key}`);
+      }
+      return key;
     },
   });
 }

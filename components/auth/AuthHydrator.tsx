@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useGetProfileQuery } from "@/lib/redux/features/auth/authApi";
 import { setCredentials, selectCurrentToken, selectCurrentUser } from "@/lib/redux/features/auth/authSlice";
+import { isAppLocale } from "@/lib/i18n/locales";
 
 export const AuthHydrator = ({ children }: { children: React.ReactNode }) => {
   const dispatch = useDispatch();
@@ -77,6 +78,16 @@ export const AuthHydrator = ({ children }: { children: React.ReactNode }) => {
     if (isSuccess && profileRes?.data) {
       const userData = profileRes.data;
       console.log("AuthHydrator Sync Effect - Received profile data from server:", userData);
+
+      const profileLang = userData.preferredLanguage ?? userData.language;
+      if (profileLang && isAppLocale(profileLang)) {
+        try {
+          localStorage.setItem("preferredLanguage", profileLang);
+        } catch {
+          /* ignore */
+        }
+      }
+
       const tokenMatch = document.cookie.match(new RegExp('(^| )token=([^;]+)'));
       const refreshMatch = document.cookie.match(new RegExp('(^| )refreshToken=([^;]+)'));
       const token = tokenMatch ? tokenMatch[2] : "";

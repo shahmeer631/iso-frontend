@@ -53,7 +53,7 @@ export function transformQuizQuestions(
 }
 
 /**
- * AI quiz service accepts beginner | intermediate | professional.
- * Use professional + backend difficulty_instructions for extremely hard items.
+ * Default Mastery Lab difficulty: EXPERT / extremely hard.
+ * Backend maps expert → AI "professional" enum while keeping expert intent in prompts.
  */
-export const MASTERY_QUIZ_DIFFICULTY = "professional";
+export const MASTERY_QUIZ_DIFFICULTY = "expert";

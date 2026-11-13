@@ -149,6 +149,10 @@ const AssessmentPage = () => {
     setLastStartPayload(data);
 
     try {
+      const { getOrCreateGuestId } = await import("@/lib/apiUsage/guestId");
+      const guestId =
+        typeof window !== "undefined" ? getOrCreateGuestId() : undefined;
+
       const res = await generateQuiz({
         context: {
           industry: data.industry,
@@ -157,6 +161,7 @@ const AssessmentPage = () => {
         },
         num_questions: 10,
         difficulty: MASTERY_QUIZ_DIFFICULTY,
+        guestId,
       }).unwrap();
 
       const quizData = res.data || res;

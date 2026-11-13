@@ -42,7 +42,7 @@ export default function AcademyCoursePage({
     }
   }, [resolvedParams?.lang]);
 
-  // Fetch course data by ID from /courses/:id
+  // Fetch course data by ID from /courses/:id (public freemium shell + free lessons)
   const courseId = resolvedParams?.id ?? "";
   const { data: courseData, isLoading, isError, error: courseError } = useGetCourseByIdQuery(courseId, {
     skip: !courseId || !isAccessVerified,
@@ -50,18 +50,18 @@ export default function AcademyCoursePage({
 
   const course = courseData?.data;
   const lessons = course?.lessons?.slice().sort((a, b) => a.order - b.order) ?? [];
+  const hasFullAccess = course?.hasFullAccess === true;
+  const freeLessonLimit = course?.freeLessonLimit ?? 2;
 
   // Handle errors from course data fetch
   React.useEffect(() => {
     if (courseError) {
       const err = courseError as any;
-      if (err?.status === 403 || err?.data?.statusCode === 403 || err?.data?.message?.includes("Upgrade your plan")) {
-        toast.error(err?.data?.message || t('isoNavigator.upgradeUltra'));
-        const lang = resolvedParams?.lang || "en";
-        router.push(`/${lang}/pricing?courseId=${courseId}`);
+      if (err?.status === 404 || err?.data?.statusCode === 404) {
+        toast.error(err?.data?.message || "Course not found");
       }
     }
-  }, [courseError, router, courseId, resolvedParams?.lang, t]);
+  }, [courseError, t]);
 
   const [currentLessonIndex, setCurrentLessonIndex] = React.useState(0);
   const [completedLessons, setCompletedLessons] = React.useState<Set<string>>(new Set());
@@ -116,14 +116,14 @@ export default function AcademyCoursePage({
     setAiMessages([]);
   }, [courseId]);
 
-  // Access verification
+  // Freemium access: course player is open for visitors & free users.
+  // Backend redacts lessons beyond the first two unless COURSES entitlement is present.
   React.useEffect(() => {
     if (!resolvedParams?.id) return;
     setIsVerifying(true);
 
     const timer = setTimeout(async () => {
-      let activeCourseId = resolvedParams.id;
-      const lang = resolvedParams.lang || "en";
+      const activeCourseId = resolvedParams.id;
 
       let activeToken = token;
       if (!activeToken && typeof document !== "undefined") {
@@ -131,39 +131,21 @@ export default function AcademyCoursePage({
         if (match) activeToken = match[2];
       }
 
-      if (!activeToken) {
-        router.push(`/${lang}/auth/login?courseId=${activeCourseId}`);
-        setIsVerifying(false);
-        return;
+      // Optional enrollment probe for premium UX — never blocks freemium preview
+      if (activeToken) {
+        try {
+          await checkEnrollment({ courseId: activeCourseId }).unwrap();
+        } catch {
+          // ignore — free preview still allowed
+        }
       }
 
-      try {
-        const result = await checkEnrollment({ courseId: activeCourseId }).unwrap();
-        const isEnrolled =
-          result?.data?.enrolled === true ||
-          result?.data?.isEnrolled === true ||
-          result?.enrolled === true ||
-          result?.isEnrolled === true;
-
-        if (isEnrolled) {
-          setIsAccessVerified(true);
-        } else {
-          router.push(`/${lang}/pricing?courseId=${activeCourseId}`);
-        }
-      } catch (error: any) {
-        if (error?.status === 403 || error?.data?.statusCode === 403 || error?.data?.message?.includes("Upgrade your plan")) {
-          toast.error(error?.data?.message || "Upgrade your plan to access courses");
-          router.push(`/${lang}/pricing?courseId=${activeCourseId}`);
-        } else {
-          router.push(`/${lang}/pricing?courseId=${activeCourseId}`);
-        }
-      } finally {
-        setIsVerifying(false);
-      }
-    }, 300);
+      setIsAccessVerified(true);
+      setIsVerifying(false);
+    }, 100);
 
     return () => clearTimeout(timer);
-  }, [resolvedParams?.id, token, router, checkEnrollment, resolvedParams?.lang]);
+  }, [resolvedParams?.id, token, checkEnrollment]);
 
   // Reset quiz state when switching lessons
   React.useEffect(() => {
@@ -181,13 +163,39 @@ export default function AcademyCoursePage({
   const completedCount = completedLessons.size;
   const allLessonsCompleted = totalLessons > 0 && completedCount === totalLessons;
 
-  const isLessonUnlocked = (index: number) => {
+  const isPremiumLocked = (index: number) => {
+    const lesson = lessons[index];
+    if (!lesson) return true;
+    if (hasFullAccess) return false;
+    if (typeof lesson.isLocked === "boolean") return lesson.isLocked;
+    // Fallback: trust sorted position when API flags are absent
+    return index >= freeLessonLimit;
+  };
+
+  const isSequentiallyUnlocked = (index: number) => {
     if (index === 0) return true;
     const prevLesson = lessons[index - 1];
     return prevLesson ? completedLessons.has(prevLesson.id) : false;
   };
 
+  /** Free lessons (1–2) are always open; later lessons need premium + prior completion. */
+  const isLessonUnlocked = (index: number) => {
+    if (isPremiumLocked(index)) return false;
+    if (!hasFullAccess) return true; // free preview ranks
+    return isSequentiallyUnlocked(index);
+  };
+
   const handleLessonClick = (index: number) => {
+    if (isPremiumLocked(index)) {
+      const lang = resolvedParams?.lang || "en";
+      toast.error("Unlock this lesson with Premium access.", {
+        action: {
+          label: "Upgrade",
+          onClick: () => router.push(`/${lang}/pricing?courseId=${courseId}`),
+        },
+      });
+      return;
+    }
     if (isLessonUnlocked(index)) {
       setCurrentLessonIndex(index);
     } else {
@@ -432,8 +440,10 @@ export default function AcademyCoursePage({
                   {lessons.map((lesson, index) => {
                     const isActive = currentLessonIndex === index;
                     const isCompleted = completedLessons.has(lesson.id);
+                    const premiumLocked = isPremiumLocked(index);
                     const isUnlocked = isLessonUnlocked(index);
                     const hasQuiz = lesson.quizzes?.some((q) => q.questions?.length > 0);
+                    const isFreePreview = !premiumLocked && !hasFullAccess && index < freeLessonLimit;
 
                     return (
                       <li key={lesson.id}>
@@ -443,10 +453,10 @@ export default function AcademyCoursePage({
                             handleLessonClick(index);
                             setIsMobileCurriculumOpen(false);
                           }}
-                          disabled={!isUnlocked}
                           className={cn(
                             "w-full flex items-start gap-3 rounded-xl border p-3 text-left transition-all duration-300",
-                            !isUnlocked && "cursor-not-allowed border-[var(--ib-line)] bg-[var(--ib-card)] opacity-30",
+                            premiumLocked && "border-amber-200/80 bg-amber-50/40 opacity-90 hover:bg-amber-50",
+                            !premiumLocked && !isUnlocked && "cursor-not-allowed border-[var(--ib-line)] bg-[var(--ib-card)] opacity-30",
                             isUnlocked && "hover:border-[var(--ib-line)] hover:bg-[var(--ib-accbg)]",
                             isCompleted && !isActive && "border-emerald-500/20 bg-emerald-500/5 hover:bg-emerald-500/10",
                             isActive && "border-[var(--ib-acc)] bg-[var(--ib-acc)]/10 shadow-[0_0_15px_rgba(27, 77, 219, 0.1)]",
@@ -454,21 +464,25 @@ export default function AcademyCoursePage({
                           )}
                         >
                           <span className="mt-0.5 shrink-0 text-base text-[var(--ib-acc)]">
-                            {!isUnlocked ? "🔒" : isCompleted && !isActive ? "✅" : isActive ? "▶️" : "⏯️"}
+                            {premiumLocked ? "🔒" : isCompleted && !isActive ? "✅" : isActive ? "▶️" : "⏯️"}
                           </span>
                           <div className="min-w-0 flex-1">
                             <p className={cn(
                               "text-xs md:text-sm font-bold tracking-tight",
                               isActive && "text-[var(--ib-acc)]",
                               isCompleted && !isActive && "text-emerald-400",
-                              !isUnlocked && "text-[var(--ib-mute)]",
+                              (premiumLocked || !isUnlocked) && "text-[var(--ib-mute)]",
                               isUnlocked && !isActive && !isCompleted && "text-[var(--ib-ink)]/90"
                             )}>
                               {lesson.title}
                             </p>
                             <p className="mt-0.5 text-[10px] font-black uppercase tracking-widest text-[var(--ib-mute)]/60">
-                              {lesson.video?.duration || "Modular"}
-                              {hasQuiz && " · 📝 Assessment"}
+                              {premiumLocked
+                                ? "Premium"
+                                : isFreePreview
+                                  ? "Free"
+                                  : lesson.video?.duration || "Modular"}
+                              {!premiumLocked && hasQuiz && " · 📝 Assessment"}
                             </p>
                           </div>
                         </button>
@@ -530,18 +544,20 @@ export default function AcademyCoursePage({
                   {lessons.map((lesson, index) => {
                     const isActive = currentLessonIndex === index;
                     const isCompleted = completedLessons.has(lesson.id);
+                    const premiumLocked = isPremiumLocked(index);
                     const isUnlocked = isLessonUnlocked(index);
                     const hasQuiz = lesson.quizzes?.some((q) => q.questions?.length > 0);
+                    const isFreePreview = !premiumLocked && !hasFullAccess && index < freeLessonLimit;
 
                     return (
                       <li key={lesson.id}>
                         <button
                           type="button"
                           onClick={() => handleLessonClick(index)}
-                          disabled={!isUnlocked}
                           className={cn(
                             "w-full flex items-start gap-3 rounded-xl border p-3.5 text-left transition-all duration-300",
-                            !isUnlocked && "cursor-not-allowed border-[var(--ib-line)] bg-[var(--ib-card)] opacity-30",
+                            premiumLocked && "border-amber-200/80 bg-amber-50/40 opacity-90 hover:bg-amber-50",
+                            !premiumLocked && !isUnlocked && "cursor-not-allowed border-[var(--ib-line)] bg-[var(--ib-card)] opacity-30",
                             isUnlocked && "hover:border-[var(--ib-line)] hover:bg-[var(--ib-accbg)]",
                             isCompleted && !isActive && "border-emerald-500/20 bg-emerald-500/5 hover:bg-emerald-500/10",
                             isActive && "border-[var(--ib-acc)] bg-[var(--ib-acc)]/10 shadow-[0_0_15px_rgba(27, 77, 219, 0.1)]",
@@ -549,21 +565,25 @@ export default function AcademyCoursePage({
                           )}
                         >
                           <span className="mt-0.5 shrink-0 text-base text-[var(--ib-acc)]">
-                            {!isUnlocked ? "🔒" : isCompleted && !isActive ? "✅" : isActive ? "▶️" : "⏯️"}
+                            {premiumLocked ? "🔒" : isCompleted && !isActive ? "✅" : isActive ? "▶️" : "⏯️"}
                           </span>
                           <div className="min-w-0 flex-1">
                             <p className={cn(
                               "text-xs font-bold tracking-tight line-clamp-2",
                               isActive && "text-[var(--ib-acc)]",
                               isCompleted && !isActive && "text-emerald-400",
-                              !isUnlocked && "text-[var(--ib-mute)]",
+                              (premiumLocked || !isUnlocked) && "text-[var(--ib-mute)]",
                               isUnlocked && !isActive && !isCompleted && "text-[var(--ib-ink)]/90"
                             )}>
                               {lesson.title}
                             </p>
                             <p className="mt-1 text-[10px] font-black uppercase tracking-widest text-[var(--ib-mute)]/60">
-                              {lesson.video?.duration || "Modular"}
-                              {hasQuiz && " · 📝 Assessment"}
+                              {premiumLocked
+                                ? "Premium"
+                                : isFreePreview
+                                  ? "Free"
+                                  : lesson.video?.duration || "Modular"}
+                              {!premiumLocked && hasQuiz && " · 📝 Assessment"}
                             </p>
                           </div>
                         </button>
@@ -594,7 +614,25 @@ export default function AcademyCoursePage({
               {/* Left Card: Video Player */}
               <div className="flex flex-col rounded-2xl bg-[var(--ib-card)] border border-[var(--ib-line)] overflow-hidden shadow-2xl">
                 <div className="overflow-hidden bg-[#000000] aspect-video w-full flex items-center justify-center">
-                  {videoSrc && !videoSrc.includes('youtube.com') && !videoSrc.includes('youtu.be') && !videoSrc.includes('vimeo.com') ? (
+                  {isPremiumLocked(currentLessonIndex) ? (
+                    <div className="flex flex-col items-center justify-center text-center p-6 bg-[var(--ib-bg)] w-full h-full">
+                      <div className="w-14 h-14 rounded-full bg-amber-50 flex items-center justify-center mb-3 border border-amber-200 shadow-xl text-2xl">
+                        🔒
+                      </div>
+                      <h3 className="text-base md:text-lg font-bold text-[var(--ib-ink)] mb-1">
+                        Unlock this lesson with Premium access.
+                      </h3>
+                      <p className="text-[var(--ib-mute)] text-xs max-w-xs mx-auto mb-4">
+                        The first {freeLessonLimit} lessons in every course are free. Upgrade to continue this path.
+                      </p>
+                      <Link
+                        href={`${basePath}/pricing?courseId=${courseId}`}
+                        className="inline-flex items-center justify-center rounded-xl bg-[var(--ib-acc)] px-5 py-2.5 text-xs font-black uppercase tracking-widest text-white hover:opacity-90 transition-all"
+                      >
+                        View Premium plans
+                      </Link>
+                    </div>
+                  ) : videoSrc && !videoSrc.includes('youtube.com') && !videoSrc.includes('youtu.be') && !videoSrc.includes('vimeo.com') ? (
                     <video
                       className="w-full h-full object-contain bg-[#000000]"
                       src={videoSrc}

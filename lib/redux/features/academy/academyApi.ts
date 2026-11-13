@@ -41,6 +41,12 @@ export interface Lesson {
   video: LessonVideo;
   quizzes?: Quiz[];
   pdfUrl?: string;
+  /** Freemium: premium-locked when true (content redacted by backend) */
+  isLocked?: boolean;
+  /** Freemium: one of the first two free lessons in this course */
+  isFreePreview?: boolean;
+  /** 1-based trusted rank by Lesson.order ASC */
+  freeAccessRank?: number;
 }
 
 export interface CourseCategory {
@@ -65,6 +71,9 @@ export interface Course {
   categoryId: string;
   isoStandardId: string;
   lessons: Lesson[];
+  /** Freemium: COURSES entitlement grants all lessons */
+  hasFullAccess?: boolean;
+  freeLessonLimit?: number;
   category?: {
     id: string;
     name: string;

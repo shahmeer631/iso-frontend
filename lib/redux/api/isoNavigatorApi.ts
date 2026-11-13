@@ -133,7 +133,7 @@ export const isoNavigatorApi = baseApi.injectEndpoints({
           data: payload?.data || payload,
         };
       },
-      invalidatesTags: ['ISOStandards'],
+      invalidatesTags: ['ISOStandards', 'ApiUsage'],
     }),
     chatWithAi: builder.mutation<ChatResponse, ChatRequest>({
       query: (data) => ({
@@ -141,6 +141,7 @@ export const isoNavigatorApi = baseApi.injectEndpoints({
         method: 'POST',
         body: data,
       }),
+      invalidatesTags: ['ApiUsage'],
     }),
     chatSimple: builder.mutation<any, any>({
       query: (data) => ({
@@ -148,6 +149,7 @@ export const isoNavigatorApi = baseApi.injectEndpoints({
         method: 'POST',
         body: data,
       }),
+      invalidatesTags: ['ApiUsage'],
     }),
     generateContextSuggestions: builder.mutation<any[], ContextGeneratorRequest>({
       query: (data) => ({
@@ -155,6 +157,7 @@ export const isoNavigatorApi = baseApi.injectEndpoints({
         method: 'POST',
         body: data,
       }),
+      invalidatesTags: ['ApiUsage'],
       transformResponse: (response: ContextGeneratorResponse) => {
         // Transform API response to keep the full object with what, where, why, when, whom
         return response.data?.options?.map((option, index) => ({
@@ -169,6 +172,7 @@ export const isoNavigatorApi = baseApi.injectEndpoints({
         method: 'POST',
         body: data,
       }),
+      invalidatesTags: ['ApiUsage'],
       transformResponse: (response: any) => {
         if (Array.isArray(response)) return response;
         const nested =
@@ -200,6 +204,7 @@ export const isoNavigatorApi = baseApi.injectEndpoints({
         method: 'POST',
         body: data,
       }),
+      invalidatesTags: ['ApiUsage'],
       transformResponse: (response: any) => {
         const data = response?.data?.data || response?.data || response;
         return {

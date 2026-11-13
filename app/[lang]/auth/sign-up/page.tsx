@@ -2,7 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowRight, CheckCircle2, Sparkles } from "lucide-react";
-import { useRouter, useParams } from "next/navigation";
+import { useRouter, useParams, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { useState, useEffect } from "react";
@@ -62,6 +62,8 @@ const SignUpPage = () => {
   const { t } = useTranslation();
   const router = useRouter();
   const { lang } = useParams();
+  const searchParams = useSearchParams();
+  const fromParam = searchParams.get("from") || searchParams.get("redirect");
   const reduceMotion = useReducedMotion();
   const [register, { isLoading }] = useRegisterMutation();
   const [isEmailValid, setIsEmailValid] = useState(false);
@@ -99,7 +101,9 @@ const SignUpPage = () => {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
       await register({ email: values.email }).unwrap();
-      router.push(`/auth/otp?email=${encodeURIComponent(values.email)}`);
+      const otpQs = new URLSearchParams({ email: values.email });
+      if (fromParam) otpQs.set("from", fromParam);
+      router.push(`/${lang}/auth/otp?${otpQs.toString()}`);
     } catch (err: any) {
       console.error("Failed to register email:", err);
       toast.error(
@@ -340,7 +344,11 @@ const SignUpPage = () => {
                     {t("auth.alreadyHaveAccount")}
                   </span>
                   <Link
-                    href="/auth/login"
+                    href={
+                      fromParam
+                        ? `/${lang}/auth/login?from=${encodeURIComponent(fromParam)}`
+                        : `/${lang}/auth/login`
+                    }
                     className="whitespace-nowrap font-semibold text-[var(--ib-acc)] transition-colors hover:text-[var(--ib-acc)]/80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ib-acc)]"
                   >
                     {t("auth.logIn")}

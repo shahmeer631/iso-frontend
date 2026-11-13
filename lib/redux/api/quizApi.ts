@@ -38,6 +38,7 @@ export const quizApi = baseApi.injectEndpoints({
         method: 'POST',
         body,
       }),
+      invalidatesTags: ['ApiUsage'],
     }),
   }),
   overrideExisting: true,
