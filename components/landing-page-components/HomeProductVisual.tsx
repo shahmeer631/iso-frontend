@@ -398,11 +398,11 @@ function LibraryVisual({ lang }: { lang: string }) {
           <span className="inline-flex items-center rounded-full border border-[var(--ib-line)] bg-[var(--ib-accbg)] px-2.5 py-1 text-[11px] font-bold tracking-[0.06em] text-[var(--ib-acc)] uppercase">
             {slide.code}
           </span>
-          <div className="mt-5 flex items-start gap-3">
+          <div className="mt-5 flex flex-col items-start gap-3 sm:flex-row">
             <span className="grid size-11 shrink-0 place-items-center rounded-[12px] border border-[var(--ib-line)] bg-[var(--ib-accbg)] text-[var(--ib-acc)]">
               <Icon className="size-5" />
             </span>
-            <div>
+            <div className="min-w-0">
               <h4 className="mb-0! text-[20px] font-bold tracking-[-0.02em] text-[var(--ib-ink)]">
                 {slide.title}
               </h4>
@@ -440,11 +440,11 @@ function AcademyVisual({ lang }: { lang: string }) {
           <span className="inline-flex items-center rounded-full border border-[var(--ib-line)] bg-[var(--ib-accbg)] px-2.5 py-1 text-[11px] font-bold tracking-[0.06em] text-[var(--ib-acc)] uppercase">
             {slide.code}
           </span>
-          <div className="mt-5 flex items-start gap-3">
+          <div className="mt-5 flex flex-col items-start gap-3 sm:flex-row">
             <span className="grid size-11 shrink-0 place-items-center rounded-[12px] border border-[var(--ib-line)] bg-[var(--ib-accbg)] text-[var(--ib-acc)]">
               <Icon className="size-5" />
             </span>
-            <div>
+            <div className="min-w-0">
               <h4 className="mb-0! text-[20px] font-bold tracking-[-0.02em] text-[var(--ib-ink)]">
                 {slide.title}
               </h4>
@@ -482,11 +482,11 @@ function AIVisual({ lang }: { lang: string }) {
           <span className="inline-flex items-center rounded-full border border-[var(--ib-line)] bg-[var(--ib-accbg)] px-2.5 py-1 text-[11px] font-bold tracking-[0.06em] text-[var(--ib-acc)] uppercase">
             Tool {String(index + 1).padStart(2, "0")}
           </span>
-          <div className="mt-5 flex items-start gap-3">
+          <div className="mt-5 flex flex-col items-start gap-3 sm:flex-row">
             <span className="grid size-11 shrink-0 place-items-center rounded-[12px] border border-[var(--ib-line)] bg-[var(--ib-accbg)] text-[var(--ib-acc)]">
               <Icon className="size-5" />
             </span>
-            <div>
+            <div className="min-w-0">
               <h4 className="mb-0! text-[20px] font-bold tracking-[-0.02em] text-[var(--ib-ink)]">
                 {slide.title}
               </h4>

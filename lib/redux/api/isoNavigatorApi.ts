@@ -158,12 +158,18 @@ export const isoNavigatorApi = baseApi.injectEndpoints({
         body: data,
       }),
       invalidatesTags: ['ApiUsage'],
-      transformResponse: (response: ContextGeneratorResponse) => {
+      transformResponse: (response: ContextGeneratorResponse & { data?: any }) => {
         // Transform API response to keep the full object with what, where, why, when, whom
-        return response.data?.options?.map((option, index) => ({
-          id: index + 1,
-          ...option,
-        })) || [];
+        const options =
+          response.data?.options?.map((option: any, index: number) => ({
+            id: index + 1,
+            ...option,
+          })) || [];
+        // Surface scrape-fallback notice without breaking callers that expect an array.
+        if (response.data?.warning && options.length) {
+          (options as any).warning = response.data.warning;
+        }
+        return options;
       },
     }),
     getISOSuggestions: builder.mutation<ISOSuggestion[], ISOSuggestionsRequest>({

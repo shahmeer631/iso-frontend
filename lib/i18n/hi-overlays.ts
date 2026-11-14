@@ -61,4 +61,14 @@ export const commonHIOverlays: Record<string, unknown> = {
   faq: { title: "अक्सर पूछे जाने वाले प्रश्न" },
   contact: { title: "हमसे संपर्क करें" },
   aboutPage: { title: "ISOBrain के बारे में" },
+  academy: {
+    heroHeading: "ISO मानकों में सही महारत हासिल करें",
+    browseCourses: "पाठ्यक्रम देखें",
+    featuredCourse: "विशेष कार्यक्रम",
+    lessons: "मॉड्यूल",
+    viewSampleCertificate: "नमूना प्रमाणपत्र देखें",
+    availablePrograms: "उपलब्ध कार्यक्रम",
+    availableProgramsDesc:
+      "तत्काल ऑडिट दक्षता के लिए निर्मित मान्यता प्राप्त ISO पाठ्यक्रम।",
+  },
 };

@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef, useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Clock, PlayCircle, BookOpen, ShieldCheck, ArrowLeft, Award, Sparkles, Star, Brain } from "lucide-react";
+import { Clock, PlayCircle, BookOpen, ShieldCheck, ArrowLeft, Award, Sparkles, Star } from "lucide-react";
 import { useRouter, useParams } from "next/navigation";
 import { useSelector } from "react-redux";
 import { selectCurrentToken } from "@/lib/redux/features/auth/authSlice";
@@ -93,14 +93,6 @@ const CategoryCoursesPage = () => {
     const startIndex = (currentPage - 1) * coursesPerPage;
     return courses.slice(startIndex, startIndex + coursesPerPage);
   }, [courses, currentPage]);
-
-  const totalCpdHours = useMemo(() => {
-    return courses.reduce((sum, course) => sum + (course.cpdHours || 0), 0);
-  }, [courses]);
-
-  const totalModules = useMemo(() => {
-    return courses.reduce((sum, course) => sum + (course._count?.lessons || 0), 0);
-  }, [courses]);
 
   const [enrollmentStatus, setEnrollmentStatus] = useState<Record<string, boolean>>({});
   const [isCheckingId, setIsCheckingId] = useState<string | null>(null);
@@ -281,7 +273,7 @@ const CategoryCoursesPage = () => {
                 onClick={scrollToCourses}
                 className="inline-flex items-center justify-center rounded-xl bg-[var(--ib-acc)] px-6 py-3.5 text-[14px] font-semibold text-white transition-all hover:opacity-92 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ib-acc)] sm:px-7 sm:text-[15px]"
               >
-                {t("academy.browseCourses", "Browse Courses")}
+                {t("academy.browseCourses", { defaultValue: "Browse Courses" })}
               </button>
               <Link
                 href={`/${lang}/pricing`}
@@ -314,7 +306,7 @@ const CategoryCoursesPage = () => {
                   textTransform: "uppercase",
                   letterSpacing: "0.05em"
                 }}>
-                  {t('academy.featuredCourse', 'Featured Program')}
+                  {t("academy.featuredCourse", { defaultValue: "Featured Program" })}
                 </span>
 
                 <h3 className="mt-3 mb-2 font-sans text-[18px] font-bold leading-snug tracking-[-0.02em] text-[var(--ib-ink)] sm:text-[20px]">
@@ -337,7 +329,8 @@ const CategoryCoursesPage = () => {
                 }}>
                   <span className="flex items-center gap-2">
                     <BookOpen size={14} color="var(--ib-acc)" />
-                    {courses[0]._count?.lessons || 12} {t('academy.lessons', 'Modules')}
+                    {courses[0]._count?.lessons || 12}{" "}
+                    {t("academy.lessons", { defaultValue: "Modules" })}
                   </span>
                   <span className="flex items-center gap-2">
                     <Clock size={14} color="var(--ib-acc)" />
@@ -379,83 +372,14 @@ const CategoryCoursesPage = () => {
                     }
                     className="flex w-full items-center justify-center gap-2 rounded-xl border border-[var(--ib-line)] bg-[var(--ib-card)] px-5 py-3 text-[14px] font-semibold text-[var(--ib-ink)] transition-all hover:border-[var(--ib-acc)] hover:bg-[var(--ib-accbg)] hover:text-[var(--ib-acc)]"
                   >
-                    {t("academy.viewSampleCertificate", "View Sample Certificate")}{" "}
+                    {t("academy.viewSampleCertificate", {
+                      defaultValue: "View Sample Certificate",
+                    })}{" "}
                     <Award size={16} />
                   </button>
                 </div>
               </div>
             )}
-          </div>
-        </div>
-
-        {/* CPD Information Grid */}
-        <div style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 300px), 1fr))",
-          gap: 24,
-          marginBottom: 64
-        }}>
-          {/* Card 1 */}
-          <div style={{
-            background: "var(--ib-bg)", borderRadius: 16, border: "1px solid var(--ib-line)",
-            padding: 24, display: "flex", gap: 16, alignItems: "start"
-          }}>
-            <div style={{
-              background: "rgba(27, 77, 219,0.08)",
-              borderRadius: 12, padding: 12, display: "flex", alignItems: "center", justifyItems: "center"
-            }}>
-              <Clock size={24} color="var(--ib-acc)" />
-            </div>
-            <div className="text-left">
-              <h4 style={{ color: "var(--ib-ink)", fontSize: 16, fontWeight: 700, margin: "0 0 8px 0" }}>
-                {totalCpdHours} {t('academy.cpdHours', 'CPD Hours')}
-              </h4>
-              <p style={{ color: "var(--ib-mute)", fontSize: 13, lineHeight: 1.4, margin: 0 }}>
-                {t('academy.cpdHoursDesc', 'Accredited Continuing Professional Development hours directly trackable upon course completion.')}
-              </p>
-            </div>
-          </div>
-
-          {/* Card 2 */}
-          <div style={{
-            background: "var(--ib-bg)", borderRadius: 16, border: "1px solid var(--ib-line)",
-            padding: 24, display: "flex", gap: 16, alignItems: "start"
-          }}>
-            <div style={{
-              background: "rgba(27, 77, 219,0.08)",
-              borderRadius: 12, padding: 12, display: "flex", alignItems: "center", justifyItems: "center"
-            }}>
-              <Award size={24} color="var(--ib-acc)" />
-            </div>
-            <div className="text-left">
-              <h4 style={{ color: "var(--ib-ink)", fontSize: 16, fontWeight: 700, margin: "0 0 8px 0" }}>
-                {t('academy.accreditedCert', 'Accredited CPD Certification')}
-              </h4>
-              <p style={{ color: "var(--ib-mute)", fontSize: 13, lineHeight: 1.4, margin: 0 }}>
-                {t('academy.cpdCertDesc', 'Earn a verified Certificate of Competency recognized globally by leading standard auditing bodies.')}
-              </p>
-            </div>
-          </div>
-
-          {/* Card 3 */}
-          <div style={{
-            background: "var(--ib-bg)", borderRadius: 16, border: "1px solid var(--ib-line)",
-            padding: 24, display: "flex", gap: 16, alignItems: "start"
-          }}>
-            <div style={{
-              background: "rgba(27, 77, 219,0.08)",
-              borderRadius: 12, padding: 12, display: "flex", alignItems: "center", justifyItems: "center"
-            }}>
-              <Brain size={24} color="var(--ib-acc)" />
-            </div>
-            <div className="text-left">
-              <h4 style={{ color: "var(--ib-ink)", fontSize: 16, fontWeight: 700, margin: "0 0 8px 0" }}>
-                {t('academy.neuralVerify', 'Neural Simulation Checked')}
-              </h4>
-              <p style={{ color: "var(--ib-mute)", fontSize: 13, lineHeight: 1.4, margin: 0 }}>
-                {t('academy.neuralVerifyDesc', 'Engage in custom interactive audit lens exercises powered by our neural compliance engines.')}
-              </p>
-            </div>
           </div>
         </div>
 
@@ -479,10 +403,15 @@ const CategoryCoursesPage = () => {
             {/* Available Programs Header */}
             <div ref={coursesSectionRef} style={{ marginTop: 64, marginBottom: 32 }} className="text-left">
               <h2 className="mb-2 font-sans text-[26px] font-bold tracking-[-0.03em] text-[var(--ib-ink)] sm:text-[34px]">
-                {t("academy.availablePrograms", "Available Programs")}
+                {t("academy.availablePrograms", {
+                  defaultValue: "Available Programs",
+                })}
               </h2>
               <p className="font-inter text-sm sm:text-base text-[var(--ib-mute)] m-0">
-                {t('academy.availableProgramsDesc', 'Fully accredited ISO courses built for immediate corporate auditing competency.')}
+                {t("academy.availableProgramsDesc", {
+                  defaultValue:
+                    "Fully accredited ISO courses built for immediate corporate auditing competency.",
+                })}
               </p>
             </div>
 

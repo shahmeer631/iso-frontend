@@ -44,7 +44,9 @@ const AcademyPage = () => {
             </div>
 
             <h1 className="mb-0! mt-3 text-[32px] font-bold leading-[1.12] tracking-[-0.035em] text-[var(--ib-ink)] sm:text-[40px] lg:text-[48px]">
-              {t("academy.heroHeading") || "Master ISO properly"}
+              {t("academy.heroHeading", {
+                defaultValue: "Master ISO standards properly",
+              })}
             </h1>
 
             <p className="mx-auto mt-4 max-w-[680px] text-[15px] font-medium leading-relaxed text-[var(--ib-mute)] sm:text-[16.5px]">

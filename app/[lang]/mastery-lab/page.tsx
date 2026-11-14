@@ -137,6 +137,11 @@ const AssessmentPage = () => {
     managementLevel: string;
     department: string;
   } | null>(null);
+  const [previewContext, setPreviewContext] = useState<{
+    industry: string;
+    managementLevel: string;
+    department: string;
+  }>({ industry: "", managementLevel: "", department: "" });
 
   const handleStartAssessment = async (data: {
     industry: string;
@@ -327,7 +332,7 @@ const AssessmentPage = () => {
           transition={{ duration: 0.55, ease }}
           className="flex justify-center"
         >
-          <div className="relative max-w-4xl transition-transform duration-500 hover:-translate-y-1">
+          <div className="relative w-full max-w-4xl transition-transform duration-500 hover:-translate-y-1">
             <Image
               src="/certificate-cpd.jpg"
               alt={t("dynamic.dyn_cPDCertificate_225")}
@@ -337,6 +342,28 @@ const AssessmentPage = () => {
               priority
               unoptimized
             />
+            {/* Live preview overlays: name + Steps 1–3 (industry / level / department) */}
+            <div
+              aria-hidden
+              className="pointer-events-none absolute inset-0 hidden sm:block"
+            >
+              <div className="absolute left-[17%] top-[34.5%] w-[66%] text-center font-serif text-[clamp(14px,2.6vw,28px)] font-bold tracking-wide text-[#b8860b]">
+                Your Name Goes Here
+              </div>
+              <div className="absolute left-[45.5%] top-[62.5%] w-[22%] truncate text-[clamp(9px,1.1vw,13px)] font-semibold text-[#1a2744]">
+                {previewContext.industry || "—"}
+              </div>
+              <div className="absolute left-[45.5%] top-[66.2%] w-[22%] truncate text-[clamp(9px,1.1vw,13px)] font-semibold text-[#1a2744]">
+                {previewContext.managementLevel || "—"}
+              </div>
+              <div className="absolute left-[45.5%] top-[70%] w-[24%] truncate text-[clamp(9px,1.1vw,13px)] font-semibold text-[#1a2744]">
+                {previewContext.department || "—"}
+              </div>
+            </div>
+            <p className="mt-3 text-center text-[12px] text-[var(--ib-mute)] sm:text-[13px]">
+              After your assessment, the certificate fills your name plus Industry,
+              Management Level, and Job Function from Steps 1–3.
+            </p>
           </div>
         </motion.div>
       </section>
@@ -370,6 +397,7 @@ const AssessmentPage = () => {
                 ]}
                 departments={HARDCODED_DEPARTMENTS}
                 onSubmit={handleStartAssessment}
+                onContextChange={setPreviewContext}
                 isLoading={isGeneratingQuiz}
                 buttonText={
                   isGeneratingQuiz

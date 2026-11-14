@@ -27,6 +27,11 @@ interface GetStartedCardProps {
     managementLevel: string;
     department: string;
   }) => void;
+  onContextChange?: (data: {
+    industry: string;
+    managementLevel: string;
+    department: string;
+  }) => void;
   buttonText?: string;
   isLoading?: boolean;
 }
@@ -37,6 +42,7 @@ export default function GetStartedCard({
   departments,
   buttonText,
   onSubmit,
+  onContextChange,
   isLoading = false,
 }: GetStartedCardProps) {
   const { t } = useTranslation();
@@ -47,6 +53,20 @@ export default function GetStartedCard({
   const displayButtonText = buttonText || t("pricingPage.startAssessment");
   const isDisabled =
     isLoading || !industry || !managementLevel || !department;
+
+  const emitContext = (
+    next: Partial<{
+      industry: string;
+      managementLevel: string;
+      department: string;
+    }>,
+  ) => {
+    onContextChange?.({
+      industry: next.industry ?? industry,
+      managementLevel: next.managementLevel ?? managementLevel,
+      department: next.department ?? department,
+    });
+  };
 
   const handleSubmit = () => {
     if (isDisabled) return;
@@ -73,7 +93,13 @@ export default function GetStartedCard({
           <p className="mb-2 pl-0.5 text-[12px] font-semibold uppercase tracking-[0.05em] text-[var(--ib-acc)] sm:text-[13px]">
             Step 1 — Select Your Industry
           </p>
-          <Select onValueChange={setIndustry} disabled={isLoading}>
+          <Select
+            onValueChange={(value) => {
+              setIndustry(value);
+              emitContext({ industry: value });
+            }}
+            disabled={isLoading}
+          >
             <SelectTrigger className="h-11 rounded-[10px] border-[var(--ib-line)] bg-[var(--ib-bg)] text-xs text-[var(--ib-ink)] sm:text-sm">
               <SelectValue placeholder={t("dynamic.dyn_selectindustry_86")} />
             </SelectTrigger>
@@ -95,7 +121,13 @@ export default function GetStartedCard({
           <p className="mb-2 pl-0.5 text-[12px] font-semibold uppercase tracking-[0.05em] text-[var(--ib-acc)] sm:text-[13px]">
             Step 2 — Define your management level
           </p>
-          <Select onValueChange={setManagementLevel} disabled={isLoading}>
+          <Select
+            onValueChange={(value) => {
+              setManagementLevel(value);
+              emitContext({ managementLevel: value });
+            }}
+            disabled={isLoading}
+          >
             <SelectTrigger className="h-11 rounded-[10px] border-[var(--ib-line)] bg-[var(--ib-bg)] text-xs text-[var(--ib-ink)] sm:text-sm">
               <SelectValue placeholder={t("dynamic.dyn_selectlevel_87")} />
             </SelectTrigger>
@@ -117,7 +149,13 @@ export default function GetStartedCard({
           <p className="mb-2 pl-0.5 text-[12px] font-semibold uppercase tracking-[0.05em] text-[var(--ib-acc)] sm:text-[13px]">
             Step 3 — Choose your department or function
           </p>
-          <Select onValueChange={setDepartment} disabled={isLoading}>
+          <Select
+            onValueChange={(value) => {
+              setDepartment(value);
+              emitContext({ department: value });
+            }}
+            disabled={isLoading}
+          >
             <SelectTrigger className="h-11 rounded-[10px] border-[var(--ib-line)] bg-[var(--ib-bg)] text-xs text-[var(--ib-ink)] sm:text-sm">
               <SelectValue placeholder={t("dynamic.dyn_selectdepartment_88")} />
             </SelectTrigger>

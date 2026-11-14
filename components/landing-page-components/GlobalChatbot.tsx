@@ -4,7 +4,7 @@ import React, { useState, useRef, useEffect, useMemo } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { usePathname, useSearchParams } from "next/navigation";
-import { X, MessageCircle, Send, Maximize2, Minimize2 } from "lucide-react";
+import { X, Send, Maximize2, Minimize2 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { toast } from "sonner";
@@ -825,7 +825,13 @@ export default function GlobalChatbot() {
                   aria-hidden
                 >
                   <span className="ask-ai-orb absolute inset-0 rounded-full bg-[radial-gradient(circle_at_30%_30%,rgba(255,255,255,0.7),transparent_55%),radial-gradient(circle_at_70%_70%,rgba(255,255,255,0.35),transparent_50%)] opacity-95" />
-                  <MessageCircle className="relative z-[1] size-6" />
+                  <Image
+                    src="/Icon.png"
+                    alt=""
+                    width={28}
+                    height={28}
+                    className="relative z-[1] size-7 object-contain"
+                  />
                 </span>
               </button>
 

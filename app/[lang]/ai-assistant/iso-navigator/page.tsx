@@ -46,6 +46,14 @@ import {
 
   Copy,
 
+  ChevronDown,
+
+  ChevronUp,
+
+  PanelLeftClose,
+
+  PanelLeftOpen,
+
 } from "lucide-react";
 
 import ReactMarkdown from "react-markdown";
@@ -269,6 +277,11 @@ export default function ISONavigator() {
 
   const [chatInput, setChatInput] = useState("");
 
+  /** Collapsed by default so webinar / full-screen document review stays wide. */
+  const [chatCollapsed, setChatCollapsed] = useState(true);
+
+  const [leftPanelCollapsed, setLeftPanelCollapsed] = useState(false);
+
   const [contextInput, setContextInput] = useState("");
 
   const [contextInputType, setContextInputType] = useState<'text' | 'url'>('text');
@@ -469,7 +482,9 @@ export default function ISONavigator() {
 
   const fetchContextSuggestions = async (input: string) => {
 
-    if (!input.trim()) {
+    const raw = (input || "").trim();
+
+    if (!raw) {
 
       setContextSuggestions([]);
 
@@ -485,15 +500,36 @@ export default function ISONavigator() {
 
     try {
 
-      const isUrl = input.startsWith('http');
+      const looksLikeUrl =
+        contextInputType === "url" ||
+        /^https?:\/\//i.test(raw) ||
+        /^[a-z0-9.-]+\.[a-z]{2,}([/:?].*)?$/i.test(raw);
 
-      const result = await generateContextSuggestions({
+      let payload: { text?: string; url?: string };
 
-        text: isUrl ? undefined : input,
+      if (looksLikeUrl) {
+        let url = raw;
+        if (!/^https?:\/\//i.test(url)) {
+          url = `https://${url}`;
+        }
+        try {
+          // Reject clearly invalid URLs before hitting the AI service (avoids opaque 400s).
+          // eslint-disable-next-line no-new
+          new URL(url);
+        } catch {
+          toast.error("Please enter a valid website URL (including https://).");
+          return;
+        }
+        payload = { url };
+      } else {
+        if (raw.length < 10) {
+          toast.error("Please describe your organization in a bit more detail.");
+          return;
+        }
+        payload = { text: raw };
+      }
 
-        url: isUrl ? input : undefined,
-
-      }).unwrap();
+      const result = await generateContextSuggestions(payload).unwrap();
 
 
 
@@ -504,6 +540,9 @@ export default function ISONavigator() {
       console.log('Context suggestions result:', result);
 
       setContextSuggestions(result || []);
+      if ((result as any)?.warning) {
+        toast.message(String((result as any).warning));
+      }
 
     } catch (error: any) {
 
@@ -511,11 +550,32 @@ export default function ISONavigator() {
 
       if (reqId !== suggestionRequestId.current) return;
 
-      const message =
+      const rawMessage = String(
         error?.data?.message ||
-        error?.error ||
-        (typeof error?.status === 'number' ? `Request failed (${error.status})` : null) ||
-        t('isoNavigator.failedGenerate');
+          error?.data?.error ||
+          error?.data?.errorSources?.[0]?.message ||
+          error?.error ||
+          "",
+      );
+
+      const blocked =
+        /403|forbidden|failed to extract content|blocked automatic reading|switch to text/i.test(
+          rawMessage,
+        );
+
+      if (blocked) {
+        setContextInputType("text");
+      }
+
+      const message = blocked
+        ? "This website blocked automatic reading. Switched to Text — paste a short description of the organization and Analyze again."
+        : rawMessage && !/^Request failed with status code/i.test(rawMessage)
+          ? rawMessage
+          : error?.status === 400
+            ? "Could not analyze that input. Try a clearer organization description or a full https:// URL."
+            : typeof error?.status === "number"
+              ? `Request failed (${error.status})`
+              : t("isoNavigator.failedGenerate");
 
       console.error("Error fetching context suggestions:", message, error);
 
@@ -994,20 +1054,43 @@ export default function ISONavigator() {
         sessionKey="ai_iso_navigator"
       />
 
-      {/* Header */}
-      <header className="space-y-4 px-2 sm:px-0 mb-8 md:mb-12 mt-12 md:mt-20">
-        <div className="flex justify-center mb-6">
-          <div className="px-4 py-1 text-[var(--ib-acc)] border border-[var(--ib-line)] rounded-full">
-            <span className=" text-[10px] font-black uppercase tracking-[0.3em]">{t('isoNavigator.badge')}</span>
-          </div>
+      {/* Header — compact so the tool itself gets the screen */}
+      <header className="space-y-3 px-2 sm:px-0 mb-6 md:mb-8 mt-8 md:mt-12">
+        <div className="flex flex-wrap items-center justify-center gap-3">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-[44px] font-bold text-[var(--ib-ink)] text-center leading-[1.15] tracking-[-0.03em] mb-0">
+            {t('isoNavigator.title')}
+          </h1>
         </div>
-        <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-[52px] font-semibold text-[var(--ib-ink)] text-center leading-[1.1] tracking-tight mb-8">
-          {t('isoNavigator.title')}
-        </h1>
-        <p className="text-[var(--ib-mute)] text-sm lg:text-lg max-w-4xl mx-auto text-center leading-relaxed mb-12 font-inter">
-          <span className="font-semibold text-[var(--ib-ink)]/80 block mb-2">{t('isoNavigator.subtitle')}</span>
+        <p className="text-[var(--ib-mute)] text-sm md:text-base max-w-3xl mx-auto text-center leading-relaxed">
+          <span className="font-semibold text-[var(--ib-ink)]/85 block mb-1">{t('isoNavigator.subtitle')}</span>
           {t('isoNavigator.description')}
         </p>
+        <div className="flex flex-wrap items-center justify-center gap-2 pt-1">
+          <button
+            type="button"
+            onClick={() => setLeftPanelCollapsed((v) => !v)}
+            className="inline-flex items-center gap-2 rounded-full border border-[var(--ib-line)] bg-[var(--ib-card)] px-3.5 py-1.5 text-[11px] font-semibold uppercase tracking-wider text-[var(--ib-mute)] transition-colors hover:border-[var(--ib-acc)] hover:text-[var(--ib-acc)]"
+          >
+            {leftPanelCollapsed ? (
+              <PanelLeftOpen className="size-3.5" aria-hidden />
+            ) : (
+              <PanelLeftClose className="size-3.5" aria-hidden />
+            )}
+            {leftPanelCollapsed ? "Show data generator" : "Collapse data generator"}
+          </button>
+          <button
+            type="button"
+            onClick={() => setChatCollapsed((v) => !v)}
+            className="inline-flex items-center gap-2 rounded-full border border-[var(--ib-line)] bg-[var(--ib-card)] px-3.5 py-1.5 text-[11px] font-semibold uppercase tracking-wider text-[var(--ib-mute)] transition-colors hover:border-[var(--ib-acc)] hover:text-[var(--ib-acc)]"
+          >
+            {chatCollapsed ? (
+              <ChevronDown className="size-3.5" aria-hidden />
+            ) : (
+              <ChevronUp className="size-3.5" aria-hidden />
+            )}
+            {chatCollapsed ? "Expand contextual chat" : "Collapse contextual chat"}
+          </button>
+        </div>
       </header>
 
 
@@ -1016,7 +1099,7 @@ export default function ISONavigator() {
 
         {/* Left Column - Form */}
 
-        <div className="md:col-span-5 lg:col-span-5 bg-[var(--ib-card)] border border-[var(--ib-line)] rounded-3xl shadow-2xl overflow-hidden min-h-[520px] md:min-h-0 md:h-full flex flex-col">
+        <div className={`${leftPanelCollapsed ? "hidden md:hidden" : "md:col-span-5 lg:col-span-5"} bg-[var(--ib-card)] border border-[var(--ib-line)] rounded-3xl shadow-2xl overflow-hidden min-h-[520px] md:min-h-0 md:h-full flex flex-col`}>
 
           <div className="p-5 md:p-6 flex items-center gap-4 border-b border-[var(--ib-line)] bg-[var(--ib-card)] shrink-0">
 
@@ -1146,7 +1229,7 @@ export default function ISONavigator() {
                       onClick={() => setContextInputType('url')}
                       className={`flex-1 py-3 text-sm font-bold rounded-lg transition-colors flex items-center justify-center gap-2 ${contextInputType === 'url' ? 'bg-[var(--ib-acc)] text-white' : 'text-[var(--ib-mute)] hover:text-[var(--ib-ink)] hover:bg-[var(--ib-card)]'}`}
                     >
-                      <Link className="w-4 h-4" /> {t('isoNavigator.urlTab')}
+                      <LinkIcon className="w-4 h-4" /> {t('isoNavigator.urlTab')}
                     </button>
                   </div>
 
@@ -1671,8 +1754,8 @@ export default function ISONavigator() {
                             : isNavigatorImsLabel(formData?.specific_requirements || "") &&
                                 /27001/i.test(formData?.specific_requirements || "") &&
                                 /42001/i.test(formData?.specific_requirements || "")
-                              ? "Mandatory IMS Documents (Clauses 4–10 · Annex controls)"
-                              : "Mandatory IMS Documents"}
+                              ? "Mandatory Documents (Clauses 4–10 · Annex controls)"
+                              : "Mandatory Documents"}
                         </p>
                         <div className="space-y-2">
                           {selectedISO?.documents?.map((doc: any, index: number) => {
@@ -1721,7 +1804,7 @@ export default function ISONavigator() {
                         <p className="text-[10px] font-bold text-[var(--ib-mute)] uppercase tracking-wider">
                           {isQhseAnnexSlImsLabel(formData?.specific_requirements || "")
                             ? "Retained Documented Information (Records)"
-                            : "Mandatory IMS Records — Evidence of Implementation"}
+                            : "Mandatory Records — Evidence of Implementation"}
                         </p>
                         <div className="space-y-2">
                           {selectedISO?.records?.map((rec: any, index: number) => {
@@ -1903,7 +1986,7 @@ export default function ISONavigator() {
 
         {/* Right Column - Document Viewer */}
 
-        <div className="md:col-span-7 lg:col-span-7 bg-[var(--ib-card)] border border-[var(--ib-line)] rounded-3xl shadow-[0_4px_20px_-2px_rgba(0,0,0,0.25)] overflow-hidden min-h-[520px] md:min-h-0 md:h-full md:max-h-full flex flex-col relative min-w-0">
+        <div className={`${leftPanelCollapsed ? "md:col-span-12 lg:col-span-12" : "md:col-span-7 lg:col-span-7"} bg-[var(--ib-card)] border border-[var(--ib-line)] rounded-3xl shadow-[0_4px_20px_-2px_rgba(0,0,0,0.25)] overflow-hidden min-h-[520px] md:min-h-0 md:h-full md:max-h-full flex flex-col relative min-w-0`}>
 
             {!generatedDocument || isGenerating ? (
 
@@ -2251,11 +2334,16 @@ export default function ISONavigator() {
 
 
 
-      {/* Bottom Row - Ask AI */}
+      {/* Bottom Row - Contextual chat (collapsible for full-width document view) */}
 
-      <div className="mt-12 bg-[var(--ib-card)] border border-[var(--ib-line)] rounded-3xl shadow-2xl overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-500 max-w-[1600px] mx-auto w-full">
+      <div className="mt-8 bg-[var(--ib-card)] border border-[var(--ib-line)] rounded-3xl shadow-2xl overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-500 max-w-[1600px] mx-auto w-full">
 
-        <div className="p-2 sm:p-3 md:p-6 flex items-center gap-4 border-b border-[var(--ib-line)] bg-[var(--ib-card)]">
+        <button
+          type="button"
+          onClick={() => setChatCollapsed((v) => !v)}
+          className="w-full p-3 sm:p-4 md:p-5 flex items-center gap-4 border-b border-[var(--ib-line)] bg-[var(--ib-card)] text-left hover:bg-[var(--ib-accbg)]/40 transition-colors"
+          aria-expanded={!chatCollapsed}
+        >
 
           <div className="p-2 bg-[var(--ib-accbg)] text-[var(--ib-acc)] rounded-xl">
 
@@ -2263,18 +2351,26 @@ export default function ISONavigator() {
 
           </div>
 
-          <div>
+          <div className="min-w-0 flex-1">
             <div className="text-[10px] sm:text-xs md:text-sm lg:text-base font-black text-[var(--ib-ink)] uppercase tracking-wider">
               {t('isoNavigator.chatTitle')}
             </div>
-            <p className="mt-1 text-[8px] font-black uppercase tracking-widest text-[var(--ib-mute)]">
-              {t('isoNavigator.chatDesc')}
-            </p>
+            {!chatCollapsed && (
+              <p className="mt-1 text-[8px] font-black uppercase tracking-widest text-[var(--ib-mute)]">
+                {t('isoNavigator.chatDesc')}
+              </p>
+            )}
           </div>
-        </div>
+          {chatCollapsed ? (
+            <ChevronDown className="size-5 shrink-0 text-[var(--ib-mute)]" aria-hidden />
+          ) : (
+            <ChevronUp className="size-5 shrink-0 text-[var(--ib-mute)]" aria-hidden />
+          )}
+        </button>
 
 
 
+        {!chatCollapsed && (
         <div className="p-2 sm:p-3 md:p-8 space-y-8 max-w-[94.5vw] sm:max-w-[80vw] md:max-w-[90vw] lg:max-w-[99vw]">
 
           <div className="flex flex-col space-y-6 min-w-0  ">
@@ -2406,6 +2502,7 @@ export default function ISONavigator() {
           </div>
 
         </div>
+        )}
 
       </div>
 
@@ -2552,7 +2649,7 @@ export default function ISONavigator() {
 
                     {isQhseAnnexSlImsLabel(selectedISODetail.standard || "")
                       ? "Maintained Documented Information (Common · 9001 · 14001 · 45001)"
-                      : "Mandatory IMS Documents"}
+                      : "Mandatory Documents"}
 
                   </p>
 
@@ -2591,7 +2688,7 @@ export default function ISONavigator() {
 
                     {isQhseAnnexSlImsLabel(selectedISODetail.standard || "")
                       ? "Retained Documented Information (Records)"
-                      : "Mandatory IMS Records — Evidence of Implementation"}
+                      : "Mandatory Records — Evidence of Implementation"}
 
                   </p>
 
@@ -2734,7 +2831,7 @@ export default function ISONavigator() {
 
           margin: 0 auto;
 
-          font-family: 'Inter', system-ui, -apple-system, sans-serif;
+          font-family: var(--font-inter), 'Space Grotesk', system-ui, -apple-system, sans-serif;
 
           color: var(--ib-ink);
 
