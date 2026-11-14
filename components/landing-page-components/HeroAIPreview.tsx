@@ -150,13 +150,14 @@ export default function HeroAIPreview() {
 
             {/* AI row */}
             <div className="flex items-start gap-2.5">
-              <div className="relative mt-0.5 flex size-8 shrink-0 items-center justify-center overflow-hidden rounded-[10px] border border-[color-mix(in_srgb,var(--ib-acc)_25%,var(--ib-line))] bg-[var(--ib-accbg)] shadow-sm">
+              <div className="relative mt-0.5 flex size-8 shrink-0 items-center justify-center overflow-hidden rounded-[10px] border border-[color-mix(in_srgb,var(--ib-acc)_25%,var(--ib-line))] bg-white shadow-sm">
                 <Image
-                  src="/Icon.png"
+                  src="/isobrain-mark.png"
                   alt=""
-                  width={18}
-                  height={18}
+                  width={22}
+                  height={22}
                   className="object-contain"
+                  unoptimized
                 />
               </div>
 

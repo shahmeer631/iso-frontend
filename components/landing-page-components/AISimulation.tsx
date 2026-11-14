@@ -1,6 +1,5 @@
 ﻿"use client";
 
-import { Sparkles } from "lucide-react";
 import Image from "next/image";
 
 interface AISimulationProps {
@@ -32,13 +31,7 @@ const AISimulation = ({ customQuery, customResponse }: AISimulationProps) => {
       <div className="min-h-[280px] space-y-4 bg-[var(--ib-card)] p-4 sm:min-h-[320px] sm:space-y-5 sm:p-6">
         <div className="flex items-start gap-3 sm:gap-4">
           <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-[10px] border border-[var(--ib-line)] bg-[var(--ib-accbg)] sm:h-8 sm:w-8">
-            <Image
-              src="/Icon.png"
-              alt="User"
-              width={14}
-              height={14}
-              className="sm:h-4 sm:w-4"
-            />
+            <span className="text-[10px] font-bold text-[var(--ib-acc)]">You</span>
           </div>
           <p className="max-w-[90%] rounded-[12px_12px_4px_12px] bg-[var(--ib-accbg)] p-3 text-xs font-semibold leading-relaxed text-[var(--ib-ink)] sm:p-3.5 sm:text-sm">
             {query}
@@ -46,8 +39,15 @@ const AISimulation = ({ customQuery, customResponse }: AISimulationProps) => {
         </div>
 
         <div className="flex items-start gap-3 sm:gap-4">
-          <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-[10px] border border-[color-mix(in_srgb,var(--ib-acc)_25%,var(--ib-line))] bg-[var(--ib-accbg)] sm:h-8 sm:w-8">
-            <Sparkles className="h-3.5 w-3.5 text-[var(--ib-acc)] sm:h-4 sm:w-4" />
+          <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-[10px] border border-[color-mix(in_srgb,var(--ib-acc)_25%,var(--ib-line))] bg-white sm:h-8 sm:w-8">
+            <Image
+              src="/isobrain-mark.png"
+              alt="ISOBrain AI"
+              width={18}
+              height={18}
+              className="object-contain sm:h-5 sm:w-5"
+              unoptimized
+            />
           </div>
           <p className="max-w-[90%] whitespace-pre-wrap rounded-[12px_12px_12px_4px] border border-[var(--ib-line)] bg-[color-mix(in_srgb,var(--ib-bg)_80%,var(--ib-card))] p-3 text-xs font-medium leading-relaxed text-[var(--ib-ink)] sm:p-3.5 sm:text-sm">
             {answer}

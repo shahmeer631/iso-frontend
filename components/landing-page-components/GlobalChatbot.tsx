@@ -545,8 +545,15 @@ export default function GlobalChatbot() {
           >
             <div className="relative z-[1] flex shrink-0 items-center justify-between gap-3 border-b border-[var(--ib-line)] bg-[linear-gradient(180deg,var(--ib-card)_0%,color-mix(in_srgb,var(--ib-card)_88%,var(--ib-accbg))_100%)] px-4 py-3.5">
               <div className="flex min-w-0 items-center gap-2.5">
-                <div className="flex size-9 shrink-0 items-center justify-center rounded-xl border border-[color-mix(in_srgb,var(--ib-acc)_18%,var(--ib-line))] bg-[var(--ib-accbg)]">
-                  <Image src="/Icon.png" alt="" width={22} height={22} />
+                <div className="flex size-9 shrink-0 items-center justify-center rounded-xl border border-[color-mix(in_srgb,var(--ib-acc)_18%,var(--ib-line))] bg-white">
+                  <Image
+                    src="/isobrain-mark.png"
+                    alt=""
+                    width={22}
+                    height={22}
+                    className="object-contain"
+                    unoptimized
+                  />
                 </div>
                 <div className="min-w-0">
                   <span className="block text-[13px] font-bold leading-tight text-[var(--ib-ink)] sm:text-sm">
@@ -590,8 +597,15 @@ export default function GlobalChatbot() {
             >
               {chatHistory.length === 0 ? (
                 <div className="flex h-full flex-col items-center justify-center px-4 text-center">
-                  <div className="mb-4 flex size-16 items-center justify-center rounded-full border border-[color-mix(in_srgb,var(--ib-acc)_16%,var(--ib-line))] bg-[var(--ib-accbg)]">
-                    <Image src="/Icon.png" alt="" width={32} height={32} />
+                  <div className="mb-4 flex size-16 items-center justify-center rounded-full border border-[color-mix(in_srgb,var(--ib-acc)_16%,var(--ib-line))] bg-white">
+                    <Image
+                      src="/isobrain-mark.png"
+                      alt=""
+                      width={40}
+                      height={40}
+                      className="object-contain"
+                      unoptimized
+                    />
                   </div>
                   <h3 className="chat-greeting-text mb-2 text-[15px] font-bold leading-snug tracking-[-0.01em]">
                     How can I help you today?
@@ -821,16 +835,17 @@ export default function GlobalChatbot() {
                   Ask AI
                 </span>
                 <span
-                  className="relative flex size-11 shrink-0 items-center justify-center overflow-hidden rounded-full bg-white/20 ring-2 ring-white/30"
+                  className="relative flex size-11 shrink-0 items-center justify-center overflow-hidden rounded-full bg-white ring-2 ring-white/40"
                   aria-hidden
                 >
-                  <span className="ask-ai-orb absolute inset-0 rounded-full bg-[radial-gradient(circle_at_30%_30%,rgba(255,255,255,0.7),transparent_55%),radial-gradient(circle_at_70%_70%,rgba(255,255,255,0.35),transparent_50%)] opacity-95" />
                   <Image
-                    src="/Icon.png"
+                    src="/isobrain-mark.png"
                     alt=""
-                    width={28}
-                    height={28}
-                    className="relative z-[1] size-7 object-contain"
+                    width={30}
+                    height={30}
+                    className="size-[30px] object-contain"
+                    unoptimized
+                    priority
                   />
                 </span>
               </button>
