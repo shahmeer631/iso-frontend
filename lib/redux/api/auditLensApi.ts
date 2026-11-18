@@ -26,7 +26,44 @@ export const auditLensApi = baseApi.injectEndpoints({
         method: 'POST',
         body: data,
       }),
-      invalidatesTags: ['ApiUsage'],
+      invalidatesTags: ['ApiUsage', 'ChatSessions'],
+    }),
+    getAuditChatSessions: builder.query<
+      Array<{
+        id: string;
+        title?: string | null;
+        createdAt: string;
+        updatedAt: string;
+      }>,
+      void
+    >({
+      query: () => ({
+        url: '/ai-assistant/sessions',
+        params: { purpose: 'audit_lens' },
+      }),
+      transformResponse: (response: any) => {
+        const rows = response?.data || response || [];
+        return Array.isArray(rows) ? rows : [];
+      },
+      providesTags: ['ChatSessions'],
+    }),
+    getAuditChatHistory: builder.query<
+      Array<{
+        id: string;
+        role: string;
+        message: string;
+        sources?: any;
+        createdAt: string;
+      }>,
+      string
+    >({
+      query: (sessionId) => ({
+        url: `/ai-assistant/history/${sessionId}`,
+      }),
+      transformResponse: (response: any) => {
+        const rows = response?.data || response || [];
+        return Array.isArray(rows) ? rows : [];
+      },
     }),
     generateAuditContext: builder.mutation<any, any>({
       query: (data) => ({
@@ -69,6 +106,8 @@ export const {
   useChatWithAuditAiMutation,
   useChatSimpleMutation,
   useGenerateAuditContextMutation,
-  useGenerateAuditStepMutation
+  useGenerateAuditStepMutation,
+  useGetAuditChatSessionsQuery,
+  useLazyGetAuditChatHistoryQuery,
 } = auditLensApi;
 

@@ -34,6 +34,8 @@ import { useSelector } from "react-redux";
 import { selectCurrentToken } from "@/lib/redux/features/auth/authSlice";
 import { useClaimMasteryLabResultMutation } from "@/lib/redux/api/isoStandardsApi";
 import { getOrCreateGuestId } from "@/lib/apiUsage/guestId";
+import { dashboardUrl } from "@/lib/config/dashboard";
+import { toast } from "sonner";
 
 const PENDING_MASTERY_RESULT_KEY = "mastery_pending_result";
 
@@ -545,18 +547,59 @@ export default function SuccessEvaluationPage() {
                       )}
                   </p>
                 </div>
-                <a
-                  href="https://dashboard.isobrain.ai/user/certificates"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center gap-2 rounded-full bg-[var(--ib-acc)] px-8 py-4 text-xs font-bold uppercase tracking-wider text-white transition-transform hover:scale-105 md:text-sm"
-                >
-                  <Award size={18} className="shrink-0" />
-                  {t(
-                    "mastery.viewCertificate",
-                    "View Certificate in Dashboard"
-                  )}
-                </a>
+                <div className="flex flex-col gap-3 sm:flex-row">
+                  <a
+                    href={
+                      assessmentData?.certificate?.dashboardUrl ||
+                      dashboardUrl("/user/certificates")
+                    }
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center justify-center gap-2 rounded-full bg-[var(--ib-acc)] px-8 py-4 text-xs font-bold uppercase tracking-wider text-white transition-transform hover:scale-105 md:text-sm"
+                  >
+                    <Award size={18} className="shrink-0" />
+                    {t(
+                      "mastery.viewCertificate",
+                      "View Certificate in Dashboard"
+                    )}
+                  </a>
+                  {assessmentData?.certificate?.id ||
+                  assessmentData?.certificate?.shareUrl ? (
+                    <button
+                      type="button"
+                      onClick={async () => {
+                        const shareUrl =
+                          assessmentData?.certificate?.shareUrl ||
+                          dashboardUrl(
+                            `/certificates/${assessmentData?.certificate?.id}`,
+                          );
+                        try {
+                          if (navigator.share) {
+                            await navigator.share({
+                              title:
+                                "ISO Mastery Lab – Certificate of Competency",
+                              text: "I earned my ISO Competency certificate on ISOBrain Mastery Lab.",
+                              url: shareUrl,
+                            });
+                          } else {
+                            await navigator.clipboard.writeText(shareUrl);
+                            toast.success("Certificate share link copied");
+                          }
+                        } catch {
+                          try {
+                            await navigator.clipboard.writeText(shareUrl);
+                            toast.success("Certificate share link copied");
+                          } catch {
+                            toast.error("Could not share certificate link");
+                          }
+                        }
+                      }}
+                      className="inline-flex items-center justify-center gap-2 rounded-full border border-[var(--ib-line)] bg-[var(--ib-card)] px-8 py-4 text-xs font-bold uppercase tracking-wider text-[var(--ib-ink)] transition-colors hover:border-[var(--ib-acc)] hover:text-[var(--ib-acc)] md:text-sm"
+                    >
+                      Share certificate
+                    </button>
+                  ) : null}
+                </div>
               </div>
             </div>
           )}

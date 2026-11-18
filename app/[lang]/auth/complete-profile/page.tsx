@@ -228,9 +228,9 @@ const CompleteProfileContent = () => {
         <div className="text-center text-xs text-[var(--ib-mute)] mt-6">
           <p>
             {t('auth.byContinuing')}{" "}
-            <Link href="#" className="text-[var(--ib-acc)] hover:underline">{t('footer.terms')}</Link>{" "}
+            <Link href={`/${lang}/terms-of-service`} className="text-[var(--ib-acc)] hover:underline">{t('footer.terms')}</Link>{" "}
             {t('auth.and')}{" "}
-            <Link href="#" className="text-[var(--ib-acc)] hover:underline">{t('footer.privacy')}</Link>
+            <Link href={`/${lang}/privacy-policy`} className="text-[var(--ib-acc)] hover:underline">{t('footer.privacy')}</Link>
           </p>
         </div>
       </div>

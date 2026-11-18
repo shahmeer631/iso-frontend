@@ -983,7 +983,6 @@ export function getNavigatorPlainText(document: GeneratedDocumentData): string {
     document.executive_summary,
     document.process_sipoc,
     document.escalation_thresholds,
-    document.associated_forms_records,
   ]
     .map((p) => (p ? String(p).trim() : ""))
     .filter(Boolean);
@@ -1080,11 +1079,11 @@ export default function NavigatorDocumentView({ document, labels }: Props) {
     { title: "Critical Success Factors", body: document.critical_success_factors },
     { title: "Common Pitfalls & Warning Flags", body: document.common_pitfalls },
   ];
+  // Client revision: do not render document/record inventory lists in AI outputs.
   const dailyDiscreteAll = [
     { title: "Plain-Language Executive Summary", body: document.executive_summary },
     { title: "Process Approach / SIPOC", body: document.process_sipoc },
     { title: "Escalation & Exception Thresholds", body: document.escalation_thresholds },
-    { title: "Associated Forms, Records & Logs", body: document.associated_forms_records },
   ];
 
   let summaryTitle = "";

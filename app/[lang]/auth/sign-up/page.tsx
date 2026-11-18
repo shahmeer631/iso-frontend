@@ -227,13 +227,13 @@ const SignUpPage = () => {
           >
             <span>{t("dynamic.dyn_copy2024ISOBRAINAI_548")}</span>
             <Link
-              href="/privacy"
+              href={`/${lang}/privacy-policy`}
               className="transition-colors hover:text-[var(--ib-ink)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ib-acc)]"
             >
               {t("auth.privacyPolicy")}
             </Link>
             <Link
-              href="/terms"
+              href={`/${lang}/terms-of-service`}
               className="transition-colors hover:text-[var(--ib-ink)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ib-acc)]"
             >
               {t("auth.termsOfService")}
@@ -364,13 +364,13 @@ const SignUpPage = () => {
               <p>{t("dynamic.dyn_copy2024ISOBRAINAI_548")}</p>
               <div className="flex justify-center gap-4">
                 <Link
-                  href="#"
+                  href={`/${lang}/privacy-policy`}
                   className="transition-colors hover:text-[var(--ib-ink)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ib-acc)]"
                 >
                   {t("auth.privacyPolicy")}
                 </Link>
                 <Link
-                  href="#"
+                  href={`/${lang}/terms-of-service`}
                   className="transition-colors hover:text-[var(--ib-ink)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ib-acc)]"
                 >
                   {t("auth.termsOfService")}

@@ -85,13 +85,18 @@ export default function GetStartedCard({
           className="h-4 w-1 rounded-full bg-[var(--ib-acc)]"
           aria-hidden
         />
-        Set your context
+        Set your RACI competency profile
       </h3>
+      <p className="relative z-[1] mt-2 text-xs font-medium leading-relaxed text-[var(--ib-mute)] sm:text-sm">
+        Three inputs — industry, management level, and department — shape questions
+        across requirements, implementation, auditing, and daily use of the relevant
+        standards.
+      </p>
 
       <div className="relative z-[1] mt-6 space-y-5">
         <div>
           <p className="mb-2 pl-0.5 text-[12px] font-semibold uppercase tracking-[0.05em] text-[var(--ib-acc)] sm:text-[13px]">
-            Step 1 — Select Your Industry
+            Step 1 — Industry (operating context)
           </p>
           <Select
             onValueChange={(value) => {
@@ -119,7 +124,7 @@ export default function GetStartedCard({
 
         <div>
           <p className="mb-2 pl-0.5 text-[12px] font-semibold uppercase tracking-[0.05em] text-[var(--ib-acc)] sm:text-[13px]">
-            Step 2 — Define your management level
+            Step 2 — Management level (accountable)
           </p>
           <Select
             onValueChange={(value) => {
@@ -147,7 +152,7 @@ export default function GetStartedCard({
 
         <div>
           <p className="mb-2 pl-0.5 text-[12px] font-semibold uppercase tracking-[0.05em] text-[var(--ib-acc)] sm:text-[13px]">
-            Step 3 — Choose your department or function
+            Step 3 — Department / function (responsible)
           </p>
           <Select
             onValueChange={(value) => {

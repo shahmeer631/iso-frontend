@@ -182,11 +182,11 @@ function sanitizeVisibleChatLabel(text: string): string {
     return "Creating summary…";
   }
   if (
-    /generate exactly 5 difficult|exam-style starter questions|starter study questions/.test(
+    /generate exactly 5 difficult|exam-style starter questions|starter study questions|open-ended exploration questions/.test(
       lower,
     )
   ) {
-    return "Suggested study questions";
+    return "Suggested questions";
   }
   if (
     /generate difficult exam questions|certification-style questions|practice_questions/.test(
@@ -246,6 +246,8 @@ const starterQuestionsCache = new Map<
   { questions: string[]; expiresAt: number }
 >();
 const STARTER_CACHE_TTL_MS = 10 * 60 * 1000;
+/** Bump when starter prompt/style changes so stale exam chips are not reused. */
+const STARTER_CACHE_VERSION = "explore-v2";
 
 function suggestionsErrorText(error: unknown): string {
   if (!error) return "";
@@ -344,7 +346,7 @@ async function fetchLibraryStarterQuestions(
       const formData = new FormData();
       formData.append(
         "messages",
-        "Generate exam-style starter study questions for the selected ISO standard.",
+        "Generate short open-ended exploration questions about what a learner should understand in the selected ISO standard.",
       );
       formData.append(
         "context",
@@ -390,7 +392,7 @@ async function fetchLibraryStarterQuestions(
       const result = await res.json();
       if (!result?.success || !result?.data?.response) return [];
 
-      const fromFollowups = filterExamStyleFollowups(
+      const fromFollowups = filterExplorationStarterFollowups(
         Array.isArray(result.data.suggested_followups)
           ? result.data.suggested_followups
           : [],
@@ -398,7 +400,7 @@ async function fetchLibraryStarterQuestions(
       const lines = String(result.data.response)
         .split("\n")
         .filter((l: string) => l.trim().length > 5);
-      return filterExamStyleFollowups([
+      return filterExplorationStarterFollowups([
         ...fromFollowups,
         ...lines.map((l: string) =>
           l.replace(/^[\d\.\-\*]+\s*/, "").replace(/^"|"$/g, "").trim(),
@@ -480,7 +482,55 @@ function filterExamStyleFollowups(items: string[]): string[] {
   return out;
 }
 
-/** Fetch grounded exam-style follow-ups for the selected Library standard. */
+/** Short NotebookLM-style exploration chips for the Library landing view. */
+function filterExplorationStarterFollowups(items: string[]): string[] {
+  const seen = new Set<string>();
+  const out: string[] = [];
+  for (const raw of items || []) {
+    let q = String(raw || "")
+      .trim()
+      .replace(/^[\d\.\)\-\*]+\s*/, "")
+      .replace(/^\*\*q\d+\.\*\*\s*/i, "")
+      .replace(/^q\d+\.\s*/i, "")
+      .replace(/^"|"$/g, "")
+      .trim();
+    if (!q || q.length < 18) continue;
+    if (/^#{1,3}\s/.test(q) || /^model answer/i.test(q)) continue;
+    // Drop personal-org coaching and long auditor scenarios
+    if (
+      /\byour (company|organization|qms|scope)\b/i.test(q) ||
+      /^what is your\b/i.test(q) ||
+      /^what do you know\b/i.test(q)
+    ) {
+      continue;
+    }
+    if (
+      q.length > 160 ||
+      /\bbased on\b.+\bclause/i.test(q) ||
+      /\bhow should an auditor\b/i.test(q)
+    ) {
+      continue;
+    }
+    if (q.length > 140) {
+      const cut = q.slice(0, 137).replace(/\s+\S*$/, "").trim();
+      q = /\?$/.test(cut) ? cut : `${cut}?`;
+    }
+    const looksExploration =
+      /^(what|how|why|which|when|where|who)\b/i.test(q) ||
+      /\b(principle|concept|benefit|purpose|requirement|documented information|role|performance|improvement|system)\b/i.test(
+        q,
+      );
+    if (!looksExploration) continue;
+    const key = q.toLowerCase().replace(/[^a-z0-9]+/g, " ").trim().slice(0, 80);
+    if (seen.has(key)) continue;
+    seen.add(key);
+    out.push(q);
+    if (out.length >= 5) break;
+  }
+  return out;
+}
+
+/** Fetch short open-ended exploration follow-ups for the selected Library standard. */
 async function fetchGroundedLibraryFollowups(params: {
   apiUrl: string;
   token?: string | null;
@@ -507,10 +557,9 @@ async function fetchGroundedLibraryFollowups(params: {
           details: [
             standardCode || "",
             userQuestion ? `Prior user question: ${userQuestion.slice(0, 400)}` : "",
-            "Generate difficult exam-style follow-up questions about requirements, evidence, purpose, and responsibilities for THIS selected ISO standard.",
-            "Each question must be specific to the selected standard — not generic coaching chips.",
-            'Do NOT use: "Can you give me a practical example?", "What are the common non-conformances in this area?", "How does this apply to a small organisation?", "What documentation is required?"',
-            "Do not ask about the learner's own organization.",
+            "Generate short open-ended exploration questions (max two lines each) about what the learner should know next in THIS selected ISO standard.",
+            "NotebookLM-style study chips: vary themes (principles, concepts, documented information, roles, performance, improvement).",
+            "Do NOT generate long auditor exam scenarios or personal-organization coaching.",
             answerSnippet ? String(answerSnippet).slice(0, 1200) : "",
           ]
             .filter(Boolean)
@@ -526,7 +575,7 @@ async function fetchGroundedLibraryFollowups(params: {
       followupData?.data?.questions ||
       followupData?.questions ||
       [];
-    return filterExamStyleFollowups(Array.isArray(raw) ? raw : []);
+    return filterExplorationStarterFollowups(Array.isArray(raw) ? raw : []);
   } catch (err) {
     console.error("Failed to fetch grounded library followups:", err);
     return [];
@@ -1168,7 +1217,18 @@ const DocumentSkeleton = () => {
   );
 };
 
-const InitialChatView = ({ title, summary, code, category, standardId, onActionClick }: any) => {
+const InitialChatView = ({
+  title,
+  summary,
+  code,
+  category,
+  standardId,
+  onActionClick,
+  inputValue,
+  onInputChange,
+  onSend,
+  isChatBusy,
+}: any) => {
   const { t } = useTranslation();
   const token = useSelector(selectCurrentToken);
 
@@ -1181,7 +1241,8 @@ const InitialChatView = ({ title, summary, code, category, standardId, onActionC
     let isMounted = true;
     setSuggestions([]); // clear stale chips when standard changes
 
-    const cached = starterQuestionsCache.get(standardId);
+    const cacheKey = `${STARTER_CACHE_VERSION}:${standardId}`;
+    const cached = starterQuestionsCache.get(cacheKey);
     if (cached && cached.expiresAt > Date.now() && cached.questions.length) {
       setSuggestions(cached.questions);
       return;
@@ -1189,13 +1250,13 @@ const InitialChatView = ({ title, summary, code, category, standardId, onActionC
 
     // Cancel in-flight starter fetches for other standards (rapid Library browsing).
     for (const [id, entry] of starterQuestionsInflight.entries()) {
-      if (id !== standardId) {
+      if (id !== cacheKey) {
         entry.abort?.abort();
         starterQuestionsInflight.delete(id);
       }
     }
 
-    const existing = starterQuestionsInflight.get(standardId);
+    const existing = starterQuestionsInflight.get(cacheKey);
     let abort = existing?.abort;
     let fetchPromise = existing?.promise;
 
@@ -1209,7 +1270,7 @@ const InitialChatView = ({ title, summary, code, category, standardId, onActionC
             abort!.signal,
           );
           if (cleaned.length) {
-            starterQuestionsCache.set(standardId, {
+            starterQuestionsCache.set(cacheKey, {
               questions: cleaned,
               expiresAt: Date.now() + STARTER_CACHE_TTL_MS,
             });
@@ -1217,13 +1278,13 @@ const InitialChatView = ({ title, summary, code, category, standardId, onActionC
           return cleaned;
         } finally {
           // Drop inflight as soon as settled so failures can retry on remount
-          const current = starterQuestionsInflight.get(standardId);
+          const current = starterQuestionsInflight.get(cacheKey);
           if (current?.promise === fetchPromise) {
-            starterQuestionsInflight.delete(standardId);
+            starterQuestionsInflight.delete(cacheKey);
           }
         }
       })();
-      starterQuestionsInflight.set(standardId, { promise: fetchPromise, abort });
+      starterQuestionsInflight.set(cacheKey, { promise: fetchPromise, abort });
     }
 
     setIsFetchingSuggestions(true);
@@ -1252,11 +1313,11 @@ const InitialChatView = ({ title, summary, code, category, standardId, onActionC
   if (!title) return <DocumentSkeleton />;
 
   return (
-    <div className="relative mt-2 flex h-full w-full flex-1 flex-col items-center justify-start overflow-y-auto px-4 font-sans no-scrollbar md:mt-4 md:px-8 lg:px-12">
+    <div className="relative mt-2 flex min-h-0 h-full w-full flex-1 flex-col items-center justify-start overflow-y-auto overscroll-contain px-4 pb-6 font-sans md:mt-4 md:px-8 lg:px-12">
       <div className="pointer-events-none absolute right-0 top-0 -z-10 size-[480px] rounded-full bg-[var(--ib-accbg)] blur-[110px]" />
       <div className="pointer-events-none absolute bottom-0 left-0 -z-10 size-[400px] rounded-full bg-[color-mix(in_srgb,var(--ib-acc)_8%,transparent)] blur-[110px]" />
 
-      <div className="w-full max-w-4xl pb-10">
+      <div className="w-full max-w-4xl pb-24 sm:pb-28">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -1278,7 +1339,7 @@ const InitialChatView = ({ title, summary, code, category, standardId, onActionC
           </div>
 
           {summary ? (
-            <div className="mx-auto mb-8 w-full rounded-2xl border border-[var(--ib-line)] bg-[var(--ib-card)] px-5 py-4 text-left sm:px-6 sm:py-5">
+            <div className="mx-auto mb-5 w-full rounded-2xl border border-[var(--ib-line)] bg-[var(--ib-card)] px-5 py-4 text-left sm:mb-6 sm:px-6 sm:py-5">
               <p className="mb-1.5 text-[11px] font-bold uppercase tracking-[0.12em] text-[var(--ib-acc)]">
                 Overview
               </p>
@@ -1287,6 +1348,17 @@ const InitialChatView = ({ title, summary, code, category, standardId, onActionC
               </p>
             </div>
           ) : null}
+
+          {/* Ask bar sits directly under Overview (client revision) */}
+          <div className="mx-auto mb-8 w-full max-w-4xl">
+            <ChatInput
+              value={inputValue}
+              onChange={onInputChange}
+              onSend={(text?: string) => onSend(text)}
+              isLoading={isChatBusy}
+              compact
+            />
+          </div>
 
           <p className="mb-4 text-[13px] font-semibold text-[var(--ib-mute)] sm:text-[14px]">
             Suggested questions
@@ -1297,12 +1369,12 @@ const InitialChatView = ({ title, summary, code, category, standardId, onActionC
               {[1, 2, 3, 4].map((i) => (
                 <div
                   key={i}
-                  className="flex min-h-[72px] w-full items-start gap-3 rounded-2xl border border-[var(--ib-line)] bg-[var(--ib-card)] px-4 py-4"
+                  className="flex min-h-[56px] w-full items-start gap-3 rounded-2xl border border-[var(--ib-line)] bg-[var(--ib-card)] px-4 py-3.5"
                 >
                   <div className="mt-0.5 size-8 shrink-0 animate-pulse rounded-lg bg-[var(--ib-accbg)]" />
                   <div className="flex flex-1 flex-col gap-2 pt-1">
                     <div className="h-3.5 w-full animate-pulse rounded-full bg-[var(--ib-line)]" />
-                    <div className="h-3.5 w-4/5 animate-pulse rounded-full bg-[var(--ib-line)]" />
+                    <div className="h-3.5 w-3/5 animate-pulse rounded-full bg-[var(--ib-line)]" />
                   </div>
                 </div>
               ))}
@@ -1314,12 +1386,13 @@ const InitialChatView = ({ title, summary, code, category, standardId, onActionC
                   key={index}
                   type="button"
                   onClick={() => onActionClick(quiz)}
-                  className="group flex min-h-[72px] w-full items-start gap-3 rounded-2xl border border-[var(--ib-line)] bg-[var(--ib-card)] px-4 py-4 text-left transition-all hover:-translate-y-0.5 hover:border-[var(--ib-acc)] hover:bg-[var(--ib-accbg)] sm:px-5"
+                  title={quiz}
+                  className="group flex min-h-[56px] w-full items-start gap-3 rounded-2xl border border-[var(--ib-line)] bg-[var(--ib-card)] px-4 py-3.5 text-left transition-all hover:-translate-y-0.5 hover:border-[var(--ib-acc)] hover:bg-[var(--ib-accbg)] sm:px-5"
                 >
                   <span className="mt-0.5 grid size-8 shrink-0 place-items-center rounded-lg bg-[var(--ib-accbg)] font-sans text-[13px] font-bold text-[var(--ib-acc)] transition-colors group-hover:bg-[var(--ib-acc)] group-hover:text-white">
                     {index + 1}
                   </span>
-                  <span className="font-sans text-[15px] font-semibold leading-[1.55] text-[var(--ib-ink)] sm:text-[16px]">
+                  <span className="line-clamp-2 font-sans text-[15px] font-semibold leading-[1.45] text-[var(--ib-ink)] sm:text-[16px]">
                     {quiz}
                   </span>
                 </button>
@@ -1819,10 +1892,12 @@ const MessageList = ({
                   {msg.followups.map((action, idx) => (
                     <button
                       key={idx}
+                      type="button"
                       onClick={() => onActionClick(action)}
-                      className="w-full rounded-2xl border border-[var(--ib-line)] bg-[var(--ib-card)] px-4 py-3 text-left text-[13px] font-semibold leading-relaxed text-[var(--ib-ink)] transition-all hover:-translate-y-0.5 hover:border-[var(--ib-acc)] hover:bg-[var(--ib-accbg)] md:px-5 md:text-[14px]"
+                      title={action}
+                      className="w-full rounded-2xl border border-[var(--ib-line)] bg-[var(--ib-card)] px-4 py-3 text-left text-[13px] font-semibold leading-[1.45] text-[var(--ib-ink)] transition-all hover:-translate-y-0.5 hover:border-[var(--ib-acc)] hover:bg-[var(--ib-accbg)] md:px-5 md:text-[14px]"
                     >
-                      {action}
+                      <span className="line-clamp-2">{action}</span>
                     </button>
                   ))}
                 </div>
@@ -1851,6 +1926,7 @@ const ChatInput = ({
   onSend,
   isLoading,
   placeholder,
+  compact = false,
 }: any) => {
   const { t } = useTranslation();
   const resolvedPlaceholder = placeholder ?? t("library.askAnything");
@@ -1925,7 +2001,13 @@ const ChatInput = ({
   };
 
   return (
-    <div className="relative z-30 mb-6 w-full min-w-0 shrink-0 bg-transparent px-3 pb-8 pt-2 font-sans sm:mb-8 sm:px-4 sm:pb-10 md:mb-10 md:px-6 md:pb-12 lg:px-8">
+    <div
+      className={
+        compact
+          ? "relative z-30 w-full min-w-0 shrink-0 bg-transparent px-0 pb-0 pt-0 font-sans"
+          : "relative z-30 mb-6 w-full min-w-0 shrink-0 bg-transparent px-3 pb-8 pt-2 font-sans sm:mb-8 sm:px-4 sm:pb-10 md:mb-10 md:px-6 md:pb-12 lg:px-8"
+      }
+    >
       <div className="mx-auto w-full max-w-4xl">
         <div className="group relative">
           <div className="relative flex items-center gap-2 rounded-[1.35rem] border border-[var(--ib-line)] bg-[var(--ib-card)] p-1.5 shadow-[0_16px_40px_-28px_rgba(11,18,32,0.45)] transition-all duration-300 group-focus-within:border-[var(--ib-acc)] group-focus-within:ring-2 group-focus-within:ring-[color-mix(in_srgb,var(--ib-acc)_16%,transparent)] sm:gap-3 sm:rounded-[1.5rem] sm:p-2">
@@ -1973,10 +2055,12 @@ const ChatInput = ({
             </div>
           </div>
         </div>
+        {!compact && (
         <div className="mt-3 flex items-center justify-center gap-2 text-[10px] font-semibold uppercase tracking-[0.14em] text-[var(--ib-mute)] sm:mt-4 sm:text-[11px]">
           <ShieldCheck size={12} className="text-[var(--ib-acc)]/50" />
           {t("library.aiEngineBranding")}
         </div>
+        )}
       </div>
     </div>
   );
@@ -2369,7 +2453,7 @@ const ChatInterface = ({ id }: { id: string }) => {
           // Fetch grounded followups for the last message if it's a bot message
           if (formattedMessages.length > 0) {
             const lastMsg = formattedMessages[formattedMessages.length - 1];
-            const existing = filterExamStyleFollowups(
+            const existing = filterExplorationStarterFollowups(
               Array.isArray(lastMsg.followups) ? lastMsg.followups : [],
             );
             if (lastMsg.role === "bot" && !lastMsg.flashcardDeck && existing.length < 4) {
@@ -2504,11 +2588,18 @@ const ChatInterface = ({ id }: { id: string }) => {
           router.replace(`${pathname}?${params.toString()}`);
         }
 
-        const remoteFollowups = filterExamStyleFollowups(
-          Array.isArray(result.data.suggested_followups)
-            ? result.data.suggested_followups
-            : [],
-        );
+        const remoteFollowups =
+          libraryTask === "exam_questions" || libraryTask === "quiz"
+            ? filterExamStyleFollowups(
+                Array.isArray(result.data.suggested_followups)
+                  ? result.data.suggested_followups
+                  : [],
+              )
+            : filterExplorationStarterFollowups(
+                Array.isArray(result.data.suggested_followups)
+                  ? result.data.suggested_followups
+                  : [],
+              );
         const botId = Date.now() + 1;
 
         // Commit the assistant message immediately so the UI never goes blank
@@ -2663,7 +2754,7 @@ const ChatInterface = ({ id }: { id: string }) => {
         </div>
       </div>
 
-      <div className="flex-1 flex flex-col relative overflow-hidden h-full z-0 mt-20">
+      <div className="relative z-0 mt-20 flex h-full min-h-0 flex-1 flex-col overflow-hidden">
         <ChatHeader
           onToggleLeftSidebar={() => setIsLeftSidebarOpen(true)}
           onToggleRightSidebar={() => setIsSidebarOpen(true)}
@@ -2674,9 +2765,9 @@ const ChatInterface = ({ id }: { id: string }) => {
             t("library.analyzingDetails"),
           )}
         />
-        <div className="flex-1 overflow-hidden flex flex-row w-full h-full pt-[88px] sm:pt-[96px]">
-          {/* Main Chat Area — min-w-0 so flex child can shrink/grow with viewport */}
-          <div className="flex-1 min-w-0 w-full flex flex-col h-full border-r border-[var(--ib-line)] transition-all duration-500 relative">
+        <div className="flex min-h-0 flex-1 flex-row overflow-hidden w-full h-full pt-[88px] sm:pt-[96px]">
+          {/* Main Chat Area — min-h-0/min-w-0 so nested scroll areas can reveal last chips */}
+          <div className="relative flex min-h-0 min-w-0 w-full flex-1 flex-col h-full border-r border-[var(--ib-line)] transition-all duration-500">
 
             {/* Back to Chat button inside flashcards view removed from absolute position to avoid overlap */}
 
@@ -2926,7 +3017,7 @@ const ChatInterface = ({ id }: { id: string }) => {
               </div>
             ) : (
               <>
-                <div className="flex-1 overflow-hidden flex flex-col gap-1">
+                <div className="flex min-h-0 flex-1 flex-col gap-1 overflow-hidden">
                   {isHistoryLoading ? (
                     <DocumentSkeleton />
                   ) : !isChatStarted ? (
@@ -2940,6 +3031,10 @@ const ChatInterface = ({ id }: { id: string }) => {
                         category={standard?.category?.name || t('library.isoCompliance')}
                         standardId={standardId}
                         onActionClick={(action: string) => handleSend(action)}
+                        inputValue={inputValue}
+                        onInputChange={setInputValue}
+                        onSend={(text?: string) => handleSend(text)}
+                        isChatBusy={isChatBusy}
                       />
                     )
                   ) : (
@@ -2989,12 +3084,14 @@ const ChatInterface = ({ id }: { id: string }) => {
                   )}
                 </div>
 
-                <ChatInput
-                  value={inputValue}
-                  onChange={setInputValue}
-                  onSend={(text?: string) => handleSend(text)}
-                  isLoading={isChatBusy}
-                />
+                {isChatStarted ? (
+                  <ChatInput
+                    value={inputValue}
+                    onChange={setInputValue}
+                    onSend={(text?: string) => handleSend(text)}
+                    isLoading={isChatBusy}
+                  />
+                ) : null}
               </>
             )}
           </div>

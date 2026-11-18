@@ -94,7 +94,14 @@ const isoNavigatorSlice = createSlice({
     ) => {
       state.chatHistory.push(action.payload);
     },
-    setSessionId: (state, action: PayloadAction<string>) => {
+    setChatHistory: (state, action: PayloadAction<ChatHistoryItem[]>) => {
+      state.chatHistory = action.payload;
+    },
+    clearChatHistory: (state) => {
+      state.chatHistory = [];
+      state.sessionId = null;
+    },
+    setSessionId: (state, action: PayloadAction<string | null>) => {
       state.sessionId = action.payload;
     },
     resetNavigator: () => {
@@ -110,6 +117,8 @@ export const {
   restoreGeneratedDocument,
   clearGeneratedDocument,
   addChatMessage,
+  setChatHistory,
+  clearChatHistory,
   setSessionId,
   resetNavigator,
 } = isoNavigatorSlice.actions;

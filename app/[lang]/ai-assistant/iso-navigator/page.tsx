@@ -54,6 +54,10 @@ import {
 
   PanelLeftOpen,
 
+  History,
+
+  Plus,
+
 } from "lucide-react";
 
 import ReactMarkdown from "react-markdown";
@@ -93,6 +97,10 @@ import {
 
   addChatMessage,
 
+  setChatHistory,
+
+  clearChatHistory,
+
   setSessionId,
 
   resetNavigator,
@@ -113,7 +121,14 @@ import {
 
   useGetNavigatorImsDocumentsMutation,
 
+  useGetNavigatorChatSessionsQuery,
+
+  useLazyGetNavigatorChatHistoryQuery,
+
 } from "@/lib/redux/api/isoNavigatorApi";
+
+import { useSelector } from "react-redux";
+import { selectCurrentToken } from "@/lib/redux/features/auth/authSlice";
 
 import { ISONavigatorFormData } from "@/types/iso-navigator";
 
@@ -278,7 +293,13 @@ export default function ISONavigator() {
   const [chatInput, setChatInput] = useState("");
 
   /** Collapsed by default so webinar / full-screen document review stays wide. */
-  const [chatCollapsed, setChatCollapsed] = useState(true);
+  const token = useSelector(selectCurrentToken);
+  const [historyOpen, setHistoryOpen] = useState(false);
+  const {
+    data: navigatorSessions = [],
+    refetch: refetchNavigatorSessions,
+  } = useGetNavigatorChatSessionsQuery(undefined, { skip: !token });
+  const [fetchNavigatorHistory] = useLazyGetNavigatorChatHistoryQuery();
 
   const [leftPanelCollapsed, setLeftPanelCollapsed] = useState(false);
 
@@ -953,7 +974,7 @@ export default function ISONavigator() {
 
         },
 
-        session_id: sessionId || ("iso_" + Math.random().toString(36).substring(7)),
+        ...(sessionId ? { session_id: sessionId } : {}),
 
       }).unwrap();
 
@@ -988,11 +1009,12 @@ export default function ISONavigator() {
 
         );
 
-        if (response.session_id)
-
+        if (response.session_id) {
           dispatch(setSessionId(response.session_id));
-
-
+          if (token) {
+            void refetchNavigatorSessions();
+          }
+        }
 
         // Ensure we scroll to bottom when AI response arrives
 
@@ -1078,24 +1100,33 @@ export default function ISONavigator() {
             )}
             {leftPanelCollapsed ? "Show data generator" : "Collapse data generator"}
           </button>
+          {token ? (
+            <button
+              type="button"
+              onClick={() => setHistoryOpen((v) => !v)}
+              className="inline-flex items-center gap-2 rounded-full border border-[var(--ib-line)] bg-[var(--ib-card)] px-3.5 py-1.5 text-[11px] font-semibold uppercase tracking-wider text-[var(--ib-mute)] transition-colors hover:border-[var(--ib-acc)] hover:text-[var(--ib-acc)]"
+            >
+              <History className="size-3.5" aria-hidden />
+              {historyOpen ? "Hide history" : "Chat history"}
+            </button>
+          ) : null}
           <button
             type="button"
-            onClick={() => setChatCollapsed((v) => !v)}
-            className="inline-flex items-center gap-2 rounded-full border border-[var(--ib-line)] bg-[var(--ib-card)] px-3.5 py-1.5 text-[11px] font-semibold uppercase tracking-wider text-[var(--ib-mute)] transition-colors hover:border-[var(--ib-acc)] hover:text-[var(--ib-acc)]"
+            onClick={() => {
+              dispatch(clearChatHistory());
+              setHistoryOpen(false);
+            }}
+            className="inline-flex items-center gap-2 rounded-full border border-[var(--ib-acc)]/30 bg-[var(--ib-accbg)] px-3.5 py-1.5 text-[11px] font-semibold uppercase tracking-wider text-[var(--ib-acc)] transition-colors hover:border-[var(--ib-acc)]"
           >
-            {chatCollapsed ? (
-              <ChevronDown className="size-3.5" aria-hidden />
-            ) : (
-              <ChevronUp className="size-3.5" aria-hidden />
-            )}
-            {chatCollapsed ? "Expand contextual chat" : "Collapse contextual chat"}
+            <Plus className="size-3.5" aria-hidden />
+            New chat
           </button>
         </div>
       </header>
 
+      <div className="mx-auto flex w-full max-w-[1600px] flex-col gap-4 px-0 md:h-[calc(100dvh-6.5rem)] md:min-h-[640px] md:max-h-[980px]">
 
-
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-5 items-stretch w-full max-w-[1600px] mx-auto px-0 md:h-[calc(100dvh-7rem)] md:min-h-[600px] md:max-h-[920px] md:overflow-hidden">
+      <div className="grid min-h-0 flex-1 grid-cols-1 items-stretch gap-4 md:grid-cols-12 md:gap-5 md:overflow-hidden">
 
         {/* Left Column - Form */}
 
@@ -2070,11 +2101,12 @@ export default function ISONavigator() {
 
           ) : (
 
-            <div className="flex flex-col flex-1 min-h-0 basis-0 h-full overflow-hidden animate-in fade-in duration-700">
+            <div className="flex h-full min-h-0 flex-1 basis-0 flex-col overflow-hidden animate-in fade-in duration-700">
 
-              <div className="h-full min-h-0 overflow-y-auto overflow-x-hidden overscroll-contain custom-thin-scrollbar">
+              <div className="custom-thin-scrollbar h-full min-h-0 flex-1 overflow-y-auto overflow-x-hidden overscroll-contain">
 
-              <div className="p-4 md:p-5 border-b border-[var(--ib-line)] bg-[var(--ib-bg)]/80 backdrop-blur-[8px] flex flex-col gap-3 w-full min-w-0">
+              <div className="flex min-h-full w-full min-w-0 flex-col">
+              <div className="flex w-full min-w-0 shrink-0 flex-col gap-3 border-b border-[var(--ib-line)] bg-[var(--ib-bg)]/80 p-4 backdrop-blur-[8px] md:p-5">
 
                 {/* Meta row only: badges left, actions right — title must NOT sit in this flex row */}
                 <div className="flex flex-wrap items-start justify-between gap-x-3 gap-y-2 w-full min-w-0">
@@ -2238,52 +2270,6 @@ export default function ISONavigator() {
                     </p>
                   )}
 
-                  {(() => {
-                    const docs = [
-                      ...(selectedISO?.documents || []),
-                      ...(selectedISO?.records || []),
-                    ];
-                    if (docs.length < 2) return null;
-                    return (
-                      <div className="flex flex-wrap gap-1.5 pt-1 w-full min-w-0 content-start">
-                        {docs.map((d: any, idx: number) => {
-                          const active = formData.output_type === d?.title;
-                          return (
-                            <button
-                              key={`switch-${idx}-${d?.title}`}
-                              type="button"
-                              disabled={isGenerating}
-                              onClick={() =>
-                                selectDocumentAndGenerate({
-                                  output_type: d?.title,
-                                  document_title: d?.title,
-                                  clause: d?.clause || "",
-                                  document_taxonomy:
-                                    d?.type === "recommended"
-                                      ? "recommended"
-                                      : d?.type === "record" ||
-                                          selectedISO?.records?.some(
-                                            (r: any) => r?.title === d?.title,
-                                          )
-                                        ? "mandatory_record"
-                                        : "mandatory_document",
-                                })
-                              }
-                              title={d?.title}
-                              className={`max-w-full truncate rounded-lg border px-2.5 py-1.5 text-[11px] font-medium transition-colors disabled:opacity-40 ${
-                                active
-                                  ? "border-[var(--ib-acc)]/50 bg-[var(--ib-accbg)] text-[var(--ib-acc)]"
-                                  : "border-[var(--ib-line)] bg-[var(--ib-card)] text-[var(--ib-mute)] hover:border-[color-mix(in_srgb,var(--ib-acc)_35%,var(--ib-line))] hover:text-[var(--ib-ink)]"
-                              }`}
-                            >
-                              {d?.title}
-                            </button>
-                          );
-                        })}
-                      </div>
-                    );
-                  })()}
-
                   {(generatedDocument.generation_timestamp || generatedDocument.word_count) && (
 
                     <p className="text-[11px] font-normal leading-[1.3] text-[var(--ib-mute)]">
@@ -2305,7 +2291,7 @@ export default function ISONavigator() {
 
               </div>
 
-              <div className="p-4 sm:p-5 md:p-6 lg:p-8 bg-[var(--ib-card)] min-w-0">
+              <div className="min-h-0 min-w-0 flex-1 bg-[var(--ib-card)] p-4 sm:p-5 md:p-6 lg:p-8">
 
                 <NavigatorDocumentView
                   document={generatedDocument}
@@ -2321,6 +2307,7 @@ export default function ISONavigator() {
                 />
 
               </div>
+              </div>
 
               </div>
 
@@ -2334,69 +2321,115 @@ export default function ISONavigator() {
 
 
 
-      {/* Bottom Row - Contextual chat (collapsible for full-width document view) */}
-
-      <div className="mt-8 bg-[var(--ib-card)] border border-[var(--ib-line)] rounded-3xl shadow-2xl overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-500 max-w-[1600px] mx-auto w-full">
-
-        <button
-          type="button"
-          onClick={() => setChatCollapsed((v) => !v)}
-          className="w-full p-3 sm:p-4 md:p-5 flex items-center gap-4 border-b border-[var(--ib-line)] bg-[var(--ib-card)] text-left hover:bg-[var(--ib-accbg)]/40 transition-colors"
-          aria-expanded={!chatCollapsed}
-        >
-
-          <div className="p-2 bg-[var(--ib-accbg)] text-[var(--ib-acc)] rounded-xl">
-
-            <Sparkles className="w-5 h-5 text-[var(--ib-acc)]" />
-
+      {/* Bottom chat — always open; history + messages fill remaining space */}
+      <div className="flex shrink-0 flex-col overflow-hidden rounded-3xl border border-[var(--ib-line)] bg-[var(--ib-card)] shadow-2xl">
+        <div className="flex items-center gap-3 border-b border-[var(--ib-line)] bg-[var(--ib-card)] p-3 sm:p-4">
+          <div className="rounded-xl bg-[var(--ib-accbg)] p-2 text-[var(--ib-acc)]">
+            <Sparkles className="h-5 w-5 text-[var(--ib-acc)]" />
           </div>
-
           <div className="min-w-0 flex-1">
-            <div className="text-[10px] sm:text-xs md:text-sm lg:text-base font-black text-[var(--ib-ink)] uppercase tracking-wider">
-              {t('isoNavigator.chatTitle')}
+            <div className="text-[10px] font-black uppercase tracking-wider text-[var(--ib-ink)] sm:text-xs md:text-sm">
+              {t("isoNavigator.chatTitle")}
             </div>
-            {!chatCollapsed && (
-              <p className="mt-1 text-[8px] font-black uppercase tracking-widest text-[var(--ib-mute)]">
-                {t('isoNavigator.chatDesc')}
-              </p>
-            )}
+            <p className="mt-0.5 text-[8px] font-black uppercase tracking-widest text-[var(--ib-mute)]">
+              {t("isoNavigator.chatDesc")}
+            </p>
           </div>
-          {chatCollapsed ? (
-            <ChevronDown className="size-5 shrink-0 text-[var(--ib-mute)]" aria-hidden />
-          ) : (
-            <ChevronUp className="size-5 shrink-0 text-[var(--ib-mute)]" aria-hidden />
-          )}
-        </button>
+        </div>
 
+        <div className="flex min-h-0 flex-col gap-3 p-3 sm:p-4 md:flex-row md:gap-4 md:p-5">
+          {token && historyOpen ? (
+            <div className="flex max-h-[220px] w-full shrink-0 flex-col overflow-hidden rounded-2xl border border-[var(--ib-line)] bg-[var(--ib-bg)] md:max-h-[280px] md:w-64">
+              <div className="border-b border-[var(--ib-line)] px-3 py-2 text-[10px] font-black uppercase tracking-widest text-[var(--ib-mute)]">
+                Saved chats
+              </div>
+              <div className="flex-1 overflow-y-auto p-2 custom-thin-scrollbar">
+                {navigatorSessions.length === 0 ? (
+                  <p className="px-2 py-4 text-xs text-[var(--ib-mute)]">No saved Navigator chats yet.</p>
+                ) : (
+                  navigatorSessions.map((session) => (
+                    <button
+                      key={session.id}
+                      type="button"
+                      onClick={async () => {
+                        try {
+                          const rows = await fetchNavigatorHistory(session.id).unwrap();
+                          const mapped = (rows || []).map((m) => {
+                            const raw = typeof m.message === "string" ? m.message : String(m.message || "");
+                            let content = raw;
+                            try {
+                              const parsed = JSON.parse(raw);
+                              if (Array.isArray(parsed) && parsed[0]?.content) {
+                                content = String(parsed[0].content);
+                              } else if (parsed?.content) {
+                                content = String(parsed.content);
+                              }
+                            } catch {
+                              /* plain text */
+                            }
+                            return {
+                              role: m.role === "assistant" || m.role === "ai" ? ("ai" as const) : ("user" as const),
+                              content,
+                              sources: Array.isArray(m.sources) ? m.sources : undefined,
+                            };
+                          });
+                          dispatch(setChatHistory(mapped));
+                          dispatch(setSessionId(session.id));
+                          setHistoryOpen(false);
+                          toast.success("Chat history loaded");
+                        } catch {
+                          toast.error("Could not load chat history");
+                        }
+                      }}
+                      className={`mb-1 w-full rounded-xl px-3 py-2.5 text-left text-xs transition-colors ${
+                        sessionId === session.id
+                          ? "bg-[var(--ib-acc)]/15 text-[var(--ib-acc)]"
+                          : "text-[var(--ib-ink)] hover:bg-[var(--ib-accbg)]"
+                      }`}
+                    >
+                      <span className="line-clamp-2 font-semibold leading-snug">
+                        {(session.title || "ISO Navigator chat").replace(/^ISO Navigator\s*[—\-]\s*/i, "") ||
+                          "ISO Navigator chat"}
+                      </span>
+                      <span className="mt-1 block text-[10px] text-[var(--ib-mute)]">
+                        {session.updatedAt
+                          ? new Date(session.updatedAt).toLocaleString()
+                          : ""}
+                      </span>
+                    </button>
+                  ))
+                )}
+              </div>
+            </div>
+          ) : null}
 
-
-        {!chatCollapsed && (
-        <div className="p-2 sm:p-3 md:p-8 space-y-8 max-w-[94.5vw] sm:max-w-[80vw] md:max-w-[90vw] lg:max-w-[99vw]">
-
-          <div className="flex flex-col space-y-6 min-w-0  ">
-
+          <div className="flex min-w-0 flex-1 flex-col gap-3">
             {(chatHistory.length > 0 || isChatting) && (
-
-              <div ref={chatContainerRef} onScroll={handleChatScroll} className="w-full min-w-0 bg-[var(--ib-bg)] border border-[var(--ib-line)] rounded-2xl p-5 text-left max-h-[400px] overflow-y-auto custom-thin-scrollbar relative">
+              <div
+                ref={chatContainerRef}
+                onScroll={handleChatScroll}
+                className="custom-thin-scrollbar relative max-h-[240px] min-h-[120px] w-full min-w-0 flex-1 overflow-y-auto rounded-2xl border border-[var(--ib-line)] bg-[var(--ib-bg)] p-4 text-left md:max-h-[280px]"
+              >
                 {chatHistory.map((msg, i) => (
                   <div
                     key={i}
                     className={`mb-4 flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
                   >
                     <div
-                      className={`p-3 rounded-2xl text-sm leading-relaxed ${msg.role === "user"
-                        ? "bg-[var(--ib-acc)] text-white rounded-tr-none font-medium max-w-[85%]"
-                        : "bg-[var(--ib-card)] text-[var(--ib-mute)] border border-[var(--ib-line)] rounded-tl-none w-full min-w-0"
-                        }`}
+                      className={`rounded-2xl p-3 text-sm leading-relaxed ${
+                        msg.role === "user"
+                          ? "max-w-[85%] rounded-tr-none bg-[var(--ib-acc)] font-medium text-white"
+                          : "w-full min-w-0 rounded-tl-none border border-[var(--ib-line)] bg-[var(--ib-card)] text-[var(--ib-mute)]"
+                      }`}
                     >
                       {msg.role !== "user" ? (
-                        <div className="prose prose-sm max-w-none w-full min-w-0 text-[var(--ib-ink)] prose-headings:text-[var(--ib-ink)] prose-p:text-[var(--ib-ink)]/90 prose-strong:text-[var(--ib-ink)] prose-li:text-[var(--ib-ink)]/90">
+                        <div className="prose prose-sm w-full min-w-0 max-w-none text-[var(--ib-ink)] prose-headings:text-[var(--ib-ink)] prose-p:text-[var(--ib-ink)]/90 prose-strong:text-[var(--ib-ink)] prose-li:text-[var(--ib-ink)]/90">
                           <ReactMarkdown
                             remarkPlugins={[remarkGfm]}
                             components={{
                               img: ({ ...props }) => (
                                 <h3 className="text-center">
-                                  <img {...props} className="inline-block max-w-full h-auto" alt={props.alt} />
+                                  <img {...props} className="inline-block h-auto max-w-full" alt={props.alt} />
                                 </h3>
                               ),
                               h1: ({ ...props }) => <h3 className="text-[var(--ib-acc)]" {...props} />,
@@ -2405,38 +2438,38 @@ export default function ISONavigator() {
                               h4: ({ ...props }) => <h4 className="text-[var(--ib-acc)]" {...props} />,
                               table: ({ ...props }) => (
                                 <div className="scrollable-table my-4 w-full overflow-x-auto rounded-xl border border-[var(--ib-line)] pb-2">
-                                  <table className="w-full text-left border-collapse text-sm md:text-base min-w-[500px]" {...props} />
+                                  <table
+                                    className="w-full min-w-[500px] border-collapse text-left text-sm md:text-base"
+                                    {...props}
+                                  />
                                 </div>
                               ),
-                              th: ({ ...props }) => <th className="border-b border-[var(--ib-line)] bg-[var(--ib-bg)] px-3 py-2 font-bold break-normal text-[var(--ib-ink)] md:px-4 md:py-3" {...props} />,
-                              td: ({ ...props }) => <td className="border-b border-[var(--ib-line)] px-3 py-2 align-top break-normal text-[var(--ib-ink)] md:px-4 md:py-3" {...props} />,
+                              th: ({ ...props }) => (
+                                <th
+                                  className="break-normal border-b border-[var(--ib-line)] bg-[var(--ib-bg)] px-3 py-2 font-bold text-[var(--ib-ink)] md:px-4 md:py-3"
+                                  {...props}
+                                />
+                              ),
+                              td: ({ ...props }) => (
+                                <td
+                                  className="break-normal border-b border-[var(--ib-line)] px-3 py-2 align-top text-[var(--ib-ink)] md:px-4 md:py-3"
+                                  {...props}
+                                />
+                              ),
                             }}
                           >
                             {msg.content}
                           </ReactMarkdown>
-                          {Array.isArray(msg.sources) && msg.sources.length > 0 && (
-                            <p className="mt-2 text-[10px] leading-[1.45] text-[var(--ib-ink)]/40">
-                              Sources:{" "}
-                              {msg.sources
-                                .map((s) => {
-                                  const ver = s.version ? `:${s.version}` : "";
-                                  const pages =
-                                    Array.isArray(s.pages) && s.pages.length > 0
-                                      ? ` (pp. ${s.pages.join(", ")})`
-                                      : s.page_count
-                                        ? ` (${s.page_count} pp.)`
-                                        : "";
-                                  const clauses =
-                                    Array.isArray(s.clauses) && s.clauses.length > 0
-                                      ? ` [cl. ${s.clauses.slice(0, 5).join(", ")}]`
-                                      : "";
-                                  return `${s.title || s.standard || ""}${ver}${pages}${clauses}`;
-                                })
-                                .join(" · ")}
-                            </p>
-                          )}
-                          <div className="mt-2 flex items-center cursor-pointer text-[var(--ib-acc)]" onClick={() => { navigator.clipboard.writeText(msg.content); toast.success(t('isoNavigator.textCopied')) }}>
-                            <span className="ml-2 border border-[var(--ib-acc)] rounded-full px-2 py-1 text-[var(--ib-acc)] font-medium">{t('isoNavigator.copyClipboard')}</span>
+                          <div
+                            className="mt-2 flex cursor-pointer items-center text-[var(--ib-acc)]"
+                            onClick={() => {
+                              navigator.clipboard.writeText(msg.content);
+                              toast.success(t("isoNavigator.textCopied"));
+                            }}
+                          >
+                            <span className="ml-2 rounded-full border border-[var(--ib-acc)] px-2 py-1 font-medium text-[var(--ib-acc)]">
+                              {t("isoNavigator.copyClipboard")}
+                            </span>
                           </div>
                         </div>
                       ) : (
@@ -2447,12 +2480,12 @@ export default function ISONavigator() {
                 ))}
 
                 {isChatting && (
-                  <div className="flex justify-start mb-4">
-                    <div className="p-3 rounded-2xl bg-[var(--ib-card)] text-[var(--ib-mute)] border border-[var(--ib-line)] rounded-tl-none">
+                  <div className="mb-4 flex justify-start">
+                    <div className="rounded-2xl rounded-tl-none border border-[var(--ib-line)] bg-[var(--ib-card)] p-3 text-[var(--ib-mute)]">
                       <span className="flex items-center gap-1.5">
-                        <span className="w-2 h-2 bg-[var(--ib-acc)] rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
-                        <span className="w-2 h-2 bg-[var(--ib-acc)] rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
-                        <span className="w-2 h-2 bg-[var(--ib-acc)] rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
+                        <span className="h-2 w-2 animate-bounce rounded-full bg-[var(--ib-acc)]" style={{ animationDelay: "0ms" }} />
+                        <span className="h-2 w-2 animate-bounce rounded-full bg-[var(--ib-acc)]" style={{ animationDelay: "150ms" }} />
+                        <span className="h-2 w-2 animate-bounce rounded-full bg-[var(--ib-acc)]" style={{ animationDelay: "300ms" }} />
                       </span>
                     </div>
                   </div>
@@ -2460,50 +2493,28 @@ export default function ISONavigator() {
 
                 <div ref={chatEndRef} />
               </div>
-
             )}
 
-
-
             <div className="relative group">
-
               <input
-
                 type="text"
-
                 value={chatInput}
-
                 onChange={(e) => setChatInput(e.target.value)}
-
                 onKeyPress={(e) => e.key === "Enter" && handleSendChat()}
-
-                placeholder={t('isoNavigator.chatPlaceholder')}
-
-                className="w-full bg-[var(--ib-bg)] border border-[var(--ib-line)] rounded-2xl p-4 md:p-6 pr-16 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[var(--ib-acc)]/30 focus:border-[var(--ib-acc)] transition-all text-[var(--ib-ink)] placeholder:text-[var(--ib-mute)]"
-
+                placeholder={t("isoNavigator.chatPlaceholder")}
+                className="w-full rounded-2xl border border-[var(--ib-line)] bg-[var(--ib-bg)] p-4 pr-16 text-sm font-medium text-[var(--ib-ink)] transition-all placeholder:text-[var(--ib-mute)] focus:border-[var(--ib-acc)] focus:outline-none focus:ring-2 focus:ring-[var(--ib-acc)]/30 md:p-5"
               />
-
               <button
-
                 onClick={() => handleSendChat()}
-
                 disabled={!chatInput.trim() || isChatting}
-
-                className="absolute right-3 top-1/2 -translate-y-1/2 p-2 md:p-3 bg-[var(--ib-acc)] text-white rounded-xl hover:bg-[var(--ib-acc)]/90 disabled:opacity-30 transition-all shadow-lg active:scale-95"
-
+                className="absolute right-3 top-1/2 -translate-y-1/2 rounded-xl bg-[var(--ib-acc)] p-2 text-white shadow-lg transition-all hover:bg-[var(--ib-acc)]/90 active:scale-95 disabled:opacity-30 md:p-3"
               >
-
-                <Send className="w-4 h-4 md:w-5 md:h-5" />
-
+                <Send className="h-4 w-4 md:h-5 md:w-5" />
               </button>
-
             </div>
-
           </div>
-
         </div>
-        )}
-
+      </div>
       </div>
 
 

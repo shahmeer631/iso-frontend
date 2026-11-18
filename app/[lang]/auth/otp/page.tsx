@@ -186,11 +186,17 @@ const OTPContent = () => {
         <div className="text-center text-xs text-[var(--ib-mute)] mt-6">
           <p>
             {t('auth.byContinuing')}{" "}
-            <Link href="#" className="text-[var(--ib-acc)] hover:underline">
+            <Link
+              href={`/${lang}/terms-of-service`}
+              className="text-[var(--ib-acc)] hover:underline"
+            >
               {t('auth.termsOfService')}
             </Link>{" "}
             {t('auth.and')}{" "}
-            <Link href="#" className="text-[var(--ib-acc)] hover:underline">
+            <Link
+              href={`/${lang}/privacy-policy`}
+              className="text-[var(--ib-acc)] hover:underline"
+            >
               {t('auth.privacyPolicy')}
             </Link>
           </p>

@@ -98,7 +98,19 @@ import { ISOSuggestion } from "@/types/benchmark";
 
 
 
-export default function UploadPage({ onAnalyze }: { onAnalyze: () => void }) {
+export default function UploadPage({
+  onAnalyze,
+  panelMode = false,
+  hideChat = false,
+  onAnalyzeStart,
+  onAnalyzeEnd,
+}: {
+  onAnalyze: () => void;
+  panelMode?: boolean;
+  hideChat?: boolean;
+  onAnalyzeStart?: () => void;
+  onAnalyzeEnd?: () => void;
+}) {
   const dispatch = useAppDispatch();
   const router = useRouter();
   const params = useParams();
@@ -154,6 +166,10 @@ export default function UploadPage({ onAnalyze }: { onAnalyze: () => void }) {
   const [selectedISODetail, setSelectedISODetail] = useState<ISOSuggestion | null>(null);
 
   const [messageIndex, setMessageIndex] = useState(0);
+
+  const improvementOptions = (selectedSuggestion?.opportunities_for_improvement?.length
+    ? selectedSuggestion.opportunities_for_improvement
+    : selectedSuggestion?.improvements) || [];
 
 
 
@@ -385,7 +401,11 @@ export default function UploadPage({ onAnalyze }: { onAnalyze: () => void }) {
 
         context: {
 
-          benchmark_upload_context: contextStr
+          purpose: "benchmark_ai",
+
+          isoStandardId: selectedSuggestion?.isoStandardId,
+
+          benchmark_upload_context: contextStr,
 
         },
 
@@ -531,11 +551,19 @@ export default function UploadPage({ onAnalyze }: { onAnalyze: () => void }) {
 
       const response = await getISOSuggestions(formData).unwrap();
 
+      const suggestions =
+        response.data?.suggestions ||
+        (response.data as any)?.data?.suggestions ||
+        (response as any)?.suggestions ||
+        [];
 
+      if (response.success !== false && Array.isArray(suggestions) && suggestions.length > 0) {
 
-      if (response.success && response.data?.suggestions) {
+        setIsoSuggestions(suggestions);
 
-        setIsoSuggestions(response.data.suggestions);
+      } else if (Array.isArray(suggestions) && suggestions.length > 0) {
+
+        setIsoSuggestions(suggestions);
 
       } else {
 
@@ -569,6 +597,8 @@ export default function UploadPage({ onAnalyze }: { onAnalyze: () => void }) {
 
     setError(null);
 
+    onAnalyzeStart?.();
+
     try {
 
       let response;
@@ -585,6 +615,12 @@ export default function UploadPage({ onAnalyze }: { onAnalyze: () => void }) {
 
         formData.append("target_standard", `${suggestion.standard} - ${suggestion.title}`);
 
+        if (suggestion.isoStandardId) {
+
+          formData.append("isoStandardId", suggestion.isoStandardId);
+
+        }
+
         response = await analyzeFile(formData).unwrap();
 
       } else if (uploadType === "text" && textContent.trim()) {
@@ -597,6 +633,8 @@ export default function UploadPage({ onAnalyze }: { onAnalyze: () => void }) {
 
           target_standard: `${suggestion.standard} - ${suggestion.title}`,
 
+          isoStandardId: suggestion.isoStandardId,
+
         };
 
         response = await analyzeText(payload).unwrap();
@@ -607,6 +645,8 @@ export default function UploadPage({ onAnalyze }: { onAnalyze: () => void }) {
 
         setAnalyzeLoading(false);
 
+        onAnalyzeEnd?.();
+
         return;
 
       }
@@ -615,7 +655,16 @@ export default function UploadPage({ onAnalyze }: { onAnalyze: () => void }) {
 
       if (response.success) {
 
-        dispatch(setAnalysisResults(response.data));
+        const payload =
+          response.data &&
+          (response.data.overall_score != null ||
+            response.data.identified_gaps ||
+            response.data.standard_analyzed ||
+            response.data.clause_compliance)
+            ? response.data
+            : (response.data as any)?.data || response.data;
+
+        dispatch(setAnalysisResults(payload));
 
         onAnalyze();
 
@@ -647,6 +696,8 @@ export default function UploadPage({ onAnalyze }: { onAnalyze: () => void }) {
 
       setAnalyzeLoading(false);
 
+      onAnalyzeEnd?.();
+
     }
 
   }
@@ -655,8 +706,10 @@ export default function UploadPage({ onAnalyze }: { onAnalyze: () => void }) {
 
   return (
 
-    <div className="min-h-screen bg-[var(--ib-bg)] space-y-6 md:space-y-12 animate-in fade-in duration-500 p-2 md:p-8">
+    <div className={panelMode ? "h-full space-y-4 animate-in fade-in duration-500" : "min-h-screen bg-[var(--ib-bg)] space-y-6 md:space-y-12 animate-in fade-in duration-500 p-2 md:p-8"}>
 
+      {!panelMode ? (
+      <>
       {/* Header */}
       <header className="space-y-3 md:space-y-4 px-2 sm:px-0 mb-6 md:mb-10 mt-8 md:mt-16 animate-in fade-in duration-700">
         <div className="flex justify-center mb-4 md:mb-6">
@@ -672,12 +725,12 @@ export default function UploadPage({ onAnalyze }: { onAnalyze: () => void }) {
           {t('benchmarkAi.description')}
         </p>
       </header>
-
-
+      </>
+      ) : null}
 
       {/* Body */}
 
-      <div className="w-full py-4 md:py-8 grid grid-cols-1 xl:grid-cols-2 gap-4 md:gap-8">
+      <div className={panelMode ? "w-full h-full" : "w-full py-4 md:py-8 grid grid-cols-1 xl:grid-cols-2 gap-4 md:gap-8"}>
 
         {/* Left – form */}
 
@@ -977,11 +1030,11 @@ export default function UploadPage({ onAnalyze }: { onAnalyze: () => void }) {
 
                     >
 
-                      <div className="h-4 bg-[var(--ib-ink)] rounded w-32"></div>
+                      <div className="h-4 w-32 rounded bg-[var(--ib-line)]"></div>
 
-                      <div className="h-3 bg-[var(--ib-ink)] rounded w-full"></div>
+                      <div className="h-3 w-full rounded bg-[var(--ib-line)]"></div>
 
-                      <div className="h-3 bg-[var(--ib-ink)] rounded w-5/6"></div>
+                      <div className="h-3 w-5/6 rounded bg-[var(--ib-line)]"></div>
 
                     </div>
 
@@ -1007,7 +1060,7 @@ export default function UploadPage({ onAnalyze }: { onAnalyze: () => void }) {
 
                     <label className="text-[10px] md:text-[11px] font-black text-[var(--ib-mute)] uppercase tracking-[0.2em] truncate flex items-center gap-2">
 
-                      <Target className="w-3.5 h-3.5" /> {isoSuggestions.length} ISO Standards Found
+                      <Target className="w-3.5 h-3.5" /> {isoSuggestions.length} ISO Standards Found (latest Library)
 
                     </label>
 
@@ -1035,11 +1088,11 @@ export default function UploadPage({ onAnalyze }: { onAnalyze: () => void }) {
 
                         }}
 
-                        className={`bg-[var(--ib-bg)] border rounded-xl p-2 md:p-3 text-[10px] md:text-xs cursor-pointer transition-all flex gap-2 md:gap-3 items-start ${selectedSuggestion?.standard === suggestion.standard
+                        className={`border rounded-xl p-2 md:p-3 text-[10px] md:text-xs cursor-pointer transition-all flex gap-2 md:gap-3 items-start ${selectedSuggestion?.standard === suggestion.standard
 
-                          ? "border-[var(--ib-acc)] bg-[var(--ib-mute)] text-white shadow-[0_0_20px_rgba(27, 77, 219,0.1)]"
+                          ? "border-[var(--ib-acc)] bg-[var(--ib-accbg)] shadow-[0_0_12px_rgba(27,77,219,0.12)]"
 
-                          : "border-[var(--ib-line)] hover:border-[var(--ib-mute)] hover:bg-[var(--ib-accbg)]"
+                          : "border-[var(--ib-line)] bg-[var(--ib-bg)] hover:border-[var(--ib-acc)]/40 hover:bg-[var(--ib-accbg)]"
 
                           }`}
 
@@ -1051,33 +1104,13 @@ export default function UploadPage({ onAnalyze }: { onAnalyze: () => void }) {
 
                             <div className="flex-1">
 
-                              <p
-
-                                className={`font-black text-[11px] ${selectedSuggestion?.standard === suggestion.standard
-
-                                  ? "text-[var(--ib-acc)]"
-
-                                  : "text-[var(--ib-ink)]"
-
-                                  }`}
-
-                              >
+                              <p className="text-[11px] font-black text-[var(--ib-ink)]">
 
                                 {suggestion.standard}
 
                               </p>
 
-                              <p
-
-                                className={`text-[10px] font-medium ${selectedSuggestion?.standard === suggestion.standard
-
-                                  ? "text-[var(--ib-acc)]/80"
-
-                                  : "text-[var(--ib-mute)]"
-
-                                  }`}
-
-                              >
+                              <p className="text-[10px] font-medium text-[var(--ib-mute)]">
 
                                 {suggestion.title}
 
@@ -1087,17 +1120,7 @@ export default function UploadPage({ onAnalyze }: { onAnalyze: () => void }) {
 
                           </div>
 
-                          <p
-
-                            className={`text-[9px] leading-relaxed line-clamp-2 mt-2 ${selectedSuggestion?.standard === suggestion.standard
-
-                              ? "text-[var(--ib-acc)]/70"
-
-                              : "text-[var(--ib-mute)]"
-
-                              }`}
-
-                          >
+                          <p className="mt-2 line-clamp-2 text-[9px] leading-relaxed text-[var(--ib-mute)]">
 
                             {suggestion.relevance}
 
@@ -1155,12 +1178,12 @@ export default function UploadPage({ onAnalyze }: { onAnalyze: () => void }) {
 
                   </label>
 
-                  {/* Improvement Goals List */}
-                  {selectedSuggestion?.improvements && selectedSuggestion?.improvements?.length > 0 && (
+                  {/* OFI / Improvement Goals List */}
+                  {improvementOptions.length > 0 && (
                     <div className="space-y-2">
-                      <p className="text-[10px] text-[var(--ib-mute)] font-medium">Select an improvement goal:</p>
+                      <p className="text-[10px] text-[var(--ib-mute)] font-medium">Select an opportunity for improvement / goal:</p>
                       <div className="grid grid-cols-1 gap-2 max-h-[200px] overflow-y-auto custom-thin-scrollbar">
-                        {selectedSuggestion.improvements.map((goal, idx) => (
+                        {improvementOptions.map((goal, idx) => (
                           <button
                             key={idx}
                             type="button"
@@ -1174,11 +1197,36 @@ export default function UploadPage({ onAnalyze }: { onAnalyze: () => void }) {
                     </div>
                   )}
 
+                  {(selectedSuggestion?.potential_gaps?.length || selectedSuggestion?.common_nonconformities?.length) ? (
+                    <div className="space-y-3 rounded-2xl border border-[var(--ib-line)] bg-[var(--ib-bg)] p-3">
+                      {selectedSuggestion?.potential_gaps?.length ? (
+                        <div>
+                          <p className="mb-1 text-[10px] font-black uppercase tracking-widest text-[var(--ib-mute)]">Potential gaps</p>
+                          <ul className="space-y-1">
+                            {selectedSuggestion.potential_gaps.slice(0, 4).map((g, i) => (
+                              <li key={i} className="text-[11px] font-medium text-[var(--ib-ink)]">• {g}</li>
+                            ))}
+                          </ul>
+                        </div>
+                      ) : null}
+                      {selectedSuggestion?.common_nonconformities?.length ? (
+                        <div>
+                          <p className="mb-1 text-[10px] font-black uppercase tracking-widest text-[var(--ib-mute)]">Common non-conformities</p>
+                          <ul className="space-y-1">
+                            {selectedSuggestion.common_nonconformities.slice(0, 4).map((g, i) => (
+                              <li key={i} className="text-[11px] font-medium text-[var(--ib-ink)]">• {g}</li>
+                            ))}
+                          </ul>
+                        </div>
+                      ) : null}
+                    </div>
+                  ) : null}
+
                   {/* Editable textarea for selected/custom goal */}
                   <textarea
                     value={improvementGoal}
                     onChange={(e) => setImprovementGoal(e.target.value)}
-                    placeholder={selectedSuggestion?.improvements?.length ? "Select a goal above or type a custom one..." : "Enter your improvement goal..."}
+                    placeholder={improvementOptions.length ? "Select a goal above or type a custom one..." : "Enter your improvement goal..."}
                     rows={3}
                     className="w-full bg-[var(--ib-bg)] border border-[var(--ib-line)] rounded-2xl p-4 text-sm text-[var(--ib-ink)] placeholder:text-[var(--ib-mute)] resize-none focus:outline-none focus:ring-2 focus:ring-[var(--ib-acc)]/50 transition-all shadow-inner font-medium"
                   />
@@ -1256,6 +1304,8 @@ export default function UploadPage({ onAnalyze }: { onAnalyze: () => void }) {
           </div>
         </div>
 
+        {!panelMode ? (
+        <>
         {/* Right – info panel (hidden on mobile and narrow desktops) */}
         <div className="hidden xl:flex bg-[var(--ib-card)] rounded-3xl border border-[var(--ib-line)] shadow-2xl p-8 md:p-12 flex-col items-center justify-center text-center h-full">
           <div className="w-24 h-24 rounded-3xl border-2 border-[var(--ib-line)] flex items-center justify-center mb-8 bg-[var(--ib-bg)] group hover:border-[var(--ib-acc)]/50 transition-all duration-500">
@@ -1295,10 +1345,14 @@ export default function UploadPage({ onAnalyze }: { onAnalyze: () => void }) {
           </div>
         </div>
 
+                </>
+        ) : null}
       </div>
 
 
 
+      {!(hideChat || panelMode) ? (
+<>
       {/* Ask AI Section */}
 
       <div className="mt-8 md:mt-12 bg-[var(--ib-card)] border border-[var(--ib-line)] rounded-3xl shadow-2xl overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -1520,6 +1574,9 @@ export default function UploadPage({ onAnalyze }: { onAnalyze: () => void }) {
 
       {/* ISO Details Modal */}
 
+</>
+      ) : null}
+
       {selectedISODetail && (
 
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-3 md:p-4">
@@ -1587,6 +1644,42 @@ export default function UploadPage({ onAnalyze }: { onAnalyze: () => void }) {
 
 
               {/* Documents Section */}
+
+
+              {(selectedISODetail.opportunities_for_improvement?.length || selectedISODetail.potential_gaps?.length || selectedISODetail.common_nonconformities?.length) ? (
+                <div className="mb-6 space-y-4">
+                  {selectedISODetail.opportunities_for_improvement?.length ? (
+                    <div className="rounded-xl border border-[var(--ib-line)] bg-[var(--ib-bg)] p-4">
+                      <p className="mb-2 text-[10px] font-black uppercase tracking-widest text-[var(--ib-acc)]">Opportunities for improvement</p>
+                      <ul className="space-y-1">
+                        {selectedISODetail.opportunities_for_improvement.map((item, i) => (
+                          <li key={i} className="text-xs font-medium text-[var(--ib-ink)]">• {item}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  ) : null}
+                  {selectedISODetail.potential_gaps?.length ? (
+                    <div className="rounded-xl border border-red-500/20 bg-red-50/40 p-4">
+                      <p className="mb-2 text-[10px] font-black uppercase tracking-widest text-red-600">Potential gaps</p>
+                      <ul className="space-y-1">
+                        {selectedISODetail.potential_gaps.map((item, i) => (
+                          <li key={i} className="text-xs font-medium text-[var(--ib-ink)]">• {item}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  ) : null}
+                  {selectedISODetail.common_nonconformities?.length ? (
+                    <div className="rounded-xl border border-amber-500/20 bg-amber-50/40 p-4">
+                      <p className="mb-2 text-[10px] font-black uppercase tracking-widest text-amber-700">Common non-conformities</p>
+                      <ul className="space-y-1">
+                        {selectedISODetail.common_nonconformities.map((item, i) => (
+                          <li key={i} className="text-xs font-medium text-[var(--ib-ink)]">• {item}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  ) : null}
+                </div>
+              ) : null}
 
               {selectedISODetail.documents && selectedISODetail.documents.length > 0 && (
 
@@ -1712,26 +1805,17 @@ export default function UploadPage({ onAnalyze }: { onAnalyze: () => void }) {
 
 
 
+      {/* Full-page overlay only when not in side-by-side panel mode */}
       <FullPageLoader
-
-        isLoading={loading || analyzeLoading}
-
+        isLoading={!panelMode && (loading || analyzeLoading)}
         title={analyzeLoading ? "Generating Gap Analysis..." : "Processing Document..."}
-
         description={analyzeLoading ? "Retrieving relevant clauses and comparing them..." : "Performing OCR and parsing structure..."}
-
         steps={[
-
           "Uploading document",
-
           "Analyzing context & suggestions",
-
           "Generating report",
-
-          "Preparing interactive workspace"
-
+          "Preparing interactive workspace",
         ]}
-
       />
 
     </div>

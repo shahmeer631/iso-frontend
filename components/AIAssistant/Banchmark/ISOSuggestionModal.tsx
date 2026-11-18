@@ -87,7 +87,7 @@ export const ISOSuggestionModal: React.FC<ISOSuggestionModalProps> = ({
               style={{
                 fontSize: 24,
                 fontWeight: 500,
-                color: "#fff",
+                color: "var(--ib-ink)",
                 margin: 0,
                 marginBottom: 4,
               }}
@@ -135,7 +135,7 @@ export const ISOSuggestionModal: React.FC<ISOSuggestionModalProps> = ({
           <p
             style={{
               fontSize: 13,
-              color: "#fff",
+              color: "var(--ib-ink)",
               margin: 0,
               lineHeight: 1.6,
             }}
@@ -151,7 +151,7 @@ export const ISOSuggestionModal: React.FC<ISOSuggestionModalProps> = ({
               style={{
                 fontSize: 14,
                 fontWeight: 500,
-                color: "#fff",
+                color: "var(--ib-ink)",
                 marginBottom: 12,
                 display: "flex",
                 alignItems: "center",
@@ -194,7 +194,7 @@ export const ISOSuggestionModal: React.FC<ISOSuggestionModalProps> = ({
                       style={{
                         fontSize: 13,
                         fontWeight: 500,
-                        color: "#fff",
+                        color: "var(--ib-ink)",
                         margin: 0,
                         marginBottom: 2,
                       }}
@@ -224,7 +224,7 @@ export const ISOSuggestionModal: React.FC<ISOSuggestionModalProps> = ({
               style={{
                 fontSize: 14,
                 fontWeight: 500,
-                color: "#fff",
+                color: "var(--ib-ink)",
                 marginBottom: 12,
                 display: "flex",
                 alignItems: "center",
@@ -267,7 +267,7 @@ export const ISOSuggestionModal: React.FC<ISOSuggestionModalProps> = ({
                       style={{
                         fontSize: 13,
                         fontWeight: 500,
-                        color: "#fff",
+                        color: "var(--ib-ink)",
                         margin: 0,
                         marginBottom: 2,
                       }}
@@ -289,6 +289,103 @@ export const ISOSuggestionModal: React.FC<ISOSuggestionModalProps> = ({
             </div>
           </div>
         )}
+
+        {(suggestion.opportunities_for_improvement?.length ||
+          suggestion.potential_gaps?.length ||
+          suggestion.common_nonconformities?.length) ? (
+          <div style={{ marginBottom: 24, display: "flex", flexDirection: "column", gap: 12 }}>
+            {suggestion.opportunities_for_improvement?.length ? (
+              <div
+                style={{
+                  border: "1px solid var(--ib-line)",
+                  background: "var(--ib-bg)",
+                  borderRadius: 12,
+                  padding: 14,
+                }}
+              >
+                <p
+                  style={{
+                    margin: "0 0 8px",
+                    fontSize: 11,
+                    fontWeight: 700,
+                    color: "var(--ib-acc)",
+                    textTransform: "uppercase",
+                    letterSpacing: "0.08em",
+                  }}
+                >
+                  Opportunities for improvement
+                </p>
+                <ul style={{ margin: 0, paddingLeft: 16 }}>
+                  {suggestion.opportunities_for_improvement.map((item, i) => (
+                    <li key={i} style={{ fontSize: 13, color: "var(--ib-ink)", marginBottom: 4 }}>
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : null}
+            {suggestion.potential_gaps?.length ? (
+              <div
+                style={{
+                  border: "1px solid rgba(239,68,68,0.25)",
+                  background: "rgba(254,242,242,0.7)",
+                  borderRadius: 12,
+                  padding: 14,
+                }}
+              >
+                <p
+                  style={{
+                    margin: "0 0 8px",
+                    fontSize: 11,
+                    fontWeight: 700,
+                    color: "#DC2626",
+                    textTransform: "uppercase",
+                    letterSpacing: "0.08em",
+                  }}
+                >
+                  Potential gaps
+                </p>
+                <ul style={{ margin: 0, paddingLeft: 16 }}>
+                  {suggestion.potential_gaps.map((item, i) => (
+                    <li key={i} style={{ fontSize: 13, color: "var(--ib-ink)", marginBottom: 4 }}>
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : null}
+            {suggestion.common_nonconformities?.length ? (
+              <div
+                style={{
+                  border: "1px solid rgba(245,158,11,0.3)",
+                  background: "rgba(255,251,235,0.8)",
+                  borderRadius: 12,
+                  padding: 14,
+                }}
+              >
+                <p
+                  style={{
+                    margin: "0 0 8px",
+                    fontSize: 11,
+                    fontWeight: 700,
+                    color: "#B45309",
+                    textTransform: "uppercase",
+                    letterSpacing: "0.08em",
+                  }}
+                >
+                  Common non-conformities
+                </p>
+                <ul style={{ margin: 0, paddingLeft: 16 }}>
+                  {suggestion.common_nonconformities.map((item, i) => (
+                    <li key={i} style={{ fontSize: 13, color: "var(--ib-ink)", marginBottom: 4 }}>
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : null}
+          </div>
+        ) : null}
 
         {/* Close Button */}
         <button

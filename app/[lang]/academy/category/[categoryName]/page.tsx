@@ -277,9 +277,9 @@ const CategoryCoursesPage = () => {
               </button>
               <Link
                 href={`/${lang}/pricing`}
-                className="inline-flex items-center justify-center rounded-xl border border-[var(--ib-acc)] bg-[var(--ib-accbg)] px-6 py-3.5 text-[14px] font-semibold text-[var(--ib-acc)] transition-all hover:bg-[var(--ib-acc)] hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ib-acc)] sm:px-7 sm:text-[15px]"
+                className="inline-flex min-h-[52px] items-center justify-center rounded-xl border-2 border-[var(--ib-acc)] bg-[var(--ib-acc)] px-7 py-3.5 text-[14px] font-black uppercase tracking-[0.04em] text-white shadow-[0_14px_30px_-12px_color-mix(in_srgb,var(--ib-acc)_65%,transparent)] transition-all hover:-translate-y-0.5 hover:opacity-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ib-acc)] sm:min-h-[56px] sm:px-8 sm:text-[15px]"
               >
-                Start Your Trial - Enroll Free
+                Start Free — First 2 Lessons
               </Link>
             </div>
           </div>
@@ -343,10 +343,10 @@ const CategoryCoursesPage = () => {
                     type="button"
                     onClick={(e) => handleEnrollClick(e, courses[0].id)}
                     disabled={isCheckingId === courses[0].id}
-                    className={`flex w-full items-center justify-center gap-2 rounded-xl px-5 py-3 text-[14px] font-semibold transition-all hover:opacity-92 disabled:opacity-60 ${
+                    className={`flex min-h-[52px] w-full items-center justify-center gap-2 rounded-xl px-5 py-3.5 text-[15px] font-black uppercase tracking-[0.03em] transition-all hover:-translate-y-0.5 hover:opacity-95 disabled:opacity-60 ${
                       token && enrollmentStatus[courses[0].id]
-                        ? "bg-[var(--ib-acc)] text-white"
-                        : "border border-[var(--ib-acc)] bg-[var(--ib-acc)] text-white shadow-[0_10px_24px_-12px_color-mix(in_srgb,var(--ib-acc)_55%,transparent)]"
+                        ? "bg-[var(--ib-acc)] text-white shadow-[0_14px_30px_-12px_color-mix(in_srgb,var(--ib-acc)_65%,transparent)]"
+                        : "border-2 border-[var(--ib-acc)] bg-[var(--ib-acc)] text-white shadow-[0_14px_30px_-12px_color-mix(in_srgb,var(--ib-acc)_65%,transparent)]"
                     }`}
                   >
                     {isCheckingId === courses[0].id ? (
@@ -358,7 +358,7 @@ const CategoryCoursesPage = () => {
                       </>
                     ) : (
                       <>
-                        Start Your Trial - Enroll Free <BookOpen size={16} />
+                        Start Free — First 2 Lessons <BookOpen size={16} />
                       </>
                     )}
                   </button>
@@ -520,10 +520,10 @@ const CategoryCoursesPage = () => {
                             type="button"
                             onClick={(e) => handleEnrollClick(e, course.id)}
                             disabled={isCheckingId === course.id}
-                            className={`flex w-full items-center justify-center gap-2 rounded-xl px-5 py-3.5 text-[15px] font-semibold transition-all hover:opacity-92 disabled:opacity-60 ${
+                            className={`flex min-h-[52px] w-full items-center justify-center gap-2 rounded-xl px-5 py-3.5 text-[15px] font-black uppercase tracking-[0.03em] transition-all hover:-translate-y-0.5 hover:opacity-95 disabled:opacity-60 ${
                               isPurchased
-                                ? "bg-[var(--ib-acc)] text-white"
-                                : "border border-[var(--ib-acc)] bg-[var(--ib-acc)] text-white shadow-[0_10px_24px_-12px_color-mix(in_srgb,var(--ib-acc)_55%,transparent)]"
+                                ? "bg-[var(--ib-acc)] text-white shadow-[0_14px_30px_-12px_color-mix(in_srgb,var(--ib-acc)_65%,transparent)]"
+                                : "border-2 border-[var(--ib-acc)] bg-[var(--ib-acc)] text-white shadow-[0_14px_30px_-12px_color-mix(in_srgb,var(--ib-acc)_65%,transparent)]"
                             }`}
                           >
                             {isCheckingId === course.id ? (
@@ -535,7 +535,7 @@ const CategoryCoursesPage = () => {
                               </>
                             ) : (
                               <>
-                                Start Your Trial - Enroll Free <BookOpen size={16} />
+                                Start Free — First 2 Lessons <BookOpen size={16} />
                               </>
                             )}
                           </button>

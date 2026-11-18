@@ -1,613 +1,389 @@
 "use client";
-// ResultsPage.tsx
 
-import { useRef, useState, useEffect } from "react";
-import { useRouter, useParams } from 'next/navigation';
-import { toast } from 'sonner';
 import { BenchmarkData } from "@/types/benchmark";
 import {
-  Eye,
-  Brain,
-  Search,
-  Award,
-  Upload,
-  FileCheck,
-  CheckCircle2,
-  Lock,
-  Type,
-  BarChart,
-  FileText,
-  Loader2,
-  Send,
-  Bot,
-  Sparkles,
   AlertTriangle,
-  Lightbulb,
+  BarChart,
   CheckCircle,
-  MessageSquare,
+  CheckCircle2,
+  FileText,
+  Lightbulb,
+  Search,
+  Sparkles,
 } from "lucide-react";
-import { useChatSimpleMutation } from "@/lib/redux/api/benchmarkApi";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
-import React from "react";
-import { useTranslation } from "react-i18next";
+import { useParams } from "next/navigation";
+import { useEffect } from "react";
 import i18n from "@/lib/i18n/client";
 
 export default function ResultsPage({
   result,
   onReset,
+  embedded = false,
 }: {
   result: BenchmarkData;
   onReset: () => void;
+  embedded?: boolean;
 }) {
-  const router = useRouter();
   const params = useParams();
-  const lang = params?.lang || 'en';
-  const { t } = useTranslation();
+  const lang = params?.lang || "en";
 
-  // Sync i18n language with the URL [lang] param
   useEffect(() => {
     if (lang && i18n.language !== lang) {
       i18n.changeLanguage(lang as string);
     }
   }, [lang]);
 
-  const STEPS = [
-    { icon: Eye, label: "Scanned", sub: "OCR Extraction" },
-    { icon: Brain, label: "Analyzed", sub: "Secure Processing" },
-    { icon: Search, label: "Evaluation", sub: "Variance Analysis" },
-    { icon: Award, label: "Grade Label", sub: "Optimization Roadmap" },
-  ];
-
-  const [chatSimple, { isLoading: aiLoading }] = useChatSimpleMutation();
-  const [sessionId, setSessionId] = useState<string>(result.conversation_id || "bench_" + result.analysis_id);
-  const [aiQ, setAiQ] = useState("");
-  const [chatHistory, setChatHistory] = useState<{ role: 'user' | 'ai', content: string }[]>([]);
-  const chatEndRef = useRef<HTMLDivElement>(null);
-  const chatContainerRef = useRef<HTMLDivElement>(null);
-  const isUserScrolledUp = useRef(false);
-
-  useEffect(() => {
-    if (!isUserScrolledUp.current) {
-      chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
-    }
-  }, [chatHistory, aiLoading]);
-
-  const handleChatScroll = () => {
-    if (!chatContainerRef.current) return;
-    const { scrollTop, scrollHeight, clientHeight } = chatContainerRef.current;
-    isUserScrolledUp.current = (scrollHeight - scrollTop - clientHeight) > 80;
-  };
-
-  const scrollToBottom = (force = false) => {
-    if (force || !isUserScrolledUp.current) {
-      chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
-    }
-  };
-
-  async function askAI() {
-    if (!aiQ.trim() || aiLoading) return;
-
-    const userMessage = aiQ.trim();
-    setAiQ("");
-    setChatHistory(prev => [...prev, { role: "user", content: userMessage }]);
-    isUserScrolledUp.current = false;
-
-    try {
-      const contextStr = `ISO Compliance Benchmark Results for ${result.document_type_detected}. 
-Standard: ${result.standard_analyzed}. 
-Overall Score: ${result.overall_score} (Grade ${result.grade}).
-Compliance: ${result.compliance_percentage}%, Effectiveness: ${result.effectiveness_percentage}%.
-Strengths: ${result.strengths?.join(', ') ?? 'N/A'}.
-Key Gaps: ${result.identified_gaps?.map(g => g.gap_title).join(', ') ?? 'N/A'}.`;
-
-      const response = await chatSimple({
-        messages: [{ content: userMessage }],
-        context: {
-          benchmark_analysis_context: contextStr
-        },
-        session_id: sessionId,
-      }).unwrap();
-
-      const aiResponse = response.messages?.[response.messages.length - 1]?.content || response.data?.response;
-
-      if (aiResponse) {
-        setChatHistory(prev => [...prev, { role: "ai", content: aiResponse }]);
-        if (response.session_id) setSessionId(response.session_id);
-
-        isUserScrolledUp.current = false;
-        setTimeout(() => {
-          scrollToBottom(true);
-        }, 100);
-      }
-    } catch (error: any) {
-      console.error("Benchmark chat failed", error);
-      if (error?.status === 403 || error?.data?.statusCode === 403 || error?.data?.message?.includes("ULTRA plan")) {
-        toast.error(error?.data?.message || "Please upgrade to the ULTRA plan to access this feature.");
-        router.push(`/${lang}/pricing`);
-      } else {
-        setChatHistory(prev => [...prev, { role: "ai", content: "Sorry, I encountered an error. Please try again." }]);
-      }
-    }
-  }
-
   const gradeColor =
     result.grade === "A"
-      ? "text-emerald-500"
+      ? "text-emerald-600"
       : result.grade === "B"
-        ? "text-amber-500"
-        : "text-red-500";
+        ? "text-amber-600"
+        : "text-red-600";
+
+  const ofiItems =
+    result.opportunities_for_improvement?.length
+      ? result.opportunities_for_improvement
+      : (result.recommendations ?? []).map(
+          (r) => `${r.title}: ${r.description}`,
+        );
+
+  const commonNcItems = result.common_nonconformities ?? [];
 
   return (
-    <div className="min-h-screen bg-[var(--ib-bg)] space-y-8 md:space-y-12 animate-in fade-in duration-500 p-4 md:p-8">
-      {/* Header */}
-      <header className="space-y-4 px-2 sm:px-0 mb-12">
-        <div className="flex justify-center mb-6">
-          <div className="px-4 py-1 bg-[var(--ib-accbg)] border border-[var(--ib-acc)]/20 rounded-full">
-            <span className="text-[var(--ib-acc)] text-[10px] font-black uppercase tracking-[0.3em]">BENCHMARK RESULTS</span>
+    <div
+      className={`${
+        embedded
+          ? "h-full space-y-5 animate-in fade-in duration-500"
+          : "min-h-screen space-y-8 bg-[var(--ib-bg)] p-4 animate-in fade-in duration-500 md:space-y-12 md:p-8"
+      }`}
+    >
+      {!embedded ? (
+        <header className="mb-8 space-y-4 px-2 sm:px-0">
+          <div className="mb-6 flex justify-center">
+            <div className="rounded-full border border-[var(--ib-acc)]/20 bg-[var(--ib-accbg)] px-4 py-1">
+              <span className="text-[10px] font-black uppercase tracking-[0.3em] text-[var(--ib-acc)]">
+                BENCHMARK RESULTS
+              </span>
+            </div>
           </div>
-        </div>
-        <h1 className="text-5xl lg:text-[52px] font-semibold text-white leading-[1.1] tracking-tight text-center mb-8">
-          Benchmark Diagnostic <span className="text-[var(--ib-acc)]">Workspace</span>
-        </h1>
-
-        <p className="mb-12 max-w-4xl mx-auto text-center font-inter text-sm font-medium leading-relaxed text-[var(--ib-mute)] lg:text-lg">
-          Compare your document content directly against ISO compliance definitions.
-        </p>
-      </header>
-
-      <div className="overflow-x-auto hidden md:block">
-        <div className="flex gap-4 min-w-max md:min-w-0 md:grid md:grid-cols-4">
-          {STEPS.map((s, i) => (
-            <div
-              key={i}
-              className={`flex flex-col items-center gap-2 px-4 py-4 rounded-xl border transition-all ${i === 3 ? "border-[var(--ib-acc)] bg-[var(--ib-accbg)] text-[var(--ib-acc)] text-white" : "border-[var(--ib-line)] bg-[var(--ib-card)] text-[var(--ib-mute)]"}`}
+          <h1 className="mb-4 text-center text-4xl font-semibold leading-[1.1] tracking-tight text-[var(--ib-ink)] lg:text-[52px]">
+            Benchmark Diagnostic{" "}
+            <span className="text-[var(--ib-acc)]">Workspace</span>
+          </h1>
+          <p className="mx-auto max-w-4xl text-center font-inter text-sm font-medium leading-relaxed text-[var(--ib-mute)] lg:text-lg">
+            Compare your document content directly against the latest ISO Library
+            edition — with gaps, OFIs, and common non-conformity themes.
+          </p>
+          <div className="flex justify-center">
+            <button
+              onClick={onReset}
+              className="rounded-xl bg-[var(--ib-acc)] px-5 py-2.5 text-xs font-black uppercase tracking-widest text-white transition-all hover:opacity-92"
             >
-              <div
-                className={`p-2 rounded-xl ${i === 3 ? "bg-[var(--ib-acc)] text-white/20" : "bg-[var(--ib-bg)]"}`}
-              >
-                <s.icon
-                  className={`w-5 h-5 ${i === 3 ? "text-[var(--ib-acc)]" : "text-[var(--ib-mute)]"}`}
-                />
-              </div>
-              <span className="font-bold text-xs">
-                {i + 1}. {s.label}
-              </span>
-              <span className="text-[10px] text-center font-medium opacity-80">
-                {s.sub}
-              </span>
-            </div>
-          ))}
-        </div>
-      </div>
+              Analyze another document
+            </button>
+          </div>
+        </header>
+      ) : null}
 
-      <div className="w-full py-8 grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-8">
-        {/* ── Sidebar ── */}
-        <aside className="bg-[var(--ib-card)] rounded-3xl border border-[var(--ib-line)] shadow-2xl p-6 space-y-6 self-start">
-          <div className="flex items-center gap-3">
-            <div className="p-1.5 bg-[var(--ib-accbg)] text-[var(--ib-acc)] rounded-xl">
-              <Upload className="w-4 h-4 text-[var(--ib-acc)]" />
+      <div className="space-y-5">
+        <div className="relative overflow-hidden rounded-3xl border border-[var(--ib-line)] bg-[var(--ib-card)] p-6 shadow-2xl md:p-10">
+          <div className="absolute right-0 top-0 h-32 w-32 rounded-full bg-[var(--ib-accbg)] blur-[60px]" />
+          <div className="relative z-10 grid grid-cols-1 gap-8 md:grid-cols-3 md:gap-12">
+            {[
+              {
+                label: "Overall Score",
+                value: result.overall_score,
+                color: gradeColor,
+                bar: "bg-amber-400",
+                extra: (
+                  <span className={`mt-1 block text-sm font-extrabold ${gradeColor}`}>
+                    Grade {result.grade}
+                  </span>
+                ),
+              },
+              {
+                label: "Completeness",
+                value: result.compliance_percentage,
+                color: "text-[var(--ib-acc)]",
+                bar: "bg-[var(--ib-acc)]",
+              },
+              {
+                label: "Effectiveness",
+                value: result.effectiveness_percentage,
+                color: "text-emerald-600",
+                bar: "bg-emerald-500",
+              },
+            ].map(({ label, value, color, bar, extra }) => (
+              <div key={label} className="space-y-1">
+                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-[var(--ib-mute)]">
+                  {label}
+                </p>
+                <span
+                  className={`font-jetbrains-mono text-4xl font-black tracking-tighter md:text-5xl lg:text-6xl ${color}`}
+                >
+                  {value ?? "—"}%
+                </span>
+                {extra}
+                <div className="mt-4 h-2 w-full rounded-full bg-[var(--ib-bg)]">
+                  <div
+                    className={`${bar} h-2 rounded-full transition-all duration-1000`}
+                    style={{ width: `${value ?? 0}%` }}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="mt-6 flex flex-wrap gap-4 border-t border-[var(--ib-line)] pt-4 text-[10px] font-medium text-[var(--ib-mute)] md:mt-8 md:gap-8 md:pt-6 md:text-xs">
+            <div className="flex items-center gap-2">
+              <FileText className="h-3.5 w-3.5 text-[var(--ib-acc)]" />
+              <span>
+                <b className="text-[var(--ib-ink)]">Protocol:</b>{" "}
+                {result.document_type_detected || "—"}
+              </span>
             </div>
-            <h2 className="text-sm font-black text-[var(--ib-ink)] uppercase tracking-wider">
-              Document Input
-            </h2>
+            <div className="flex items-center gap-2">
+              <Search className="h-3.5 w-3.5 text-[var(--ib-acc)]" />
+              <span>
+                <b className="text-[var(--ib-ink)]">Latest ISO Library:</b>{" "}
+                {result.standard_analyzed || "—"}
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              <BarChart className="h-3.5 w-3.5 text-[var(--ib-acc)]" />
+              <span>
+                <b className="text-[var(--ib-ink)]">Focus:</b> Gaps · OFIs · Common NCs
+              </span>
+            </div>
           </div>
-          <div className="border-2 border-dashed border-[var(--ib-line)] rounded-2xl p-6 text-center text-xs text-[var(--ib-mute)] group hover:border-[var(--ib-acc)]/50 transition-all">
-            <Upload className="w-6 h-6 mx-auto mb-2 text-[var(--ib-mute)] group-hover:text-[var(--ib-acc)]" />
-            Click or drag files
-            <br />
-            <span className="text-[10px] font-medium opacity-80 text-[var(--ib-mute)]">
-              PDF format only
-            </span>
+        </div>
+
+        <div className="rounded-3xl border border-[var(--ib-line)] bg-[var(--ib-card)] p-6 shadow-2xl md:p-10">
+          <h3 className="mb-8 border-l-4 border-[var(--ib-acc)] pl-6 text-xl font-black uppercase tracking-widest text-[var(--ib-ink)]">
+            Neural Compliance Matrix
+          </h3>
+          <div className="space-y-8">
+            {(result.clause_compliance ?? []).map((c) => (
+              <div key={c.clause_number} className="space-y-3">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="space-y-1">
+                    <span className="text-sm font-bold text-[var(--ib-ink)] md:text-base">
+                      {c.clause_number} {c.clause_title}
+                    </span>
+                    <p className="text-xs font-medium italic text-[var(--ib-mute)]">
+                      Evidence: {c.evidence_found}
+                    </p>
+                    <p className="text-xs font-medium text-red-600">
+                      Gap: {c.gap_description}
+                    </p>
+                  </div>
+                  <div className="flex shrink-0 items-center gap-3">
+                    <span
+                      className={`rounded-lg border px-2 py-1 text-[8px] font-bold uppercase tracking-wider md:px-3 md:text-[10px] ${
+                        c.status === "Conforming"
+                          ? "border-emerald-500/30 bg-emerald-50 text-emerald-700"
+                          : c.status === "Major Gap"
+                            ? "border-red-500/30 bg-red-50 text-red-700"
+                            : "border-amber-500/30 bg-amber-50 text-amber-700"
+                      }`}
+                    >
+                      {c.status}
+                    </span>
+                    <span className="w-10 text-right text-sm font-black text-[var(--ib-ink)] md:w-12 md:text-base">
+                      {c.compliance_percentage}%
+                    </span>
+                  </div>
+                </div>
+                <div className="h-2 w-full rounded-full bg-[var(--ib-bg)]">
+                  <div
+                    className={`${
+                      c.status === "Conforming"
+                        ? "bg-emerald-500"
+                        : c.status === "Major Gap"
+                          ? "bg-red-500"
+                          : "bg-amber-400"
+                    } h-2 rounded-full transition-all duration-1000`}
+                    style={{ width: `${c.compliance_percentage}%` }}
+                  />
+                </div>
+              </div>
+            ))}
+            {(result.clause_compliance ?? []).length === 0 ? (
+              <p className="text-sm text-[var(--ib-mute)]">
+                No clause matrix returned for this run.
+              </p>
+            ) : null}
           </div>
-          <div className="flex items-center gap-3 p-4 bg-[var(--ib-ok)]/5 border border-[var(--ib-ok)]/20 rounded-xl">
-            <FileCheck className="w-4 h-4 text-[var(--ib-ok)]" />
+        </div>
+
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <div className="space-y-6 rounded-3xl border border-emerald-500/20 bg-[var(--ib-card)] p-6 shadow-2xl">
+            <div className="flex items-center gap-4">
+              <div className="rounded-xl bg-emerald-50 p-2">
+                <CheckCircle2 className="h-5 w-5 text-emerald-600" />
+              </div>
+              <h4 className="text-base font-black uppercase tracking-wider text-[var(--ib-ink)]">
+                Strengths
+              </h4>
+            </div>
+            <ul className="space-y-3">
+              {(result.strengths ?? []).map((item, i) => (
+                <li
+                  key={i}
+                  className="flex items-start gap-2 text-xs font-medium leading-relaxed text-[var(--ib-ink)] md:gap-3 md:text-sm"
+                >
+                  <CheckCircle className="mt-0.5 h-3.5 w-3.5 shrink-0 text-emerald-600 md:h-4 md:w-4" />
+                  {item}
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div className="space-y-6 rounded-3xl border border-red-500/20 bg-[var(--ib-card)] p-6 shadow-2xl">
+            <div className="flex items-center gap-4">
+              <div className="rounded-xl bg-red-50 p-2">
+                <AlertTriangle className="h-5 w-5 text-red-600" />
+              </div>
+              <h4 className="text-base font-black uppercase tracking-wider text-[var(--ib-ink)]">
+                Identified Gaps
+              </h4>
+            </div>
+            <ul className="space-y-3">
+              {(result.identified_gaps ?? []).map((g, i) => (
+                <li
+                  key={i}
+                  className="flex items-start gap-2 text-xs font-medium leading-relaxed text-[var(--ib-ink)] md:gap-3 md:text-sm"
+                >
+                  <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0 text-red-600 md:h-4 md:w-4" />
+                  <span>
+                    <span className="font-bold text-[var(--ib-ink)]">
+                      {g.clause_reference}: {g.gap_title}
+                    </span>
+                    {" — "}
+                    {g.gap_description}
+                  </span>
+                </li>
+              ))}
+              {(result.identified_gaps ?? []).length === 0 ? (
+                <li className="text-sm text-[var(--ib-mute)]">No gaps flagged.</li>
+              ) : null}
+            </ul>
+          </div>
+        </div>
+
+        <div className="rounded-3xl border border-[var(--ib-line)] bg-[var(--ib-card)] p-6 shadow-2xl md:p-10">
+          <div className="mb-8 flex items-center gap-4">
+            <div className="rounded-xl bg-[var(--ib-accbg)] p-2 text-[var(--ib-acc)]">
+              <Sparkles className="h-5 w-5 text-[var(--ib-acc)]" />
+            </div>
             <div>
-              <p className="text-[11px] font-black text-[var(--ib-ink)] line-clamp-1 uppercase tracking-wider">
-                {result.document_type_detected}
-              </p>
-              <p className="text-[10px] text-[var(--ib-ok)] font-black uppercase tracking-widest flex items-center gap-1">
-                <CheckCircle2 className="w-3 h-3" /> Scanned
+              <h3 className="text-xl font-black uppercase tracking-widest text-[var(--ib-ink)]">
+                Opportunities for Improvement
+              </h3>
+              <p className="mt-1 text-xs font-medium text-[var(--ib-mute)]">
+                Actionable OFIs to close gaps against the latest Library edition
               </p>
             </div>
           </div>
-          <div>
-            <p className="text-[10px] font-black text-[var(--ib-mute)] uppercase tracking-[0.2em] mb-3">
-              Improvement Goal
-            </p>
-            <div className="border border-[var(--ib-line)] bg-[var(--ib-bg)] rounded-xl px-4 py-3 text-xs text-[var(--ib-mute)] flex justify-between font-medium">
-              <span className="line-clamp-1">Analyzed...</span>
-              <CheckCircle2 className="w-4 h-4 text-[var(--ib-ok)]" />
+          <div className="space-y-4">
+            {(result.recommendations ?? []).length > 0
+              ? (result.recommendations ?? []).map((r, i) => (
+                  <div
+                    key={i}
+                    className="group rounded-2xl border border-[var(--ib-line)] bg-[var(--ib-bg)]/50 p-4 transition-all hover:border-[var(--ib-acc)]/30 hover:shadow-md md:p-6"
+                  >
+                    <div className="mb-4 flex flex-wrap items-center justify-between gap-4">
+                      <div className="flex items-center gap-3">
+                        <div className="flex h-6 w-6 items-center justify-center rounded-full bg-[var(--ib-ink)] text-xs font-black text-white md:h-8 md:w-8">
+                          {i + 1}
+                        </div>
+                        <span
+                          className={`rounded-lg px-2 py-1 text-[8px] font-bold uppercase tracking-wider md:px-3 md:text-[10px] ${
+                            r.priority === "High Priority"
+                              ? "border border-red-500/20 bg-red-50 text-red-700"
+                              : r.priority === "Medium Priority"
+                                ? "border border-amber-500/20 bg-amber-50 text-amber-700"
+                                : "border border-blue-500/20 bg-blue-50 text-blue-700"
+                          }`}
+                        >
+                          {r.priority}
+                        </span>
+                      </div>
+                      <span className="rounded-lg border border-[var(--ib-line)] bg-[var(--ib-bg)] px-2 py-1 text-[10px] font-bold text-[var(--ib-mute)] md:px-3 md:text-xs">
+                        Clause {r.clause_reference}
+                      </span>
+                    </div>
+                    <h4 className="mb-2 text-base font-bold text-[var(--ib-ink)] transition-colors group-hover:text-[var(--ib-acc)] md:text-lg">
+                      {r.title}
+                    </h4>
+                    <p className="mb-4 text-xs font-medium leading-relaxed text-[var(--ib-mute)] md:text-sm">
+                      <span className="font-bold text-[var(--ib-ink)]">OFI: </span>
+                      {r.description}
+                    </p>
+                    <div className="flex items-start gap-2 rounded-xl border border-[var(--ib-line)] bg-[var(--ib-card)] p-3 shadow-sm md:gap-3 md:p-4">
+                      <Lightbulb className="mt-0.5 h-3.5 w-3.5 shrink-0 text-amber-500 md:h-4 md:w-4" />
+                      <p className="text-[10px] font-medium text-[var(--ib-mute)] md:text-xs">
+                        <span className="font-bold text-[var(--ib-ink)]">Benefit: </span>
+                        {r.benefit_statement}
+                      </p>
+                    </div>
+                  </div>
+                ))
+              : ofiItems.map((item, i) => (
+                  <div
+                    key={i}
+                    className="rounded-2xl border border-[var(--ib-line)] bg-[var(--ib-bg)]/50 p-4 text-sm font-medium text-[var(--ib-ink)] md:p-5"
+                  >
+                    {item}
+                  </div>
+                ))}
+            {ofiItems.length === 0 && (result.recommendations ?? []).length === 0 ? (
+              <p className="text-sm text-[var(--ib-mute)]">
+                No opportunities for improvement returned.
+              </p>
+            ) : null}
+          </div>
+        </div>
+
+        {commonNcItems.length > 0 ? (
+          <div className="rounded-3xl border border-amber-500/20 bg-[var(--ib-card)] p-6 shadow-2xl md:p-10">
+            <div className="mb-6 flex items-center gap-4">
+              <div className="rounded-xl bg-amber-50 p-2">
+                <AlertTriangle className="h-5 w-5 text-amber-600" />
+              </div>
+              <div>
+                <h3 className="text-xl font-black uppercase tracking-widest text-[var(--ib-ink)]">
+                  Common Non-Conformities
+                </h3>
+                <p className="mt-1 text-xs font-medium text-[var(--ib-mute)]">
+                  Typical NC themes to watch for this standard / protocol
+                </p>
+              </div>
             </div>
+            <ul className="space-y-3">
+              {commonNcItems.map((item, i) => (
+                <li
+                  key={i}
+                  className="flex items-start gap-3 text-sm font-medium text-[var(--ib-ink)]"
+                >
+                  <span className="mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-amber-100 text-[10px] font-black text-amber-700">
+                    {i + 1}
+                  </span>
+                  {item}
+                </li>
+              ))}
+            </ul>
           </div>
+        ) : null}
+
+        {embedded ? (
           <button
             onClick={onReset}
-            className="w-full py-4 rounded-xl bg-[var(--ib-acc)] text-white text-white hover:bg-[var(--ib-acc)]/90 text-xs font-black uppercase tracking-widest transition-all shadow-lg active:scale-[0.98] flex items-center justify-center gap-2"
-          >
-            <Bot className="w-4 h-4" />
-            <span>Reset Analysis</span>
-          </button>
-          <div className="bg-[#F0FDF4] border border-[#BBF7D0] rounded-xl p-3 text-xs text-green-700 flex items-start gap-2 font-medium">
-            <CheckCircle2 className="w-4 h-4 shrink-0 text-green-600" />
-            <span>Analysis Complete</span>
-          </div>
-          <button
-            onClick={onReset}
-            className="w-full text-xs text-[var(--ib-mute)] hover:text-[var(--ib-acc)] underline transition-colors font-medium"
+            className="w-full rounded-2xl border border-[var(--ib-line)] bg-[var(--ib-bg)] py-3 text-xs font-black uppercase tracking-widest text-[var(--ib-mute)] transition-colors hover:border-[var(--ib-acc)] hover:text-[var(--ib-acc)]"
           >
             Analyze another document
           </button>
-          <div className="text-[10px] text-[var(--ib-mute)] space-y-2 pt-4 border-t border-[var(--ib-line)] font-medium">
-            <div className="flex items-center gap-2">
-              <Lock className="w-3 h-3 text-blue-500" />
-              <span>Processed Securely</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <Type className="w-3 h-3 text-blue-500" />
-              <span>OCR Tech Enabled</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <BarChart className="w-3 h-3 text-blue-500" />
-              <span>ISO Requirements Sandbox</span>
-            </div>
-          </div>
-        </aside>
-
-        {/* ── Main ── */}
-        <div className="space-y-5">
-          {/* Score overview */}
-          <div className="bg-[var(--ib-card)] rounded-3xl border border-[var(--ib-line)] shadow-2xl p-6 md:p-10 relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-[var(--ib-accbg)] blur-[60px] rounded-full" />
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12 relative z-10">
-              {[
-                {
-                  label: "Overall Score",
-                  value: result.overall_score,
-                  color: gradeColor,
-                  bar: "bg-amber-400",
-                  extra: (
-                    <span
-                      className={`text-sm font-extrabold ${gradeColor} mt-1 block`}
-                    >
-                      Grade {result.grade}
-                    </span>
-                  ),
-                },
-                {
-                  label: "Completeness",
-                  value: result.compliance_percentage,
-                  color: "text-blue-600",
-                  bar: "bg-blue-600",
-                },
-                {
-                  label: "Effectiveness",
-                  value: result.effectiveness_percentage,
-                  color: "text-[var(--ib-acc)]",
-                  bar: "bg-[var(--ib-acc)]",
-                },
-              ].map(({ label, value, color, bar, extra }) => (
-                <div key={label} className="space-y-1">
-                  <p className="text-[10px] text-[var(--ib-mute)] font-black uppercase tracking-[0.3em]">
-                    {label}
-                  </p>
-                  <span className={`text-4xl md:text-5xl lg:text-6xl font-black ${color} font-jetbrains-mono tracking-tighter`}>
-                    {value}%
-                  </span>
-                  {extra}
-                  <div className="w-full bg-[var(--ib-bg)] rounded-full h-2 mt-4">
-                    <div
-                      className={`${bar} h-2 rounded-full transition-all duration-1000`}
-                      style={{ width: `${value}%` }}
-                    />
-                  </div>
-                </div>
-              ))}
-            </div>
-            <div className="mt-6 md:mt-8 pt-4 md:pt-6 border-t border-[var(--ib-line)] flex flex-wrap gap-4 md:gap-8 text-[10px] md:text-xs text-[var(--ib-mute)] font-medium">
-              <div className="flex items-center gap-2">
-                <FileText className="w-3.5 h-3.5 text-[var(--ib-acc)]" />
-                <span>
-                  <b className="text-[var(--ib-ink)]">Protocol:</b>{" "}
-                  {result.document_type_detected}
-                </span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Search className="w-3.5 h-3.5 text-[var(--ib-acc)]" />
-                <span>
-                  <b className="text-[var(--ib-ink)]">ISO Standards:</b> {result.standard_analyzed}
-                </span>
-              </div>
-            </div>
-          </div>
-
-          {/* Clause compliance */}
-          <div className="bg-[var(--ib-card)] rounded-3xl border border-[var(--ib-line)] shadow-2xl p-6 md:p-10">
-            <h3 className="text-xl font-black text-[var(--ib-ink)] uppercase tracking-widest mb-10 border-l-4 border-[var(--ib-acc)] pl-6">
-              Neural Compliance Matrix
-            </h3>
-            <div className="space-y-8">
-              {(result.clause_compliance ?? []).map((c) => (
-                <div key={c.clause_number} className="space-y-3">
-                  <div className="flex items-start justify-between">
-                    <div className="space-y-1">
-                      <span className="text-sm md:text-base font-bold text-[var(--ib-ink)]">
-                        {c.clause_number} {c.clause_title}
-                      </span>
-                      <p className="text-xs text-[var(--ib-mute)] font-medium italic">
-                        Evidence: {c.evidence_found}
-                      </p>
-                      <p className="text-xs text-red-400 font-medium">
-                        Gap: {c.gap_description}
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-3 shrink-0">
-                      <span
-                        className={`text-[8px] md:text-[10px] font-bold uppercase tracking-wider px-2 md:px-3 py-1 rounded-lg border ${c.status === "Conforming" ? "bg-emerald-100/10 text-emerald-400 border-emerald-500/20" :
-                          c.status === "Major Gap" ? "bg-red-100/10 text-red-400 border-red-500/20" :
-                            "bg-amber-100/10 text-amber-400 border-amber-500/20"
-                          }`}
-                      >
-                        {c.status === "Conforming" ? "Conforming" :
-                          c.status === "Major Gap" ? "Major Gap" :
-                            "Minor Gap"
-                        }
-                      </span>
-                      <span className="text-sm md:text-base font-black text-[var(--ib-ink)] w-10 md:w-12 text-right">
-                        {c.compliance_percentage}%
-                      </span>
-                    </div>
-                  </div>
-                  <div className="w-full bg-[var(--ib-bg)] rounded-full h-2">
-                    <div
-                      className={`${c.status === "Conforming" ? "bg-emerald-500" :
-                        c.status === "Major Gap" ? "bg-red-500" :
-                          "bg-amber-400"
-                        } h-2 rounded-full transition-all duration-1000`}
-                      style={{ width: `${c.compliance_percentage}%` }}
-                    />
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Strengths & Gaps */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {[
-              {
-                title: "Strengths",
-                icon: CheckCircle2,
-                iconColor: "text-emerald-500",
-                bgColor: "bg-emerald-50/5",
-                border: "border-emerald-500/10",
-                bullet: CheckCircle,
-                bulletColor: "text-emerald-500",
-                items: result.strengths,
-              },
-              {
-                title: "Identified Gaps",
-                icon: AlertTriangle,
-                iconColor: "text-red-500",
-                bgColor: "bg-red-50/5",
-                border: "border-red-500/10",
-                bullet: AlertTriangle,
-                bulletColor: "text-red-500",
-                items: (result.identified_gaps ?? []).map(g => `${g.clause_reference}: ${g.gap_title} - ${g.gap_description}`),
-              },
-            ].map(
-              ({
-                title,
-                icon: Icon,
-                iconColor,
-                bgColor,
-                border,
-                bullet: Bullet,
-                bulletColor,
-                items,
-              }) => (
-                <div
-                  key={title}
-                  className={`bg-[var(--ib-card)] rounded-3xl border ${border} shadow-2xl p-6 space-y-6`}
-                >
-                  <div className="flex items-center gap-4">
-                    <div className={`p-2 ${bgColor} rounded-xl`}>
-                      <Icon className={`w-5 h-5 ${iconColor}`} />
-                    </div>
-                    <h4 className="text-base font-black text-[var(--ib-ink)] uppercase tracking-wider">
-                      {title}
-                    </h4>
-                  </div>
-                  <ul className="space-y-3">
-                    {(items ?? []).map((item, i) => (
-                      <li
-                        key={i}
-                        className="flex items-start gap-2 md:gap-3 text-xs md:text-sm text-[var(--ib-mute)] font-medium leading-relaxed"
-                      >
-                        <Bullet
-                          className={`${bulletColor} w-3.5 h-3.5 md:w-4 md:h-4 mt-0.5 shrink-0`}
-                        />
-                        {item}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ),
-            )}
-          </div>
-
-          {/* Recommendations */}
-          <div className="bg-[var(--ib-card)] rounded-3xl border border-[var(--ib-line)] shadow-2xl p-6 md:p-10">
-            <div className="flex items-center gap-4 mb-10">
-              <div className="p-2 bg-[var(--ib-accbg)] text-[var(--ib-acc)] rounded-xl">
-                <Sparkles className="w-5 h-5 text-[var(--ib-acc)]" />
-              </div>
-              <h3 className="text-xl font-black text-[var(--ib-ink)] uppercase tracking-widest">
-                Optimization Roadmap
-              </h3>
-            </div>
-            <div className="space-y-4">
-              {(result.recommendations ?? []).map((r, i) => (
-                <div
-                  key={i}
-                  className="border border-[var(--ib-line)] rounded-2xl p-4 md:p-6 bg-[var(--ib-bg)]/50 transition-all hover:border-[var(--ib-acc)]/30 hover:shadow-md group"
-                >
-                  <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-6 h-6 md:w-8 md:h-8 rounded-full bg-[var(--ib-ink)] text-white flex items-center justify-center font-black text-xs">
-                        {i + 1}
-                      </div>
-                      <span
-                        className={`text-[8px] md:text-[10px] font-bold uppercase tracking-wider px-2 md:px-3 py-1 rounded-lg ${r.priority === "High Priority" ? "bg-red-500/10 text-red-400 border border-red-500/20" :
-                          r.priority === "Medium Priority" ? "bg-amber-500/10 text-amber-400 border border-amber-500/20" :
-                            "bg-blue-500/10 text-blue-400 border border-blue-500/20"
-                          }`}
-                      >
-                        {r.priority}
-                      </span>
-                    </div>
-                    <span className="text-[10px] md:text-xs font-bold text-[var(--ib-mute)] bg-[var(--ib-bg)] px-2 md:px-3 py-1 rounded-lg border border-[var(--ib-line)]">
-                      Clause {r.clause_reference}
-                    </span>
-                  </div>
-                  <h4 className="text-base md:text-lg font-bold text-[var(--ib-ink)] mb-2 group-hover:text-[var(--ib-acc)] transition-colors">
-                    {r.title}
-                  </h4>
-                  <p className="text-xs md:text-sm text-[var(--ib-mute)] font-medium leading-relaxed mb-4">
-                    <span className="font-bold text-[var(--ib-ink)]">
-                      Recommendation:{" "}
-                    </span>
-                    {r.description}
-                  </p>
-                  <div className="flex items-start gap-2 md:gap-3 bg-[var(--ib-bg)] border border-[var(--ib-line)] rounded-xl p-3 md:p-4 shadow-sm">
-                    <Lightbulb className="w-3.5 h-3.5 md:w-4 md:h-4 text-amber-500 shrink-0 mt-0.5" />
-                    <p className="text-[10px] md:text-xs text-[var(--ib-mute)] font-medium">
-                      <span className="font-bold text-[var(--ib-ink)]">
-                        Benefit:{" "}
-                      </span>
-                      {r.benefit_statement}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Ask AI */}
-          <div className="mt-12 bg-[var(--ib-card)] border border-[var(--ib-line)] rounded-3xl shadow-2xl overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-500">
-            <div className="p-5 md:p-6 flex items-center gap-4 border-b border-[var(--ib-line)] bg-[var(--ib-bg)]/50">
-              <div className="p-2 bg-[var(--ib-accbg)] text-[var(--ib-acc)] rounded-xl">
-                <Sparkles className="w-5 h-5 text-black" />
-              </div>
-              <div>
-                <div className="text-base md:text-lg font-black text-[var(--ib-ink)] uppercase tracking-wider">
-                  Interactive compliance AI Chat
-                </div>
-              </div>
-            </div>
-
-            <div className="p-4 md:p-8 space-y-6 max-w-[94.5vw] sm:max-w-[80vw] md:max-w-[90vw] lg:max-w-[99vw]">
-              {(chatHistory.length > 0 || aiLoading) && (
-                <div
-                  ref={chatContainerRef}
-                  onScroll={handleChatScroll}
-                  className="w-full min-w-0 bg-[var(--ib-bg)] border border-[var(--ib-line)] rounded-2xl p-6 overflow-y-auto max-h-[400px] flex flex-col space-y-6 custom-thin-scrollbar animate-in slide-in-from-bottom-4 duration-300"
-                >
-                  {chatHistory.map((msg, i) => (
-                    <div
-                      key={i}
-                      className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"} min-w-0`}
-                    >
-                      <div
-                        className={`max-w-full md:max-w-[85%] p-4 rounded-2xl text-sm font-medium leading-relaxed min-w-0 ${msg.role === "user"
-                          ? "bg-[var(--ib-acc)] text-white rounded-tr-none"
-                          : "bg-[var(--ib-card)] border border-[var(--ib-line)] text-[var(--ib-ink)] rounded-tl-none w-full"
-                          }`}
-                      >
-                        <div className="max-w-none prose prose-invert prose-sm w-full min-w-0">
-                          <ReactMarkdown
-                            remarkPlugins={[remarkGfm]}
-                            components={{
-                              h1: (props) => <span className={`block font-black mb-3 uppercase tracking-wide text-[10px] sm:text-[12px] md:text-[14px] ${msg.role === "user" ? "text-black font-bold" : "text-white font-bold"}`} {...props} />,
-                              h2: (props) => <span className={`block font-black mt-4 mb-2 uppercase tracking-wide text-[9px] sm:text-[11px] md:text-[13px] ${msg.role === "user" ? "text-black font-bold" : "text-white font-bold"}`} {...props} />,
-                              h3: (props) => <span className={`block font-bold mt-3 mb-1.5 uppercase tracking-wide text-[8px] sm:text-[10px] md:text-[12px] ${msg.role === "user" ? "text-black" : "text-white"}`} {...props} />,
-                              p: (props) => <p className={`mb-2 text-[10px] sm:text-xs md:text-sm leading-relaxed ${msg.role === "user" ? "text-black font-semibold" : "text-[var(--ib-mute)]"}`} {...props} />,
-                              ul: (props) => <ul className={`list-disc pl-4 mb-3 space-y-1 ${msg.role === "user" ? "text-black" : "text-[var(--ib-mute)]"}`} {...props} />,
-                              ol: (props) => <ol className={`list-decimal pl-4 mb-3 space-y-1 ${msg.role === "user" ? "text-black" : "text-[var(--ib-mute)]"}`} {...props} />,
-                              li: (props) => <li className={`text-[10px] sm:text-xs md:text-sm leading-relaxed ${msg.role === "user" ? "text-black" : "text-[var(--ib-mute)]"}`} {...props} />,
-                              table: ({ ...props }) => (
-                                <div className="scrollable-table my-4 w-full overflow-x-auto rounded-xl border border-[var(--ib-line)] pb-2">
-                                  <table className="w-full text-left border-collapse text-sm md:text-base min-w-[500px]" {...props} />
-                                </div>
-                              ),
-                              th: ({ ...props }) => <th className="border-b border-white/20 px-3 py-2 md:px-4 md:py-3 bg-white/5 font-bold text-white break-normal" {...props} />,
-                              td: ({ ...props }) => <td className="border-b border-[var(--ib-line)] px-3 py-2 md:px-4 md:py-3 break-normal align-top text-[var(--ib-mute)]" {...props} />,
-                            }}
-                          >
-                            {msg.content}
-                          </ReactMarkdown>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                  {aiLoading && (
-                    <div className="flex justify-start">
-                      <div className="p-4 bg-white border border-[#E2E8F0] rounded-2xl rounded-tl-none animate-pulse">
-                        <Loader2 className="animate-spin text-[var(--ib-acc)]" size={18} />
-                      </div>
-                    </div>
-                  )}
-                  <div ref={chatEndRef} />
-                </div>
-              )}
-
-              <div className="relative">
-                <textarea
-                  className="w-full bg-[var(--ib-bg)] border border-[var(--ib-line)] rounded-2xl p-6 pr-16 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ib-acc)]/30 focus:border-[var(--ib-acc)] transition-all min-h-[100px] resize-none font-medium text-[var(--ib-ink)] placeholder-[var(--ib-mute)]"
-                  placeholder="Ask any question about compliance, standards, or how to improve..."
-                  value={aiQ}
-                  onChange={(e) => setAiQ(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" && !e.shiftKey) {
-                      e.preventDefault();
-                      askAI();
-                    }
-                  }}
-                />
-                <button
-                  onClick={askAI}
-                  disabled={!aiQ.trim() || aiLoading}
-                  className="absolute bottom-6 right-6 p-3 bg-[var(--ib-acc)] text-white rounded-xl hover:opacity-92 disabled:opacity-50 transition-all shadow-lg active:scale-95"
-                >
-                  <Send className="w-[18px] h-[18px]" />
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
+        ) : null}
       </div>
-      <style jsx global>{`
-        .custom-scrollbar::-webkit-scrollbar {
-          width: 5px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-          background: transparent;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-          background: #cbd5e1;
-          border-radius: 8px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-          background: #94a3b8;
-        }
-
-        .prose tr:nth-child(even) {
-          background-color: var(--ib-ink);
-        }
-
-        .prose th {
-          background-color: var(--ib-ink);
-        }
-      `}</style>
     </div>
   );
 }

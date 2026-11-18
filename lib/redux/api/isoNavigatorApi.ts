@@ -149,7 +149,7 @@ export const isoNavigatorApi = baseApi.injectEndpoints({
         method: 'POST',
         body: data,
       }),
-      invalidatesTags: ['ApiUsage'],
+      invalidatesTags: ['ApiUsage', 'ChatSessions'],
     }),
     generateContextSuggestions: builder.mutation<any[], ContextGeneratorRequest>({
       query: (data) => ({
@@ -224,6 +224,43 @@ export const isoNavigatorApi = baseApi.injectEndpoints({
         };
       },
     }),
+    getNavigatorChatSessions: builder.query<
+      Array<{
+        id: string;
+        title?: string | null;
+        createdAt: string;
+        updatedAt: string;
+      }>,
+      void
+    >({
+      query: () => ({
+        url: '/ai-assistant/sessions',
+        params: { purpose: 'iso_navigator' },
+      }),
+      transformResponse: (response: any) => {
+        const rows = response?.data || response || [];
+        return Array.isArray(rows) ? rows : [];
+      },
+      providesTags: ['ChatSessions'],
+    }),
+    getNavigatorChatHistory: builder.query<
+      Array<{
+        id: string;
+        role: string;
+        message: string;
+        sources?: any;
+        createdAt: string;
+      }>,
+      string
+    >({
+      query: (sessionId) => ({
+        url: `/ai-assistant/history/${sessionId}`,
+      }),
+      transformResponse: (response: any) => {
+        const rows = response?.data || response || [];
+        return Array.isArray(rows) ? rows : [];
+      },
+    }),
   }),
 });
 
@@ -234,4 +271,6 @@ export const {
   useGenerateContextSuggestionsMutation,
   useGetISOSuggestionsMutation,
   useGetNavigatorImsDocumentsMutation,
+  useGetNavigatorChatSessionsQuery,
+  useLazyGetNavigatorChatHistoryQuery,
 } = isoNavigatorApi;

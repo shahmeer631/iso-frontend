@@ -84,11 +84,14 @@ const AcademyPage = () => {
               </p>
               <Link
                 href={`/${lang}/pricing`}
-                className="mt-8 inline-flex items-center gap-2.5 rounded-[10px] bg-white px-8 py-4 text-[12px] font-bold uppercase tracking-[0.06em] text-[var(--ib-ink)] transition-opacity hover:opacity-92 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white sm:px-10 sm:py-5 sm:text-[14px]"
+                className="mt-8 inline-flex min-h-[56px] items-center gap-2.5 rounded-[12px] bg-white px-10 py-5 text-[13px] font-black uppercase tracking-[0.08em] text-[var(--ib-ink)] shadow-[0_18px_40px_-18px_rgba(0,0,0,0.45)] transition-[transform,opacity] hover:-translate-y-0.5 hover:opacity-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white sm:min-h-[60px] sm:px-12 sm:text-[15px]"
               >
                 Start Your Free Trial - Enroll Free
                 <ArrowRight className="size-5" aria-hidden />
               </Link>
+              <p className="mt-4 text-[13px] font-semibold text-white/90">
+                First 2 lessons free in every Academy course
+              </p>
             </div>
           </motion.div>
         </div>

@@ -295,13 +295,13 @@ export default function LoginPage() {
           >
             <span>{t("dynamic.dyn_copy2026ISOBRAINAI_546")}</span>
             <Link
-              href="#"
+              href={`/${lang}/privacy-policy`}
               className="transition-colors hover:text-[var(--ib-ink)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ib-acc)]"
             >
               {t("auth.privacyPolicy")}
             </Link>
             <Link
-              href="#"
+              href={`/${lang}/terms-of-service`}
               className="transition-colors hover:text-[var(--ib-ink)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ib-acc)]"
             >
               {t("auth.termsOfService")}

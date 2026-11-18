@@ -334,7 +334,7 @@ const AssessmentPage = () => {
         >
           <div className="relative w-full max-w-4xl transition-transform duration-500 hover:-translate-y-1">
             <Image
-              src="/certificate-cpd.jpg"
+              src="/certificate-cpd.png?v=blank-name-2"
               alt={t("dynamic.dyn_cPDCertificate_225")}
               width={1536}
               height={1024}
@@ -342,13 +342,18 @@ const AssessmentPage = () => {
               priority
               unoptimized
             />
-            {/* Live preview overlays: name + Steps 1–3 (industry / level / department) */}
+            {/*
+              Cover ANY baked-in name layers in the art, then paint exactly one name.
+              (Old asset had a large name + a smaller overridden name stacked.)
+            */}
             <div
               aria-hidden
-              className="pointer-events-none absolute inset-0 hidden sm:block"
+              className="pointer-events-none absolute inset-0"
             >
-              <div className="absolute left-[17%] top-[34.5%] w-[66%] text-center font-serif text-[clamp(14px,2.6vw,28px)] font-bold tracking-wide text-[#b8860b]">
-                Your Name Goes Here
+              {/* Start below the template's ISSUED TO label so it never overlaps */}
+              <div className="absolute left-[10%] top-[34.8%] h-[7.2%] w-[80%] bg-[#f3f4ec]" />
+              <div className="absolute left-[12%] top-[35.8%] w-[76%] text-center font-sans text-[clamp(15px,2.6vw,28px)] font-bold uppercase tracking-wide text-[#b8860b]">
+                YOUR NAME GOES HERE
               </div>
               <div className="absolute left-[45.5%] top-[62.5%] w-[22%] truncate text-[clamp(9px,1.1vw,13px)] font-semibold text-[#1a2744]">
                 {previewContext.industry || "—"}

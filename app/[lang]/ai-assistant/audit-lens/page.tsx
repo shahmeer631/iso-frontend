@@ -72,7 +72,15 @@ import {
 
 
 
-  ChevronUp
+  ChevronUp,
+
+  PanelLeftClose,
+
+  PanelLeftOpen,
+
+  History,
+
+  Plus,
 
 
 
@@ -118,7 +126,11 @@ import {
 
 
 
-  useChatSimpleMutation
+  useChatSimpleMutation,
+
+  useGetAuditChatSessionsQuery,
+
+  useLazyGetAuditChatHistoryQuery,
 
 
 
@@ -136,6 +148,8 @@ import { useTranslation } from "react-i18next";
 
 import i18n from "@/lib/i18n/client";
 import { ActivityTracker } from "@/components/activity/ActivityTracker";
+import { useSelector } from "react-redux";
+import { selectCurrentToken } from "@/lib/redux/features/auth/authSlice";
 
 
 
@@ -399,7 +413,14 @@ const AuditLensPage = () => {
 
   const [chatSimple, { isLoading: isSendingChat }] = useChatSimpleMutation();
 
-
+  const token = useSelector(selectCurrentToken);
+  const [leftPanelCollapsed, setLeftPanelCollapsed] = useState(false);
+  const [historyOpen, setHistoryOpen] = useState(false);
+  const {
+    data: auditSessions = [],
+    refetch: refetchAuditSessions,
+  } = useGetAuditChatSessionsQuery(undefined, { skip: !token });
+  const [fetchAuditHistory] = useLazyGetAuditChatHistoryQuery();
 
   const [chatLoaderIdx, setChatLoaderIdx] = useState(0);
 
@@ -574,54 +595,18 @@ const AuditLensPage = () => {
 
 
 
-      const currentSessionId = sessionId || ("audit_" + Math.random().toString(36).substring(7));
-
-
-
-
-
-
-
       const res = await chatSimple({
-
-
-
         messages: [{ content: newUserMessage.content }],
-
-
-
         context: {
-
-
-
-          full_document_context: contextStr
-
-
-
+          purpose: "audit_lens",
+          full_document_context: contextStr,
         },
-
-
-
-        session_id: currentSessionId
-
-
-
+        ...(sessionId ? { session_id: sessionId } : {}),
       }).unwrap();
 
-
-
-
-
-
-
-      if (res.session_id && !sessionId) {
-
-
-
+      if (res.session_id) {
         setSessionId(res.session_id);
-
-
-
+        if (token) void refetchAuditSessions();
       }
 
 
@@ -1114,11 +1099,17 @@ const AuditLensPage = () => {
 
 
 
-                  <h4 className="text-sm font-bold text-[var(--ib-ink)] mb-2 leading-relaxed">{opt.scope}</h4>
+                  <h4 className="mb-2 text-sm font-bold leading-relaxed text-[var(--ib-ink)]">{opt.scope}</h4>
 
+                  <p className="mb-2 text-xs font-medium leading-relaxed text-[var(--ib-ink)]/85">
+                    {opt.description ||
+                      opt.detailed_description ||
+                      opt.summary ||
+                      opt.context ||
+                      `Audit focus: ${opt.scope}. Objective: ${opt.objective}`}
+                  </p>
 
-
-                  <p className="text-xs text-[var(--ib-mute)] leading-relaxed">{opt.objective}</p>
+                  <p className="text-xs leading-relaxed text-[var(--ib-mute)]">{opt.objective}</p>
 
 
 
@@ -1190,19 +1181,11 @@ const AuditLensPage = () => {
 
 
 
-              <div className="p-2 bg-[var(--ib-acc)] text-white rounded-xl">
-
-
-
-                <CheckCircle2 className="w-5 h-5 text-[var(--ib-acc)]" />
-
-
-
+              <div className="rounded-xl bg-[var(--ib-acc)] p-2 text-white">
+                <ClipboardList className="h-5 w-5 text-white" strokeWidth={2.25} />
               </div>
 
-
-
-              <h2 className="text-[16px] font-semibold leading-[1.4] text-[var(--ib-ink)] tracking-wide">{t('auditLens.auditSteps')}</h2>
+              <h2 className="text-[16px] font-semibold leading-[1.4] tracking-wide text-[var(--ib-ink)]">{t('auditLens.auditSteps')}</h2>
             </div>
             {mode === 'steps' && <button onClick={handleReset} className="text-xs text-[var(--ib-mute)] hover:text-[var(--ib-ink)] uppercase tracking-widest">{t('auditLens.restart')}</button>}
 
@@ -1292,11 +1275,11 @@ const AuditLensPage = () => {
 
 
 
-                        <span className="text-[12px] font-semibold uppercase tracking-[0.06em] text-[var(--ib-dktx)]">{stage} Phase</span>
+                        <span className={`text-[12px] font-semibold uppercase tracking-[0.06em] ${hasActiveStep ? "text-white" : "text-[var(--ib-ink)]"}`}>{stage} Phase</span>
 
 
 
-                        <span className="text-[12px] text-[var(--ib-mute)] font-medium">({stageSteps.length} Steps)</span>
+                        <span className={`text-[12px] font-medium ${hasActiveStep ? "text-white/80" : "text-[var(--ib-mute)]"}`}>({stageSteps.length} Steps)</span>
 
 
 
@@ -1400,34 +1383,20 @@ const AuditLensPage = () => {
 
 
 
-                              <div className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 font-bold text-[10px] ${isActive
-
-
-
-                                ? 'bg-[var(--ib-acc)] text-white shadow-[0_0_10px_rgba(27, 77, 219,0.4)]'
-
-
-
-                                : isCompleted
-
-
-
-                                  ? 'bg-[var(--ib-ink)] text-[var(--ib-acc)]'
-
-
-
-                                  : 'bg-[var(--ib-ink)] text-[var(--ib-mute)]'
-
-
-
-                                }`}>
-
-
-
-                                {isCompleted && !isActive ? <CheckCircle className="w-3.5 h-3.5 text-[var(--ib-acc)]" /> : stepNum}
-
-
-
+                              <div
+                                className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[10px] font-bold ${
+                                  isActive
+                                    ? "bg-[var(--ib-acc)] text-white shadow-[0_0_10px_color-mix(in_srgb,var(--ib-acc)_40%,transparent)]"
+                                    : isCompleted
+                                      ? "bg-[var(--ib-acc)] text-white"
+                                      : "border border-[var(--ib-line)] bg-[var(--ib-card)] text-[var(--ib-mute)]"
+                                }`}
+                              >
+                                {isCompleted && !isActive ? (
+                                  <CheckCircle className="h-3.5 w-3.5 text-white" strokeWidth={2.5} />
+                                ) : (
+                                  stepNum
+                                )}
                               </div>
 
 
@@ -1436,7 +1405,7 @@ const AuditLensPage = () => {
 
 
 
-                                <p className={`text-xs font-bold truncate ${isActive ? 'text-[var(--ib-ink)]' : 'text-[var(--ib-mute)]'}`}>{step.title}</p>
+                                <p className={`truncate text-xs font-bold ${isActive ? "text-white" : "text-[var(--ib-ink)]"}`}>{step.title}</p>
 
 
 
@@ -1818,7 +1787,7 @@ const AuditLensPage = () => {
 
 
 
-                  className="px-6 py-3 rounded-xl border border-[var(--ib-line)] cursor-pointer text-[var(--ib-mute)] font-bold uppercase tracking-widest text-xs hover:bg-[var(--ib-ink)] hover:text-[var(--ib-ink)] transition-all disabled:opacity-30 disabled:pointer-events-none"
+                  className="cursor-pointer rounded-xl border border-[var(--ib-line)] bg-[var(--ib-card)] px-6 py-3 text-xs font-bold uppercase tracking-widest text-[var(--ib-mute)] transition-all hover:border-[var(--ib-acc)] hover:bg-[var(--ib-accbg)] hover:text-[var(--ib-acc)] disabled:pointer-events-none disabled:opacity-30"
 
 
 
@@ -1854,7 +1823,7 @@ const AuditLensPage = () => {
 
 
 
-                    className="px-6 py-3 cursor-pointer bg-[var(--ib-ok)] text-[var(--ib-ink)] rounded-xl font-bold uppercase tracking-widest text-xs hover:bg-[var(--ib-ok)] transition-all shadow-lg shadow-blue-500/20 disabled:opacity-50 flex items-center gap-2"
+                    className="flex cursor-pointer items-center gap-2 rounded-xl bg-[var(--ib-acc)] px-6 py-3 text-xs font-bold uppercase tracking-widest text-white shadow-lg shadow-[color-mix(in_srgb,var(--ib-acc)_35%,transparent)] transition-all hover:opacity-92 disabled:opacity-50"
 
 
 
@@ -1958,7 +1927,7 @@ const AuditLensPage = () => {
 
           <div className="p-2 bg-[var(--ib-accbg)] text-[var(--ib-acc)] rounded-xl">
 
-            <Sparkles className="w-5 h-5 text-black" />
+            <Sparkles className="h-5 w-5 text-[var(--ib-acc)]" />
 
           </div>
 
@@ -1983,9 +1952,9 @@ const AuditLensPage = () => {
 
                   <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} min-w-0`}>
 
-                    <div className={`max-w-full p-2 sm:p-3 md:p-4 rounded-2xl text-[13px] sm:text-sm md:text-[14px] font-medium leading-[1.6] min-w-0 ${msg.role === 'user' ? 'bg-[var(--ib-acc)] text-white rounded-tr-none shadow-[0_4px_15px_-3px_rgba(27, 77, 219,0.35)]' : 'bg-[var(--ib-card)] border border-[var(--ib-line)] text-[var(--ib-dktx)] rounded-tl-none w-full'}`}>
+                    <div className={`max-w-full min-w-0 rounded-2xl p-2 text-[13px] font-medium leading-[1.6] sm:p-3 sm:text-sm md:p-4 md:text-[14px] ${msg.role === 'user' ? 'rounded-tr-none bg-[var(--ib-acc)] text-white shadow-[0_4px_15px_-3px_rgba(27,77,219,0.35)]' : 'w-full rounded-tl-none border border-[var(--ib-line)] bg-[var(--ib-card)] text-[var(--ib-ink)]'}`}>
 
-                      <div className={`prose prose-sm max-w-none w-full min-w-0 ${msg.role === 'user' ? 'text-black' : 'prose-invert text-[var(--ib-dktx)]'}`}>
+                      <div className={`prose prose-sm w-full min-w-0 max-w-none ${msg.role === 'user' ? 'text-white' : 'text-[var(--ib-ink)]'}`}>
 
                         <ReactMarkdown
 
@@ -1993,37 +1962,33 @@ const AuditLensPage = () => {
 
                           components={{
 
-                            h1: (props) => <span className={`block font-semibold mb-2 tracking-tight text-[16px] sm:text-[18px] md:text-[20px] leading-[1.3] ${msg.role === 'user' ? 'text-black' : 'text-[var(--ib-ink)]'}`} {...props} />,
+                            h1: (props) => <span className={`mb-2 block text-[16px] font-semibold leading-[1.3] tracking-tight sm:text-[18px] md:text-[20px] ${msg.role === 'user' ? 'text-white' : 'text-[var(--ib-ink)]'}`} {...props} />,
 
-                            h2: (props) => <span className={`block font-semibold mt-3 mb-1.5 tracking-tight text-[14px] sm:text-[15px] md:text-[16px] leading-[1.4] ${msg.role === 'user' ? 'text-black' : 'text-[var(--ib-ink)]'}`} {...props} />,
+                            h2: (props) => <span className={`mb-1.5 mt-3 block text-[14px] font-semibold leading-[1.4] tracking-tight sm:text-[15px] md:text-[16px] ${msg.role === 'user' ? 'text-white' : 'text-[var(--ib-ink)]'}`} {...props} />,
 
-                            h3: (props) => <span className={`block font-semibold mt-2.5 mb-1 tracking-tight text-[13px] sm:text-[14px] leading-[1.4] ${msg.role === 'user' ? 'text-black' : 'text-[var(--ib-ink)]'}`} {...props} />,
+                            h3: (props) => <span className={`mb-1 mt-2.5 block text-[13px] font-semibold leading-[1.4] tracking-tight sm:text-[14px] ${msg.role === 'user' ? 'text-white' : 'text-[var(--ib-ink)]'}`} {...props} />,
 
-                            p: (props) => <p className={`mb-2 text-[13px] sm:text-sm md:text-[14px] leading-[1.6] ${msg.role === 'user' ? 'text-[var(--ib-ink)] font-medium' : 'text-[var(--ib-mute)]'}`} {...props} />,
+                            p: (props) => <p className={`mb-2 text-[13px] leading-[1.6] sm:text-sm md:text-[14px] ${msg.role === 'user' ? 'font-medium text-white' : 'text-[var(--ib-ink)]/90'}`} {...props} />,
 
-                            ul: ({node, className, ...props}: any) => <ul className={`list-disc pl-4 mb-3 space-y-1 ${msg.role === 'user' ? 'text-black' : 'text-[var(--ib-mute)]'} ${className || ''}`} {...props} />,
+                            ul: ({node, className, ...props}: any) => <ul className={`mb-3 list-disc space-y-1 pl-4 ${msg.role === 'user' ? 'text-white' : 'text-[var(--ib-ink)]/90'} ${className || ''}`} {...props} />,
 
+                            ol: ({node, className, ...props}: any) => <ol className={`mb-3 list-decimal space-y-1 pl-4 ${msg.role === 'user' ? 'text-white' : 'text-[var(--ib-ink)]/90'} ${className || ''}`} {...props} />,
 
-
-                            ol: ({node, className, ...props}: any) => <ol className={`list-decimal pl-4 mb-3 space-y-1 ${msg.role === 'user' ? 'text-black' : 'text-[var(--ib-mute)]'} ${className || ''}`} {...props} />,
-
-                            
-
-                            li: ({node, className, ...props}: any) => <li className={`mb-1 text-[13px] sm:text-sm md:text-[14px] leading-[1.6] ${msg.role === 'user' ? 'text-black' : 'text-[var(--ib-mute)]'} ${className || ''}`} {...props} />,
+                            li: ({node, className, ...props}: any) => <li className={`mb-1 text-[13px] leading-[1.6] sm:text-sm md:text-[14px] ${msg.role === 'user' ? 'text-white' : 'text-[var(--ib-ink)]/90'} ${className || ''}`} {...props} />,
 
                             table: ({ ...props }) => (
 
                               <div className="scrollable-table my-4 w-full overflow-x-auto rounded-xl border border-[var(--ib-line)] pb-2">
 
-                                <table className="w-full text-left border-collapse text-sm md:text-base min-w-[500px]" {...props} />
+                                <table className="w-full min-w-[500px] border-collapse text-left text-sm md:text-base" {...props} />
 
                               </div>
 
                             ),
 
-                            th: ({ ...props }) => <th className="border-b border-white/20 px-3 py-2 md:px-4 md:py-3 bg-[var(--ib-card)] font-bold text-[var(--ib-ink)] break-normal" {...props} />,
+                            th: ({ ...props }) => <th className="break-normal border-b border-[var(--ib-line)] bg-[var(--ib-bg)] px-3 py-2 font-bold text-[var(--ib-ink)] md:px-4 md:py-3" {...props} />,
 
-                            td: ({ ...props }) => <td className="border-b border-[var(--ib-line)] px-3 py-2 md:px-4 md:py-3 break-normal align-top text-[var(--ib-mute)]" {...props} />,
+                            td: ({ ...props }) => <td className="break-normal border-b border-[var(--ib-line)] px-3 py-2 align-top text-[var(--ib-ink)]/90 md:px-4 md:py-3" {...props} />,
 
                           }}
 
@@ -2206,87 +2171,133 @@ const AuditLensPage = () => {
 
 
       {/* Header */}
-      <header className="space-y-4 px-2 sm:px-0 mb-12 mt-20">
-        <div className="flex justify-center mb-6">
-          <div className="px-4 py-1 border-[var(--ib-acc)] text-[var(--ib-acc)] border border-[var(--ib-acc)]/20 rounded-full">
-            <span className="text-[var(--ib-acc)] text-[10px] font-black uppercase tracking-[0.3em]">{t('auditLens.badge')}</span>
+      <header className="mb-8 mt-20 space-y-4 px-2 sm:px-0 md:mb-10">
+        <div className="mb-6 flex justify-center">
+          <div className="rounded-full border border-[var(--ib-acc)]/20 px-4 py-1 text-[var(--ib-acc)]">
+            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-[var(--ib-acc)]">{t('auditLens.badge')}</span>
           </div>
         </div>
-        <h1 className="text-5xl lg:text-[52px] font-semibold text-[var(--ib-ink)] leading-[1.1] tracking-tight mb-8 text-center">
+        <h1 className="mb-4 text-center text-5xl font-semibold leading-[1.1] tracking-tight text-[var(--ib-ink)] lg:text-[52px]">
           {t('auditLens.title')}
         </h1>
-        <p className="text-[var(--ib-mute)] text-sm lg:text-lg max-w-4xl mx-auto text-center leading-relaxed mb-12 font-inter">
-          <span className="font-semibold text-[var(--ib-ink)]/80 block mb-2">{t('auditLens.subtitle')}</span>
+        <p className="mx-auto mb-6 max-w-4xl text-center font-inter text-sm leading-relaxed text-[var(--ib-mute)] lg:text-lg">
+          <span className="mb-2 block font-semibold text-[var(--ib-ink)]/80">{t('auditLens.subtitle')}</span>
           {t('auditLens.description')}
         </p>
+        <div className="flex flex-wrap items-center justify-center gap-2">
+          <button
+            type="button"
+            onClick={() => setLeftPanelCollapsed((v) => !v)}
+            className="inline-flex items-center gap-2 rounded-full border border-[var(--ib-line)] bg-[var(--ib-card)] px-3.5 py-1.5 text-[11px] font-semibold uppercase tracking-wider text-[var(--ib-mute)] transition-colors hover:border-[var(--ib-acc)] hover:text-[var(--ib-acc)]"
+          >
+            {leftPanelCollapsed ? (
+              <PanelLeftOpen className="size-3.5" aria-hidden />
+            ) : (
+              <PanelLeftClose className="size-3.5" aria-hidden />
+            )}
+            {leftPanelCollapsed ? "Show sidebar" : "Collapse sidebar"}
+          </button>
+          {token ? (
+            <button
+              type="button"
+              onClick={() => setHistoryOpen((v) => !v)}
+              className="inline-flex items-center gap-2 rounded-full border border-[var(--ib-line)] bg-[var(--ib-card)] px-3.5 py-1.5 text-[11px] font-semibold uppercase tracking-wider text-[var(--ib-mute)] transition-colors hover:border-[var(--ib-acc)] hover:text-[var(--ib-acc)]"
+            >
+              <History className="size-3.5" aria-hidden />
+              {historyOpen ? "Hide history" : "Chat history"}
+            </button>
+          ) : null}
+          <button
+            type="button"
+            onClick={() => {
+              setChatHistory([]);
+              setSessionId("");
+              setHistoryOpen(false);
+            }}
+            className="inline-flex items-center gap-2 rounded-full border border-[var(--ib-acc)]/30 bg-[var(--ib-accbg)] px-3.5 py-1.5 text-[11px] font-semibold uppercase tracking-wider text-[var(--ib-acc)] transition-colors hover:border-[var(--ib-acc)]"
+          >
+            <Plus className="size-3.5" aria-hidden />
+            New chat
+          </button>
+        </div>
       </header>
 
-
-
-
-
-
-
-      <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 md:gap-4 items-start">
-
-
-
-        {/* Left Column - Input/Steps */}
-
-
-
-        <div className="xl:col-span-4 space-y-6">
-
-
-
+      <div className="grid grid-cols-1 items-stretch gap-4 md:gap-5 xl:grid-cols-12 xl:min-h-[640px]">
+        <div className={`${leftPanelCollapsed ? "hidden" : "xl:col-span-4"} space-y-6`}>
           {renderLeftColumn()}
-
-
-
         </div>
 
-
-
-
-
-
-
-        {/* Right Column - Results Viewer */}
-
-
-
-        <div className="xl:col-span-8">
-
-
-
+        <div className={`${leftPanelCollapsed ? "xl:col-span-12" : "xl:col-span-8"} min-w-0`}>
           {renderRightColumn()}
-
-
-
         </div>
-
-
-
       </div>
 
-
-
-
-
-
-
-      {/* Bottom Chat Section */}
-
-
-
-      <div className="mt-8 xl:mt-12">
-
-
-
+      <div className="mt-6 xl:mt-8">
+        {token && historyOpen ? (
+          <div className="mb-4 max-h-[240px] overflow-hidden rounded-2xl border border-[var(--ib-line)] bg-[var(--ib-card)]">
+            <div className="border-b border-[var(--ib-line)] px-4 py-2 text-[10px] font-black uppercase tracking-widest text-[var(--ib-mute)]">
+              Saved Audit Lens chats
+            </div>
+            <div className="custom-thin-scrollbar max-h-[200px] overflow-y-auto p-2">
+              {auditSessions.length === 0 ? (
+                <p className="px-3 py-4 text-xs text-[var(--ib-mute)]">No saved chats yet.</p>
+              ) : (
+                auditSessions.map((session) => (
+                  <button
+                    key={session.id}
+                    type="button"
+                    onClick={async () => {
+                      try {
+                        const rows = await fetchAuditHistory(session.id).unwrap();
+                        const mapped: AuditChatHistoryItem[] = (rows || []).map((m) => {
+                          const raw = typeof m.message === "string" ? m.message : String(m.message || "");
+                          let content = raw;
+                          try {
+                            const parsed = JSON.parse(raw);
+                            if (Array.isArray(parsed) && parsed[0]?.content) {
+                              content = String(parsed[0].content);
+                            } else if (parsed?.content) {
+                              content = String(parsed.content);
+                            }
+                          } catch {
+                            /* plain text */
+                          }
+                          return {
+                            role:
+                              m.role === "assistant" || m.role === "ai"
+                                ? "ai"
+                                : "user",
+                            content,
+                          };
+                        });
+                        setChatHistory(mapped);
+                        setSessionId(session.id);
+                        setHistoryOpen(false);
+                        toast.success("Chat history loaded");
+                      } catch {
+                        toast.error("Could not load chat history");
+                      }
+                    }}
+                    className={`mb-1 w-full rounded-xl px-3 py-2.5 text-left text-xs transition-colors ${
+                      sessionId === session.id
+                        ? "bg-[var(--ib-acc)]/15 text-[var(--ib-acc)]"
+                        : "text-[var(--ib-ink)] hover:bg-[var(--ib-accbg)]"
+                    }`}
+                  >
+                    <span className="line-clamp-2 font-semibold leading-snug">
+                      {(session.title || "Audit Lens chat").replace(/^Audit Lens\s*[—\-]\s*/i, "") ||
+                        "Audit Lens chat"}
+                    </span>
+                    <span className="mt-1 block text-[10px] text-[var(--ib-mute)]">
+                      {session.updatedAt ? new Date(session.updatedAt).toLocaleString() : ""}
+                    </span>
+                  </button>
+                ))
+              )}
+            </div>
+          </div>
+        ) : null}
         {renderBottomChat()}
-
-
-
       </div>
 
 

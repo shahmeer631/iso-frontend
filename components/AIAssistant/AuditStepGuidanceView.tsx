@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 /* react-markdown custom renderers use loose prop shapes (same pattern as Navigator) */
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -17,7 +17,7 @@ import { useTranslation } from "react-i18next";
 import { ChevronDown, Download, AlertTriangle } from "lucide-react";
 import { CopyControl } from "@/components/AIAssistant/CopyControl";
 
-/* ─── helpers ─────────────────────────────────────────────────────────── */
+/* â”€â”€â”€ helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 function cleanMarkdown(raw: string) {
   let content = raw || "";
@@ -38,11 +38,11 @@ function mergeClass(base: string, className?: string) {
 }
 
 /**
- * Presentation tokens — balance “full document” feel with readable measure.
+ * Presentation tokens â€” balance â€œfull documentâ€ feel with readable measure.
  * Spec: do NOT make everything full-width; narrative keeps a measure;
  * tables/matrices/structured cards use available panel width.
  */
-const NARRATIVE = "w-full max-w-[60rem]"; // ~960px — Case Study + long-form prose
+const NARRATIVE = "w-full max-w-none"; // fill available AI output space
 const FULL = "w-full max-w-none"; // templates, tables, evidence grids, WP cards
 
 function normalizeComparable(text: string) {
@@ -50,7 +50,7 @@ function normalizeComparable(text: string) {
 }
 
 const CLAUSE_RE =
-  /(\b(?:ISO|IEC|ISO\/IEC)\s*[\d.:/-]+(?:\s*[:§]\s*[\d.A-Za-z]+)?|\bClause\s+[\d.]+(?:\.[\d]+)*|\b§\s*[\d.A-Za-z]+|\bRef\.?\s*:?\s*[\d.A-Za-z]+)/gi;
+  /(\b(?:ISO|IEC|ISO\/IEC)\s*[\d.:/-]+(?:\s*[:Â§]\s*[\d.A-Za-z]+)?|\bClause\s+[\d.]+(?:\.[\d]+)*|\bÂ§\s*[\d.A-Za-z]+|\bRef\.?\s*:?\s*[\d.A-Za-z]+)/gi;
 
 function flattenText(node: React.ReactNode): string {
   if (node == null || typeof node === "boolean") return "";
@@ -91,7 +91,7 @@ function decorateInline(children: React.ReactNode): React.ReactNode {
         parts.push(
           <span
             key={`c-${i++}-${match.index}`}
-            className="inline-flex items-center mx-0.5 px-1.5 py-0.5 rounded-md bg-[#0D9488]/15 text-[#5EEAD4] font-jetbrains-mono text-[13px] font-medium leading-[1.4] tracking-[0.02em] align-middle"
+            className="inline-flex items-center mx-0.5 px-1.5 py-0.5 rounded-md bg-[var(--ib-accbg)] text-[var(--ib-acc)] font-jetbrains-mono text-[13px] font-medium leading-[1.4] tracking-[0.02em] align-middle"
           >
             {match[0]}
           </span>,
@@ -183,7 +183,7 @@ function parseEvidenceCards(
       .filter(Boolean) as Array<{ name: string; body: string; clauses: string[] }>;
   }
 
-  // Numbered items: 1. Name — details
+  // Numbered items: 1. Name â€” details
   const numbered = cleaned.match(/^\d+\.\s+.+/gm);
   if (numbered && numbered.length >= 2) {
     const chunks = cleaned.split(/\n(?=\d+\.\s+)/);
@@ -202,11 +202,11 @@ function parseEvidenceCards(
       .filter(Boolean) as Array<{ name: string; body: string; clauses: string[] }>;
   }
 
-  // Bullet evidence lines: - **Name** — action details
+  // Bullet evidence lines: - **Name** â€” action details
   const bulletEvidence = cleaned.match(/^\s*[-*]\s+\*\*[^*]+\*\*.+$/gm);
   if (bulletEvidence && bulletEvidence.length >= 2) {
     return bulletEvidence.map((line) => {
-      const m = line.match(/^\s*[-*]\s+\*\*([^*]+)\*\*\s*[:—-]?\s*(.*)$/);
+      const m = line.match(/^\s*[-*]\s+\*\*([^*]+)\*\*\s*[:â€”-]?\s*(.*)$/);
       const name = m?.[1]?.trim() || line;
       const rest = m?.[2]?.trim() || "";
       return {
@@ -217,7 +217,7 @@ function parseEvidenceCards(
     });
   }
 
-  // Plain bullet list → one evidence card with verification actions
+  // Plain bullet list â†’ one evidence card with verification actions
   if (/^\s*[-*]\s+/m.test(cleaned) && (cleaned.match(/^\s*[-*]\s+/gm) || []).length >= 2) {
     return [
       {
@@ -334,13 +334,13 @@ function tablesToCsv(tables: string[][][]): string {
 function ClauseBadge({ label }: { label: string }) {
   const display = label.replace(/^Ref\.?\s*:?\s*/i, "Ref: ");
   return (
-    <span className="inline-flex items-center shrink-0 px-1.5 py-0.5 rounded-md bg-[#0D9488]/15 text-[#5EEAD4] font-jetbrains-mono text-[13px] font-medium tracking-[0.02em] border border-[#0D9488]/25">
+    <span className="inline-flex items-center shrink-0 px-1.5 py-0.5 rounded-md bg-[var(--ib-accbg)] text-[var(--ib-acc)] font-jetbrains-mono text-[13px] font-medium tracking-[0.02em] border border-[var(--ib-acc)]/25">
       {display}
     </span>
   );
 }
 
-/* ─── markdown components ─────────────────────────────────────────────── */
+/* â”€â”€â”€ markdown components â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 const ChecklistMode = createContext(false);
 
@@ -394,7 +394,7 @@ function MdLi({ className, children, ...props }: any) {
   const raw = flattenText(rest);
   const clauses = extractClauses(raw);
   const evidenceMatch = raw.match(
-    /((?:ensure|verify|check|confirm|evidence|notes?|guidance)\s*[:—-]\s*)([\s\S]+)/i,
+    /((?:ensure|verify|check|confirm|evidence|notes?|guidance)\s*[:â€”-]\s*)([\s\S]+)/i,
   );
   let titleText = raw;
   let detailText = "";
@@ -406,13 +406,13 @@ function MdLi({ className, children, ...props }: any) {
 
   return (
     <li className={mergeClass("list-none", className)} {...props}>
-      <div className="flex items-start gap-3 rounded-xl border border-[#334155] bg-[var(--ib-ink)] px-3.5 py-3">
+      <div className="flex items-start gap-3 rounded-xl border border-[var(--ib-line)] bg-[var(--ib-card)] px-3.5 py-3">
         {checkbox ? (
           <span className="mt-0.5 shrink-0">{checkbox}</span>
         ) : (
           <span
             aria-hidden="true"
-            className="mt-0.5 shrink-0 h-4 w-4 rounded-[4px] border border-[#64748B] bg-[var(--ib-ink)]"
+            className="mt-0.5 shrink-0 h-4 w-4 rounded-[4px] border border-[var(--ib-line)] bg-[var(--ib-card)]"
           />
         )}
         <div className="min-w-0 flex-1 space-y-1.5">
@@ -501,7 +501,7 @@ const mdComponents: any = {
   blockquote: ({ className, children, ...props }: any) => (
     <blockquote
       className={mergeClass(
-        "my-3 border-l-2 border-[#0D9488] bg-[var(--ib-ink)]/70 rounded-r-xl px-3.5 py-2.5 text-[14px] leading-[1.6] text-[var(--ib-ink)]/90",
+        "my-3 border-l-2 border-[var(--ib-acc)] bg-[var(--ib-card)]/70 rounded-r-xl px-3.5 py-2.5 text-[14px] leading-[1.6] text-[var(--ib-ink)]/90",
         className,
       )}
       {...props}
@@ -524,7 +524,7 @@ const mdComponents: any = {
     return (
       <code
         className={mergeClass(
-          "font-jetbrains-mono text-[13px] font-medium tracking-[0.02em] text-[#5EEAD4] bg-[var(--ib-ink)] px-1.5 py-0.5 rounded-md",
+          "font-jetbrains-mono text-[13px] font-medium tracking-[0.02em] text-[var(--ib-acc)] bg-[var(--ib-card)] px-1.5 py-0.5 rounded-md",
           className,
         )}
         {...props}
@@ -536,7 +536,7 @@ const mdComponents: any = {
   pre: ({ className, children, ...props }: any) => (
     <pre
       className={mergeClass(
-        "w-full overflow-x-auto my-3 rounded-xl border border-[#334155] bg-[var(--ib-ink)] p-3 text-[13px] leading-[1.5]",
+        "w-full overflow-x-auto my-3 rounded-xl border border-[var(--ib-line)] bg-[var(--ib-card)] p-3 text-[13px] leading-[1.5]",
         className,
       )}
       {...props}
@@ -545,7 +545,7 @@ const mdComponents: any = {
     </pre>
   ),
   table: ({ className, ...props }: any) => (
-    <div className="w-full max-w-none overflow-x-auto my-3 rounded-xl border border-[#334155] bg-[var(--ib-ink)]/40">
+    <div className="w-full max-w-none overflow-x-auto my-3 rounded-xl border border-[var(--ib-line)] bg-[var(--ib-card)]/40">
       <table
         className={mergeClass("w-full min-w-[480px] border-collapse text-left", className)}
         {...props}
@@ -553,12 +553,12 @@ const mdComponents: any = {
     </div>
   ),
   thead: ({ className, ...props }: any) => (
-    <thead className={mergeClass("bg-[var(--ib-ink)]", className)} {...props} />
+    <thead className={mergeClass("bg-[var(--ib-card)]", className)} {...props} />
   ),
   th: ({ className, children, ...props }: any) => (
     <th
       className={mergeClass(
-        "py-2.5 px-3 text-left text-[12px] font-semibold uppercase tracking-[0.04em] text-[var(--ib-mute)] border-b border-[#334155]",
+        "py-2.5 px-3 text-left text-[12px] font-semibold uppercase tracking-[0.04em] text-[var(--ib-mute)] border-b border-[var(--ib-line)]",
         className,
       )}
       {...props}
@@ -569,7 +569,7 @@ const mdComponents: any = {
   td: ({ className, children, ...props }: any) => (
     <td
       className={mergeClass(
-        "py-2.5 px-3 text-[14px] leading-[1.55] text-[var(--ib-ink)]/90 border-b border-[#334155]/50 align-top border-x-0",
+        "py-2.5 px-3 text-[14px] leading-[1.55] text-[var(--ib-ink)]/90 border-b border-[var(--ib-line)]/50 align-top border-x-0",
         className,
       )}
       {...props}
@@ -578,7 +578,7 @@ const mdComponents: any = {
     </td>
   ),
   hr: ({ className, ...props }: any) => (
-    <hr className={mergeClass("my-4 border-[#334155]", className)} {...props} />
+    <hr className={mergeClass("my-4 border-[var(--ib-line)]", className)} {...props} />
   ),
   input: ({ type, checked, ...props }: any) => {
     if (type === "checkbox") {
@@ -587,8 +587,8 @@ const mdComponents: any = {
           aria-hidden="true"
           className={`inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-[4px] border ${
             checked
-              ? "border-[#0D9488] bg-[#0D9488]/30 text-[#5EEAD4]"
-              : "border-[#64748B] bg-[var(--ib-ink)]"
+              ? "border-[var(--ib-acc)] bg-[var(--ib-accbg)] text-[var(--ib-acc)]"
+              : "border-[var(--ib-line)] bg-[var(--ib-card)]"
           }`}
         >
           {checked ? (
@@ -625,7 +625,7 @@ function MarkdownBody({
   );
 }
 
-/* ─── section renderers ───────────────────────────────────────────────── */
+/* â”€â”€â”€ section renderers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 function GuidanceBriefing({
   data,
@@ -648,11 +648,11 @@ function GuidanceBriefing({
   if (!cards.length && !blob) return null;
 
   return (
-    <div className="rounded-xl border border-[#334155] bg-[var(--ib-ink)]/50 overflow-hidden">
+    <div className="rounded-xl border border-[var(--ib-line)] bg-[var(--ib-card)]/50 overflow-hidden">
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="flex w-full items-center justify-between gap-3 px-4 py-3 text-left hover:bg-[var(--ib-ink)]/80 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0D9488]"
+        className="flex w-full items-center justify-between gap-3 px-4 py-3 text-left hover:bg-[var(--ib-card)]/80 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ib-acc)]"
         aria-expanded={open}
       >
         <div>
@@ -661,7 +661,7 @@ function GuidanceBriefing({
           </h2>
           <p className="text-[12px] leading-[1.3] text-[var(--ib-mute)] mt-0.5">
             {cards.length
-              ? `${cards.length} briefing cards — expand to review`
+              ? `${cards.length} briefing cards â€” expand to review`
               : "Expand to review auditor briefing"}
           </p>
         </div>
@@ -670,7 +670,7 @@ function GuidanceBriefing({
         />
       </button>
       {open ? (
-        <div className="border-t border-[#334155] px-3.5 py-3.5 space-y-3">
+        <div className="border-t border-[var(--ib-line)] px-3.5 py-3.5 space-y-3">
           {!cards.length && blob ? (
             <div className="flex justify-end mb-2">
               <CopyControl text={blob} label={copyLabel} />
@@ -683,7 +683,7 @@ function GuidanceBriefing({
                 return (
                   <div
                     key={card.title}
-                    className="rounded-xl border border-[#334155] bg-[var(--ib-ink)] px-3.5 py-3"
+                    className="rounded-xl border border-[var(--ib-line)] bg-[var(--ib-card)] px-3.5 py-3"
                   >
                     <div className="mb-2 flex items-start justify-between gap-2">
                       <h3 className="text-[12px] font-semibold uppercase tracking-[0.04em] text-[var(--ib-mute)]">
@@ -697,7 +697,7 @@ function GuidanceBriefing({
               })}
             </div>
           ) : (
-            <div className={`${NARRATIVE} rounded-xl border-l-2 border-[#0D9488] bg-[var(--ib-ink)] px-3.5 py-3.5`}>
+            <div className={`${NARRATIVE} rounded-xl border-l-2 border-[var(--ib-acc)] bg-[var(--ib-card)] px-3.5 py-3.5`}>
               <MarkdownBody text={blob} />
             </div>
           )}
@@ -797,16 +797,16 @@ function WorkingPaperView({ text, copyLabel }: { text: string; copyLabel: string
                       : null;
             const isGuideline = kind === "guideline" || kind === "key";
             const tint = isGuideline
-              ? "bg-[#172554]/35"
+              ? "bg-[var(--ib-accbg)]"
               : kind === "application"
-                ? "bg-[var(--ib-ink)]"
-                : "bg-[var(--ib-ink)]";
+                ? "bg-[var(--ib-card)]"
+                : "bg-[var(--ib-card)]";
             return (
               <article
                 key={`${part.title}-${idx}`}
-                className={`rounded-xl border border-[#334155] overflow-hidden ${tint} ${FULL}`}
+                className={`rounded-xl border border-[var(--ib-line)] overflow-hidden ${tint} ${FULL}`}
               >
-                <div className="border-b border-[#334155] bg-[var(--ib-ink)]/50 px-3.5 py-2">
+                <div className="border-b border-[var(--ib-line)] bg-[var(--ib-card)]/50 px-3.5 py-2">
                   {label ? (
                     <p className="text-[12px] uppercase tracking-[0.04em] text-[var(--ib-mute)] mb-0.5">
                       {label}
@@ -818,7 +818,7 @@ function WorkingPaperView({ text, copyLabel }: { text: string; copyLabel: string
                     </h3>
                   ) : null}
                 </div>
-                <div className="border-l-2 border-[#0D9488] px-3.5 py-3.5">
+                <div className="border-l-2 border-[var(--ib-acc)] px-3.5 py-3.5">
                   <MarkdownBody text={part.body} />
                 </div>
               </article>
@@ -826,7 +826,7 @@ function WorkingPaperView({ text, copyLabel }: { text: string; copyLabel: string
           })}
         </div>
       ) : (
-        <div className={`${NARRATIVE} rounded-xl border border-[#334155] bg-[var(--ib-ink)] border-l-2 border-l-[#0D9488] px-3.5 py-3.5`}>
+        <div className={`${NARRATIVE} rounded-xl border border-[var(--ib-line)] bg-[var(--ib-card)] border-l-2 border-l-[var(--ib-acc)] px-3.5 py-3.5`}>
           <MarkdownBody text={cleaned} />
         </div>
       )}
@@ -856,7 +856,7 @@ function DocumentedInfoView({ text, copyLabel }: { text: string; copyLabel: stri
           {cards.map((card, idx) => (
             <article
               key={`${card.name}-${idx}`}
-              className="rounded-xl border border-[#334155] bg-[var(--ib-ink)] px-3.5 py-3.5"
+              className="rounded-xl border border-[var(--ib-line)] bg-[var(--ib-card)] px-3.5 py-3.5"
             >
               <div className="flex flex-wrap items-start justify-between gap-2 mb-2.5">
                 <div className="min-w-0 flex-1">
@@ -887,7 +887,7 @@ function DocumentedInfoView({ text, copyLabel }: { text: string; copyLabel: stri
           ))}
         </div>
       ) : (
-        <div className={`${NARRATIVE} rounded-xl border border-[#334155] bg-[var(--ib-ink)] px-3.5 py-3.5`}>
+        <div className={`${NARRATIVE} rounded-xl border border-[var(--ib-line)] bg-[var(--ib-card)] px-3.5 py-3.5`}>
           <MarkdownBody text={evidenceText} />
         </div>
       )}
@@ -932,7 +932,7 @@ function TemplateView({ text, copyLabel }: { text: string; copyLabel: string }) 
             <button
               type="button"
               onClick={downloadCsv}
-              className="inline-flex items-center gap-1 rounded-lg border border-[var(--ib-ink)] bg-[var(--ib-ink)]/80 backdrop-blur-[8px] px-2 py-1 text-[12px] font-medium text-[var(--ib-mute)] hover:text-[var(--ib-ink)] hover:border-[#0D9488]/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0D9488]"
+              className="inline-flex items-center gap-1 rounded-lg border border-[var(--ib-line)] bg-[var(--ib-card)]/80 backdrop-blur-[8px] px-2 py-1 text-[12px] font-medium text-[var(--ib-mute)] hover:text-[var(--ib-ink)] hover:border-[var(--ib-acc)]/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ib-acc)]"
               aria-label="Export as CSV"
             >
               <Download className="w-3 h-3" />
@@ -942,7 +942,7 @@ function TemplateView({ text, copyLabel }: { text: string; copyLabel: string }) 
           {copyLabel ? <span className="sr-only">{copyLabel}</span> : null}
         </div>
       </div>
-      <div className="w-full rounded-xl border border-[#334155] bg-[var(--ib-ink)]/40 px-3 py-3 sm:px-3.5 sm:py-3.5">
+      <div className="w-full rounded-xl border border-[var(--ib-line)] bg-[var(--ib-card)]/40 px-3 py-3 sm:px-3.5 sm:py-3.5">
         <MarkdownBody text={cleaned} checklist={looksLikeChecklist} />
       </div>
     </div>
@@ -1068,16 +1068,16 @@ function CaseStudyView({ text, copyLabel }: { text: string; copyLabel: string })
               kind === "complication"
                 ? "border-l-amber-500/70 bg-amber-950/15"
                 : kind === "action"
-                  ? "border-l-[#0D9488] bg-[#0D9488]/5"
+                  ? "border-l-[var(--ib-acc)] bg-[var(--ib-accbg)]"
                   : kind === "situation"
                     ? "border-l-sky-500/60 bg-sky-950/15"
                     : kind === "learning"
                       ? "border-l-[var(--ib-acc)]/50 bg-[var(--ib-accbg)]"
-                      : "border-l-[#334155] bg-[var(--ib-ink)]/60";
+                      : "border-l-[var(--ib-line)] bg-[var(--ib-bg)]";
             return (
               <article
                 key={`${part.title}-${idx}`}
-                className={`w-full rounded-r-xl border border-[#334155] border-l-2 px-3.5 py-3.5 sm:px-4 sm:py-4 ${accent}`}
+                className={`w-full rounded-r-xl border border-[var(--ib-line)] border-l-2 px-3.5 py-3.5 sm:px-4 sm:py-4 ${accent}`}
               >
                 <h3 className="text-[14px] font-semibold leading-[1.4] text-[var(--ib-ink)] mb-2 inline-flex items-center gap-2">
                   {kind === "complication" ? (
@@ -1085,7 +1085,7 @@ function CaseStudyView({ text, copyLabel }: { text: string; copyLabel: string })
                   ) : null}
                   {fallbackTitle || part.title}
                 </h3>
-                <div className="border-t border-[#334155]/60 pt-2.5 mt-0.5">
+                <div className="border-t border-[var(--ib-line)]/60 pt-2.5 mt-0.5">
                   <MarkdownBody text={part.body} className={caseBodyClass} />
                 </div>
               </article>
@@ -1093,7 +1093,7 @@ function CaseStudyView({ text, copyLabel }: { text: string; copyLabel: string })
           })}
         </div>
       ) : (
-        <article className="w-full rounded-xl border border-[#334155] bg-[var(--ib-ink)]/70 px-3.5 py-4 sm:px-4">
+        <article className="w-full rounded-xl border border-[var(--ib-line)] bg-[var(--ib-card)]/70 px-3.5 py-4 sm:px-4">
           <MarkdownBody text={cleaned} className={caseBodyClass} />
         </article>
       )}
@@ -1103,7 +1103,7 @@ function CaseStudyView({ text, copyLabel }: { text: string; copyLabel: string })
 
 function EmptyTab({ label }: { label: string }) {
   return (
-    <div className={`${FULL} rounded-xl border border-dashed border-[#334155] bg-[var(--ib-ink)]/30 px-4 py-6 text-center`}>
+    <div className={`${FULL} rounded-xl border border-dashed border-[var(--ib-line)] bg-[var(--ib-card)]/30 px-4 py-6 text-center`}>
       <p className="text-[14px] leading-[1.6] text-[var(--ib-mute)]">
         No {label.toLowerCase()} content for this step.
       </p>
@@ -1111,7 +1111,7 @@ function EmptyTab({ label }: { label: string }) {
   );
 }
 
-/* ─── main view ───────────────────────────────────────────────────────── */
+/* â”€â”€â”€ main view â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 type AuditStepData = {
   guidance?: string;
@@ -1341,7 +1341,7 @@ function hasMeaningfulCaseStudyText(text: string): boolean {
   );
 }
 
-/** Object-shaped Case Study → markdown for existing CaseStudyView. */
+/** Object-shaped Case Study â†’ markdown for existing CaseStudyView. */
 function caseStudyFromObject(value: unknown): string {
   if (!value || typeof value !== "object" || Array.isArray(value)) return "";
   const o = value as Record<string, unknown>;
@@ -1497,7 +1497,7 @@ export default function AuditStepGuidanceView({ data, emptyMessage }: Props) {
 
   const guidance = cleanMarkdown(data.guidance || "");
 
-  // Structured fields only — Template resolution must keep using these (unchanged path)
+  // Structured fields only â€” Template resolution must keep using these (unchanged path)
   const structuredWorking = pickMarkdownField(data, "audit_paper", "auditPaper");
   const structuredDocumented = pickMarkdownField(
     data,
@@ -1517,7 +1517,7 @@ export default function AuditStepGuidanceView({ data, emptyMessage }: Props) {
   );
 
   /**
-   * Template tab content — known-good path. Do not change this algorithm.
+   * Template tab content â€” known-good path. Do not change this algorithm.
    * Uses structured fields only (not guidance fallbacks).
    */
   const template = useMemo(() => {
@@ -1538,7 +1538,7 @@ export default function AuditStepGuidanceView({ data, emptyMessage }: Props) {
     return "";
   }, [templateCandidate, structuredDocumented, structuredWorking]);
 
-  // Working / Documented / Case: structured → guidance sections → safe preview fallback
+  // Working / Documented / Case: structured â†’ guidance sections â†’ safe preview fallback
   const guidanceSections = collectLooseSections(guidance);
   const workingFromGuidance = findGuidanceSection(
     guidanceSections,
@@ -1566,7 +1566,7 @@ export default function AuditStepGuidanceView({ data, emptyMessage }: Props) {
       ? guidance
       : "");
 
-  // Documented Info only — do not alter Working Paper / Template above.
+  // Documented Info only â€” do not alter Working Paper / Template above.
   // Root cause: gating preview with looksLikeWorkPaper() skipped Template's own
   // template_preview whenever that text mentioned "work paper" / WP refs.
   // Use inequality vs Working Paper instead so Documented Info can share the
@@ -1583,7 +1583,7 @@ export default function AuditStepGuidanceView({ data, emptyMessage }: Props) {
       ? templateCandidate
       : "");
 
-  // Case Study only — do not alter Working Paper / Documented Info / Template.
+  // Case Study only â€” do not alter Working Paper / Documented Info / Template.
   // extractLabeledGuidanceBlock stops on the bold Hypothetical label and yields "".
   // resolveCaseStudyContent recovers case_study fields + guidance ## 4 / trailing labels.
   const caseStudy = resolveCaseStudyContent(data, guidance, caseFromGuidance);
@@ -1649,11 +1649,11 @@ export default function AuditStepGuidanceView({ data, emptyMessage }: Props) {
       {hasGuidance ? <GuidanceBriefing data={data} copyLabel={copyLabel} /> : null}
 
       {(availableTabs.length > 0 || hasGuidance) && (
-        <div className="rounded-xl border border-[#334155] bg-[var(--ib-ink)] overflow-hidden">
+        <div className="rounded-xl border border-[var(--ib-line)] bg-[var(--ib-card)] overflow-hidden">
           <div
             role="tablist"
             aria-label="Audit Lens output sections"
-            className="flex gap-1 overflow-x-auto border-b border-[#334155] bg-[var(--ib-ink)] px-2 py-1.5 custom-thin-scrollbar"
+            className="flex gap-1 overflow-x-auto border-b border-[var(--ib-line)] bg-[var(--ib-card)] px-2 py-1.5 custom-thin-scrollbar"
           >
             {TAB_ORDER.map((id) => {
               const hasContent = !!contentByTab[id];
@@ -1669,10 +1669,10 @@ export default function AuditStepGuidanceView({ data, emptyMessage }: Props) {
                     if (!hasContent) return;
                     setUserTab(id);
                   }}
-                  className={`shrink-0 rounded-lg px-3 py-1.5 text-[12px] font-semibold tracking-[0.02em] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0D9488] disabled:opacity-35 disabled:cursor-not-allowed ${
+                  className={`shrink-0 rounded-lg px-3 py-1.5 text-[12px] font-semibold tracking-[0.02em] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ib-acc)] disabled:opacity-35 disabled:cursor-not-allowed ${
                     selected
-                      ? "bg-[#0D9488]/20 text-[#5EEAD4] border border-[#0D9488]/40"
-                      : "text-[var(--ib-mute)] border border-transparent hover:text-[var(--ib-ink)] hover:bg-[var(--ib-ink)]/60"
+                      ? "bg-[var(--ib-accbg)] text-[var(--ib-acc)] border border-[var(--ib-acc)]/40"
+                      : "text-[var(--ib-mute)] border border-transparent hover:text-[var(--ib-ink)] hover:bg-[var(--ib-accbg)]"
                   }`}
                 >
                   {TAB_LABELS[id]}
@@ -1681,7 +1681,7 @@ export default function AuditStepGuidanceView({ data, emptyMessage }: Props) {
             })}
           </div>
 
-          <div role="tabpanel" className="p-3 sm:p-4 md:p-5 bg-[var(--ib-ink)]">
+          <div role="tabpanel" className="p-3 sm:p-4 md:p-5 bg-[var(--ib-card)]">
             {activeTab === "working" &&
               (workingPaper ? (
                 <WorkingPaperView text={workingPaper} copyLabel={copyLabel} />
@@ -1711,7 +1711,7 @@ export default function AuditStepGuidanceView({ data, emptyMessage }: Props) {
       )}
 
       {showFallbackGuidance ? (
-        <div className={`${NARRATIVE} rounded-xl border border-[#334155] bg-[var(--ib-ink)]/50 px-3.5 py-3.5`}>
+        <div className={`${NARRATIVE} rounded-xl border border-[var(--ib-line)] bg-[var(--ib-card)]/50 px-3.5 py-3.5`}>
           <div className="mb-2.5 flex justify-end">
             <CopyControl text={guidance} label={copyLabel} />
           </div>

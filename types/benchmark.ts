@@ -34,10 +34,13 @@ export interface BenchmarkData {
   effectiveness_percentage?: number;
   document_type_detected?: string;
   standard_analyzed?: string;
+  isoStandardId?: string;
   clause_compliance?: ClauseCompliance[];
   strengths?: string[];
   identified_gaps?: IdentifiedGap[];
   recommendations?: Recommendation[];
+  opportunities_for_improvement?: string[];
+  common_nonconformities?: string[];
   analysis_timestamp?: string;
   analysis_id?: string;
   word_count_analyzed?: number;
@@ -56,6 +59,8 @@ export interface BenchmarkFileRequest {
   improvement_goal: string;
   document_type?: string;
   department?: string;
+  target_standard?: string;
+  isoStandardId?: string;
 }
 
 export interface BenchmarkTextRequest {
@@ -64,6 +69,7 @@ export interface BenchmarkTextRequest {
   target_standard?: string;
   document_type?: string;
   department?: string;
+  isoStandardId?: string;
 }
 
 export interface ISODocument {
@@ -79,6 +85,10 @@ export interface ISOSuggestion {
   documents: ISODocument[];
   records: ISODocument[];
   improvements: string[];
+  isoStandardId?: string;
+  opportunities_for_improvement?: string[];
+  common_nonconformities?: string[];
+  potential_gaps?: string[];
 }
 
 export interface ISOSuggestionsResponse {
@@ -87,4 +97,9 @@ export interface ISOSuggestionsResponse {
   data: {
     suggestions: ISOSuggestion[];
   };
+}
+
+export interface BenchmarkChatHistoryItem {
+  role: "user" | "ai";
+  content: string;
 }

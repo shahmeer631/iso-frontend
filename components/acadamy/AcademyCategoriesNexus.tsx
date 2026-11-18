@@ -109,15 +109,17 @@ const AcademyCategoryCard = ({
         <Icon size={96} strokeWidth={0.75} />
       </div>
 
-      <div className="relative z-[1] flex flex-col gap-4">
-        <div className="flex size-12 items-center justify-center rounded-xl border border-[color-mix(in_srgb,var(--ib-acc)_18%,var(--ib-line))] bg-[var(--ib-accbg)] text-[var(--ib-acc)] transition-transform duration-300 group-hover:scale-105">
-          <Icon className="size-6" aria-hidden />
-        </div>
-        <div className="inline-flex w-fit items-center gap-2 rounded-full border border-[color-mix(in_srgb,var(--ib-acc)_20%,var(--ib-line))] bg-[var(--ib-accbg)] px-3 py-1">
-          <span className="size-1.5 rounded-full bg-[var(--ib-acc)]" aria-hidden />
-          <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-[var(--ib-acc)]">
-            {t("academy.cpdCertified", "CPD Certified")}
-          </span>
+      <div className="relative z-[1] flex flex-col gap-3">
+        <div className="flex items-start justify-between gap-3">
+          <div className="flex size-11 items-center justify-center rounded-xl border border-[color-mix(in_srgb,var(--ib-acc)_18%,var(--ib-line))] bg-[var(--ib-accbg)] text-[var(--ib-acc)] transition-transform duration-300 group-hover:scale-105 sm:size-12">
+            <Icon className="size-5 sm:size-6" aria-hidden />
+          </div>
+          <div className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-[color-mix(in_srgb,var(--ib-acc)_20%,var(--ib-line))] bg-[var(--ib-accbg)] px-2.5 py-1">
+            <span className="size-1.5 rounded-full bg-[var(--ib-acc)]" aria-hidden />
+            <span className="text-[9px] font-bold uppercase tracking-[0.1em] text-[var(--ib-acc)] sm:text-[10px]">
+              {t("academy.cpdCertified", "CPD Certified")}
+            </span>
+          </div>
         </div>
         <h3 className="mb-0! text-[18px] font-bold leading-snug tracking-[-0.02em] text-[var(--ib-ink)] transition-colors group-hover:text-[var(--ib-acc)] sm:text-[20px]">
           {item.name} {t("academy.courses", "Courses")}
@@ -136,10 +138,10 @@ const AcademyCategoryCard = ({
           e.stopPropagation();
           onNavigate(item.slug);
         }}
-        className="relative z-[1] mt-auto inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-[10px] border border-[var(--ib-acc)] bg-[var(--ib-acc)] px-4 py-3 text-[13px] font-semibold text-white shadow-[0_10px_24px_-12px_color-mix(in_srgb,var(--ib-acc)_55%,transparent)] transition-[transform,box-shadow,opacity] duration-200 hover:-translate-y-0.5 hover:opacity-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ib-acc)] sm:text-[14.5px]"
+        className="relative z-[1] mt-auto inline-flex min-h-[52px] w-full cursor-pointer items-center justify-center gap-2 rounded-[12px] border-2 border-[var(--ib-acc)] bg-[var(--ib-acc)] px-4 py-3.5 text-[14px] font-black uppercase tracking-[0.04em] text-white shadow-[0_14px_30px_-12px_color-mix(in_srgb,var(--ib-acc)_65%,transparent)] transition-[transform,box-shadow,opacity] duration-200 hover:-translate-y-0.5 hover:opacity-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ib-acc)] sm:min-h-[56px] sm:text-[15px]"
       >
-        Start Your Free Trial - Enroll Free
-        <ArrowRight size={16} aria-hidden />
+        Start Free — First 2 Lessons
+        <ArrowRight size={18} aria-hidden />
       </button>
     </motion.article>
   );

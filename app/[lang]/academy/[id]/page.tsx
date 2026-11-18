@@ -220,8 +220,42 @@ export default function AcademyCoursePage({
     setQuizAnswers((prev) => ({ ...prev, [questionId]: value }));
   };
 
+  const isQuizAnswerCorrect = (
+    selected: string,
+    correct: string,
+    options: string[] = [],
+  ) => {
+    const sel = String(selected || "").trim();
+    const ans = String(correct || "").trim();
+    if (!sel || !ans) return false;
+    if (sel === ans || sel.toLowerCase() === ans.toLowerCase()) return true;
+    // Trusted answer may be a letter label (A/B/C) while UI stores option text
+    const letterMatch = /^[A-D]$/i.exec(ans);
+    if (letterMatch) {
+      const idx = letterMatch[0].toUpperCase().charCodeAt(0) - 65;
+      const byLetter = options[idx];
+      if (byLetter && byLetter.trim().toLowerCase() === sel.toLowerCase()) {
+        return true;
+      }
+    }
+    const optIdx = options.findIndex(
+      (o) => String(o).trim().toLowerCase() === sel.toLowerCase(),
+    );
+    if (optIdx >= 0) {
+      const label = String.fromCharCode(65 + optIdx);
+      if (label === ans.toUpperCase()) return true;
+    }
+    return false;
+  };
+
   const handleSubmitQuiz = () => {
     setQuizSubmitted(true);
+  };
+
+  const goToAdjacentLesson = (direction: -1 | 1) => {
+    const nextIndex = currentLessonIndex + direction;
+    if (nextIndex < 0 || nextIndex >= lessons.length) return;
+    handleLessonClick(nextIndex);
   };
 
   const handleSaveNote = async () => {
@@ -409,6 +443,13 @@ export default function AcademyCoursePage({
                     {course.category.name}
                   </span>
                 )}
+                {!hasFullAccess ? (
+                  <span className="inline-flex items-center gap-1.5 rounded-md border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-1 font-bold text-emerald-600">
+                    {t("academy.coursePlayer.freeLessonsBanner", {
+                      defaultValue: "First 2 lessons free",
+                    })}
+                  </span>
+                ) : null}
               </div>
             </div>
 
@@ -495,8 +536,8 @@ export default function AcademyCoursePage({
           )}
         </div>
 
-        {/* ── Main Layout: Desktop Sidebar + Equal Video & AI Grid ── */}
-        <div className="flex flex-col xl:flex-row items-start gap-6">
+        {/* ── Main Layout: Curriculum + YouTube-style video/Ask AI ── */}
+        <div className="flex flex-col items-start gap-6 xl:flex-row">
 
           {/* ── 1. Desktop Left Sidebar: Modules & Curriculum ── */}
           <div className={cn(
@@ -605,15 +646,19 @@ export default function AcademyCoursePage({
             )}
           </div>
 
-          {/* ── Main Content Area: Video (50%) & Ask AI (50%) Side by Side ── */}
+          {/* ── Main Content: YouTube-style video stage + Ask AI panel ── */}
           <div className="w-full flex-1 min-w-0 space-y-6">
 
-            {/* Top Row: Video Player + Ask AI Chatbot in Equal 50/50 Proportions */}
-            <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 items-stretch">
+            {/*
+              YouTube layout:
+              - Desktop/laptop: large video left, Ask AI chat as right sidebar
+              - Phone/tablet: video on top, Ask AI stacked below (readable text while learning)
+            */}
+            <div className="flex flex-col gap-4 lg:flex-row lg:items-stretch lg:gap-5">
 
-              {/* Left Card: Video Player */}
-              <div className="flex flex-col rounded-2xl bg-[var(--ib-card)] border border-[var(--ib-line)] overflow-hidden shadow-2xl">
-                <div className="overflow-hidden bg-[#000000] aspect-video w-full flex items-center justify-center">
+              {/* Primary stage: Video Player */}
+              <div className="flex min-w-0 flex-1 flex-col overflow-hidden rounded-2xl border border-[var(--ib-line)] bg-[var(--ib-card)] shadow-2xl">
+                <div className="flex aspect-video w-full items-center justify-center overflow-hidden bg-[#000000]">
                   {isPremiumLocked(currentLessonIndex) ? (
                     <div className="flex flex-col items-center justify-center text-center p-6 bg-[var(--ib-bg)] w-full h-full">
                       <div className="w-14 h-14 rounded-full bg-amber-50 flex items-center justify-center mb-3 border border-amber-200 shadow-xl text-2xl">
@@ -627,9 +672,11 @@ export default function AcademyCoursePage({
                       </p>
                       <Link
                         href={`${basePath}/pricing?courseId=${courseId}`}
-                        className="inline-flex items-center justify-center rounded-xl bg-[var(--ib-acc)] px-5 py-2.5 text-xs font-black uppercase tracking-widest text-white hover:opacity-90 transition-all"
+                        className="inline-flex items-center justify-center rounded-xl bg-[var(--ib-acc)] px-7 py-3.5 text-sm font-black uppercase tracking-widest text-white shadow-[0_14px_32px_-12px_color-mix(in_srgb,var(--ib-acc)_70%,transparent)] transition-all hover:-translate-y-0.5 hover:opacity-95"
                       >
-                        View Premium plans
+                        {t("academy.coursePlayer.upgradeVisibleCta", {
+                          defaultValue: "Upgrade — Unlock Full Course",
+                        })}
                       </Link>
                     </div>
                   ) : videoSrc && !videoSrc.includes('youtube.com') && !videoSrc.includes('youtu.be') && !videoSrc.includes('vimeo.com') ? (
@@ -666,37 +713,67 @@ export default function AcademyCoursePage({
                     </div>
                   )}
                 </div>
-                <div className="px-5 py-3.5 bg-[var(--ib-card)] border-t border-[var(--ib-line)] flex items-center justify-between mt-auto">
-                  <div className="min-w-0 pr-2">
-                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[var(--ib-acc)] mb-0.5">{t('academy.coursePlayer.nowStreaming')}</p>
-                    <p className="text-sm font-bold text-[var(--ib-ink)]/90 truncate">{currentVideo?.title || t('academy.coursePlayer.selectLesson')}</p>
+                <div className="mt-auto space-y-3 border-t border-[var(--ib-line)] bg-[var(--ib-card)] px-5 py-3.5">
+                  <div className="flex items-center justify-between">
+                    <div className="min-w-0 pr-2">
+                      <p className="mb-0.5 text-[10px] font-black uppercase tracking-[0.2em] text-[var(--ib-acc)]">{t('academy.coursePlayer.nowStreaming')}</p>
+                      <p className="truncate text-sm font-bold text-[var(--ib-ink)]/90">{currentVideo?.title || t('academy.coursePlayer.selectLesson')}</p>
+                    </div>
+                    <PlayCircle className="h-5 w-5 shrink-0 text-[var(--ib-acc)] opacity-60" />
                   </div>
-                  <PlayCircle className="w-5 h-5 text-[var(--ib-acc)] opacity-60 shrink-0" />
+                  <div className="grid grid-cols-2 gap-2">
+                    <button
+                      type="button"
+                      onClick={() => goToAdjacentLesson(-1)}
+                      disabled={currentLessonIndex <= 0}
+                      className="inline-flex items-center justify-center gap-1.5 rounded-xl border-2 border-[var(--ib-line)] bg-[var(--ib-bg)] px-3 py-2.5 text-[11px] font-black uppercase tracking-wider text-[var(--ib-ink)] transition-all hover:border-[var(--ib-acc)] hover:bg-[var(--ib-accbg)] disabled:cursor-not-allowed disabled:opacity-35"
+                    >
+                      <ChevronLeft className="size-4" aria-hidden />
+                      {t("academy.coursePlayer.prevLesson", { defaultValue: "Previous" })}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => goToAdjacentLesson(1)}
+                      disabled={currentLessonIndex >= lessons.length - 1}
+                      className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-[var(--ib-acc)] px-3 py-2.5 text-[11px] font-black uppercase tracking-wider text-white shadow-[0_10px_24px_-12px_color-mix(in_srgb,var(--ib-acc)_60%,transparent)] transition-all hover:opacity-92 disabled:cursor-not-allowed disabled:bg-[var(--ib-accbg)] disabled:text-[var(--ib-ink)]/40 disabled:shadow-none"
+                    >
+                      {t("academy.coursePlayer.nextLessonShort", { defaultValue: "Next lesson" })}
+                      <ChevronRight className="size-4" aria-hidden />
+                    </button>
+                  </div>
                 </div>
               </div>
 
-              {/* Right Card: Ask AI About This Lesson (Equal Width & Height Match) */}
-              <div className="flex flex-col rounded-2xl bg-[var(--ib-card)] border border-[var(--ib-line)] overflow-hidden shadow-2xl">
+              {/* Ask AI panel — YouTube-style side chat (desktop) / below player (mobile) */}
+              <div className="flex min-h-[420px] w-full flex-col overflow-hidden rounded-2xl border border-[var(--ib-line)] bg-[var(--ib-card)] shadow-2xl lg:min-h-0 lg:w-[min(100%,400px)] lg:shrink-0">
                 {/* Header */}
-                <div className="flex items-center gap-3 px-5 py-3.5 bg-gradient-to-r from-[var(--ib-acc)]/10 to-transparent border-b border-[var(--ib-line)] shrink-0">
-                  <div className="p-2 bg-[var(--ib-acc)] text-[var(--ib-bg)] rounded-xl font-bold">
+                <div className="flex shrink-0 items-center gap-3 border-b border-[var(--ib-line)] bg-gradient-to-r from-[var(--ib-acc)]/10 to-transparent px-4 py-3 sm:px-5 sm:py-3.5">
+                  <div className="rounded-xl bg-[var(--ib-acc)] p-2 font-bold text-[var(--ib-bg)]">
                     <MessageCircle className="h-4 w-4" />
                   </div>
-                  <div>
-                    <h2 className="text-sm font-black text-[var(--ib-ink)] uppercase tracking-wider">{t('academy.coursePlayer.askAI')} ✨</h2>
-                    <p className="text-[10px] font-bold text-[var(--ib-acc)] uppercase tracking-[0.2em]">{t('academy.coursePlayer.neuralEngine')}</p>
+                  <div className="min-w-0">
+                    <h2 className="text-sm font-black uppercase tracking-wider text-[var(--ib-ink)]">
+                      {t('academy.coursePlayer.askAI')}
+                    </h2>
+                    <p className="truncate text-[10px] font-bold uppercase tracking-[0.14em] text-[var(--ib-acc)]">
+                      {t('academy.coursePlayer.askAiSideHint', {
+                        defaultValue: 'Ask in your language · follow with text',
+                      })}
+                    </p>
                   </div>
-                  <div className="ml-auto flex items-center gap-2 px-2.5 py-1 bg-[var(--ib-accbg)] border border-[var(--ib-line)] rounded-full">
-                    <div className="h-1.5 w-1.5 rounded-full bg-[var(--ib-acc)] animate-pulse" />
-                    <span className="text-[10px] font-black text-[var(--ib-mute)] uppercase tracking-widest">{t('academy.coursePlayer.active')}</span>
+                  <div className="ml-auto flex items-center gap-2 rounded-full border border-[var(--ib-line)] bg-[var(--ib-accbg)] px-2.5 py-1">
+                    <div className="h-1.5 w-1.5 animate-pulse rounded-full bg-[var(--ib-acc)]" />
+                    <span className="text-[10px] font-black uppercase tracking-widest text-[var(--ib-mute)]">
+                      {t('academy.coursePlayer.active')}
+                    </span>
                   </div>
                 </div>
 
-                {/* Chat messages */}
+                {/* Chat messages — fills remaining sidebar height like YouTube live chat */}
                 <div
                   ref={chatContainerRef}
                   onScroll={handleChatScroll}
-                  className="flex-1 min-h-[300px] max-h-[380px] overflow-y-auto p-4 space-y-4 bg-[var(--ib-bg)]/40 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
+                  className="min-h-[260px] flex-1 space-y-4 overflow-y-auto bg-[var(--ib-bg)]/40 p-4 [-ms-overflow-style:none] [scrollbar-width:none] lg:min-h-0 [&::-webkit-scrollbar]:hidden"
                 >
                   {aiMessages.length === 0 ? (
                     <div className="flex flex-col items-center justify-center h-full text-center gap-3 py-6">
@@ -784,8 +861,8 @@ export default function AcademyCoursePage({
                   )}
                 </div>
 
-                {/* Chat Input */}
-                <div className="p-3.5 border-t border-[var(--ib-line)] bg-[var(--ib-card)] shrink-0">
+                {/* Chat Input — pinned to bottom of Ask AI panel */}
+                <div className="shrink-0 border-t border-[var(--ib-line)] bg-[var(--ib-card)] p-3 sm:p-3.5">
                   <div className="flex items-center gap-2">
                     <input
                       type="text"
@@ -794,7 +871,7 @@ export default function AcademyCoursePage({
                       onKeyDown={(e) => e.key === "Enter" && !isChatLoading && handleSendAi()}
                       disabled={isChatLoading}
                       placeholder={t('academy.coursePlayer.queryAIArchitect')}
-                      className="min-w-0 flex-1 rounded-xl border border-[var(--ib-line)] bg-[var(--ib-bg)] px-4 py-2.5 text-xs md:text-sm text-[var(--ib-ink)] placeholder:text-[var(--ib-mute)] focus:border-[var(--ib-acc)]/50 focus:outline-none transition-all disabled:opacity-60"
+                      className="min-w-0 flex-1 rounded-xl border border-[var(--ib-line)] bg-[var(--ib-bg)] px-4 py-2.5 text-xs text-[var(--ib-ink)] placeholder:text-[var(--ib-mute)] transition-all focus:border-[var(--ib-acc)]/50 focus:outline-none disabled:opacity-60 md:text-sm"
                     />
                     <button
                       type="button"
@@ -802,7 +879,7 @@ export default function AcademyCoursePage({
                       disabled={!aiQuestion.trim() || isChatLoading}
                       aria-label="Send message"
                       title="Send"
-                      className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-[var(--ib-acc)]/30 bg-[var(--ib-acc)] text-[var(--ib-bg)] shadow-[0_0_12px_rgba(27, 77, 219,0.35)] hover:brightness-110 transition-all disabled:opacity-100 disabled:brightness-75 disabled:cursor-not-allowed"
+                      className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-[var(--ib-acc)]/30 bg-[var(--ib-acc)] text-[var(--ib-bg)] shadow-[0_0_12px_rgba(27,77,219,0.35)] transition-all hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-100 disabled:brightness-75"
                     >
                       <Send className="h-4 w-4 stroke-[2.5]" aria-hidden />
                     </button>
@@ -844,39 +921,142 @@ export default function AcademyCoursePage({
                 {/* Quiz Content */}
                 {(() => {
                   if (quizSubmitted) {
-                    let correctCount = 0;
-                    allQuestions.forEach((q) => {
-                      const correct = q.correctAnswer || q.answer;
-                      if (quizAnswers[q.id] === correct) correctCount++;
+                    const PASS_MARK = 0.5;
+                    const reviewed = allQuestions.map((q) => {
+                      const correct = String(q.correctAnswer || q.answer || "");
+                      const selected = String(quizAnswers[q.id] || "");
+                      const options = Array.isArray(q.options) ? q.options : [];
+                      const isCorrect = isQuizAnswerCorrect(selected, correct, options);
+                      const correctDisplay = (() => {
+                        const letter = /^[A-D]$/i.exec(correct);
+                        if (letter) {
+                          const idx = letter[0].toUpperCase().charCodeAt(0) - 65;
+                          return options[idx] || correct;
+                        }
+                        return correct;
+                      })();
+                      return { q, correct: correctDisplay, selected, isCorrect };
                     });
-                    const passed = correctCount === allQuestions.length;
+                    const correctCount = reviewed.filter((r) => r.isCorrect).length;
+                    const total = allQuestions.length || 1;
+                    const scorePct = Math.round((correctCount / total) * 100);
+                    const passed = correctCount / total >= PASS_MARK;
+                    const hasNext = currentLessonIndex < lessons.length - 1;
+
+                    const continueToNext = () => {
+                      if (!currentLesson) return;
+                      const lessonId = currentLesson.id;
+                      setCompletedLessons((prev) => {
+                        const next = new Set(prev);
+                        next.add(lessonId);
+                        return next;
+                      });
+                      if (!hasNext) return;
+                      const nextIndex = currentLessonIndex + 1;
+                      if (isPremiumLocked(nextIndex)) {
+                        handleLessonClick(nextIndex);
+                        return;
+                      }
+                      // Advance even when score is below the 50% pass mark
+                      setCurrentLessonIndex(nextIndex);
+                    };
 
                     return (
-                      <div className="text-center py-6 space-y-4">
-                        <div className={cn(
-                          "w-16 h-16 rounded-2xl mx-auto flex items-center justify-center border text-2xl shadow-xl",
-                          passed ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-400" : "bg-red-500/10 border-red-500/30 text-red-400"
-                        )}>
-                          {passed ? "🎓" : "⚠️"}
+                      <div className="space-y-5 py-2">
+                        <div className="text-center space-y-3">
+                          <div className={cn(
+                            "mx-auto flex h-16 w-16 items-center justify-center rounded-2xl border text-2xl shadow-xl",
+                            passed
+                              ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-400"
+                              : "border-amber-500/30 bg-amber-500/10 text-amber-500"
+                          )}>
+                            {passed ? "🎓" : "📋"}
+                          </div>
+                          <h3 className="text-lg font-bold text-[var(--ib-ink)]">
+                            {passed
+                              ? t("academy.coursePlayer.congratulations", {
+                                  defaultValue: "Congratulations! You Passed.",
+                                })
+                              : t("academy.coursePlayer.quizReviewed", {
+                                  defaultValue: "Quiz reviewed — keep learning",
+                                })}
+                          </h3>
+                          <p className="mx-auto max-w-md text-sm font-semibold text-[var(--ib-ink)]">
+                            {t("academy.coursePlayer.performance")}: {correctCount}/{allQuestions.length} ({scorePct}%)
+                            <span className="ml-2 text-[var(--ib-mute)]">
+                              · {t("academy.coursePlayer.passMark", { defaultValue: "Pass mark" })}: 50%
+                            </span>
+                          </p>
+                          <p className="mx-auto max-w-md text-xs text-[var(--ib-mute)]">
+                            {passed
+                              ? t("academy.coursePlayer.canProceed", {
+                                  defaultValue: "You can now proceed to the next lesson.",
+                                })
+                              : t("academy.coursePlayer.belowPassContinue", {
+                                  defaultValue:
+                                    "You scored below 50%. Review the answers below — you can still continue to the next lesson.",
+                                })}
+                          </p>
                         </div>
-                        <h3 className="text-lg font-bold text-[var(--ib-ink)]">
-                          {passed ? t('academy.coursePlayer.strategicMastery') : `${t('academy.coursePlayer.performance')}: ${correctCount}/${allQuestions.length}`}
-                        </h3>
-                        <p className="text-xs text-[var(--ib-mute)] max-w-sm mx-auto">
-                          {passed ? t('academy.coursePlayer.flawlessExecution') : t('academy.coursePlayer.knowledgeGapDetected')}
-                        </p>
-                        <div className="pt-2 flex justify-center gap-3">
-                          {!passed ? (
+
+                        <div className="space-y-3 text-left">
+                          {reviewed.map(({ q, correct, selected, isCorrect }, idx) => (
+                            <div
+                              key={q.id || idx}
+                              className={cn(
+                                "rounded-xl border p-4",
+                                isCorrect
+                                  ? "border-emerald-500/25 bg-emerald-500/5"
+                                  : "border-rose-500/25 bg-rose-500/5",
+                              )}
+                            >
+                              <div className="mb-2 flex items-start gap-2">
+                                {isCorrect ? (
+                                  <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-emerald-500" />
+                                ) : (
+                                  <XCircle className="mt-0.5 size-4 shrink-0 text-rose-500" />
+                                )}
+                                <p className="text-sm font-bold text-[var(--ib-ink)]">
+                                  {idx + 1}. {q.question}
+                                </p>
+                              </div>
+                              <div className="ml-6 space-y-1 text-xs">
+                                <p className={cn(isCorrect ? "text-emerald-700" : "text-rose-700")}>
+                                  {t("academy.coursePlayer.yourAnswer", { defaultValue: "Your answer" })}:{" "}
+                                  <span className="font-semibold">{selected || "—"}</span>
+                                </p>
+                                {!isCorrect ? (
+                                  <p className="text-emerald-700">
+                                    {t("academy.coursePlayer.correctAnswer", {
+                                      defaultValue: "Correct answer",
+                                    })}
+                                    : <span className="font-semibold">{correct}</span>
+                                  </p>
+                                ) : null}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+
+                        <div className="flex flex-col items-stretch justify-center gap-3 pt-1 sm:flex-row sm:items-center">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setQuizSubmitted(false);
+                              setQuizAnswers({});
+                              setCurrentQuestionIndex(0);
+                            }}
+                            className="rounded-xl border-2 border-[var(--ib-line)] bg-[var(--ib-card)] px-6 py-3 text-xs font-black uppercase tracking-wider text-[var(--ib-ink)] transition-all hover:border-[var(--ib-acc)] hover:bg-[var(--ib-accbg)]"
+                          >
+                            {t("academy.coursePlayer.tryAgain")}
+                          </button>
+                          {hasNext ? (
                             <button
                               type="button"
-                              onClick={() => {
-                                setQuizSubmitted(false);
-                                setQuizAnswers({});
-                                setCurrentQuestionIndex(0);
-                              }}
-                              className="px-6 py-2.5 rounded-xl bg-[var(--ib-accbg)] text-[var(--ib-ink)] font-bold text-xs hover:bg-[var(--ib-accbg)] transition-all uppercase tracking-wider"
+                              onClick={continueToNext}
+                              className="rounded-xl bg-[var(--ib-acc)] px-8 py-3 text-xs font-black uppercase tracking-wider text-white shadow-[0_12px_28px_-12px_color-mix(in_srgb,var(--ib-acc)_65%,transparent)] transition-all hover:opacity-92"
                             >
-                              {t('academy.coursePlayer.tryAgain')}
+                              {t("academy.coursePlayer.nextModule")} →
                             </button>
                           ) : (
                             <button
@@ -885,13 +1065,12 @@ export default function AcademyCoursePage({
                                 if (currentLesson) {
                                   setCompletedLessons((prev) => new Set(prev).add(currentLesson.id));
                                 }
-                                if (currentLessonIndex < lessons.length - 1) {
-                                  handleLessonClick(currentLessonIndex + 1);
-                                }
                               }}
-                              className="px-6 py-2.5 rounded-xl bg-[var(--ib-acc)] text-[var(--ib-bg)] font-black text-xs hover:opacity-90 transition-all uppercase tracking-wider"
+                              className="rounded-xl bg-emerald-500 px-8 py-3 text-xs font-black uppercase tracking-wider text-white transition-all hover:opacity-92"
                             >
-                              {t('academy.coursePlayer.nextModule')} →
+                              {t("academy.coursePlayer.courseComplete", {
+                                defaultValue: "Mark course progress complete",
+                              })}
                             </button>
                           )}
                         </div>
@@ -971,18 +1150,21 @@ export default function AcademyCoursePage({
                             type="button"
                             onClick={handleSubmitQuiz}
                             disabled={!allAnswered}
-                            className="px-6 py-2 rounded-lg bg-[var(--ib-acc)] text-white text-xs font-black uppercase tracking-wider hover:opacity-90 transition-all disabled:bg-[var(--ib-accbg)] disabled:text-[var(--ib-ink)]/40 disabled:cursor-not-allowed"
+                            className="rounded-xl bg-[var(--ib-acc)] px-7 py-3 text-xs font-black uppercase tracking-wider text-white shadow-[0_12px_28px_-12px_color-mix(in_srgb,var(--ib-acc)_65%,transparent)] transition-all hover:opacity-92 disabled:cursor-not-allowed disabled:bg-[var(--ib-accbg)] disabled:text-[var(--ib-ink)]/40 disabled:shadow-none"
                           >
-                            {t('academy.coursePlayer.validateProtocol')} ✓
+                            {t("academy.coursePlayer.submitAssessment", {
+                              defaultValue: "Submit Assessment",
+                            })}{" "}
+                            ✓
                           </button>
                         ) : (
                           <button
                             type="button"
                             onClick={() => setCurrentQuestionIndex((i) => Math.min(allQuestions.length - 1, i + 1))}
                             disabled={!isAnswered}
-                            className="px-6 py-2 rounded-lg bg-[var(--ib-acc)] text-white text-xs font-black uppercase tracking-wider hover:opacity-90 transition-all disabled:bg-[var(--ib-accbg)] disabled:text-[var(--ib-ink)]/40 disabled:cursor-not-allowed"
+                            className="rounded-xl bg-[var(--ib-acc)] px-7 py-3 text-xs font-black uppercase tracking-wider text-white shadow-[0_12px_28px_-12px_color-mix(in_srgb,var(--ib-acc)_65%,transparent)] transition-all hover:opacity-92 disabled:cursor-not-allowed disabled:bg-[var(--ib-accbg)] disabled:text-[var(--ib-ink)]/40 disabled:shadow-none"
                           >
-                            {t('dynamic.dyn_next_497') || 'Next'}
+                            {t("dynamic.dyn_next_497") || "Next"}
                           </button>
                         )}
                       </div>
