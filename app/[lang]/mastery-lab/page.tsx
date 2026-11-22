@@ -206,9 +206,18 @@ const AssessmentPage = () => {
         toast.error(msg);
       }
     } catch (err: any) {
+      const stackMsg =
+        typeof err?.data?.stack === "string"
+          ? err.data.stack.match(/^Error:\s*(.+?)(?:\n|$)/)?.[1]
+          : null;
+      const apiMessage = err?.data?.message;
       const message =
-        err?.data?.message ||
+        (apiMessage &&
+        apiMessage !== "An unexpected error occurred!"
+          ? apiMessage
+          : null) ||
         err?.data?.errorSources?.[0]?.details ||
+        stackMsg ||
         err?.error ||
         err?.message ||
         (typeof err === "string" ? err : null);
@@ -217,7 +226,6 @@ const AssessmentPage = () => {
         status: err?.status,
         message,
         data: err?.data,
-        raw: err,
       });
 
       const fallback = t(

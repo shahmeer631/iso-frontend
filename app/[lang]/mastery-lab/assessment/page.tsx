@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
 import {
@@ -33,7 +33,6 @@ import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 import "@/lib/i18n/client";
 
-import ExploreFeatures from "@/components/Shared/ExploreFeatures";
 import { useSubmitAssessmentMutation, type SubmitAssessmentResponse } from "@/lib/redux/api/isoStandardsApi";
 import { useGenerateQuizMutation } from "@/lib/redux/api/quizApi";
 import { useSelector } from "react-redux";
@@ -59,6 +58,7 @@ import Leaderboard from '@/components/assessment/Leaderboard';
 import { SkillHexGrid } from "@/components/assessment/SkillHexGrid";
 import EvaluationProgressBar from "@/components/mastery-lab/evaluation/ProgressBar";
 import AssessmentResultGate from "@/components/mastery-lab/AssessmentResultGate";
+import InlineAssessmentLoader from "@/components/mastery-lab/InlineAssessmentLoader";
 import { getOrCreateGuestId } from "@/lib/apiUsage/guestId";
 
 const PENDING_MASTERY_RESULT_KEY = "mastery_pending_result";
@@ -110,6 +110,11 @@ const AssessmentQuizPage = () => {
   const [generateQuiz] = useGenerateQuizMutation();
   const [quizMetadata, setQuizMetadata] = useState<any>(null);
   const [examSessionIds, setExamSessionIds] = useState<string[]>([]);
+  const [isLoadingNextBatch, setIsLoadingNextBatch] = useState(false);
+  const [nextBatchError, setNextBatchError] = useState<string | null>(null);
+  const [pendingAdvanceAfterBatch, setPendingAdvanceAfterBatch] = useState(false);
+  const [acceptPartialExam, setAcceptPartialExam] = useState(false);
+  const batchFetchInFlightRef = useRef(false);
 
   useEffect(() => {
     if (typeof window !== "undefined" && !token) {
@@ -205,20 +210,192 @@ const AssessmentQuizPage = () => {
     return () => clearInterval(timer);
   }, [showResults, timeRemaining, router, params?.lang]);
 
+  const stemKey = (text: string) =>
+    text.trim().toLowerCase().replace(/\s+/g, " ");
+
+  const loadMoreQuestions = useCallback(
+    async (count: number = 10) => {
+      if (!quizMetadata) return false;
+      if (batchFetchInFlightRef.current) return false;
+
+      batchFetchInFlightRef.current = true;
+      setIsLoadingNextBatch(true);
+      setNextBatchError(null);
+
+      const batchNumber =
+        quizQuestions.length <= 10 ? 2 : quizQuestions.length <= 20 ? 3 : 4;
+      const existingStemHints = quizQuestions
+        .slice(-8)
+        .map((q) => q.question.trim().slice(0, 120));
+
+      try {
+        const res = await generateQuiz({
+          context: {
+            industry: quizMetadata.categoryName || "",
+            management_level: quizMetadata.difficulty || "Manager",
+            department: quizMetadata.jobFunction || "Operation",
+            // Novelty hints so follow-up batches don't clone the first 10/20 stems
+            mastery_batch: batchNumber,
+            mastery_batch_label: `continuation_batch_${batchNumber}`,
+            novelty_seed: `${Date.now()}_${batchNumber}`,
+            avoid_duplicate_questions: true,
+            existing_question_hints: existingStemHints,
+            instruction:
+              "Generate NEW clause-specific expert questions that do not repeat prior stems or scenarios from earlier batches for this same learner.",
+          },
+          num_questions: count,
+          difficulty: MASTERY_QUIZ_DIFFICULTY,
+          guestId: !token ? guestId || getOrCreateGuestId() : undefined,
+        }).unwrap();
+
+        const quizData = res.data || res;
+        const extraQuestionsRaw = quizData.questions || [];
+
+        if (!extraQuestionsRaw.length) {
+          setNextBatchError(
+            t(
+              "mastery.nextBatchEmpty",
+              "No additional questions were returned. Please try again.",
+            ),
+          );
+          return false;
+        }
+
+        const newSessionId = quizData.examSessionId
+          ? String(quizData.examSessionId)
+          : null;
+
+        let appended = 0;
+        setExamSessionIds((prevSessions) => {
+          const nextSessions =
+            newSessionId && !prevSessions.includes(newSessionId)
+              ? [...prevSessions, newSessionId]
+              : prevSessions;
+
+          setQuizQuestions((qPrev) => {
+            const transformedExtra = transformQuizQuestions(
+              extraQuestionsRaw,
+              qPrev.length + 1,
+            );
+            // Exact-stem dedupe only (prefix matching was dropping valid new items)
+            const seen = new Set(qPrev.map((q) => stemKey(q.question)));
+            const uniqueExtra = transformedExtra.filter((q) => {
+              const key = stemKey(q.question);
+              if (seen.has(key)) return false;
+              seen.add(key);
+              return true;
+            });
+
+            appended = uniqueExtra.length;
+            if (uniqueExtra.length === 0) {
+              setNextBatchError(
+                t(
+                  "mastery.nextBatchDuplicates",
+                  "The next set repeated earlier questions. Please try again, or finish with your current answers.",
+                ),
+              );
+              return qPrev;
+            }
+
+            const combined = [...qPrev, ...uniqueExtra].slice(0, 30);
+
+            if (combined.length > 10) setHasTriggeredTen(true);
+            if (combined.length >= 20) setHasTriggeredTwenty(true);
+
+            const activeQuiz = localStorage.getItem("active_iso_quiz");
+            if (activeQuiz) {
+              try {
+                const parsed = JSON.parse(activeQuiz);
+                parsed.questions = combined;
+                parsed.examSessionIds = nextSessions;
+                localStorage.setItem("active_iso_quiz", JSON.stringify(parsed));
+              } catch {
+                /* ignore */
+              }
+            }
+            return combined;
+          });
+
+          return nextSessions;
+        });
+
+        return appended > 0;
+      } catch (error: any) {
+        console.error("Failed to load additional Mastery Lab questions:", error);
+        const apiMessage =
+          error?.data?.message ||
+          error?.data?.errorSources?.[0]?.details ||
+          error?.error ||
+          error?.message ||
+          null;
+        setNextBatchError(
+          typeof apiMessage === "string" && apiMessage
+            ? apiMessage
+            : t(
+                "mastery.nextBatchFailed",
+                "Could not load the next questions. Please try again.",
+              ),
+        );
+        return false;
+      } finally {
+        batchFetchInFlightRef.current = false;
+        setIsLoadingNextBatch(false);
+      }
+    },
+    [quizMetadata, generateQuiz, token, guestId, t, quizQuestions],
+  );
+
+  // Prefetch next batches in the background (do not mark triggered until success)
   useEffect(() => {
-    if (isLoaded && quizMetadata && !showResults) {
-      // Fetch 2nd batch (11-20) when we have the initial 10
-      if (quizQuestions.length <= 10 && !hasTriggeredTen) {
-        setHasTriggeredTen(true);
-        loadMoreQuestions(10);
-      }
-      // Fetch 3rd batch (21-30) as soon as the 2nd batch is loaded (length reaches 20)
-      else if (quizQuestions.length > 10 && quizQuestions.length <= 20 && !hasTriggeredTwenty) {
-        setHasTriggeredTwenty(true);
-        loadMoreQuestions(10);
-      }
+    if (!isLoaded || !quizMetadata || showResults || nextBatchError) return;
+    if (batchFetchInFlightRef.current || isLoadingNextBatch) return;
+
+    if (quizQuestions.length > 0 && quizQuestions.length <= 10 && !hasTriggeredTen) {
+      void loadMoreQuestions(10);
+      return;
     }
-  }, [isLoaded, quizMetadata, quizQuestions.length, hasTriggeredTen, hasTriggeredTwenty, showResults]);
+    if (
+      quizQuestions.length > 10 &&
+      quizQuestions.length <= 20 &&
+      !hasTriggeredTwenty
+    ) {
+      void loadMoreQuestions(10);
+    }
+  }, [
+    isLoaded,
+    quizMetadata,
+    quizQuestions.length,
+    hasTriggeredTen,
+    hasTriggeredTwenty,
+    showResults,
+    nextBatchError,
+    isLoadingNextBatch,
+    loadMoreQuestions,
+  ]);
+
+  // After more questions arrive, always leave the waiting state and move forward.
+  // Do not gate on isLoadingNextBatch — that caused a stuck Q20 with selection locked.
+  useEffect(() => {
+    if (!pendingAdvanceAfterBatch) return;
+    if (nextBatchError) return;
+    if (currentQuestion < quizQuestions.length - 1) {
+      setPendingAdvanceAfterBatch(false);
+      setCurrentQuestion((q) => q + 1);
+      setIsAdvancing(false);
+    }
+  }, [
+    pendingAdvanceAfterBatch,
+    nextBatchError,
+    currentQuestion,
+    quizQuestions.length,
+  ]);
+
+  // Safety: never leave answers permanently disabled after a selection glitch
+  useEffect(() => {
+    if (!isAdvancing) return;
+    const timer = window.setTimeout(() => setIsAdvancing(false), 2500);
+    return () => window.clearTimeout(timer);
+  }, [isAdvancing, currentQuestion]);
 
   const calculateCounts = (answers: SelectedAnswers = selectedAnswers) => {
     const total = quizQuestions.length;
@@ -248,7 +425,10 @@ const AssessmentQuizPage = () => {
     };
   };
 
-  const advanceAfterAnswer = async (answers: SelectedAnswers) => {
+  const advanceAfterAnswer = async (
+    answers: SelectedAnswers,
+    opts?: { forceSubmit?: boolean },
+  ) => {
     try {
       if (currentQuestion < quizQuestions.length - 1) {
         setCurrentQuestion((q) => q + 1);
@@ -256,14 +436,18 @@ const AssessmentQuizPage = () => {
         return;
       }
 
-      if (quizQuestions.length < 30) {
-        toast.info(
-          t(
-            "mastery.loadingMore",
-            "Loading more questions, please wait a moment..."
-          )
-        );
+      // Target 30 questions, but never block forever if later batches fail
+      if (
+        quizQuestions.length < 30 &&
+        !nextBatchError &&
+        !acceptPartialExam &&
+        !opts?.forceSubmit
+      ) {
+        setPendingAdvanceAfterBatch(true);
         setIsAdvancing(false);
+        if (!batchFetchInFlightRef.current && !isLoadingNextBatch) {
+          void loadMoreQuestions(10);
+        }
         return;
       }
 
@@ -388,7 +572,25 @@ const AssessmentQuizPage = () => {
   };
 
   const handleAnswerSelect = (label: string) => {
-    if (showResults || isAdvancing || isSubmitting) return;
+    if (showResults || isSubmitting) return;
+
+    // If more questions are already loaded but we were stuck waiting, unlock and advance
+    if (
+      pendingAdvanceAfterBatch &&
+      currentQuestion < quizQuestions.length - 1
+    ) {
+      setPendingAdvanceAfterBatch(false);
+      setIsAdvancing(false);
+      setCurrentQuestion((q) => q + 1);
+      return;
+    }
+
+    // While waiting on a missing next batch, ignore further clicks on the last item
+    if (pendingAdvanceAfterBatch && quizQuestions.length < 30) {
+      return;
+    }
+
+    if (isAdvancing) return;
 
     const questionIndex = currentQuestion;
     const nextAnswers = { ...selectedAnswers, [questionIndex]: label };
@@ -433,56 +635,23 @@ const AssessmentQuizPage = () => {
     }, 650);
   };
 
-  const loadMoreQuestions = async (count: number = 10) => {
-    if (!quizMetadata) return;
+  const handleRetryNextBatch = () => {
+    setNextBatchError(null);
+    setPendingAdvanceAfterBatch(true);
+    void loadMoreQuestions(10);
+  };
 
-    try {
-      const res = await generateQuiz({
-        context: {
-          industry: quizMetadata.categoryName || "",
-          management_level: quizMetadata.difficulty || "Manager",
-          department: quizMetadata.jobFunction || "Operation"
-        },
-        num_questions: count,
-        difficulty: MASTERY_QUIZ_DIFFICULTY,
-        guestId: !token ? guestId || getOrCreateGuestId() : undefined,
-      }).unwrap();
-
-      const quizData = res.data || res;
-      const extraQuestionsRaw = quizData.questions || [];
-
-      if (extraQuestionsRaw.length > 0) {
-        const transformedExtra = transformQuizQuestions(
-          extraQuestionsRaw,
-          quizQuestions.length + 1
-        );
-        const newSessionId = quizData.examSessionId
-          ? String(quizData.examSessionId)
-          : null;
-
-        setExamSessionIds((prev) => {
-          const next = newSessionId && !prev.includes(newSessionId)
-            ? [...prev, newSessionId]
-            : prev;
-          setQuizQuestions((qPrev) => {
-            const combined = [...qPrev, ...transformedExtra].slice(0, 30);
-            const activeQuiz = localStorage.getItem("active_iso_quiz");
-            if (activeQuiz) {
-              try {
-                const parsed = JSON.parse(activeQuiz);
-                parsed.questions = combined;
-                parsed.examSessionIds = next;
-                localStorage.setItem("active_iso_quiz", JSON.stringify(parsed));
-              } catch (e) { }
-            }
-            return combined;
-          });
-          return next;
-        });
-      }
-    } catch (error) {
-      console.error("Failed to load additional Mastery Lab questions:", error);
-    }
+  /** Allow completing the exam with whatever questions are already loaded. */
+  const handleFinishWithCurrentQuestions = () => {
+    setNextBatchError(null);
+    setPendingAdvanceAfterBatch(false);
+    setAcceptPartialExam(true);
+    setHasTriggeredTen(true);
+    setHasTriggeredTwenty(true);
+    setIsAdvancing(true);
+    window.setTimeout(() => {
+      void advanceAfterAnswer(selectedAnswers, { forceSubmit: true });
+    }, 50);
   };
 
   const handleNext = async () => {
@@ -552,6 +721,16 @@ const AssessmentQuizPage = () => {
 
   const currentQ = quizQuestions[currentQuestion];
   const currentAnswer = selectedAnswers[currentQuestion];
+  // Only replace the question pane when we are truly on the last loaded item
+  // and still short of the target set (not when later questions already exist).
+  const awaitingNextBatch =
+    !showResults &&
+    quizQuestions.length > 0 &&
+    quizQuestions.length < 30 &&
+    currentQuestion >= Math.max(0, quizQuestions.length - 1) &&
+    (Boolean(nextBatchError) ||
+      (pendingAdvanceAfterBatch &&
+        currentQuestion >= quizQuestions.length - 1));
 
   if (requiresAuthForResults) {
     const currentLang = String(params?.lang || "en");
@@ -563,7 +742,7 @@ const AssessmentQuizPage = () => {
     );
   }
 
-  if (!currentQ) {
+  if (!currentQ && !awaitingNextBatch && quizQuestions.length === 0) {
     return (
       <div className="flex min-h-[60vh] flex-col items-center justify-center gap-4 px-4 text-center">
         <p className="text-[15px] text-[var(--ib-mute)]">
@@ -791,6 +970,9 @@ const AssessmentQuizPage = () => {
                 correctAnswer={currentQ.correctAnswer}
                 options={currentQ.options}
                 explanation={currentQ.explanation}
+                standard={(currentQ as any).standard}
+                version={(currentQ as any).version}
+                clause={(currentQ as any).clause || (currentQ as any).subclause}
               />
 
               <div className="flex flex-col items-center gap-4 mt-10 w-full">
@@ -880,25 +1062,110 @@ const AssessmentQuizPage = () => {
 
           <QuizProgressBar
             currentQuestion={currentQuestion}
-            totalQuestions={totalQuestions}
+            totalQuestions={
+              awaitingNextBatch || quizQuestions.length < 30
+                ? Math.max(totalQuestions, 30)
+                : totalQuestions
+            }
             answeredCount={answeredCount}
           />
-          <QuestionCard
-            question={currentQ.question}
-            options={currentQ.options}
-            selectedAnswer={currentAnswer}
-            onAnswerSelect={handleAnswerSelect}
-            onHintClick={() => setShowHint(true)}
-            onSwipeNext={handleNext}
-            onSwipePrev={currentQuestion > 0 ? handlePrevious : undefined}
-            disableAnswers={isAdvancing || isSubmitting}
-          />
-          <HintModal
-            isOpen={showHint}
-            onClose={() => setShowHint(false)}
-            hint={currentQ.hint}
-            hintInsight={currentQ.hintInsight}
-          />
+
+          {awaitingNextBatch ? (
+            <div className="mt-2">
+              {nextBatchError ? (
+                <div
+                  role="alert"
+                  className="ib-card flex flex-col items-start gap-4 p-6 sm:p-8"
+                >
+                  <div className="flex size-12 items-center justify-center rounded-2xl border border-red-200 bg-red-50 text-red-600">
+                    <AlertCircle className="size-6" aria-hidden />
+                  </div>
+                  <div className="min-w-0">
+                    <h3 className="mb-0! text-[16px] font-bold text-[var(--ib-ink)] sm:text-[18px]">
+                      {t(
+                        "mastery.nextBatchErrorTitle",
+                        "Couldn't load the next questions",
+                      )}
+                    </h3>
+                    <p className="mt-2 text-[14px] leading-relaxed text-[var(--ib-mute)]">
+                      {nextBatchError}
+                    </p>
+                    <p className="mt-2 text-[13px] text-[var(--ib-mute)]">
+                      {t(
+                        "mastery.nextBatchErrorHint",
+                        "Your previous answers are saved. You can retry without restarting the exam.",
+                      )}
+                    </p>
+                  </div>
+                  <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+                    <button
+                      type="button"
+                      onClick={handleRetryNextBatch}
+                      disabled={isLoadingNextBatch}
+                      className="inline-flex items-center justify-center rounded-full bg-[var(--ib-acc)] px-6 py-3 text-[13px] font-bold uppercase tracking-wider text-white transition-opacity hover:opacity-95 disabled:opacity-60"
+                    >
+                      {t("mastery.tryAgain", "Try Again")}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleFinishWithCurrentQuestions}
+                      disabled={isLoadingNextBatch || isSubmitting}
+                      className="inline-flex items-center justify-center rounded-full border border-[var(--ib-line)] bg-[var(--ib-card)] px-6 py-3 text-[13px] font-bold uppercase tracking-wider text-[var(--ib-ink)] transition-colors hover:border-[var(--ib-acc)] hover:text-[var(--ib-acc)] disabled:opacity-60"
+                    >
+                      {t(
+                        "mastery.finishWithCurrent",
+                        "Finish with current questions",
+                      )}
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <InlineAssessmentLoader
+                  title={t(
+                    "mastery.preparingNextTitle",
+                    "Preparing Your Next Questions",
+                  )}
+                  description={t(
+                    "mastery.preparingNextDesc",
+                    "Please wait while we prepare the next set of questions. This may take a few moments.",
+                  )}
+                  steps={[
+                    t(
+                      "mastery.preparingNextStep1",
+                      "Fetching the next expert scenarios",
+                    ),
+                    t(
+                      "mastery.preparingNextStep2",
+                      "Validating clause-specific items",
+                    ),
+                    t(
+                      "mastery.preparingNextStep3",
+                      "Updating your assessment progress",
+                    ),
+                  ]}
+                />
+              )}
+            </div>
+          ) : currentQ ? (
+            <>
+              <QuestionCard
+                question={currentQ.question}
+                options={currentQ.options}
+                selectedAnswer={currentAnswer}
+                onAnswerSelect={handleAnswerSelect}
+                onHintClick={() => setShowHint(true)}
+                onSwipeNext={handleNext}
+                onSwipePrev={currentQuestion > 0 ? handlePrevious : undefined}
+                disableAnswers={isAdvancing || isSubmitting}
+              />
+              <HintModal
+                isOpen={showHint}
+                onClose={() => setShowHint(false)}
+                hint={currentQ.hint}
+                hintInsight={currentQ.hintInsight}
+              />
+            </>
+          ) : null}
         </div>
         <div className="lg:col-span-4 xl:col-span-3">
           <div className="ib-card sticky top-24 overflow-hidden">

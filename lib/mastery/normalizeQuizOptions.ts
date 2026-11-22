@@ -32,11 +32,16 @@ export function transformQuizQuestions(
   explanation: string;
   hint?: string;
   hintInsight?: string;
+  standard?: string;
+  version?: string;
+  clause?: string;
+  subclause?: string;
 }> {
   return (questionsRaw || [])
     .map((q: any, idx: number) => {
       const options = normalizeQuizOptions(q?.options);
       if (!q?.question || options.length === 0) return null;
+      const clause = String(q.clause ?? q.subclause ?? "").trim();
       return {
         id: startId + idx,
         /** Stable server question id for trusted scoring */
@@ -47,6 +52,10 @@ export function transformQuizQuestions(
         explanation: String(q.explanation ?? ""),
         hint: q.hint,
         hintInsight: q.explanation,
+        standard: String(q.standard ?? "").trim() || undefined,
+        version: String(q.version ?? "").trim() || undefined,
+        clause: clause || undefined,
+        subclause: String(q.subclause ?? "").trim() || undefined,
       };
     })
     .filter(Boolean) as any[];

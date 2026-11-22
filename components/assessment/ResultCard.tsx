@@ -17,6 +17,9 @@ interface ResultCardProps {
   correctAnswer: string;
   options: QuestionOption[];
   explanation: string;
+  standard?: string;
+  clause?: string;
+  version?: string;
 }
 
 export const ResultCard: React.FC<ResultCardProps> = ({
@@ -26,6 +29,9 @@ export const ResultCard: React.FC<ResultCardProps> = ({
   correctAnswer,
   options,
   explanation,
+  standard,
+  clause,
+  version,
 }) => {
   const { t } = useTranslation();
   const isCorrect = userAnswer === correctAnswer;
@@ -33,6 +39,14 @@ export const ResultCard: React.FC<ResultCardProps> = ({
   const correctAnswerText = options.find(
     (opt) => opt.label === correctAnswer,
   )?.text;
+  const standardLabel = [standard, version && !String(standard || "").includes(String(version))
+    ? `(${version})`
+    : null]
+    .filter(Boolean)
+    .join(" ");
+  const referenceLabel = [standardLabel, clause ? `Clause ${clause}` : null]
+    .filter(Boolean)
+    .join(" · ");
 
   return (
     <div style={{
@@ -52,9 +66,19 @@ export const ResultCard: React.FC<ResultCardProps> = ({
         }}>
           {questionNumber}
         </span>
-        <h4 className="text-sm sm:text-lg" style={{ fontWeight: 400, color: "var(--ib-ink)", lineHeight: 1.6, margin: 0 }}>
-          {question}
-        </h4>
+        <div className="min-w-0 flex-1">
+          {referenceLabel ? (
+            <p
+              className="mb-2 text-[10px] font-black uppercase tracking-[0.16em] text-[var(--ib-acc)]"
+              style={{ margin: "0 0 8px" }}
+            >
+              {referenceLabel}
+            </p>
+          ) : null}
+          <h4 className="text-sm sm:text-lg" style={{ fontWeight: 400, color: "var(--ib-ink)", lineHeight: 1.6, margin: 0 }}>
+            {question}
+          </h4>
+        </div>
       </div>
 
       <div style={{ display: "flex", flexDirection: "column", gap: 16, marginBottom: 40 }}>

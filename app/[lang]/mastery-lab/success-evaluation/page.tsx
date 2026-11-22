@@ -3,14 +3,13 @@
 import React, { useState, useEffect } from "react";
 import Leaderboard from "@/components/assessment/Leaderboard";
 import ProgressBar from "@/components/mastery-lab/evaluation/ProgressBar";
-import ExploreFeatures from "@/components/Shared/ExploreFeatures";
+import ContinueYourMastery from "@/components/mastery-lab/ContinueYourMastery";
 import { SkillHexGrid } from "@/components/assessment/SkillHexGrid";
 import AssessmentResultGate from "@/components/mastery-lab/AssessmentResultGate";
 import {
   Check,
   Loader2,
   Award,
-  ArrowRight,
   RotateCcw,
   ShieldAlert,
   Brain,
@@ -607,17 +606,19 @@ export default function SuccessEvaluationPage() {
           {/* Footer Actions */}
           <div className="pt-12 flex flex-col md:flex-row gap-4 md:gap-6 justify-center max-w-sm mx-auto md:max-w-none">
             <Link
-              href={`/${lang}/academy`}
-              className="px-6 py-3.5 md:px-12 md:py-5 rounded-full bg-[var(--ib-acc)] text-white text-white font-medium text-xs md:text-sm uppercase tracking-wider text-center flex items-center justify-center gap-2 hover:scale-105 transition-transform"
-            >
-              Explore Academy <ArrowRight size={18} className="shrink-0" />
-            </Link>
-            <Link
               href={`/${lang}/mastery-lab`}
               className="px-6 py-3.5 md:px-12 md:py-5 rounded-full bg-[var(--ib-card)] border border-[var(--ib-line)] text-[var(--ib-ink)] font-bold text-xs md:text-sm uppercase tracking-wider text-center flex items-center justify-center gap-2 hover:bg-[var(--ib-accbg)] transition-all"
             >
               <RotateCcw size={18} className="shrink-0" /> Retake Assessment
             </Link>
+          </div>
+
+          {/* Lead generation — Academy / Library / AI Assistant */}
+          <div className="pt-16 md:pt-20">
+            <ContinueYourMastery
+              trackResultView
+              score={overallScore}
+            />
           </div>
 
         </div>
@@ -629,10 +630,6 @@ export default function SuccessEvaluationPage() {
           </div>
         </div>
 
-      </div>
-
-      <div className="mt-24">
-        <ExploreFeatures />
       </div>
     </div>
   );

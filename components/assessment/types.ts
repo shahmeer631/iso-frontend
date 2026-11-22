@@ -12,6 +12,10 @@ export interface Question {
   hint: string;
   hintInsight: string;
   explanation: string;
+  standard?: string;
+  version?: string;
+  clause?: string;
+  subclause?: string;
 }
 
 export interface SelectedAnswers {

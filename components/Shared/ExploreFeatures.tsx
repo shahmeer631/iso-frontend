@@ -5,6 +5,7 @@ import FeatureCard from "../mastery-lab/evaluation/FeatureCard";
 import { BookOpen, Bot, GraduationCap } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { motion, useReducedMotion } from "framer-motion";
+import { useParams } from "next/navigation";
 import "@/lib/i18n/client";
 
 const ease = [0.22, 1, 0.36, 1] as const;
@@ -12,6 +13,8 @@ const ease = [0.22, 1, 0.36, 1] as const;
 const ExploreFeatures = () => {
   const { t } = useTranslation();
   const reduceMotion = useReducedMotion();
+  const params = useParams();
+  const lang = String(params?.lang || "en");
 
   const featuresData = [
     {
@@ -19,7 +22,7 @@ const ExploreFeatures = () => {
       title: t("mastery.card1Title"),
       description: t("mastery.card1Desc"),
       cta: t("mastery.card1Cta"),
-      href: "/library/iso-standards",
+      href: `/${lang}/library/iso-standards`,
       icon: BookOpen,
       iconBgColor: "var(--ib-accbg)",
       iconColor: "var(--ib-acc)",
@@ -29,7 +32,7 @@ const ExploreFeatures = () => {
       title: t("mastery.card2Title"),
       description: t("mastery.card2Desc"),
       cta: t("mastery.card2Cta"),
-      href: "/ai-assistant-home",
+      href: `/${lang}/ai-assistant-home`,
       icon: Bot,
       iconBgColor: "var(--ib-accbg)",
       iconColor: "var(--ib-acc)",
@@ -39,7 +42,7 @@ const ExploreFeatures = () => {
       title: t("mastery.card3Title"),
       description: t("mastery.card3Desc"),
       cta: t("mastery.card3Cta"),
-      href: "/academy",
+      href: `/${lang}/academy`,
       icon: GraduationCap,
       iconBgColor: "rgba(217, 119, 6, 0.12)",
       iconColor: "#D97706",
