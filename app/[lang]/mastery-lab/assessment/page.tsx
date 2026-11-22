@@ -115,6 +115,15 @@ const AssessmentQuizPage = () => {
   const [pendingAdvanceAfterBatch, setPendingAdvanceAfterBatch] = useState(false);
   const [acceptPartialExam, setAcceptPartialExam] = useState(false);
   const batchFetchInFlightRef = useRef(false);
+  const autoSubmitTriggeredRef = useRef(false);
+  const selectedAnswersRef = useRef<SelectedAnswers>({});
+  const advanceAfterAnswerRef = useRef<
+    | ((
+        answers: SelectedAnswers,
+        opts?: { forceSubmit?: boolean },
+      ) => Promise<void>)
+    | null
+  >(null);
 
   useEffect(() => {
     if (typeof window !== "undefined" && !token) {
@@ -179,6 +188,10 @@ const AssessmentQuizPage = () => {
   }, [t]);
 
   useEffect(() => {
+    selectedAnswersRef.current = selectedAnswers;
+  }, [selectedAnswers]);
+
+  useEffect(() => {
     if (isLoaded) {
       localStorage.setItem(
         STORAGE_KEY,
@@ -192,23 +205,40 @@ const AssessmentQuizPage = () => {
     }
   }, [currentQuestion, selectedAnswers, timeRemaining, showResults, isLoaded]);
 
+  // Strict 15-minute timer; at 00:00 force-submit current exam state (implementation plan)
   useEffect(() => {
-    if (showResults) return;
+    if (showResults || requiresAuthForResults) return;
 
-    if (timeRemaining <= 0) {
-      toast.error(t('mastery.timeOver'));
+    if (timeRemaining > 0) {
+      const timer = setInterval(() => {
+        setTimeRemaining((prev) => (prev <= 1 ? 0 : prev - 1));
+      }, 1000);
+      return () => clearInterval(timer);
+    }
+
+    if (autoSubmitTriggeredRef.current) return;
+    autoSubmitTriggeredRef.current = true;
+    toast.error(t("mastery.timeOver", "Time is up — submitting your exam."));
+
+    if (!quizQuestions.length || !examSessionIds.length) {
       localStorage.removeItem(STORAGE_KEY);
-      const currentLang = params?.lang || 'en';
-      router.push(`/${currentLang}/mastery-lab`);
+      router.push(`/${params?.lang || "en"}/mastery-lab`);
       return;
     }
 
-    const timer = setInterval(() => {
-      setTimeRemaining((prev) => (prev <= 1 ? 0 : prev - 1));
-    }, 1000);
-
-    return () => clearInterval(timer);
-  }, [showResults, timeRemaining, router, params?.lang]);
+    void advanceAfterAnswerRef.current?.(selectedAnswersRef.current, {
+      forceSubmit: true,
+    });
+  }, [
+    showResults,
+    requiresAuthForResults,
+    timeRemaining,
+    quizQuestions.length,
+    examSessionIds.length,
+    router,
+    params?.lang,
+    t,
+  ]);
 
   const stemKey = (text: string) =>
     text.trim().toLowerCase().replace(/\s+/g, " ");
@@ -570,6 +600,8 @@ const AssessmentQuizPage = () => {
       setIsAdvancing(false);
     }
   };
+
+  advanceAfterAnswerRef.current = advanceAfterAnswer;
 
   const handleAnswerSelect = (label: string) => {
     if (showResults || isSubmitting) return;

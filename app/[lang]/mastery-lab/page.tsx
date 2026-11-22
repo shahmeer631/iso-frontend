@@ -164,10 +164,11 @@ const AssessmentPage = () => {
           management_level: data.managementLevel,
           department: data.department,
         },
-        num_questions: 10,
-        difficulty: MASTERY_QUIZ_DIFFICULTY,
-        guestId,
-      }).unwrap();
+          // Prefetch full exam (30 Q) so mid-exam batching is not required
+          num_questions: 30,
+          difficulty: MASTERY_QUIZ_DIFFICULTY,
+          guestId,
+        }).unwrap();
 
       const quizData = res.data || res;
       const questionsRaw = quizData.questions || [];
@@ -191,6 +192,11 @@ const AssessmentPage = () => {
 
         // Persist quiz first, then navigate — page stays mounted during loading
         localStorage.setItem("active_iso_quiz", JSON.stringify(quizPayload));
+        localStorage.setItem("mastery_last_industry", data.industry);
+        localStorage.setItem(
+          "mastery_last_management_level",
+          data.managementLevel,
+        );
         localStorage.removeItem("mastery_lab_progress");
         localStorage.removeItem("iso_assessment_progress");
         localStorage.removeItem("last_selected_option");

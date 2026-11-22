@@ -2,7 +2,6 @@
 
 import React, { useEffect } from "react";
 import Link from "next/link";
-import { useParams } from "next/navigation";
 import { BookOpen, Bot, GraduationCap, ArrowRight } from "lucide-react";
 import { motion, useReducedMotion } from "framer-motion";
 import { MasteryAnalytics } from "@/lib/analytics/track";
@@ -19,8 +18,6 @@ export default function ContinueYourMastery({
   trackResultView = false,
   score,
 }: ContinueYourMasteryProps) {
-  const params = useParams();
-  const lang = String(params?.lang || "en");
   const reduceMotion = useReducedMotion();
 
   useEffect(() => {
@@ -31,6 +28,7 @@ export default function ContinueYourMastery({
     });
   }, [trackResultView, score]);
 
+  // Hardcoded production upsell URLs per Mastery Lab Developer Implementation Plan
   const cards = [
     {
       id: "academy",
@@ -38,7 +36,7 @@ export default function ContinueYourMastery({
       description:
         "Improve your practical understanding of ISO standards through structured learning and professional training.",
       cta: "Explore ISOBrain Academy",
-      href: `/${lang}/academy`,
+      href: "https://isobrain.ai/en/academy",
       icon: GraduationCap,
       iconBg: "rgba(217, 119, 6, 0.12)",
       iconColor: "#D97706",
@@ -50,7 +48,7 @@ export default function ContinueYourMastery({
       description:
         "Access a centralized knowledge resource for ISO standards, references, and implementation-related materials.",
       cta: "Explore ISO Library",
-      href: `/${lang}/library/iso-standards`,
+      href: "https://isobrain.ai/en/library/iso-standards",
       icon: BookOpen,
       iconBg: "var(--ib-accbg)",
       iconColor: "var(--ib-acc)",
@@ -62,7 +60,7 @@ export default function ContinueYourMastery({
       description:
         "Get AI-powered assistance with ISO requirements, clause interpretation, implementation guidance, and compliance-related questions.",
       cta: "Try AI Assistant",
-      href: `/${lang}/ai-assistant-home`,
+      href: "https://isobrain.ai/en/ai-assistant-home",
       icon: Bot,
       iconBg: "var(--ib-accbg)",
       iconColor: "var(--ib-acc)",
@@ -128,6 +126,8 @@ export default function ContinueYourMastery({
               </p>
               <Link
                 href={card.href}
+                target="_blank"
+                rel="noopener noreferrer"
                 onClick={card.onClick}
                 className="mt-5 inline-flex items-center justify-center gap-2 rounded-full border border-[var(--ib-acc)]/25 bg-[var(--ib-acc)] px-5 py-2.5 text-[13px] font-semibold text-white transition-all hover:opacity-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ib-acc)]"
               >

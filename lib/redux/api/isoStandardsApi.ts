@@ -349,8 +349,30 @@ export const isoStandardsApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ['Leaderboard'],
     }),
-    getLeaderboard: builder.query<LeaderboardResponse, void>({
-      query: () => ({ url: '/mastery-labs/leaderboard' }),
+    getLeaderboard: builder.query<
+      LeaderboardResponse,
+      | void
+      | {
+          filter?: 'global' | 'industry' | 'management_level';
+          industry?: string;
+          management_level?: string;
+        }
+    >({
+      query: (args) => {
+        const params = new URLSearchParams();
+        if (args && typeof args === 'object') {
+          if (args.filter) params.set('filter', args.filter);
+          if (args.industry) params.set('industry', args.industry);
+          if (args.management_level)
+            params.set('management_level', args.management_level);
+        }
+        const qs = params.toString();
+        return {
+          url: qs
+            ? `/mastery-labs/leaderboard?${qs}`
+            : '/mastery-labs/leaderboard',
+        };
+      },
       providesTags: ['Leaderboard'],
     }),
   }),

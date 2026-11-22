@@ -1,14 +1,48 @@
 "use client";
 
-import React from "react";
+import React, { useMemo, useState } from "react";
 import { Trophy, Loader2, AlertCircle } from "lucide-react";
 import { useGetLeaderboardQuery } from "@/lib/redux/api/isoStandardsApi";
 import { useTranslation } from "react-i18next";
+import { useSelector } from "react-redux";
+import { selectCurrentUser } from "@/lib/redux/features/auth/authSlice";
 import "@/lib/i18n/client";
+
+type LeaderboardScope = "global" | "industry" | "management_level";
 
 const Leaderboard = () => {
   const { t } = useTranslation();
-  const { data, isLoading, isError } = useGetLeaderboardQuery();
+  const user = useSelector(selectCurrentUser) as any;
+  const userIndustry =
+    user?.industry ||
+    (typeof window !== "undefined"
+      ? localStorage.getItem("mastery_last_industry")
+      : null) ||
+    "";
+  const userLevel =
+    user?.professionalRole ||
+    user?.management_level ||
+    (typeof window !== "undefined"
+      ? localStorage.getItem("mastery_last_management_level")
+      : null) ||
+    "";
+
+  const [scope, setScope] = useState<LeaderboardScope>("global");
+
+  const queryArgs = useMemo(() => {
+    if (scope === "industry" && userIndustry) {
+      return { filter: "industry" as const, industry: userIndustry };
+    }
+    if (scope === "management_level" && userLevel) {
+      return {
+        filter: "management_level" as const,
+        management_level: userLevel,
+      };
+    }
+    return { filter: "global" as const };
+  }, [scope, userIndustry, userLevel]);
+
+  const { data, isLoading, isError } = useGetLeaderboardQuery(queryArgs);
   const performers = data?.data ?? [];
 
   const getRankStyles = (rank: number) => {
@@ -33,6 +67,27 @@ const Leaderboard = () => {
     };
   };
 
+  const tabs: Array<{ id: LeaderboardScope; label: string; disabled?: boolean }> =
+    [
+      { id: "global", label: t("mastery.lbGlobal", "Global Top 100") },
+      {
+        id: "industry",
+        label: userIndustry
+          ? t("mastery.lbIndustry", "Top in {{industry}}", {
+              industry: userIndustry,
+            })
+          : t("mastery.lbIndustryGeneric", "Top in Industry"),
+        disabled: !userIndustry,
+      },
+      {
+        id: "management_level",
+        label: userLevel
+          ? t("mastery.lbLevel", "Top in {{level}}", { level: userLevel })
+          : t("mastery.lbLevelGeneric", "Top in Level"),
+        disabled: !userLevel,
+      },
+    ];
+
   return (
     <div className="flex h-full flex-col">
       <div className="border-b border-[var(--ib-line)] bg-[linear-gradient(135deg,color-mix(in_srgb,var(--ib-acc)_10%,transparent),color-mix(in_srgb,var(--ib-acc)_6%,transparent))] px-4 py-5 text-left">
@@ -45,9 +100,23 @@ const Leaderboard = () => {
         <p className="m-0 text-[11px] font-medium text-[var(--ib-mute)]">
           {t("mastery.seeHowOthersPerform", "See how others perform")}
         </p>
-        <p className="mt-0.5 text-[10px] font-medium text-[var(--ib-mute)]">
-          {t("mastery.compareResults", "Compare your assessment results")}
-        </p>
+        <div className="mt-3 flex flex-wrap gap-1.5">
+          {tabs.map((tab) => (
+            <button
+              key={tab.id}
+              type="button"
+              disabled={tab.disabled}
+              onClick={() => setScope(tab.id)}
+              className={`rounded-md border px-2 py-1 text-[9px] font-semibold uppercase tracking-wide transition-colors disabled:cursor-not-allowed disabled:opacity-40 ${
+                scope === tab.id
+                  ? "border-[var(--ib-acc)] bg-[var(--ib-acc)] text-white"
+                  : "border-[var(--ib-line)] bg-[var(--ib-card)] text-[var(--ib-mute)] hover:border-[var(--ib-acc)] hover:text-[var(--ib-acc)]"
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
       </div>
 
       <div className="flex flex-1 flex-col gap-3 overflow-y-auto px-4 py-5">
@@ -80,7 +149,7 @@ const Leaderboard = () => {
 
         {!isLoading &&
           !isError &&
-          performers.slice(0, 6).map((performer: any) => {
+          performers.slice(0, 12).map((performer: any) => {
             const { card, icon } = getRankStyles(performer.rank);
 
             return (
@@ -103,7 +172,9 @@ const Leaderboard = () => {
                       {performer.name}
                     </h4>
                     <p className="m-0 mt-0.5 truncate text-[9px] font-semibold uppercase text-[var(--ib-mute)]">
-                      {performer.category || performer.industry || "Mastery Lab"}
+                      {[performer.category || performer.industry, performer.management_level]
+                        .filter(Boolean)
+                        .join(" · ") || "Mastery Lab"}
                     </p>
                   </div>
                 </div>
