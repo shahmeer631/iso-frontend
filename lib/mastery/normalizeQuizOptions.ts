@@ -37,6 +37,7 @@ export function transformQuizQuestions(
   clause?: string;
   subclause?: string;
   knowledgeCategory?: string;
+  isoStandardCategory?: string;
   questionType?: string;
 }> {
   return (questionsRaw || [])
@@ -65,6 +66,8 @@ export function transformQuizQuestions(
         clause: clause || undefined,
         subclause: String(q.subclause ?? "").trim() || undefined,
         knowledgeCategory: knowledgeCategory || undefined,
+        isoStandardCategory:
+          String(q.iso_standard_category ?? "").trim() || undefined,
         questionType:
           String(q.question_type ?? "knowledge").trim() || "knowledge",
       };

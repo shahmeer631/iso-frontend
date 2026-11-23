@@ -1194,6 +1194,7 @@ const AssessmentQuizPage = () => {
                 version={currentQ.version}
                 clause={currentQ.clause || currentQ.subclause}
                 knowledgeCategory={currentQ.knowledgeCategory}
+                isoStandardCategory={currentQ.isoStandardCategory}
               />
               <HintModal
                 isOpen={showHint}

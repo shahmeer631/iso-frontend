@@ -24,6 +24,7 @@ interface QuestionCardProps {
   version?: string;
   clause?: string;
   knowledgeCategory?: string;
+  isoStandardCategory?: string;
 }
 
 export const QuestionCard: React.FC<QuestionCardProps> = ({
@@ -37,6 +38,7 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
   version,
   clause,
   knowledgeCategory,
+  isoStandardCategory,
 }) => {
   const { t } = useTranslation();
   const standardLabel = [standard, version && !String(standard || "").includes(String(version))
@@ -45,6 +47,7 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
     .filter(Boolean)
     .join(" ");
   const referenceBits = [
+    isoStandardCategory || null,
     standardLabel || null,
     clause ? `Clause ${clause}` : null,
     knowledgeCategory

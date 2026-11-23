@@ -17,6 +17,7 @@ export interface Question {
   clause?: string;
   subclause?: string;
   knowledgeCategory?: string;
+  isoStandardCategory?: string;
   questionType?: string;
 }
 
