@@ -16,6 +16,8 @@ export interface Question {
   version?: string;
   clause?: string;
   subclause?: string;
+  knowledgeCategory?: string;
+  questionType?: string;
 }
 
 export interface SelectedAnswers {

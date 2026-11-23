@@ -36,12 +36,20 @@ export function transformQuizQuestions(
   version?: string;
   clause?: string;
   subclause?: string;
+  knowledgeCategory?: string;
+  questionType?: string;
 }> {
   return (questionsRaw || [])
     .map((q: any, idx: number) => {
       const options = normalizeQuizOptions(q?.options);
       if (!q?.question || options.length === 0) return null;
       const clause = String(q.clause ?? q.subclause ?? "").trim();
+      const knowledgeCategory = String(
+        q.primary_knowledge_category ??
+          q.knowledge_category ??
+          q.pillar ??
+          "",
+      ).trim();
       return {
         id: startId + idx,
         /** Stable server question id for trusted scoring */
@@ -56,6 +64,9 @@ export function transformQuizQuestions(
         version: String(q.version ?? "").trim() || undefined,
         clause: clause || undefined,
         subclause: String(q.subclause ?? "").trim() || undefined,
+        knowledgeCategory: knowledgeCategory || undefined,
+        questionType:
+          String(q.question_type ?? "knowledge").trim() || "knowledge",
       };
     })
     .filter(Boolean) as any[];

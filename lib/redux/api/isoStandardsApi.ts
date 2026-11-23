@@ -374,6 +374,12 @@ export const isoStandardsApi = baseApi.injectEndpoints({
         };
       },
       providesTags: ['Leaderboard'],
+      // After admin campaign/leaderboard reset there is no client mutation to
+      // invalidate this tag — remount/focus must refetch so soft-hidden ranks
+      // do not linger from RTK cache.
+      refetchOnMountOrArgChange: true,
+      refetchOnFocus: true,
+      refetchOnReconnect: true,
     }),
   }),
   overrideExisting: true,

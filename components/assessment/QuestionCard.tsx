@@ -20,6 +20,10 @@ interface QuestionCardProps {
   onSwipeNext?: () => void;
   onSwipePrev?: () => void;
   disableAnswers?: boolean;
+  standard?: string;
+  version?: string;
+  clause?: string;
+  knowledgeCategory?: string;
 }
 
 export const QuestionCard: React.FC<QuestionCardProps> = ({
@@ -29,10 +33,34 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
   onAnswerSelect,
   onSwipePrev,
   disableAnswers = false,
+  standard,
+  version,
+  clause,
+  knowledgeCategory,
 }) => {
   const { t } = useTranslation();
+  const standardLabel = [standard, version && !String(standard || "").includes(String(version))
+    ? version
+    : null]
+    .filter(Boolean)
+    .join(" ");
+  const referenceBits = [
+    standardLabel || null,
+    clause ? `Clause ${clause}` : null,
+    knowledgeCategory
+      ? t("mastery.knowledgeCategoryLabel", "Knowledge: {{category}}", {
+          category: knowledgeCategory.replace(/_/g, " "),
+        })
+      : null,
+  ].filter(Boolean);
+
   return (
     <div className="relative mb-8 rounded-[24px] border border-[var(--ib-line)] bg-[var(--ib-card)] p-5 sm:mb-8 sm:rounded-[32px] sm:p-8 md:p-10">
+      {referenceBits.length > 0 ? (
+        <p className="mb-3 text-[11px] font-bold uppercase tracking-[0.12em] text-[var(--ib-acc)] sm:text-[12px]">
+          {referenceBits.join(" · ")}
+        </p>
+      ) : null}
       <h3 className="mb-0! text-[15px] font-medium leading-relaxed text-[var(--ib-ink)] sm:text-[18px]">
         {question}
       </h3>

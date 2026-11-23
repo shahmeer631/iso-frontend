@@ -271,7 +271,7 @@ const AssessmentQuizPage = () => {
             avoid_duplicate_questions: true,
             existing_question_hints: existingStemHints,
             instruction:
-              "Generate NEW clause-specific expert questions that do not repeat prior stems or scenarios from earlier batches for this same learner.",
+              "Generate NEW clause-specific expert ISO knowledge questions that do not repeat prior stems from earlier batches for this same learner. Prefer knowledge probes over workplace scenarios.",
           },
           num_questions: count,
           difficulty: MASTERY_QUIZ_DIFFICULTY,
@@ -733,8 +733,8 @@ const AssessmentQuizPage = () => {
 
   const loaderSteps = [
     t("mastery.loaderStep1", "Analyzing your industry context"),
-    t("mastery.loaderStep2", "Building scenario-based questions"),
-    t("mastery.loaderStep3", "Calibrating difficulty level"),
+    t("mastery.loaderStep2", "Building knowledge-based ISO questions"),
+    t("mastery.loaderStep3", "Calibrating expert difficulty"),
   ];
 
   if (!isLoaded) {
@@ -744,7 +744,7 @@ const AssessmentQuizPage = () => {
         title={t("mastery.loaderTitle", "Preparing your assessment")}
         description={t(
           "mastery.loaderDesc",
-          "Building scenario-based questions for your role…"
+          "Building knowledge-based ISO questions for your role…"
         )}
         steps={loaderSteps}
       />
@@ -1042,7 +1042,12 @@ const AssessmentQuizPage = () => {
   const answeredCount = Object.keys(selectedAnswers).filter(
     (key) => selectedAnswers[Number(key)]
   ).length;
-  const totalQuestions = Math.max(quizQuestions.length, 1);
+  const loadedQuestions = Math.max(quizQuestions.length, 1);
+  // Keep answered/total aligned with progress bar (target 30 while batches load)
+  const displayTotalQuestions =
+    awaitingNextBatch || quizQuestions.length < 30
+      ? Math.max(loadedQuestions, 30)
+      : loadedQuestions;
   const contextBits = [
     quizMetadata?.categoryName,
     quizMetadata?.difficulty,
@@ -1082,7 +1087,7 @@ const AssessmentQuizPage = () => {
                   </p>
                 ) : null}
                 <p className="mt-3 text-[13px] text-[var(--ib-mute)]">
-                  {answeredCount} / {totalQuestions}{" "}
+                  {answeredCount} / {displayTotalQuestions}{" "}
                   {t("mastery.answeredLabel", "answered")}
                 </p>
               </div>
@@ -1094,11 +1099,7 @@ const AssessmentQuizPage = () => {
 
           <QuizProgressBar
             currentQuestion={currentQuestion}
-            totalQuestions={
-              awaitingNextBatch || quizQuestions.length < 30
-                ? Math.max(totalQuestions, 30)
-                : totalQuestions
-            }
+            totalQuestions={displayTotalQuestions}
             answeredCount={answeredCount}
           />
 
@@ -1164,7 +1165,7 @@ const AssessmentQuizPage = () => {
                   steps={[
                     t(
                       "mastery.preparingNextStep1",
-                      "Fetching the next expert scenarios",
+                      "Fetching the next expert knowledge questions",
                     ),
                     t(
                       "mastery.preparingNextStep2",
@@ -1189,6 +1190,10 @@ const AssessmentQuizPage = () => {
                 onSwipeNext={handleNext}
                 onSwipePrev={currentQuestion > 0 ? handlePrevious : undefined}
                 disableAnswers={isAdvancing || isSubmitting}
+                standard={currentQ.standard}
+                version={currentQ.version}
+                clause={currentQ.clause || currentQ.subclause}
+                knowledgeCategory={currentQ.knowledgeCategory}
               />
               <HintModal
                 isOpen={showHint}
