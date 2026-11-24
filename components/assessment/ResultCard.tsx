@@ -98,7 +98,7 @@ export const ResultCard: React.FC<ResultCardProps> = ({
               </span>
             </div>
             <span className="font-inter w-fit mt-1 sm:mt-0 ml-7 sm:ml-0" style={{ color: "#EF4444", fontSize: 10, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.1em", background: "rgba(239, 68, 68, 0.1)", padding: "4px 10px", borderRadius: 99, whiteSpace: "nowrap", flexShrink: 0 }}>
-              ✕ {t('mastery.yourAnswer')}
+              ✕ {t("mastery.yourAnswer", "Your answer")}
             </span>
           </div>
         )}
@@ -113,12 +113,14 @@ export const ResultCard: React.FC<ResultCardProps> = ({
               <CheckCircle2 size={18} color="#10B981" className="shrink-0" />
               <span className="font-inter font-bold text-[#10B981] shrink-0 text-sm sm:text-base">{correctAnswer}.</span>
             </div>
-            <span className="text-white font-semibold text-sm leading-relaxed pl-7 sm:pl-0">
+            <span className="text-[var(--ib-ink)] font-semibold text-sm leading-relaxed pl-7 sm:pl-0">
               {correctAnswerText}
             </span>
           </div>
           <span className="font-inter w-fit mt-1 sm:mt-0 ml-7 sm:ml-0" style={{ color: "#10B981", fontSize: 10, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.1em", background: "rgba(16, 185, 129, 0.1)", padding: "4px 10px", borderRadius: 99, whiteSpace: "nowrap", flexShrink: 0 }}>
-            ✓ {isCorrect ? t('mastery.correctChoice') : t('mastery.correctAnswer')}
+            ✓ {isCorrect
+              ? t("mastery.correctChoice", "Correct choice")
+              : t("mastery.correctAnswer", "Correct answer")}
           </span>
         </div>
       </div>
@@ -130,15 +132,15 @@ export const ResultCard: React.FC<ResultCardProps> = ({
       }}>
         <div className="flex flex-col sm:flex-row items-start gap-4">
           <div style={{
-            width: 48, height: 48, background: "rgba(176, 38, 255, 0.1)",
+            width: 48, height: 48, background: "rgba(27, 77, 219, 0.1)",
             borderRadius: 12, display: "flex", alignItems: "center", justifyContent: "center",
-            flexShrink: 0, border: "1px solid rgba(176, 38, 255, 0.2)"
+            flexShrink: 0, border: "1px solid rgba(27, 77, 219, 0.2)"
           }}>
             <Lightbulb size={24} color="var(--ib-acc)" />
           </div>
           <div style={{ flex: 1 }}>
             <p className="text-base sm:text-lg" style={{ fontWeight: 700, color: "var(--ib-ink)", marginBottom: 8, margin: 0 }}>
-              {t('mastery.explainerInsight')}
+              {t("mastery.explainerInsight", "Explainer insight")}
             </p>
             <p style={{ fontSize: 14, color: "var(--ib-mute)", lineHeight: 1.6, fontWeight: 500, margin: "8px 0 0" }}>
               {explanation}

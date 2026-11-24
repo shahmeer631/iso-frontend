@@ -992,41 +992,35 @@ const AssessmentQuizPage = () => {
               </div>
             )}
 
-            {/* Question Review (Original ResultCard style) */}
+            {/* Question Review — show every item at once (client: single scrollable breakdown) */}
             <div className="pt-20 pb-12">
-              <h3 className="text-xs font-medium text-[var(--ib-mute)] uppercase tracking-[0.2em] mb-10 text-center">Question Review Breakdown</h3>
-              <ResultCard
-                questionNumber={currentQuestion + 1}
-                question={currentQ.question}
-                userAnswer={selectedAnswers[currentQuestion]}
-                correctAnswer={currentQ.correctAnswer}
-                options={currentQ.options}
-                explanation={currentQ.explanation}
-                standard={(currentQ as any).standard}
-                version={(currentQ as any).version}
-                clause={(currentQ as any).clause || (currentQ as any).subclause}
-              />
-
-              <div className="flex flex-col items-center gap-4 mt-10 w-full">
-                <div className="text-[var(--ib-mute)] font-black text-[10px] sm:text-[12px] uppercase tracking-widest text-center">
-                  Question {currentQuestion + 1} {t('dynamic.dyn_of_479')}{quizQuestions.length}
-                </div>
-                <div className="flex justify-between items-center w-full gap-3 sm:gap-4">
-                  <button
-                    onClick={handlePrevious}
-                    disabled={currentQuestion === 0}
-                    className="flex-1 inline-flex justify-center items-center gap-2 px-3 py-3 sm:px-8 sm:py-4 rounded-xl bg-[var(--ib-card)] border border-[var(--ib-line)] text-[var(--ib-ink)] text-xs sm:text-base font-bold hover:bg-[var(--ib-accbg)] transition-all disabled:opacity-30 active:scale-95"
-                  >
-                    <ArrowLeft size={16} className="shrink-0" /> Previous
-                  </button>
-                  <button
-                    onClick={handleNext}
-                    className="flex-1 inline-flex justify-center items-center gap-2 px-3 py-3 sm:px-10 sm:py-4 rounded-xl bg-[var(--ib-acc)] text-white  text-xs sm:text-base font-bold transition-all active:scale-95"
-                  >
-                    {currentQuestion === quizQuestions.length - 1 ? "Finish Report" : "Next Result"}
-                    <ArrowRight size={16} className="shrink-0" />
-                  </button>
-                </div>
+              <h3 className="text-xs font-medium text-[var(--ib-mute)] uppercase tracking-[0.2em] mb-4 text-center">
+                {t(
+                  "mastery.questionReviewBreakdown",
+                  "Question Review Breakdown",
+                )}
+              </h3>
+              <p className="mb-10 text-center text-sm text-[var(--ib-mute)]">
+                {t(
+                  "mastery.questionReviewAllHint",
+                  "All questions and answers are shown below — scroll to review the full exam.",
+                )}
+              </p>
+              <div className="flex flex-col gap-2">
+                {quizQuestions.map((q, idx) => (
+                  <ResultCard
+                    key={q.questionId || q.id || idx}
+                    questionNumber={idx + 1}
+                    question={q.question}
+                    userAnswer={selectedAnswers[idx]}
+                    correctAnswer={q.correctAnswer}
+                    options={q.options}
+                    explanation={q.explanation}
+                    standard={(q as any).standard}
+                    version={(q as any).version}
+                    clause={(q as any).clause || (q as any).subclause}
+                  />
+                ))}
               </div>
             </div>
           </div>
