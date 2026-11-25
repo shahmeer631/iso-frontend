@@ -14,19 +14,32 @@ import "@/lib/i18n/client";
 
 const ease = [0.22, 1, 0.36, 1] as const;
 
-const PricingFAQ = () => {
+type PricingFAQProps = {
+  /** When true, show the five Lifetime Deal FAQs from the client document. */
+  lifetimeMode?: boolean;
+};
+
+const PricingFAQ = ({ lifetimeMode = false }: PricingFAQProps) => {
   const { t } = useTranslation();
   const reduceMotion = useReducedMotion();
 
-  const faqs = [
-    { question: t("faq.q1"), answer: t("faq.a1") },
-    { question: t("faq.q2"), answer: t("faq.a2") },
-    { question: t("faq.q3"), answer: t("faq.a3") },
-    { question: t("faq.q4"), answer: t("faq.a4") },
-    { question: t("faq.q5"), answer: t("faq.a5") },
-    { question: t("faq.q6"), answer: t("faq.a6") },
-    { question: t("faq.q7"), answer: t("faq.a7") },
-  ];
+  const faqs = lifetimeMode
+    ? [
+        { question: t("ltd.faq.q1"), answer: t("ltd.faq.a1") },
+        { question: t("ltd.faq.q2"), answer: t("ltd.faq.a2") },
+        { question: t("ltd.faq.q3"), answer: t("ltd.faq.a3") },
+        { question: t("ltd.faq.q4"), answer: t("ltd.faq.a4") },
+        { question: t("ltd.faq.q5"), answer: t("ltd.faq.a5") },
+      ]
+    : [
+        { question: t("faq.q1"), answer: t("faq.a1") },
+        { question: t("faq.q2"), answer: t("faq.a2") },
+        { question: t("faq.q3"), answer: t("faq.a3") },
+        { question: t("faq.q4"), answer: t("faq.a4") },
+        { question: t("faq.q5"), answer: t("faq.a5") },
+        { question: t("faq.q6"), answer: t("faq.a6") },
+        { question: t("faq.q7"), answer: t("faq.a7") },
+      ];
 
   return (
     <section className="relative overflow-x-clip bg-[var(--ib-bg)] px-4 py-16 sm:px-6 sm:py-24">
@@ -45,20 +58,29 @@ const PricingFAQ = () => {
         >
           <div className="ib-eye mx-auto mb-3 inline-flex items-center gap-2">
             <HelpCircle className="size-3.5" aria-hidden />
-            {t("faq.badge")}
+            {lifetimeMode
+              ? t("ltd.faq.badge", "Lifetime Deal FAQ")
+              : t("faq.badge")}
           </div>
           <h2 className="mb-0! text-[28px] font-bold leading-[1.2] tracking-[-0.03em] text-[var(--ib-ink)] sm:text-[34px] lg:text-[38px]">
-            {t("dynamic.dyn_fAQS_67")}
+            {lifetimeMode
+              ? t("ltd.faq.heading", "Lifetime Deal Questions")
+              : t("dynamic.dyn_fAQS_67")}
           </h2>
           <p className="mx-auto mt-3 max-w-xl text-[14px] font-medium leading-relaxed text-[var(--ib-mute)] sm:text-[15px]">
-            {t("faq.subtitle")}
+            {lifetimeMode
+              ? t(
+                  "ltd.faq.subtitle",
+                  "Clear answers about one-time lifetime access during this 7-day event.",
+                )
+              : t("faq.subtitle")}
           </p>
         </motion.div>
 
         <Accordion type="single" collapsible className="w-full space-y-3 sm:space-y-4">
           {faqs.map((faq, index) => (
             <AccordionItem
-              key={index}
+              key={`${lifetimeMode ? "ltd" : "std"}-${index}`}
               value={`item-${index}`}
               className="overflow-hidden rounded-2xl border border-[var(--ib-line)] bg-[var(--ib-card)] px-5 transition-colors duration-300 hover:border-[color-mix(in_srgb,var(--ib-acc)_28%,var(--ib-line))] sm:px-7"
             >
