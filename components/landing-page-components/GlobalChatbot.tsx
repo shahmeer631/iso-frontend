@@ -509,9 +509,11 @@ export default function GlobalChatbot() {
 
   // Panel is viewport-fixed (not inside a transformed parent) so maximize
   // can use the full screen and docked mode stays under the marketing nav.
+  // Always dock to the physical right edge — ignore page RTL (e.g. AR),
+  // otherwise justify-end / inline flow pulls the peek into the hero center.
   const dockedPanelClass = hasMarketingNav
-    ? "pointer-events-auto fixed right-3 top-[4.85rem] z-[120] h-[min(560px,calc(100dvh-7rem))] w-[calc(100vw-1.5rem)] sm:right-4 sm:w-[440px]"
-    : "pointer-events-auto fixed right-3 top-4 z-[120] h-[min(560px,calc(100dvh-6rem))] w-[calc(100vw-1.5rem)] sm:right-4 sm:w-[440px]";
+    ? "pointer-events-auto fixed end-auto right-3 top-[4.85rem] z-[120] h-[min(560px,calc(100dvh-7rem))] w-[calc(100vw-1.5rem)] sm:right-4 sm:w-[440px]"
+    : "pointer-events-auto fixed end-auto right-3 top-4 z-[120] h-[min(560px,calc(100dvh-6rem))] w-[calc(100vw-1.5rem)] sm:right-4 sm:w-[440px]";
 
   const maximizedPanelClass =
     "pointer-events-auto fixed inset-3 z-[130] h-auto w-auto max-w-none sm:inset-4 md:inset-6";
@@ -535,6 +537,7 @@ export default function GlobalChatbot() {
           <motion.div
             key="ask-ai-panel"
             {...panelMotion}
+            dir="ltr"
             style={{ transformOrigin: "bottom right" }}
             className={`chatbot-panel flex flex-col overflow-hidden rounded-2xl border border-[var(--ib-line)] bg-[var(--ib-bg)] shadow-[0_28px_64px_-22px_rgba(11,18,32,0.5)] transition-[inset,width,height,max-width] duration-300 ease-out ${
               isMaximized ? maximizedPanelClass : dockedPanelClass
@@ -816,10 +819,11 @@ export default function GlobalChatbot() {
       {/* Mid-right peek — only when chat is closed (panel header owns close/maximize) */}
       {!isOpen && (
         <div
-          className={`pointer-events-none fixed right-0 z-[120] ${shellOffsetY} -translate-y-1/2 ${denseNudge}`}
+          dir="ltr"
+          className={`pointer-events-none fixed end-auto right-0 z-[120] ${shellOffsetY} -translate-y-1/2 ${denseNudge}`}
         >
-          <div className="pointer-events-auto relative flex w-[min(440px,calc(100vw-0.75rem))] flex-col items-end">
-            <div className="relative z-50 flex w-full items-center justify-end">
+          <div className="pointer-events-auto relative ms-auto flex w-max max-w-[min(440px,calc(100vw-0.75rem))] flex-col items-end">
+            <div className="relative z-50 flex w-max items-center justify-end">
               <button
                 type="button"
                 onClick={toggleChat}
