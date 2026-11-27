@@ -58,7 +58,17 @@ export function userHasAnyPaidAccess(user: AccessUser): boolean {
   if (user.role === "SUPER_ADMIN" || user.role === "admin") return true;
   if ((user.effectivePlans || []).length > 0) return true;
   if ((user.purchasedPlanIds || []).length > 0) return true;
-  if (user.planId && user.currentPlan !== "FREE" && user.subscribed !== "FREE_USER") {
+  // Lifetime Deal / paid plan: currentPlan is raised even when subscribed
+  // was historically left as FREE_USER before LTD fulfillment set SUBSCRIBED.
+  if (
+    user.planId &&
+    user.currentPlan &&
+    user.currentPlan !== "FREE" &&
+    user.currentPlan !== "FREE_USER"
+  ) {
+    return true;
+  }
+  if (user.subscribed && user.subscribed !== "FREE_USER") {
     return true;
   }
   return false;

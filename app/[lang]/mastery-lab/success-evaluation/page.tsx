@@ -75,6 +75,7 @@ export default function SuccessEvaluationPage() {
   const [displayScores, setDisplayScores] = useState<any[]>([]);
   const [categoryName, setCategoryName] = useState("");
   const [overallScore, setOverallScore] = useState(0);
+  const [notifiedOutcome, setNotifiedOutcome] = useState(false);
 
   const applyResultPayload = (parsedData: any) => {
     let actual = parsedData;
@@ -281,6 +282,26 @@ export default function SuccessEvaluationPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token, lang, t]);
 
+  // One-time toast once backend pass + certificate issuance are confirmed
+  useEffect(() => {
+    if (!isLoaded || !assessmentData || notifiedOutcome) return;
+    if (assessmentData.passed === true && assessmentData.certificateIssued === true) {
+      toast.success("Congratulations! You passed — certificate issued.", {
+        description: `Score ${overallScore}% (pass mark 50%). Open Certificates in your Dashboard to download.`,
+        duration: 6000,
+      });
+      setNotifiedOutcome(true);
+      return;
+    }
+    if (assessmentData.passed === false) {
+      toast.message("Exam not passed", {
+        description: `Score ${overallScore}%. You need at least 50% for a certificate.`,
+        duration: 5000,
+      });
+      setNotifiedOutcome(true);
+    }
+  }, [isLoaded, assessmentData, overallScore, notifiedOutcome]);
+
   if (!isLoaded) {
     return (
       <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "var(--ib-bg)" }}>
@@ -304,6 +325,18 @@ export default function SuccessEvaluationPage() {
     value: s.score,
     fullMark: 100
   }));
+
+  // Backend is source of truth — never derive pass/fail from a client-only score.
+  const backendPassed = assessmentData?.passed === true;
+  const certificateIssued = assessmentData?.certificateIssued === true;
+  const showPassNotification = backendPassed && certificateIssued;
+  const showFailNotification =
+    assessmentData != null && assessmentData?.passed === false;
+  const certificatesDashboardHref =
+    assessmentData?.certificate?.dashboardUrl ||
+    dashboardUrl("/user/certificates");
+  // Display-only mirror of backend MASTERY_PASS_SCORE (default 50).
+  const passingThreshold = 50;
 
   return (
     <div className="min-h-screen pt-12 pb-12 px-4" style={{ background: "var(--ib-bg)", fontFamily: "'Inter', sans-serif" }}>
@@ -332,6 +365,84 @@ export default function SuccessEvaluationPage() {
               )}
             </div>
           </div>
+
+          {/* Pass / fail notification — backend-confirmed only */}
+          {showPassNotification && (
+            <motion.div
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="rounded-[32px] border border-emerald-200 bg-emerald-50/90 p-6 sm:p-8 shadow-sm"
+              role="status"
+              aria-live="polite"
+            >
+              <div className="flex flex-col gap-5 md:flex-row md:items-start md:justify-between">
+                <div className="space-y-3">
+                  <div className="inline-flex items-center gap-2 rounded-full bg-emerald-600/10 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-emerald-700">
+                    <Check size={14} className="shrink-0" />
+                    Exam passed
+                  </div>
+                  <h2 className="text-2xl font-semibold text-[var(--ib-ink)] sm:text-3xl">
+                    Congratulations! You Passed the Exam!
+                  </h2>
+                  <p className="max-w-2xl text-sm leading-relaxed text-[var(--ib-mute)] sm:text-base">
+                    You have successfully passed your Mastery Lab exam with a
+                    score of{" "}
+                    <strong className="text-[var(--ib-ink)]">{overallScore}%</strong>
+                    , above the required passing threshold of{" "}
+                    <strong className="text-[var(--ib-ink)]">
+                      {passingThreshold}%
+                    </strong>
+                    .
+                  </p>
+                  <p className="max-w-2xl text-sm leading-relaxed text-[var(--ib-mute)] sm:text-base">
+                    Your certificate has been issued successfully. You can now
+                    open your Dashboard and download your certificate from the
+                    Certificates section.
+                  </p>
+                </div>
+                <a
+                  href={certificatesDashboardHref}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex shrink-0 items-center justify-center gap-2 rounded-full bg-emerald-600 px-7 py-3.5 text-xs font-bold uppercase tracking-wider text-white transition-transform hover:scale-[1.02] hover:bg-emerald-700 sm:text-sm"
+                >
+                  <Award size={18} className="shrink-0" />
+                  Go to Dashboard
+                </a>
+              </div>
+            </motion.div>
+          )}
+
+          {showFailNotification && (
+            <motion.div
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="rounded-[32px] border border-amber-200 bg-amber-50/90 p-6 sm:p-8 shadow-sm"
+              role="status"
+              aria-live="polite"
+            >
+              <div className="space-y-3">
+                <div className="inline-flex items-center gap-2 rounded-full bg-amber-600/10 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-amber-800">
+                  <AlertTriangle size={14} className="shrink-0" />
+                  Exam not passed
+                </div>
+                <h2 className="text-2xl font-semibold text-[var(--ib-ink)] sm:text-3xl">
+                  Keep Going — You Didn&apos;t Reach the Pass Mark
+                </h2>
+                <p className="max-w-2xl text-sm leading-relaxed text-[var(--ib-mute)] sm:text-base">
+                  Your Mastery Lab score is{" "}
+                  <strong className="text-[var(--ib-ink)]">{overallScore}%</strong>
+                  . A minimum of{" "}
+                  <strong className="text-[var(--ib-ink)]">
+                    {passingThreshold}%
+                  </strong>{" "}
+                  is required to pass and receive a certificate. No certificate
+                  was issued for this attempt. Review the feedback below and
+                  retake the assessment when you&apos;re ready.
+                </p>
+              </div>
+            </motion.div>
+          )}
 
           {/* Score vs Progress — separate metrics (never interchangeable) */}
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
@@ -513,10 +624,8 @@ export default function SuccessEvaluationPage() {
             </div>
           )}
 
-          {/* CPD Certificate */}
-          {(assessmentData?.certificateIssued ||
-            assessmentData?.passed ||
-            overallScore >= 70) && (
+          {/* CPD Certificate — only when backend confirmed issuance */}
+          {certificateIssued && (
             <div className="bg-[var(--ib-card)] border border-[var(--ib-line)] p-6 sm:p-10 rounded-[40px] border-l-4 border-l-[var(--ib-acc)]">
               <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
                 <div className="space-y-3">
@@ -530,6 +639,10 @@ export default function SuccessEvaluationPage() {
                     )}
                   </p>
                   <p className="text-sm leading-relaxed text-[var(--ib-mute)]">
+                    Score{" "}
+                    <strong className="text-[var(--ib-ink)]">{overallScore}%</strong>
+                    {" · "}
+                    Pass mark {passingThreshold}%
                     {[
                       assessmentData?._uiMetadata?.industry ||
                         assessmentData?.industry,
@@ -539,19 +652,23 @@ export default function SuccessEvaluationPage() {
                         assessmentData?.department,
                     ]
                       .filter(Boolean)
-                      .join(" · ") ||
-                      t(
-                        "mastery.step3Desc",
-                        "Receive a verifiable certificate with accredited CPD hours and skill benchmarks."
-                      )}
+                      .length > 0
+                      ? ` · ${[
+                          assessmentData?._uiMetadata?.industry ||
+                            assessmentData?.industry,
+                          assessmentData?._uiMetadata?.managementLevel ||
+                            assessmentData?.management_level,
+                          assessmentData?._uiMetadata?.department ||
+                            assessmentData?.department,
+                        ]
+                          .filter(Boolean)
+                          .join(" · ")}`
+                      : ""}
                   </p>
                 </div>
                 <div className="flex flex-col gap-3 sm:flex-row">
                   <a
-                    href={
-                      assessmentData?.certificate?.dashboardUrl ||
-                      dashboardUrl("/user/certificates")
-                    }
+                    href={certificatesDashboardHref}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center justify-center gap-2 rounded-full bg-[var(--ib-acc)] px-8 py-4 text-xs font-bold uppercase tracking-wider text-white transition-transform hover:scale-105 md:text-sm"
